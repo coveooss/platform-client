@@ -1,0 +1,6 @@
+coveo-client.js
+commands/**/*.js
+commons/**/*.js
+console/**/*.js
+coveo/**/*.js
+exports/**/*.*
