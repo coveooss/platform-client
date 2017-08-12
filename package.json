@@ -1,0 +1,48 @@
+{
+  "name": "coveo-client",
+  "version": "0.0.1",
+  "description": "A simple client to manage organizations in the Coveo Cloud Platform",
+  "main": "coveo-client.ts",
+  "dependencies": {
+    "chalk": "^2.1.0",
+    "clear": "0.0.1",
+    "clui": "^0.3.6",
+    "commander": "^2.11.0",
+    "exit": "^0.1.2",
+    "figlet": "^1.2.0",
+    "fs-extra": "^4.0.1",
+    "inquirer": "^3.2.1",
+    "js-yaml": "3.9.1",
+    "jsondiffpatch": "0.2.4",
+    "opn": "5.1.0",
+    "request": "^2.81.0",
+    "typescript": "^2.4.2",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "@types/chalk": "0.4.31",
+    "@types/fs-extra": "^4.0.0",
+    "@types/inquirer": "0.0.35",
+    "@types/js-yaml": "3.9.0",
+    "@types/node": "8.0.20",
+    "@types/opn": "3.0.28",
+    "@types/promise": "^7.1.30",
+    "@types/request": "^2.0.0",
+    "@types/typescript": "2.0.0",
+    "@types/underscore": "^1.8.1",
+    "del": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-nodemon": "^2.2.1",
+    "gulp-typescript": "^3.2.1",
+    "nodemon": "^1.11.0",
+    "require-dir": "^0.3.2",
+    "run-sequence": "^2.1.0",
+    "tslint": "^5.6.0"
+  },
+  "scripts": {
+    "start": "nodejs coveo-client.js",
+    "test": ""
+  },
+  "author": "Jean-Francois Cloutier & Yassine Lakhdar",
+  "license": "GPL-3.0"
+}

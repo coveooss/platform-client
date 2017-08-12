@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+      "module": "commonjs",
+      "target": "es5",
+      "declaration": false,
+      "experimentalDecorators": true,
+      "outDir": "./bin",
+      "sourceMap": false,
+      "forceConsistentCasingInFileNames": true,
+      "typeRoots": [
+          "lib",
+          "./node_modules/@types"
+      ]
+  },
+  "include": [
+      "./src/**/*.ts"
+  ],
+  "exclude": [
+      "./node_modules"
+  ]
+}
