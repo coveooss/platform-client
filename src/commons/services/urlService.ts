@@ -1,10 +1,12 @@
 import { ObjectUtils } from '../utils/objectUtils';
+import { config } from './../../config/index';
+
 export class UrlService {
     static platformUrl: string = 'https://platform.cloud.coveo.com';
 
     /*** Fields API ***/
     static getFieldUrl(organizationId: string, options?: any): string {
-        return `${UrlService.platformUrl}/rest/organizations/${organizationId}/indexes/page/fields${this.serialize(options)}`;
+        return `${config.platformUrl}/rest/organizations/${organizationId}/indexes/page/fields${this.serialize(options)}`;
     }
 
     /**

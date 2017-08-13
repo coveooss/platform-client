@@ -2,10 +2,11 @@ import * as request from 'request';
 import { IncomingMessage } from 'http';
 import { IFieldModel } from '../commons/interfaces/ifieldModel';
 import { UrlService } from '../commons/services/urlService';
+import { IOrganizationIdentifier } from '../commons/interfaces/iorganization';
 
 export class FieldController {
 
-    constructor(private organization1: string, private apiKey1: string, private organization2: string, private apiKey2: string) {
+    constructor(private organization1: IOrganizationIdentifier, private organization2: IOrganizationIdentifier) {
 
     }
 
@@ -13,8 +14,8 @@ export class FieldController {
         // TODO: get for both orgs
         return new Promise((resolve, reject) => {
             request(
-                `${UrlService.getFieldUrl(this.organization1)}`,
-                { auth: { 'bearer': this.apiKey1 } },
+                `${UrlService.getFieldUrl(this.organization1.id)}`,
+                { auth: { 'bearer': this.organization1.apiKey } },
                 (err: any, response: request.RequestResponse, body: IFieldModel[]) => {
                     if (err) {
                         process.stderr.write(err);

@@ -38,7 +38,6 @@ The Coveo Team will look at your code and validate that :
 Files in this project are all located in misc, to follow the struture of the files in the coveo-labs.
 
 ## How-to build
-To build the project, use "tsc coveo-client.ts" from the misc folder.
 ```
 npm install -g gulp
 npm install
@@ -46,7 +45,7 @@ gulp
 ```
 
 ## How-to run
-- Make sure you were able to run gulp entirely without any errors first. Then, type "npm start".
+- Make sure you were able to run gulp entirely without any errors first. Then, run `node coveo-client.js` from the `bin` folder.
 
 
 ## Dev

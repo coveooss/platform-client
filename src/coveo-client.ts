@@ -6,11 +6,12 @@ import * as inquirer from 'inquirer';
 let clear: any = require('clear');
 let CLI: any = require('clui');
 let figlet: any = require('figlet');
+import { config } from './config/index';
 // Internal packages
 import { InitializeConsole } from './console/terminal-manager';
 import * as command from './commands/commandManager';
 import { helpText, helpDisclaimer } from './console/help';
-// let pkg: any = require('./package.json');
+let pkg: any = require('./../package.json');
 
 // Clear the console and display the package name and some other information
 clear();
@@ -18,12 +19,15 @@ console.log(
   chalk
     .white
     .bold(
-    // figlet.textSync(pkg.name, { horizontalLayout: 'full' })
+    figlet.textSync('COVEO-client', { horizontalLayout: 'full' })
     )
 );
-// console.log('Version: %s', pkg.version);
-// console.log(pkg.description);
+console.log('Version: %s', pkg.version);
+console.log(pkg.description);
 console.log(helpDisclaimer);
+if (config.env !== 'production') {
+  console.log(chalk[config.color]('Environment:', config.env));
+}
 
 // Handle the commands by sending them to the parser
 function processCommand() {

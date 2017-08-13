@@ -8,6 +8,7 @@ import { ICommand } from '../commons/interfaces/icommand';
 import { DiffResultsPageHtmlTemplate, DiffResultsItemTemplate } from '../commons/templates/diff-results-template'
 import { FileUtils } from '../commons/utils/fileUtils';
 import { FieldController } from '../controllers/fieldController';
+import { IOrganizationIdentifier } from '../commons/interfaces/iorganization';
 
 // Command class
 export class DiffCommand extends BaseCommand implements ICommand {
@@ -49,16 +50,24 @@ export class DiffCommand extends BaseCommand implements ICommand {
     // HERE, call the proper method.
 
     /*** Fields Diff ***/
-    let fieldController1: FieldController = new FieldController('organizationID_1', 'xx-xxxxx-xxxx-xxxx-xx', 'organizationID_2', 'yy-yyyyy-yyyy-yyyy-yy');
-    let delta = fieldController1.diff();
+    let organization1: IOrganizationIdentifier = {
+      id: this.mandatoryParameters[0],
+      apiKey: 'xx-xxxxx-xxxx-xxxx-xx'
+    };
+    let organization2: IOrganizationIdentifier = {
+      id: this.mandatoryParameters[1],
+      apiKey: 'yy-yyyyy-yyyy-yyyy-yy'
+    };
 
-    let testDiff = DiffResultsItemTemplate('Diff Section', delta);
+    let fieldController1: FieldController = new FieldController(organization1, organization2);
+
+    let testDiff = DiffResultsItemTemplate('Diff Section', fieldController1.diff());
     diffResultsItems.push(testDiff);
 
     // Format the whole diff document
     let diffReport: string = DiffResultsPageHtmlTemplate(
-      this.mandatoryParameters[0],
-      this.mandatoryParameters[1],
+      organization1.id,
+      organization2.id,
       diffResultsItems
     );
 
