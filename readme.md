@@ -15,6 +15,16 @@ The code for the projects uses APIs, SDKs, and code from the Coveo Platform. You
 
 It's also built on nodejs/typescript.
 
+## Important Gulp Tasks
+
+* `gulp default`: Builds the entire project (CSS, templates, TypeScript, etc.)
+* `gulp compile`: Builds only the TypeScript code and generates its output in the `./bin` folder.
+* `gulp css`: Builds only the Sass code and generates its output in the `./bin` folder.
+<!-- * `gulp test`: Builds and runs the unit tests. -->
+<!-- * `gulp doc`: Generates the documentation website for the project. -->
+* `gulp dev`: Starts a nodemon dev server for the project.
+<!-- * `gulp devTest`: Starts a webpack dev server for the unit tests. -->
+
 ## Contributing
 - Branch
 - Pull request to default putting at least 2 reviewers and at least 1 reviewer in y-lakhdar or ancientwinds.

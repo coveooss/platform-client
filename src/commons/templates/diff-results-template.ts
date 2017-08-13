@@ -22,7 +22,7 @@ export function DiffResultsItemTemplate(sectionTitle: string, diffResults: any):
     };
 
     // TODO: make this process asynchronous
-    let ejsContent = fs.readFileSync('./views/partials/diffSecdifftion.ejs', 'utf8');
+    let ejsContent = fs.readFileSync('./views/partials/diffSection.ejs', 'utf8');
 
     return ejs.render(ejsContent, data);
 }

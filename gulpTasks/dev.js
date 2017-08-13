@@ -1,16 +1,26 @@
 const nodemon = require('gulp-nodemon');
 const gulp = require('gulp');
+const webpack = require('webpack');
+const WebpackDevServer = require('webpack-dev-server');
 
 gulp.task('dev', ['watch'], () => {
   let stream = nodemon({
-    script: './bin/coveo-client.js',
+    exec: 'npm start',
     env: { 'NODE_ENV': 'development' }
   });
-  stream
-    .on('restart', function() {
-      console.log('restarted!');
-    })
-    .on('crash', function() {
-      console.error('Application has crashed!\n');
-    });
+  return stream;
 });
+
+let webpackConfigTest = require('../webpackConfigFiles/webpack.test.config');
+webpackConfigTest.entry['tests'].unshift('webpack-dev-server/client?http://localhost:3001/');
+const compilerTest = webpack(webpackConfigTest);
+
+gulp.task('devTest', function(done) {
+  var serverTests = new WebpackDevServer(compilerTest, {
+    contentBase: 'bin/',
+    publicPath: '/tests/',
+    compress: true
+  });
+  serverTests.listen(3001, 'localhost', () => {})
+  done();
+})
