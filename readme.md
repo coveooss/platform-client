@@ -46,7 +46,7 @@ gulp
 ```
 
 ## How-to run
-- Make sure you were able to run gulp entirely without any errors first. Then, type "npm start" from the misc folder.
+- Make sure you were able to run gulp entirely without any errors first. Then, type "npm start".
 
 
 ## Dev
