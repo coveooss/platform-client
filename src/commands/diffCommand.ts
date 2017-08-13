@@ -9,6 +9,7 @@ import { DiffResultsPageHtmlTemplate, DiffResultsItemTemplate } from '../commons
 import { FileUtils } from '../commons/utils/fileUtils';
 import { FieldController } from '../controllers/fieldController';
 import { IOrganizationIdentifier } from '../commons/interfaces/iorganization';
+import { config } from '../config/index';
 
 // Command class
 export class DiffCommand extends BaseCommand implements ICommand {
@@ -23,7 +24,7 @@ export class DiffCommand extends BaseCommand implements ICommand {
 
     this.optionalParameters.Add('originapikey', '');
     this.optionalParameters.Add('destinationapikey', '');
-    this.optionalParameters.Add('outputfile', `./output/diff-${Date.now()}.html`);
+    this.optionalParameters.Add('outputfile', `${config.workingDirectory}output/diff-${Date.now()}.html`);
     this.optionalParameters.Add('paramstostrip', 'organizationId,sourceId');
     this.optionalParameters.Add('scope', 'fields,extensions,sources,pipelines,hostedsearchpages');
     this.optionalParameters.Add('openinbrowser', 'true');
@@ -59,9 +60,14 @@ export class DiffCommand extends BaseCommand implements ICommand {
       apiKey: 'yy-yyyyy-yyyy-yyyy-yy'
     };
 
-    let fieldController1: FieldController = new FieldController(organization1, organization2);
+    let fieldController: FieldController = new FieldController(organization1, organization2);
 
-    let testDiff = DiffResultsItemTemplate('Diff Section', fieldController1.diff());
+    let testDiff = DiffResultsItemTemplate('Diff Section', fieldController.diff((values => {
+      console.log('*********************');
+      console.log(values);
+      console.log('*********************');
+
+    })));
     diffResultsItems.push(testDiff);
 
     // Format the whole diff document
@@ -73,16 +79,16 @@ export class DiffCommand extends BaseCommand implements ICommand {
 
     // Write the file to the proper location
     // TODO: handle absolute and relative paths
-    FileUtils.writeFile(this.optionalParameters.Item('outputfile'), diffReport, function (err: NodeJS.ErrnoException) {
-      if (err) {
-        throw console.error(err);
-      }
-    });
+    // FileUtils.writeFile(this.optionalParameters.Item('outputfile'), diffReport, function (err: NodeJS.ErrnoException) {
+    //   if (err) {
+    //     throw console.error(err);
+    //   }
+    // });
 
     console.log('Diff is done, you can view results here: ' + this.optionalParameters.Item('outputfile'));
 
     if (this.optionalParameters.Item('openinbrowser') === 'true') {
-      opn(this.optionalParameters.Item('outputfile'));
+      // opn(this.optionalParameters.Item('outputfile'));
     }
   }
 

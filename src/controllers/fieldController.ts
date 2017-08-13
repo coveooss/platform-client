@@ -10,15 +10,17 @@ export class FieldController {
 
     }
 
-    public getFields() {
+    public getFields(organization: IOrganizationIdentifier) {
+        console.log('getting fields ...');
+
         // TODO: get for both orgs
         return new Promise((resolve, reject) => {
-            request(
-                `${UrlService.getFieldUrl(this.organization1.id)}`,
-                { auth: { 'bearer': this.organization1.apiKey } },
+            return request(
+                `${UrlService.getFieldUrl(organization.id, { page: '2', numberOfResults: '100' })}`,
+                { auth: { 'bearer': organization.apiKey } },
                 (err: any, response: request.RequestResponse, body: IFieldModel[]) => {
                     if (err) {
-                        process.stderr.write(err);
+                        console.log('err');
                         Promise.reject(err);
                     } else {
                         console.log(response.statusCode) // 200
@@ -38,14 +40,18 @@ export class FieldController {
     public deleteFields() {
     }
 
-    public diff() {
+    public diff(callback) {
+        console.log('Calling diff');
+        Promise.all([this.getFields(this.organization1), this.getFields(this.organization2)])
+            .then(values => {
+                callback(values)
+            })
+            .catch((err) => {
+                console.log('**Error***');
+                console.log(err);
+                console.log('*********************');
 
-        return {
-            'organizationId': '',
-            'IdenticalParam': 'It is the same',
-            'Different param': 'It\'s not the same',
-        };
-
+            })
     }
 
 }

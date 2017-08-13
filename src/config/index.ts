@@ -1,4 +1,5 @@
 export interface IConfig {
+    workingDirectory: string;
     color: string;
     env: string;
     platformUrl: string;

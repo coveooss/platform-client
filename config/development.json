@@ -1,4 +1,5 @@
 {
+  "workingDirectory": ".bin/",
   "color": "green",
   "env": "development",
   "platformUrl": "http://localhost/3000"

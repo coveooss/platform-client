@@ -1,5 +1,6 @@
 import { ObjectUtils } from '../utils/objectUtils';
 import { config } from './../../config/index';
+const URLSearchParams = require('url-search-params');
 
 export class UrlService {
     static platformUrl: string = 'https://platform.cloud.coveo.com';
