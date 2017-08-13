@@ -6,12 +6,12 @@ This repository contains a command cline tool to perform administrative tasks in
 
 ## Available documentation
 The code for the projects uses APIs, SDKs, and code from the Coveo Platform. You can use the following resources for more information and get started:
- 
+
 - Cloud Platform API general documentation: https://developers.coveo.com/display/public/CloudPlatform/Coveo+Cloud+V2+Home
 - Cloud Platform Swagger: https://platform.cloud.coveo.com/docs?api=Platform (use the drop-down list to navigate the API categories, top-right of the page).
 - PushAPI documentation: https://developers.coveo.com/display/public/CloudPlatform/Push+API+Usage+Overview
-- Usage Analytics Swagger: https://usageanalytics.coveo.com/docs/ 
-- Coveo Search UI Framework: https://github.com/coveo/search-ui 
+- Usage Analytics Swagger: https://usageanalytics.coveo.com/docs/
+- Coveo Search UI Framework: https://github.com/coveo/search-ui
 
 It's also built on nodejs/typescript.
 
@@ -27,16 +27,24 @@ The Coveo Team will look at your code and validate that :
 
 Files in this project are all located in misc, to follow the struture of the files in the coveo-labs.
 
-## How-to build 
+## How-to build
 To build the project, use "tsc coveo-client.ts" from the misc folder.
+```
+npm install -g gulp
+npm install
+gulp
+```
 
-## How-to run 
-- After building it, type "npm start" from the misc folder.
+## How-to run
+- Make sure you were able to run gulp entirely without any errors first. Then, type "npm start" from the misc folder.
 
-## Dependencies 
-- nodejs
-- npm
-- typescript
+
+## Dev
+```
+gulp dev
+```
+This will start nodemon dev server instance.
+Any time you hit Save in a source file, the bundle will be recompiled to the bin folder.
 
 ## Authors
 - Jean-François Cloutier (https://github.com/ancientwinds)

@@ -22,7 +22,7 @@ export class DiffCommand extends BaseCommand implements ICommand {
 
     this.optionalParameters.Add('originapikey', '');
     this.optionalParameters.Add('destinationapikey', '');
-    this.optionalParameters.Add('outputfile', `diff-${Date.now()}.html`);
+    this.optionalParameters.Add('outputfile', `./output/diff-${Date.now()}.html`);
     this.optionalParameters.Add('paramstostrip', 'organizationId,sourceId');
     this.optionalParameters.Add('scope', 'fields,extensions,sources,pipelines,hostedsearchpages');
     this.optionalParameters.Add('openinbrowser', 'true');
@@ -33,30 +33,11 @@ export class DiffCommand extends BaseCommand implements ICommand {
   }
 
   public Execute(): void {
-    // Initialize the diff package
-    let jsondiffpatch = require('jsondiffpatch');
-    let diff: any = jsondiffpatch.create(this.jsonDiffOptions())
-
     // Create an array of diffs to put the results for each section
     let diffResultsItems: Array<string> = new Array<string>();
 
     // Get the params to strip.
     let PARAMS_TO_STRIP: Array<string> = this.optionalParameters.Item('paramstostrip').toLowerCase().split(',');
-
-    // Get organization 1
-    // TODO: Use real data
-    let organization1 = {
-      'organizationId': '',
-      'IdenticalParam': 'It is the same',
-      'Different param': 'It\'s not the same',
-    };
-
-    // Get organization 2
-    let organization2 = {
-      'organizationId': '',
-      'IdenticalParam': 'It is the same',
-      'Different param': 'It\'s different',
-    };
 
     // Extensions
     // HERE, call the proper method.
@@ -68,12 +49,10 @@ export class DiffCommand extends BaseCommand implements ICommand {
     // HERE, call the proper method.
 
     /*** Fields Diff ***/
-    let fieldController1: FieldController = new FieldController('organizationID_1', 'xx-xxxxx-xxxx-xxxx-xx');
-    let fieldController2: FieldController = new FieldController('organizationID_2', 'yy-yyyyy-yyyy-yyyy-yy');
-    let delta = diff.diff(organization2, organization1);
+    let fieldController1: FieldController = new FieldController('organizationID_1', 'xx-xxxxx-xxxx-xxxx-xx', 'organizationID_2', 'yy-yyyyy-yyyy-yyyy-yy');
+    let delta = fieldController1.diff();
 
-    let testDiff: string = jsondiffpatch.formatters.html.format(delta, organization1);
-    testDiff = DiffResultsItemTemplate('test data', testDiff);
+    let testDiff = DiffResultsItemTemplate('Diff Section', delta);
     diffResultsItems.push(testDiff);
 
     // Format the whole diff document
@@ -87,10 +66,6 @@ export class DiffCommand extends BaseCommand implements ICommand {
     // TODO: handle absolute and relative paths
     FileUtils.writeFile(this.optionalParameters.Item('outputfile'), diffReport, function (err: NodeJS.ErrnoException) {
       if (err) {
-        console.log('*********************');
-        console.log('err');
-        console.log('*********************');
-        
         throw console.error(err);
       }
     });

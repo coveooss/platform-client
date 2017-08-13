@@ -1,7 +1,6 @@
 const gulp = require('gulp');
 const del = require('del');
 const requireDir = require('require-dir');
-const ts = require('gulp-typescript');
 const runsequence = require('run-sequence');
 
 requireDir('./gulpTasks');
@@ -13,23 +12,24 @@ gulp.task('build:prod', function(done) {
 });
 
 gulp.task('build', function(done) {
-  runsequence('clean', ['src'], done);
+  runsequence('clean', ['setup', 'css'], 'compile', done);
 });
 
-const tsProject = ts.createProject('tsconfig.json');
-
-// Transpiling the source files into the bin/ folder
-gulp.task('src', () => {
-  const tsResult = tsProject.src()
-    .pipe(tsProject());
-  return tsResult.js.pipe(gulp.dest('./bin'));
-});
-
-gulp.task('watch', ['watchTS']);
+gulp.task('watch', ['watchTS', 'watchEJS', 'watchCSS']);
 
 // Watches the typescript files.
 gulp.task('watchTS', ['src'], () => {
   gulp.watch('src/**/*.ts', ['src']);
+});
+
+// Watches the SCSS files.
+gulp.task('watchCSS', ['css'], () => {
+  gulp.watch('scss/**/*.scss', ['css']);
+});
+
+// Watches the EJS files.
+gulp.task('watchEJS', ['ejs'], () => {
+  gulp.watch('ejs/**/*.ejs', ['ejs']);
 });
 
 // Remove bin and all zip folders.

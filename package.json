@@ -8,6 +8,7 @@
     "clear": "0.0.1",
     "clui": "^0.3.6",
     "commander": "^2.11.0",
+    "ejs": "^2.5.7",
     "exit": "^0.1.2",
     "figlet": "^1.2.0",
     "fs-extra": "^4.0.1",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "@types/chalk": "0.4.31",
+    "@types/ejs": "^2.3.33",
     "@types/fs-extra": "^4.0.0",
     "@types/inquirer": "0.0.35",
     "@types/js-yaml": "3.9.0",
@@ -32,7 +34,12 @@
     "@types/underscore": "^1.8.1",
     "del": "^3.0.0",
     "gulp": "^3.9.1",
+    "gulp-ejs": "^3.0.1",
+    "gulp-livereload": "^3.8.1",
     "gulp-nodemon": "^2.2.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^3.1.0",
+    "gulp-stream": "0.0.2",
     "gulp-typescript": "^3.2.1",
     "nodemon": "^1.11.0",
     "require-dir": "^0.3.2",
@@ -40,7 +47,7 @@
     "tslint": "^5.6.0"
   },
   "scripts": {
-    "start": "nodejs coveo-client.js",
+    "start": "node bin/coveo-client.js",
     "test": ""
   },
   "author": "Jean-Francois Cloutier & Yassine Lakhdar",
