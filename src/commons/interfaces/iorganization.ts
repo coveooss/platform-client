@@ -1,4 +1,4 @@
 export interface IOrganizationIdentifier {
-    id: string;
-    apiKey: string
+	id: string;
+	apiKey: string
 };

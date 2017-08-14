@@ -1,8 +1,8 @@
-export var helpText = `
+export let helpText = `
     INSERT
     HELP
     TEXT
     HERE
 `;
 
-export var helpDisclaimer = '\n\rType "help" to display the list of available commands.';
+export let helpDisclaimer = '\n\rType "help" to display the list of available commands.';

@@ -1,22 +1,22 @@
 export interface IConfig {
-    workingDirectory: string;
-    color: string;
-    env: string;
-    platformUrl: string;
+	workingDirectory: string;
+	color: string;
+	env: string;
+	platformUrl: string;
 }
 
 class Config {
-    private env: string;
-    private configuration: IConfig;
+	private env: string;
+	private configuration: IConfig;
 
-    constructor() {
-        this.env = process.env.NODE_ENV || 'development';
-    }
+	constructor() {
+		this.env = process.env.NODE_ENV || 'development';
+	}
 
-    public getConfiguration(): IConfig {
-        const conf = require(`./../../config/${this.env}.json`)
-        return conf;
-    }
+	public getConfiguration(): IConfig {
+		const conf = require(`./../../config/${this.env}.json`)
+		return conf;
+	}
 }
 
 export const config = new Config().getConfiguration();

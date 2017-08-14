@@ -85,7 +85,7 @@ export class DiffCommand extends BaseCommand implements ICommand {
     //   }
     // });
 
-    console.log('Diff is done, you can view results here: ' + this.optionalParameters.Item('outputfile'));
+    // console.log('Diff is done, you can view results here: ' + this.optionalParameters.Item('outputfile'));
 
     if (this.optionalParameters.Item('openinbrowser') === 'true') {
       // opn(this.optionalParameters.Item('outputfile'));
