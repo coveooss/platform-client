@@ -1,4 +1,8 @@
-export interface IOrganizationIdentifier {
-	id: string;
-	apiKey: string
+// External packages
+
+// Internal packages
+import {ICoveoObject} from './icoveoobject'
+
+export interface IOrganization extends ICoveoObject {
+	ApiKey: string;
 };
