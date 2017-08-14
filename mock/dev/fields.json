@@ -1,4 +1,5 @@
-[
+{
+  "items": [
     {
         "name": "allmetadatavalues",
         "description": "Place to put content for metadata discovery.",
@@ -8399,4 +8400,7 @@
         "dateFormat": "",
         "system": false
     }
-]
+],
+  "totalPages": 2,
+  "totalEntries": 410
+}

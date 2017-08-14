@@ -1,4 +1,5 @@
-[
+{
+  "items": [
     {
         "name": "authorloginname",
         "description": "Login Name of the item author",
@@ -8378,4 +8379,7 @@
         "dateFormat": "",
         "system": false
     }
-]
+],
+  "totalPages": 2,
+  "totalEntries": 410
+}

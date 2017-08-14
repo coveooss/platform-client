@@ -11,6 +11,10 @@ app.get('/rest/organizations/prod/indexes/page/fields', function(req, res) {
   res.send(prodField)
 });
 
+app.get('/', function(req, res) {
+  res.send('HELLO!')
+});
+
 app.listen(3000, function() {
   console.log('Mock API listening on port 3000!')
 })
