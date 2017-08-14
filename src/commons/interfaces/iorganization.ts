@@ -1,8 +1,3 @@
-// External packages
-
-// Internal packages
-import {ICoveoObject} from './icoveoobject'
-
-export interface IOrganization extends ICoveoObject {
+export interface IOrganization {
 	ApiKey: string;
 };

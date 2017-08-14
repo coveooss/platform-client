@@ -1,10 +1,11 @@
 // External packages
 
 // Internal packages
-import {ICoveoObject} from '../commons/interfaces/icoveoobject';
+import {IExtension} from '../commons/interfaces/iextension';
+import {BaseModel} from './BaseModel';
 
-export class Extension implements ICoveoObject {
-    id:string;
-    name:string;
-    configuration:string;
+export class Extension extends BaseModel implements IExtension {
+    constructor() {
+        super();
+    }
 }

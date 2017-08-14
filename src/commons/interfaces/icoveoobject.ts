@@ -1,5 +1,5 @@
 export interface ICoveoObject {
-    id:string;
-    name:string;
-    configuration:string;
+    Id:string;
+    Name:string;
+    Configuration:any;
 }
