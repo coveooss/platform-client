@@ -1,10 +1,10 @@
 // External packages
 // Internal packages
-import { GraduateCommand } from './graduateCommand';
-import { DiffCommand } from './diffCommand';
-import { Dictionary } from '../commons/collections/dictionary'
-import { ICommand } from '../commons/interfaces/icommand'
-import { BaseCommand } from './baseCommand';
+import { GraduateCommand } from './GraduateCommand';
+import { DiffCommand } from './DiffCommand';
+import { Dictionary } from '../commons/collections/Dictionary'
+import { ICommand } from '../commons/interfaces/ICommand'
+import { BaseCommand } from './BaseCommand';
 
 // Register available commands
 let commandMap: Dictionary<any> = new Dictionary<any>();

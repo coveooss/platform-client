@@ -1,12 +1,12 @@
 // External packages
 
 // Internal packages
-import {ICoveoObject} from '../commons/interfaces/icoveoobject';
+import {ICoveoObject} from '../commons/interfaces/ICoveoObject';
 
 export class BaseModel implements ICoveoObject {
-    id:string = '';
-    name:string = '';
-    configuration:any = '';
+    private id:string = '';
+    private name:string = '';
+    private configuration:any = '';
 
     get Id():string {
         return this.id;
@@ -29,5 +29,7 @@ export class BaseModel implements ICoveoObject {
         this.configuration = configuration;
     }
 
-    constructor() {}
+    constructor(id:string) {
+        this.id = id;
+    }
 }

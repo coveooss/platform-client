@@ -1,14 +1,15 @@
 // Old school import so we can access other libraries
 declare function require(name: string): any;
 // External packages
-import * as opn from 'opn';
+// import * as opn from 'opn';
 // Internal packages
-import { BaseCommand } from './baseCommand';
-import { ICommand } from '../commons/interfaces/icommand';
+import { BaseCommand } from './BaseCommand';
+import { ICommand } from '../commons/interfaces/ICommand';
 import { DiffResultsPageHtmlTemplate, DiffResultsItemTemplate } from '../commons/templates/diff-results-template'
-import { FileUtils } from '../commons/utils/fileUtils';
-import { FieldController } from '../controllers/fieldController';
-import { IOrganizationIdentifier } from '../commons/interfaces/iorganization';
+import { FileUtils } from '../commons/utils/FileUtils';
+import { FieldController } from '../controllers/FieldController';
+import { IOrganization } from '../commons/interfaces/IOrganization';
+import { Organization } from '../models/OrganizationModel'
 import { config } from '../config/index';
 
 // Command class
@@ -29,7 +30,8 @@ export class DiffCommand extends BaseCommand implements ICommand {
     this.optionalParameters.Add('scope', 'fields,extensions,sources,pipelines,hostedsearchpages');
     this.optionalParameters.Add('openinbrowser', 'true');
 
-    this.validations.Add('(this.optionalParameters["originapikey"] != "")', 'Need an API key for the origin organization (originApiKey), as a parameter or in the settings file');
+    this.validations.Add('(this.optionalParameters["originapikey"] != "")', 
+      'Need an API key for the origin organization (originApiKey), as a parameter or in the settings file');
     this.validations.Add('(this.optionalParameters["destinationapikey"] != "")',
       'Need an API key for the destination organization (destinationApiKey), as a parameter or in the settings file');
   }
@@ -51,14 +53,14 @@ export class DiffCommand extends BaseCommand implements ICommand {
     // HERE, call the proper method.
 
     /*** Fields Diff ***/
-    let organization1: IOrganizationIdentifier = {
-      id: this.mandatoryParameters[0],
-      apiKey: 'xx-xxxxx-xxxx-xxxx-xx'
-    };
-    let organization2: IOrganizationIdentifier = {
-      id: this.mandatoryParameters[1],
-      apiKey: 'yy-yyyyy-yyyy-yyyy-yy'
-    };
+    let organization1: IOrganization = new Organization (
+      this.mandatoryParameters[0],
+      'xx-xxxxx-xxxx-xxxx-xx'
+    );
+    let organization2: IOrganization = new Organization (
+      this.mandatoryParameters[1],
+      'yy-yyyyy-yyyy-yyyy-yy'
+    );
 
     let fieldController: FieldController = new FieldController(organization1, organization2);
 
@@ -72,8 +74,8 @@ export class DiffCommand extends BaseCommand implements ICommand {
 
     // Format the whole diff document
     let diffReport: string = DiffResultsPageHtmlTemplate(
-      organization1.id,
-      organization2.id,
+      organization1.Id,
+      organization2.Id,
       diffResultsItems
     );
 

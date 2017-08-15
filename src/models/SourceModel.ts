@@ -1,10 +1,10 @@
 // External packages
 
 // Internal packages
-import {IExtension} from '../commons/interfaces/IExtension';
+import {ISource} from '../commons/interfaces/ISource';
 import {BaseModel} from './BaseModel';
 
-export class Extension extends BaseModel implements IExtension {
+export class Source extends BaseModel implements ISource {
     constructor(id:string) {
         super(id);
     }

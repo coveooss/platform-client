@@ -1,7 +1,7 @@
 // External packages
 
 // Internal packages
-import { IDictionary } from '../interfaces/idictionary'
+import { IDictionary } from '../interfaces/IDictionary'
 
 export class Dictionary<T> implements IDictionary<T> {
     private items: { [index: string]: T } = {};

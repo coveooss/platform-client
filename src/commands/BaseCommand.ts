@@ -3,8 +3,8 @@ import * as yaml from 'js-yaml';
 import * as fs from 'fs';
 import * as _ from 'underscore';
 // Internal packages
-import { Dictionary } from '../commons/collections/dictionary'
-import { ICommand } from '../commons/interfaces/icommand'
+import { Dictionary } from '../commons/collections/Dictionary'
+import { ICommand } from '../commons/interfaces/ICommand'
 
 export abstract class BaseCommand implements ICommand {
   static COMMAND_NAME: string = 'base';

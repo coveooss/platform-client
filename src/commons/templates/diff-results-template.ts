@@ -1,6 +1,8 @@
-import { StringUtils } from '../utils/stringUtils'
+// External packages
 import * as ejs from 'ejs';
 import * as fs from 'fs-extra';
+// Internal packages
+import { StringUtils } from '../utils/StringUtils'
 
 export function DiffResultsPageHtmlTemplate(organization1: string, organization2: string, diffResultsItems: Array<string>): string {
   let data = {

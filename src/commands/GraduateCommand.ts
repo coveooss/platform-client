@@ -1,7 +1,7 @@
 // External packages
 // Internal packages
-import { BaseCommand } from './baseCommand';
-import { ICommand } from '../commons/interfaces/icommand';
+import { BaseCommand } from './BaseCommand';
+import { ICommand } from '../commons/interfaces/ICommand';
 
 // Command class
 export class GraduateCommand extends BaseCommand implements ICommand {

@@ -9,7 +9,7 @@ let figlet: any = require('figlet');
 import { config } from './config/index';
 // Internal packages
 import { InitializeConsole } from './console/terminal-manager';
-import * as command from './commands/commandManager';
+import * as command from './commands/CommandManager';
 import { helpText, helpDisclaimer } from './console/help';
 let pkg: any = require('./../package.json');
 

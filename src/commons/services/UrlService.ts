@@ -1,4 +1,9 @@
-import { ObjectUtils } from '../utils/objectUtils';
+// Required to require untyped modules
+declare function require(path: string) : any;
+// External packages
+
+// Internal packages
+import { ObjectUtils } from '../utils/ObjectUtils';
 import { config } from './../../config/index';
 const URLSearchParams = require('url-search-params');
 

@@ -1,13 +1,15 @@
 // External packages
 
 // Internal packages
-import {IOrganization} from '../commons/interfaces/iorganization';
+import {IOrganization} from '../commons/interfaces/IOrganization';
 import {BaseModel} from './BaseModel';
 import {Extension} from './ExtensionModel';
+import {FieldResult} from './FieldResultModel';
 
 export class Organization extends BaseModel implements IOrganization {
-    apiKey:string = '';
-    extensions:Array<Extension> = new Array<Extension>();
+    private apiKey:string = '';
+    private extensions:Array<Extension> = new Array<Extension>();
+    private fields:FieldResult;
 
     get ApiKey():string {
         return this.apiKey;
@@ -18,9 +20,8 @@ export class Organization extends BaseModel implements IOrganization {
     }
 
     constructor(id:string, apiKey:string) {
-        super();
-        
-        this.id = id;
+        super(id);
+
         this.apiKey = apiKey;
     }
 }
