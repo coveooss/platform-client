@@ -7,7 +7,7 @@ import { IField } from '../commons/interfaces/IField';
 import { IFieldResult } from '../commons/interfaces/IFieldResult';
 import { UrlService } from '../commons/services/UrlService';
 import { IOrganization } from '../commons/interfaces/IOrganization';
-import { IDiff } from '../commons/interfaces/IDiff';
+import { IDiffResult } from '../commons/interfaces/IDiffResult';
 
 export class FieldController {
 

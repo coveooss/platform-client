@@ -7,10 +7,13 @@ import { BaseCommand } from './BaseCommand';
 import { ICommand } from '../commons/interfaces/ICommand';
 import { DiffResultsPageHtmlTemplate, DiffResultsItemTemplate } from '../commons/templates/diff-results-template'
 import { FileUtils } from '../commons/utils/FileUtils';
+import { Dictionary } from '../commons/collections/Dictionary';
+import { OrganizationController } from '../controllers/OrganizationController';
 import { FieldController } from '../controllers/FieldController';
 import { IOrganization } from '../commons/interfaces/IOrganization';
-import { Organization } from '../models/OrganizationModel'
+import { Organization } from '../models/OrganizationModel';
 import { config } from '../config/index';
+import { DiffResult } from '../models/DiffResult';
 
 // Command class
 export class DiffCommand extends BaseCommand implements ICommand {
@@ -26,8 +29,8 @@ export class DiffCommand extends BaseCommand implements ICommand {
     this.optionalParameters.Add('originapikey', '');
     this.optionalParameters.Add('destinationapikey', '');
     this.optionalParameters.Add('outputfile', `${config.workingDirectory}output/diff-${Date.now()}.html`);
-    this.optionalParameters.Add('paramstostrip', 'organizationId,sourceId');
-    this.optionalParameters.Add('scope', 'fields,extensions,sources,pipelines,hostedsearchpages');
+    this.optionalParameters.Add('fieldstoignore', 'id');
+    this.optionalParameters.Add('scope', 'organization,fields,extensions,sources,pipelines,hostedsearchpages');
     this.optionalParameters.Add('openinbrowser', 'true');
 
     this.validations.Add('(this.optionalParameters["originapikey"] != "")',
@@ -37,11 +40,29 @@ export class DiffCommand extends BaseCommand implements ICommand {
   }
 
   public Execute(): void {
-    // Create an array of diffs to put the results for each section
-    let diffResultsItems: Array<string> = new Array<string>();
+    let organization1: IOrganization = new Organization(
+      this.mandatoryParameters[0],
+      this.optionalParameters.Item('originapikey')
+    );
+    let organization2: IOrganization = new Organization(
+      this.mandatoryParameters[1],
+      this.optionalParameters.Item('destinationapikey')
+    );
 
     // Get the params to strip.
-    let PARAMS_TO_STRIP: Array<string> = this.optionalParameters.Item('paramstostrip').toLowerCase().split(',');
+    let fieldsToIgnore: Array<string> = this.optionalParameters.Item('fieldstoignore').toLowerCase().split(',');
+
+    // Create an array of diffs to put the results for each section
+    let diffResults: Dictionary<DiffResult<any>> = new Dictionary<DiffResult<any>>();
+
+    // Organizations
+    if (this.optionalParameters.Item('scope').indexOf('organization') > -1) {
+      let organizationController: OrganizationController = new OrganizationController();
+      diffResults.Add(
+        'Organization configuration', 
+        organizationController.diff(organization1, organization2, fieldsToIgnore)
+      );
+    }
 
     // Extensions
     // HERE, call the proper method.
@@ -53,31 +74,28 @@ export class DiffCommand extends BaseCommand implements ICommand {
     // HERE, call the proper method.
 
     /*** Fields Diff ***/
-    let organization1: IOrganization = new Organization(
-      this.mandatoryParameters[0],
-      'xx-xxxxx-xxxx-xxxx-xx'
-    );
-    let organization2: IOrganization = new Organization(
-      this.mandatoryParameters[1],
-      'yy-yyyyy-yyyy-yyyy-yy'
-    );
 
     let fieldController: FieldController = new FieldController(organization1, organization2);
 
     // TODO: type values
+    // TODO: Put it at the end. We should store all the diffresults first, then build the report
+    // TODO: Not use a callback for something that should be sequential.
     let testDiff = DiffResultsItemTemplate('Diff Section', fieldController.diff(((values: any) => {
       console.log('*********************');
       console.log(values);
       console.log('*********************');
 
     })));
-    diffResultsItems.push(testDiff);
+    diffResults.Add('Fields', <any>testDiff);
+
+    // TODO: Build the sections based on the diff results provided
+    // here... all in diffResults for now...
 
     // Format the whole diff document
     let diffReport: string = DiffResultsPageHtmlTemplate(
       organization1.Id,
       organization2.Id,
-      diffResultsItems
+      new Array<string>() // TODO: Do the real thing...
     );
 
     // Write the file to the proper location
