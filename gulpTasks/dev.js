@@ -1,3 +1,5 @@
+'use strict';
+
 const nodemon = require('gulp-nodemon');
 const gulp = require('gulp');
 const webpack = require('webpack');
@@ -11,12 +13,12 @@ gulp.task('dev', ['watch'], () => {
   return stream;
 });
 
-let webpackConfigTest = require('../webpackConfigFiles/webpack.test.config');
+var webpackConfigTest = require('../webpackConfigFiles/webpack.test.config');
 webpackConfigTest.entry['tests'].unshift('webpack-dev-server/client?http://localhost:3001/');
 const compilerTest = webpack(webpackConfigTest);
 
 gulp.task('devTest', function(done) {
-  var serverTests = new WebpackDevServer(compilerTest, {
+  let serverTests = new WebpackDevServer(compilerTest, {
     contentBase: 'bin/',
     publicPath: '/tests/',
     compress: true

@@ -3,7 +3,8 @@ import * as request from 'request';
 import { IncomingMessage } from 'http'
 import * as _ from 'underscore';
 // Internal packages
-import { IField, IFieldResult } from '../commons/interfaces/IField';
+import { IField } from '../commons/interfaces/IField';
+import { IFieldResult } from '../commons/interfaces/IFieldResult';
 import { UrlService } from '../commons/services/UrlService';
 import { IOrganization } from '../commons/interfaces/IOrganization';
 import { IDiff } from '../commons/interfaces/IDiff';
@@ -60,13 +61,13 @@ export class FieldController {
     return same;
   }
 
-  public diff(callback) {
+  public diff(callback:Function) {
     // this.getFields(this.organization1)
     Promise.all([this.getFields(this.organization1), this.getFields(this.organization2)])
       .then((values: IFieldResult[]) => {
         console.log('*********************');
         // console.log(values[0].totalEntries);
-        console.log(this.partitionFieldSet(values[0].items, values[1].items));
+        console.log(this.partitionFieldSet(values[0].Items, values[1].Items));
         console.log('*********************');
         // callback(values)
       })
