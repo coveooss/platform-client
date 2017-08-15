@@ -26,7 +26,7 @@ console.log('Version: %s', pkg.version);
 console.log(pkg.description);
 console.log(helpDisclaimer);
 if (config.env !== 'production') {
-  console.log(chalk[config.color]('Environment:', config.env));
+  console.log(chalk.white('Environment:', config.env));
 }
 
 // Handle the commands by sending them to the parser

@@ -57,6 +57,7 @@ export abstract class BaseCommand implements ICommand {
     let errors = [];
 
     for (let validation in this.validations.Keys) {
+      // tslint:disable-next-line:no-eval
       if (!eval(validation)) {
         errors.push(this.validations.Item(validation));
       }
