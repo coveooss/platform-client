@@ -27,7 +27,6 @@ export class OrganizationController {
       this.getOrganization(organization2)
     ])
     .then((values:any[]) => {
-      console.log(values);
       organization1.Configuration = values[0];
       organization2.Configuration = values[1];
     })
