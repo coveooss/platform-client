@@ -27,11 +27,12 @@ export class OrganizationController {
       this.getOrganization(organization2)
     ])
     .then((values:any[]) => {
-      organization1.Configuration = JSON.parse(values[0]);
-      organization2.Configuration = JSON.parse(values[1]);
+      console.log(values);
+      organization1.Configuration = values[0];
+      organization2.Configuration = values[1];
     })
     .catch((err: any) => {
-        console.log(err);
+        console.log('An error happened while calling the platform: ' + err + err.message);
     });
 
     // Diff the organizations

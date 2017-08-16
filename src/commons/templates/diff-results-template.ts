@@ -2,7 +2,8 @@
 import * as ejs from 'ejs';
 import * as fs from 'fs-extra';
 // Internal packages
-import { StringUtils } from '../utils/StringUtils'
+import { StringUtils } from '../utils/StringUtils';
+import { DiffResult } from '../../models/DiffResult';
 
 export function DiffResultsPageHtmlTemplate(organization1: string, organization2: string, diffResultsItems: Array<string>): string {
   let data = {
@@ -17,13 +18,12 @@ export function DiffResultsPageHtmlTemplate(organization1: string, organization2
   return ejs.render(ejsContent, data);
 }
 
-export function DiffResultsItemTemplate(sectionTitle: string, diffResults: any): string {
+export function DiffResultsItemTemplate(sectionTitle: string, diffResults: DiffResult<any>): string {
   let data = {
     sectionTitle: sectionTitle,
     diffResults: diffResults
   };
 
-  // TODO: make this process asynchronous
   let ejsContent = fs.readFileSync('./views/partials/diffSection.ejs', 'utf8');
 
   return ejs.render(ejsContent, data);

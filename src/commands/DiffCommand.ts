@@ -14,6 +14,7 @@ import { IOrganization } from '../commons/interfaces/IOrganization';
 import { Organization } from '../models/OrganizationModel';
 import { config } from '../config/index';
 import { DiffResult } from '../models/DiffResult';
+import * as opn from 'opn';
 
 // Command class
 export class DiffCommand extends BaseCommand implements ICommand {
@@ -80,6 +81,7 @@ export class DiffCommand extends BaseCommand implements ICommand {
     // TODO: type values
     // TODO: Put it at the end. We should store all the diffresults first, then build the report
     // TODO: Not use a callback for something that should be sequential.
+    /*
     let testDiff = DiffResultsItemTemplate('Diff Section', fieldController.diff(((values: any) => {
       console.log('*********************');
       console.log(values);
@@ -87,29 +89,33 @@ export class DiffCommand extends BaseCommand implements ICommand {
 
     })));
     diffResults.Add('Fields', <any>testDiff);
+    */
 
     // TODO: Build the sections based on the diff results provided
-    // here... all in diffResults for now...
+    let formattedDiff: Array<string> = new Array<string>();
+    for (let key in diffResults.Keys) {
+      formattedDiff.push(DiffResultsItemTemplate(key, diffResults.Item(key)));
+    }
 
     // Format the whole diff document
     let diffReport: string = DiffResultsPageHtmlTemplate(
       organization1.Id,
       organization2.Id,
-      new Array<string>() // TODO: Do the real thing...
+      formattedDiff
     );
 
-    // Write the file to the proper location
-    // TODO: handle absolute and relative paths
-    // FileUtils.writeFile(this.optionalParameters.Item('outputfile'), diffReport, function (err: NodeJS.ErrnoException) {
-    //   if (err) {
-    //     throw console.error(err);
-    //   }
-    // });
+    // Write the report file to disk
+    FileUtils.writeFile(this.optionalParameters.Item('outputfile'), diffReport, function (err: NodeJS.ErrnoException) {
+       if (err) {
+         throw console.error(err);
+       }
+    });
 
-    // console.log('Diff is done, you can view results here: ' + this.optionalParameters.Item('outputfile'));
+    // Display the report location and, if the option is set to true, open in browser.
+    console.log('Diff is done, you can view results here: ' + this.optionalParameters.Item('outputfile'));
 
     if (this.optionalParameters.Item('openinbrowser') === 'true') {
-      // opn(this.optionalParameters.Item('outputfile'));
+      opn(this.optionalParameters.Item('outputfile'));
     }
   }
 
