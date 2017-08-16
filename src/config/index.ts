@@ -2,7 +2,9 @@ export interface IConfig {
 	workingDirectory: string;
 	color: string;
 	env: string;
-	platformUrl: string;
+	coveo: {
+		platformUrl: string
+	};
 }
 
 class Config {
@@ -14,7 +16,7 @@ class Config {
 	}
 
 	public getConfiguration(): IConfig {
-		const conf = require(`./../../config/${this.env}.json`)
+		const conf = require(`./../../config/${this.env}.js`)
 		return conf;
 	}
 }

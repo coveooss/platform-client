@@ -2,6 +2,7 @@
 declare function require(name: string): any;
 // External packages
 // import * as opn from 'opn';
+import { IDiffResult } from '../commons/interfaces/IDiffResult';
 // Internal packages
 import { BaseCommand } from './BaseCommand';
 import { ICommand } from '../commons/interfaces/ICommand';
@@ -59,10 +60,13 @@ export class DiffCommand extends BaseCommand implements ICommand {
     // Organizations
     if (this.optionalParameters.Item('scope').indexOf('organization') > -1) {
       let organizationController: OrganizationController = new OrganizationController();
-      diffResults.Add(
-        'Organization configuration', 
-        organizationController.diff(organization1, organization2, fieldsToIgnore)
-      );
+      organizationController.diff(organization1, organization2, fieldsToIgnore)
+        .then((diffResult: IDiffResult<any>) => {
+          diffResults.Add(
+            'Organization configuration',
+            diffResult
+          );
+        })
     }
 
     // Extensions
@@ -106,9 +110,9 @@ export class DiffCommand extends BaseCommand implements ICommand {
 
     // Write the report file to disk
     FileUtils.writeFile(this.optionalParameters.Item('outputfile'), diffReport, function (err: NodeJS.ErrnoException) {
-       if (err) {
-         throw console.error(err);
-       }
+      if (err) {
+        throw console.error(err);
+      }
     });
 
     // Display the report location and, if the option is set to true, open in browser.

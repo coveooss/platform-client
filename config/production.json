@@ -1,6 +1,0 @@
-{
-  "workingDirectory": "./",
-  "color": "red",
-  "env": "production",
-  "platformUrl": "https://platform.cloud.coveo.com"
-}
