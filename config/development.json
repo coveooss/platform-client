@@ -1,6 +1,0 @@
-{
-  "workingDirectory": ".bin/",
-  "color": "green",
-  "env": "development",
-  "platformUrl": "https://platformdev.cloud.coveo.com"
-}

@@ -1,5 +1,5 @@
 // Required to require untyped modules
-declare function require(path: string) : any;
+declare function require(path: string): any;
 // External packages
 
 // Internal packages
@@ -10,20 +10,20 @@ const URLSearchParams = require('url-search-params');
 export class UrlService {
   /*** Organization API ***/
   static getOrganizationUrl(organizationId: string): string {
-    return `${config.platformUrl}/rest/organizations/${organizationId}`;
+    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}`;
   }
 
-    /*** Extensions API ***/
+  /*** Extensions API ***/
   static getExtensionsUrl(organizationId: string): string {
-    return `${config.platformUrl}/rest/organizations/${organizationId}/extensions`;
+    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/extensions`;
   }
   static getSingleExtensionsUrl(organizationId: string, extensionId: string): string {
-    return `${config.platformUrl}/rest/organizations/${organizationId}/extensions/${extensionId}`;
+    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/extensions/${extensionId}`;
   }
 
   /*** Fields API ***/
   static getFieldUrl(organizationId: string, options?: any): string {
-    return `${config.platformUrl}/rest/organizations/${organizationId}/indexes/page/fields${this.serialize(options)}`;
+    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/indexes/page/fields${this.serialize(options)}`;
   }
 
   /**
