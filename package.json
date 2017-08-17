@@ -32,6 +32,8 @@
     "jsondiffpatch": "0.2.4",
     "opn": "5.1.0",
     "request": "2.81.0",
+    "sync-request": "4.1.0",
+    "synchronize": "2.0.0",
     "typescript": "^2.4.2",
     "underscore": "1.8.3",
     "url-search-params": "^0.10.0",

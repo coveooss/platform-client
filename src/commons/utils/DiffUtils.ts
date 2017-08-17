@@ -15,8 +15,7 @@ export class DiffUtils {
         let flat1: Dictionary<any> = JsonUtils.convertJsonToDictionary(flatten(json1), fieldsToIgnore);
         let flat2: Dictionary<any> = JsonUtils.convertJsonToDictionary(flatten(json2), fieldsToIgnore);
 
-        // Diff the provided jsons
-        for (let key in flat1.Keys) {
+        flat1.Keys().forEach(function (key){
             if (flat2.ContainsKey(key)) {
                 // The key is in both dictionary, compare the values
                 if (flat1.Item(key) != flat2.Item(key)) {
@@ -32,7 +31,7 @@ export class DiffUtils {
 
             // Remove the item from the second json, so we will know at the end what has been removed in the first one
             flat2.Remove(key);
-        }
+        });
 
         // Add the keys that were not in the first json to the deleted list
         for (let key in flat2.Keys) {

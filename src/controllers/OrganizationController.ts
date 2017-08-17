@@ -1,4 +1,5 @@
 // External packages
+var syncrequest = require('sync-request');
 import * as request from 'request';
 // Internal packages
 import { IOrganization } from '../commons/interfaces/IOrganization';
@@ -25,22 +26,24 @@ export class OrganizationController {
 
   constructor() { }
 
-  public async diff(organization1: IOrganization, organization2: IOrganization, fieldsToIgnore: Array<string>) {
-    // Diff the organizations
+  public diff(organization1: IOrganization, organization2: IOrganization, fieldsToIgnore: Array<string>): IDiffResult<any> {
+    let diffResults: DiffResult<any> = new DiffResult<any>();
+    
     let error: { organization: string, response: any }[] = [];
+
     try {
+      // Load the configuration of the organizations
+      let organizations:Array<IOrganization> = [organization1, organization2];
 
-      let organizations = [organization1, organization2];
-
-      let org1Response: request.RequestResponse = await this.getOrganization(organization1);
-      let org2Response: request.RequestResponse = await this.getOrganization(organization2);
-
-      _.each([org1Response, org2Response], (response: request.RequestResponse, idx: number) => {
-        if (response.statusCode !== 200) {
+      organizations.forEach(organization => {
+        var response:any = this.getOrganization(organization);
+        if (response.statusCode == 200) { 
+          organization.Configuration = JSON.parse(response.getBody('utf-8'));
+        } else {
           // TODO: need to make a better response in the console
           error.push({
-            organization: organizations[idx].Id,
-            response: response.body
+            organization: organization.Id,
+            response: JSON.parse(response.getBody('utf-8'))
           });
         }
       });
@@ -49,27 +52,26 @@ export class OrganizationController {
         throw new Error(JSON.stringify(error));
       }
 
-      return DiffUtils.diff(org1Response.body, org2Response.body, fieldsToIgnore);
+      // Diff the origanizations
+      diffResults = DiffUtils.diff(organization1.Configuration, organization2.Configuration, fieldsToIgnore);
     } catch (err) {
-      Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err);
+      Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err.stack);
     }
+
+    return diffResults;
   }
 
-  private getOrganization(organization: IOrganization): Promise<any> {
-    return new Promise((resolve: (value?: any | Thenable<{}>) => void, reject: (error: any) => void) => {
-      request(
-        UrlService.getOrganizationUrl(organization.Id),
-        {
-          auth: { 'bearer': organization.ApiKey },
-          json: true
-        },
-        (err: any, response: request.RequestResponse) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(response)
-          }
-        })
-    });
+  private getOrganization(organization: IOrganization): request.RequestResponse {
+    var response = syncrequest(
+      'GET',
+      UrlService.getOrganizationUrl(organization.Id),
+      {
+        'headers': {
+          'authorization': 'Bearer ' + organization.ApiKey
+        }
+      }
+    );
+
+    return response;
   }
 }

@@ -18,8 +18,8 @@ export function HandleCommand(command: string) {
 
     // Get the command...
     try {
-      let aa = commandMap.Item(elements[0])
-      cmd = <ICommand>(new (aa)());
+      let requestedCommand = commandMap.Item(elements[0])
+      cmd = <ICommand>(new (requestedCommand)());
     } catch (error) {
       throw new Error('Unreckognized command.');
     }

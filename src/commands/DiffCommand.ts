@@ -58,15 +58,12 @@ export class DiffCommand extends BaseCommand implements ICommand {
     let diffResults: Dictionary<DiffResult<any>> = new Dictionary<DiffResult<any>>();
 
     // Organizations
+    let organizationController:OrganizationController = new OrganizationController();
     if (this.optionalParameters.Item('scope').indexOf('organization') > -1) {
-      let organizationController: OrganizationController = new OrganizationController();
-      organizationController.diff(organization1, organization2, fieldsToIgnore)
-        .then((diffResult: IDiffResult<any>) => {
-          diffResults.Add(
-            'Organization configuration',
-            diffResult
-          );
-        })
+      diffResults.Add(
+        'Organization configuration',
+        organizationController.diff(organization1, organization2, fieldsToIgnore)
+      );
     }
 
     // Extensions
@@ -97,9 +94,9 @@ export class DiffCommand extends BaseCommand implements ICommand {
 
     // TODO: Build the sections based on the diff results provided
     let formattedDiff: Array<string> = new Array<string>();
-    for (let key in diffResults.Keys) {
+    diffResults.Keys().forEach(function (key) {
       formattedDiff.push(DiffResultsItemTemplate(key, diffResults.Item(key)));
-    }
+    });
 
     // Format the whole diff document
     let diffReport: string = DiffResultsPageHtmlTemplate(
