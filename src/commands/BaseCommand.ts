@@ -46,6 +46,7 @@ export abstract class BaseCommand implements ICommand {
   public LoadSettings(filename: string): void {
     try {
       const settings = yaml.safeLoad(fs.readFileSync(filename, 'utf8'));
+      // TODO: Load the values for real
       console.log(settings);
     } catch (e) {
       console.log('Unable to load seetings!');

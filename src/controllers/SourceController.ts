@@ -12,6 +12,7 @@ import { Dictionary } from '../commons/collections/Dictionary';
 import { StaticErrorMessage } from '../commons/errors';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 import { DiffUtils } from '../commons/utils/DiffUtils';
+import { RequestUtils } from '../commons/utils/RequestUtils';
 
 export class SourceController {
   constructor() { }
@@ -23,53 +24,35 @@ export class SourceController {
     try {
       // Load the configuration of the organizations
       let organizations:Array<IOrganization> = [organization1, organization2];
-      let error: { organization: string, response: any }[] = [];
       let context:SourceController = this;
 
       organizations.forEach(organization => {
-        let response:any = this.getSources(organization);
-        if (response.statusCode == 200) { 
-          let sources = JSON.parse(response.getBody('utf-8'));
-
+        let sources:any = this.getSources(organization);
           sources.forEach(function (source:any) {
-            let sourceRawResponse:any = context.getSingleSourceRaw(organization, source['id']);
+            let jsonResponse:any = context.getSingleSourceRaw(organization, source['id']);
+            // DiffUtils.diffArrays(jsonResponse['mappings']);
+            // Differ l'array ou juste le "normaliser" en le flattenisant? Pourrait fonctionner aussi pour les extensions si on récupère le nom
 
-            if (sourceRawResponse.statusCode == 200) { 
-              organization.Sources.Add(
-                source['name'],
-                // TODO: remove and diff the mappings
-                // TODO: remove and diff the extensions
-                // TODO: remove and diff the objects to get
-                // TODO: Like, remove configuration.extendedDataFiles.ObjectsToGet
-                JsonUtils.removeFieldsFromJson(
-                  JSON.parse(sourceRawResponse.getBody('utf-8')), 
-                  ['mappings', 'preConversionExtensions', 'postConversionExtensions']
-                )
-              );
-            } else {
-              // TODO: need to make a better response in the console
-              error.push({
-                organization: organization.Id,
-                response: JSON.parse(response.getBody('utf-8'))
-              });
-            }
-          })
-        } else {
-          // TODO: need to make a better response in the console
-          error.push({
-            organization: organization.Id,
-            response: JSON.parse(response.getBody('utf-8'))
+            organization.Sources.Add(
+              source['name'],
+              // TODO: remove and diff the mappings
+              // TODO: remove and diff the extensions
+              // TODO: remove and diff the objects to get
+              // TODO: Like, remove configuration.extendedDataFiles.ObjectsToGet
+              JsonUtils.removeFieldsFromJson(
+                jsonResponse, 
+                ['mappings', 'preConversionExtensions', 'postConversionExtensions']
+              )
+            );
           });
-        }
       });
-
 
       // Diff the sources in terms of "existence"
       diffResultsExistence = DiffUtils.diffDictionaryEntries(organization1.Sources.Clone(), organization2.Sources.Clone());
       diffResults.Add('ADD_DELETE', diffResultsExistence);
       // Diff the sources that could have been changed
       diffResultsExistence.UPDATED_NEW.Keys().forEach(function (key) {
-        let sourceDiff: DiffResult<any> = context.diffSingleSource(organization1, organization2, key, fieldsToIgnore);
+        let sourceDiff: DiffResult<any> = DiffUtils.diff(organization1.Sources.Item(key), organization2.Sources.Item(key), fieldsToIgnore);
         if (sourceDiff.ContainsItems()) {
           diffResults.Add(
             key,
@@ -86,39 +69,17 @@ export class SourceController {
     return diffResults;
   }
 
-  public diffSingleSource(organization1: IOrganization, organization2: IOrganization, sourceName: string, fieldsToIgnore: Array<string>): DiffResult<any> {
-  let diffResult: DiffResult<any> = DiffUtils.diff(organization1.Sources.Item(sourceName), organization2.Sources.Item(sourceName), fieldsToIgnore);
-
-    return diffResult;
-  }
-
   public getSources(organization: IOrganization): request.RequestResponse {
-
-    var response = syncrequest(
-      'GET',
+    return RequestUtils.getRequestAndReturnJson(
       UrlService.getSourcesUrl(organization.Id),
-      {
-        'headers': {
-          'authorization': 'Bearer ' + organization.ApiKey
-        }
-      }
+      organization.ApiKey
     );
-
-    return response;
   }
 
   public getSingleSourceRaw(organization: IOrganization, sourceId:string): request.RequestResponse {
-
-    var response = syncrequest(
-      'GET',
+    return RequestUtils.getRequestAndReturnJson(
       UrlService.getSingleSourceRawUrl(organization.Id, sourceId),
-      {
-        'headers': {
-          'authorization': 'Bearer ' + organization.ApiKey
-        }
-      }
+      organization.ApiKey
     );
-
-    return response;
   }
 }

@@ -74,12 +74,14 @@ export class DiffUtils {
     return diffResult;
   }
 
-  public diffArrays(array1: Array<any>, array2: Array<any>, fieldsToIgnore: Array<string>): IDiffResult<any> {
-      let diffResult: IDiffResult<any> = new DiffResult<any>();
+  static diffArrays(array1: Array<any>, array2: Array<any>, fieldsToIgnore: Array<string>): IDiffResult<any> {
+    let diffResult: IDiffResult<any> = new DiffResult<any>();
 
-        // TODO: Do something...
+    array1.forEach(function (item) {
+        console.log(item);
+    });
 
-      return diffResult;
+    return diffResult;
   }
 }
 
