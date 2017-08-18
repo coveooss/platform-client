@@ -4,14 +4,14 @@ import {flatten} from 'flat';
 import { Dictionary } from '../collections/Dictionary';
 
 export class JsonUtils {
-  static flatten(jsonObject:any): any {
+  static flatten(jsonObject: any): any {
     return flatten(jsonObject);
   }
 
-  static removeFieldsFromJson(json:any, fieldsToIgnore?:Array<string>): any {
+  static removeFieldsFromJson(json: any, fieldsToIgnore?: Array<string>): any {
     let ignoreList = fieldsToIgnore || new Array<string>();
 
-    Object.keys(json).forEach(key => {
+    Object.keys(json).forEach(function (key: string) {
       if (ignoreList.indexOf(key) > -1) {
         delete json[key];
       }
@@ -20,12 +20,12 @@ export class JsonUtils {
     return json;
   }
 
-  static convertJsonToDictionary(json:any, fieldsToIgnore?:Array<string>): Dictionary<any> {
+  static convertJsonToDictionary(json: any, fieldsToIgnore?: Array<string>): Dictionary<any> {
     let ignoreList = fieldsToIgnore || new Array<string>();
     let newDictionary: Dictionary<any> = new Dictionary<any>();
 
-    Object.keys(json).forEach(key => {
-      if (ignoreList.indexOf(key) == -1) {
+    Object.keys(json).forEach(function (key: string) {
+      if (ignoreList.indexOf(key) === -1) {
         newDictionary.Add(key, json[key]);
       }
     });

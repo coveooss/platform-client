@@ -55,11 +55,11 @@ export abstract class BaseCommand implements ICommand {
   }
 
   public Validate(): void {
-    let errors:Array<string> = [];
+    let errors: Array<string> = [];
     let validations = this.validations
     let command = this;
 
-    this.validations.Keys().forEach(function (validation) {
+    this.validations.Keys().forEach(function (validation: string) {
       // tslint:disable-next-line:no-eval
       if (!eval(validation)) {
         errors.push(validations.Item(validation));

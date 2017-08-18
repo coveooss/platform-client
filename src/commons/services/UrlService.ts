@@ -18,7 +18,7 @@ export class UrlService {
     return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/sources`;
   }
 
-  static getSingleSourceRawUrl(organizationId: string, sourceId:string): string {
+  static getSingleSourceRawUrl(organizationId: string, sourceId: string): string {
     return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/sources/${sourceId}/raw`;
   }
 

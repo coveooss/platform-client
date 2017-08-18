@@ -2,10 +2,9 @@
 
 // Internal packages
 import {ICoveoObject} from './ICoveoObject';
-import {IField} from './IField';
 
-export interface IFieldResult extends ICoveoObject {
-  Items: IField[];
+export interface IFieldResult {
+  Items: ICoveoObject[];
   TotalPages: number;
   TotalEntries: number;
 }

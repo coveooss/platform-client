@@ -1,15 +1,15 @@
 // External packages
-var syncrequest = require('sync-request');
+let syncrequest = require('sync-request');
 import * as request from 'request';
 // Internal packages
 import { Dictionary } from '../collections/Dictionary';
 import { StaticErrorMessage } from '../errors'
 
 export class RequestUtils {
-  static getRequestAndReturnJson(url:string, apiKey:string): any {
-    let jsonResponse:any = null;
+  static getRequestAndReturnJson(url: string, apiKey: string): any {
+    let jsonResponse: any = null;
 
-    var response = syncrequest(
+    let response = syncrequest(
       'GET',
       url,
       {
@@ -19,7 +19,7 @@ export class RequestUtils {
       }
     );
 
-    if (response.statusCode == 200) { 
+    if (response.statusCode === 200) {
         jsonResponse = JSON.parse(response.getBody('utf-8'));
     } else {
         // TODO: need to make a better response in the console

@@ -1,6 +1,5 @@
 // External packages
-var syncrequest = require('sync-request');
-import * as request from 'request';
+import { RequestResponse } from 'request';
 // Internal packages
 import { IOrganization } from '../commons/interfaces/IOrganization';
 import { SourceController } from './SourceController';
@@ -21,25 +20,27 @@ export class OrganizationController {
 
   public diff(organization1: IOrganization, organization2: IOrganization, fieldsToIgnore: Array<string>): IDiffResult<any> {
     let diffResults: DiffResult<any> = new DiffResult<any>();
+    let context: OrganizationController = this;
 
     try {
       // Load the configuration of the organizations
-      let organizations:Array<IOrganization> = [organization1, organization2];
+      let organizations: Array<IOrganization> = [organization1, organization2];
 
-      organizations.forEach(organization => {
-        organization.Configuration = this.getOrganization(organization);
+      organizations.forEach(function (organization: IOrganization) {
+        organization.Configuration = context.getOrganization(organization);
       });
 
       // Diff the origanizations
       diffResults = DiffUtils.diff(organization1.Configuration, organization2.Configuration, fieldsToIgnore);
     } catch (err) {
       Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err);
+      throw err;
     }
 
     return diffResults;
   }
 
-  public getOrganization(organization: IOrganization): request.RequestResponse {
+  public getOrganization(organization: IOrganization): RequestResponse {
     return RequestUtils.getRequestAndReturnJson(
       UrlService.getOrganizationUrl(organization.Id),
       organization.ApiKey

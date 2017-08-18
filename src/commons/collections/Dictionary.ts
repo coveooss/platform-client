@@ -36,7 +36,7 @@ export class Dictionary<T> implements IDictionary<T> {
     }
 
     public Keys(): string[] {
-        let keySet: string[] = [];
+        let keySet: Array<string> = [];
 
         for (let prop in this.items) {
             if (this.items.hasOwnProperty(prop)) {
@@ -47,8 +47,8 @@ export class Dictionary<T> implements IDictionary<T> {
         return keySet;
     }
 
-    public Values(): T[] {
-        let values: T[] = [];
+    public Values(): Array<T> {
+        let values: Array<T> = [];
 
         for (let prop in this.items) {
             if (this.items.hasOwnProperty(prop)) {
@@ -62,8 +62,8 @@ export class Dictionary<T> implements IDictionary<T> {
     public Clone(): Dictionary<T> {
         let clone: Dictionary<T> = new Dictionary<T>();
         let orgiginal = this;
-        
-        this.Keys().forEach(function (key) {
+
+        this.Keys().forEach(function (key: string) {
             clone.Add(key, orgiginal.Item(key));
         });
 

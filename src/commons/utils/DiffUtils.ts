@@ -8,17 +8,17 @@ import { JsonUtils } from './JsonUtils';
 
 export class DiffUtils {
   static diff(json1: any, json2: any, fieldsToIgnore: Array<string>): IDiffResult<any> {
-    let diffResult:IDiffResult<any> = new DiffResult<any>();
+    let diffResult: IDiffResult<any> = new DiffResult<any>();
 
     try {
         // Flatten the json so we can push only the differences and their paths in the result
         let flat1: Dictionary<any> = JsonUtils.convertJsonToDictionary(flatten(json1), fieldsToIgnore);
         let flat2: Dictionary<any> = JsonUtils.convertJsonToDictionary(flatten(json2), fieldsToIgnore);
 
-        flat1.Keys().forEach(function (key){
+        flat1.Keys().forEach(function (key: string){
             if (flat2.ContainsKey(key)) {
                 // The key is in both dictionary, compare the values
-                if (flat1.Item(key) != flat2.Item(key)) {
+                if (flat1.Item(key) !== flat2.Item(key)) {
                     // Values are different, add it
                     // We always compare as if the first org would replace the second org config.
                     diffResult.UPDATED_OLD.Add(key, flat2.Item(key));
@@ -34,7 +34,7 @@ export class DiffUtils {
         });
 
         // Add the keys that were not in the first json to the deleted list
-        flat2.Keys().forEach(function (key) {
+        flat2.Keys().forEach(function (key: string) {
             diffResult.DELETED.Add(key, flat2.Item(key));
         });
     } catch (err) {
@@ -46,10 +46,10 @@ export class DiffUtils {
   }
 
   static diffDictionaryEntries(dict1: Dictionary<any>, dict2: Dictionary<any>): IDiffResult<string> {
-    let diffResult:IDiffResult<any> = new DiffResult<any>();
+    let diffResult: IDiffResult<any> = new DiffResult<any>();
 
     try {
-        dict1.Keys().forEach(function (key){
+        dict1.Keys().forEach(function (key: string){
             if (dict2.ContainsKey(key)) {
                 // The key is in both dictionary, mark it as "update"
                 diffResult.UPDATED_NEW.Add(key, `Possible source update ${key}`);
@@ -63,7 +63,7 @@ export class DiffUtils {
         });
 
         // Add the keys that were not in the first json to the deleted list
-        dict2.Keys().forEach(function (key) {
+        dict2.Keys().forEach(function (key: string) {
             diffResult.DELETED.Add(key, `A source was deleted: ${key}`);
         });
     } catch (err) {
@@ -74,14 +74,50 @@ export class DiffUtils {
     return diffResult;
   }
 
-  static diffArrays(array1: Array<any>, array2: Array<any>, fieldsToIgnore: Array<string>): IDiffResult<any> {
+  static diffArrays(array1: Array<any>, array2: Array<any>, fieldsToIgnore: Array<string>, checkOrdering?: boolean): IDiffResult<any> {
+    checkOrdering = checkOrdering || false;
+
     let diffResult: IDiffResult<any> = new DiffResult<any>();
 
-    array1.forEach(function (item) {
-        console.log(item);
+    DiffUtils.removeFieldsToIgnoreAndStringify(array1, fieldsToIgnore);
+    DiffUtils.removeFieldsToIgnoreAndStringify(array2, fieldsToIgnore);
+
+    array1.forEach(function (item: string) {
+        if (array2.indexOf(item) === -1) {
+            diffResult.NEW.Add('New element', item);
+        }
     });
 
+    if (!diffResult.ContainsItems() && array2.length > array1.length) {
+        array2.forEach(function (item: string) {
+            if (array1.indexOf(item) === -1) {
+                diffResult.DELETED.Add('Deleted element', item);
+            }
+        });
+    }
+
+    if (checkOrdering && !diffResult.ContainsItems()) {
+        let orderingHasChanged: boolean = false;
+
+        for (let index = 0; index < array1.length; index++) {
+            if (array1[index] !== array2[index]) {
+                orderingHasChanged = true;
+                diffResult.UPDATED_NEW.Add(
+                    'Ordering has changed',
+                    `The order of the elements in the array has changed, starting at item ${index}`
+                );
+                break;
+            }
+        }
+    }
+
     return diffResult;
+  }
+
+  static removeFieldsToIgnoreAndStringify(array: Array<any>, fieldsToIgnore: Array<string>): void {
+    for (let index = 0; index < array.length; index++) {
+        array[index] = JSON.stringify(JsonUtils.removeFieldsFromJson(array[index], fieldsToIgnore));
+    }
   }
 }
 

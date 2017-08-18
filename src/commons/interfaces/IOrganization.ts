@@ -7,7 +7,7 @@ import { Dictionary } from '../collections/Dictionary';
 
 export interface IOrganization extends ICoveoObject {
 	ApiKey: string;
-	Sources:Dictionary<ISource>;
-	Extensions:Dictionary<ICoveoObject>;
+	Sources: Dictionary<ISource>;
+	Extensions: Dictionary<ICoveoObject>;
 	Clone(): IOrganization;
 };

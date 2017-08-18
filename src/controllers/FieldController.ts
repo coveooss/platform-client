@@ -3,7 +3,7 @@ import * as request from 'request';
 import { IncomingMessage } from 'http'
 import * as _ from 'underscore';
 // Internal packages
-import { IField } from '../commons/interfaces/IField';
+import { ICoveoObject } from '../commons/interfaces/ICoveoObject';
 import { IFieldResult } from '../commons/interfaces/IFieldResult';
 import { UrlService } from '../commons/services/UrlService';
 import { IOrganization } from '../commons/interfaces/IOrganization';
@@ -41,7 +41,7 @@ export class FieldController {
   public deleteFields() {
   }
 
-  private partitionFieldSet(firstFieldSet: IField[], secondFieldSet: IField[]): any {
+  private partitionFieldSet(firstFieldSet: ICoveoObject[], secondFieldSet: ICoveoObject[]): any {
     // private partitionFieldSet(): IDiff<IFieldModel> {
     let deletedFields = [];
     let newFields = []
@@ -53,7 +53,7 @@ export class FieldController {
     console.log(secondFieldSet);
     console.log('--------------');
 
-    let same = _.foldl(firstFieldSet, (current: IField[], x: IField) => {
+    let same = _.foldl(firstFieldSet, (current: ICoveoObject[], x: ICoveoObject) => {
       let ready = _.matcher(x);
       return current.concat(_.filter(secondFieldSet, ready));
     }, [])
@@ -61,7 +61,7 @@ export class FieldController {
     return same;
   }
 
-  public diff(callback:Function) {
+  public diff(callback: Function) {
     // this.getFields(this.organization1)
     Promise.all([this.getFields(this.organization1), this.getFields(this.organization2)])
       .then((values: IFieldResult[]) => {

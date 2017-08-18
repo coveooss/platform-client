@@ -34,7 +34,7 @@ export class DiffCommand extends BaseCommand implements ICommand {
     this.optionalParameters.Add('outputfile', `${config.workingDirectory}output/diff-${Date.now()}.html`);
     this.optionalParameters.Add('fieldstoignore', 'id,configuration.parameters.OrganizationId.value,configuration.parameters.SourceId.value');
     this.optionalParameters.Add('scope', 'organization,fields,extensions,sources,pipelines,hostedsearchpages');
-    this.optionalParameters.Add('openinbrowser', 'true');
+    this.optionalParameters.Add('openinbrowser', 'false');
 
     this.validations.Add('(command.optionalParameters.Item("originapikey") != "")',
       'Need an API key for the origin organization (originApiKey), as a parameter or in the settings file');
@@ -59,7 +59,7 @@ export class DiffCommand extends BaseCommand implements ICommand {
     let diffResults: Dictionary<IDiffResult<any>> = new Dictionary<IDiffResult<any>>();
 
     // Organizations
-    let organizationController:OrganizationController = new OrganizationController();
+    let organizationController: OrganizationController = new OrganizationController();
     if (this.inScope('organization')) {
       diffResults.Add(
         'Organization configuration',
@@ -68,7 +68,7 @@ export class DiffCommand extends BaseCommand implements ICommand {
     }
 
     // Sources
-    let sourceController:SourceController = new SourceController();
+    let sourceController: SourceController = new SourceController();
     if (this.inScope('sources')) {
       let sourceDiff: Dictionary<IDiffResult<any>> = sourceController.diff(organization1, organization2, fieldsToIgnore);
 
@@ -81,7 +81,7 @@ export class DiffCommand extends BaseCommand implements ICommand {
 
       // Create other subsections for updated sources, if any.
       if (sourceDiff.Count() > 0) {
-        sourceDiff.Keys().forEach(function (key) {
+        sourceDiff.Keys().forEach(function (key: string) {
           diffResults.Add(
             key,
             sourceDiff.Item(key)
@@ -118,7 +118,7 @@ export class DiffCommand extends BaseCommand implements ICommand {
 
     // TODO: Build the sections based on the diff results provided
     let formattedDiff: Array<string> = new Array<string>();
-    diffResults.Keys().forEach(function (key) {
+    diffResults.Keys().forEach(function (key: string) {
       if (diffResults.Item(key).ContainsItems()) {
         formattedDiff.push(DiffResultsItemTemplate(key, diffResults.Item(key)));
       }
@@ -147,7 +147,7 @@ export class DiffCommand extends BaseCommand implements ICommand {
     }
   }
 
-  private inScope(section:string):boolean {
+  private inScope(section: string): boolean {
     return (this.optionalParameters.Item('scope').indexOf(section) > -1);
   }
 

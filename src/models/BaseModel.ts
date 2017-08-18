@@ -4,32 +4,32 @@
 import {ICoveoObject} from '../commons/interfaces/ICoveoObject';
 
 export class BaseModel implements ICoveoObject {
-    private id:string = '';
-    private name:string = '';
-    private configuration:any = '';
+    private id: string = '';
+    private name: string = '';
+    private configuration: any = '';
 
-    get Id():string {
+    get Id(): string {
         return this.id;
     }
-    set Id(id:string) {
+    set Id(id: string) {
         this.id = id;
     }
 
-    get Name():string {
+    get Name(): string {
         return this.name;
     }
-    set Name(name:string) {
+    set Name(name: string) {
         this.name = name;
     }
 
-    get Configuration():any {
+    get Configuration(): any {
         return this.configuration;
     }
-    set Configuration(configuration:any) {
+    set Configuration(configuration: any) {
         this.configuration = configuration;
     }
 
-    constructor(id:string) {
+    constructor(id: string) {
         this.id = id;
     }
 }

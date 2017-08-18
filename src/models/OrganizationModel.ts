@@ -9,32 +9,32 @@ import { FieldResult } from './FieldResultModel';
 import { Dictionary } from '../commons/collections/Dictionary';
 
 export class Organization extends BaseModel implements IOrganization {
-    private apiKey:string = '';
-    private sources:Dictionary<Source> = new Dictionary<Source>();
-    private extensions:Dictionary<Extension> = new Dictionary<Extension>();
-    private fields:FieldResult;
+    private apiKey: string = '';
+    private sources: Dictionary<Source> = new Dictionary<Source>();
+    private extensions: Dictionary<Extension> = new Dictionary<Extension>();
+    private fields: FieldResult;
 
-    get ApiKey():string {
+    get ApiKey(): string {
         return this.apiKey;
     }
 
-    get Sources():Dictionary<Source> {
+    get Sources(): Dictionary<Source> {
         return this.sources;
     }
 
-    set Sources(value:Dictionary<Source>) {
+    set Sources(value: Dictionary<Source>) {
         this.sources = value;
     }
 
-    get Extensions():Dictionary<Extension> {
+    get Extensions(): Dictionary<Extension> {
         return this.extensions;
     }
 
-    set Extensions(value:Dictionary<Extension>) {
+    set Extensions(value: Dictionary<Extension>) {
         this.extensions = value;
     }
 
-    constructor(id:string, apiKey:string) {
+    constructor(id: string, apiKey: string) {
         super(id);
 
         this.apiKey = apiKey;
