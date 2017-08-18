@@ -10,6 +10,7 @@ import { DiffResultsPageHtmlTemplate, DiffResultsItemTemplate } from '../commons
 import { FileUtils } from '../commons/utils/FileUtils';
 import { Dictionary } from '../commons/collections/Dictionary';
 import { OrganizationController } from '../controllers/OrganizationController';
+import { SourceController } from '../controllers/SourceController';
 import { FieldController } from '../controllers/FieldController';
 import { IOrganization } from '../commons/interfaces/IOrganization';
 import { Organization } from '../models/OrganizationModel';
@@ -31,13 +32,13 @@ export class DiffCommand extends BaseCommand implements ICommand {
     this.optionalParameters.Add('originapikey', '');
     this.optionalParameters.Add('destinationapikey', '');
     this.optionalParameters.Add('outputfile', `${config.workingDirectory}output/diff-${Date.now()}.html`);
-    this.optionalParameters.Add('fieldstoignore', 'id');
+    this.optionalParameters.Add('fieldstoignore', 'id,configuration.parameters.OrganizationId.value,configuration.parameters.SourceId.value');
     this.optionalParameters.Add('scope', 'organization,fields,extensions,sources,pipelines,hostedsearchpages');
     this.optionalParameters.Add('openinbrowser', 'true');
 
-    this.validations.Add('(this.optionalParameters["originapikey"] != "")',
+    this.validations.Add('(command.optionalParameters.Item("originapikey") != "")',
       'Need an API key for the origin organization (originApiKey), as a parameter or in the settings file');
-    this.validations.Add('(this.optionalParameters["destinationapikey"] != "")',
+    this.validations.Add('(command.optionalParameters.Item("destinationapikey") != "")',
       'Need an API key for the destination organization (destinationApiKey), as a parameter or in the settings file');
   }
 
@@ -55,15 +56,38 @@ export class DiffCommand extends BaseCommand implements ICommand {
     let fieldsToIgnore: Array<string> = this.optionalParameters.Item('fieldstoignore').toLowerCase().split(',');
 
     // Create an array of diffs to put the results for each section
-    let diffResults: Dictionary<DiffResult<any>> = new Dictionary<DiffResult<any>>();
+    let diffResults: Dictionary<IDiffResult<any>> = new Dictionary<IDiffResult<any>>();
 
     // Organizations
     let organizationController:OrganizationController = new OrganizationController();
-    if (this.optionalParameters.Item('scope').indexOf('organization') > -1) {
+    if (this.inScope('organization')) {
       diffResults.Add(
         'Organization configuration',
         organizationController.diff(organization1, organization2, fieldsToIgnore)
       );
+    }
+
+    // Sources
+    let sourceController:SourceController = new SourceController();
+    if (this.inScope('sources')) {
+      let sourceDiff: Dictionary<IDiffResult<any>> = sourceController.diff(organization1, organization2, fieldsToIgnore);
+
+      // Create a first subsection for added and deleted sources
+      diffResults.Add(
+        'Added and deleted sources',
+        sourceDiff.Item('ADD_DELETE')
+      );
+      sourceDiff.Remove('ADD_DELETE');
+
+      // Create other subsections for updated sources, if any.
+      if (sourceDiff.Count() > 0) {
+        sourceDiff.Keys().forEach(function (key) {
+          diffResults.Add(
+            key,
+            sourceDiff.Item(key)
+          );
+        });
+      }
     }
 
     // Extensions
@@ -95,9 +119,12 @@ export class DiffCommand extends BaseCommand implements ICommand {
     // TODO: Build the sections based on the diff results provided
     let formattedDiff: Array<string> = new Array<string>();
     diffResults.Keys().forEach(function (key) {
-      formattedDiff.push(DiffResultsItemTemplate(key, diffResults.Item(key)));
+      if (diffResults.Item(key).ContainsItems()) {
+        formattedDiff.push(DiffResultsItemTemplate(key, diffResults.Item(key)));
+      }
     });
 
+    // TODO: Do something if formatted diff is empty... like showing a "the org are the same" message
     // Format the whole diff document
     let diffReport: string = DiffResultsPageHtmlTemplate(
       organization1.Id,
@@ -118,6 +145,10 @@ export class DiffCommand extends BaseCommand implements ICommand {
     if (this.optionalParameters.Item('openinbrowser') === 'true') {
       opn(this.optionalParameters.Item('outputfile'));
     }
+  }
+
+  private inScope(section:string):boolean {
+    return (this.optionalParameters.Item('scope').indexOf(section) > -1);
   }
 
   private jsonDiffOptions(): {} {

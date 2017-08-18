@@ -8,4 +8,6 @@ export interface IDiffResult<T> {
   UPDATED_OLD: Dictionary<T>;
   UPDATED_NEW: Dictionary<T>;
   DELETED: Dictionary<T>;
+
+  ContainsItems(): boolean;
 };

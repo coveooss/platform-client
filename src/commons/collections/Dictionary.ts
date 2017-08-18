@@ -58,4 +58,15 @@ export class Dictionary<T> implements IDictionary<T> {
 
         return values;
     }
+
+    public Clone(): Dictionary<T> {
+        let clone: Dictionary<T> = new Dictionary<T>();
+        let orgiginal = this;
+        
+        this.Keys().forEach(function (key) {
+            clone.Add(key, orgiginal.Item(key));
+        });
+
+        return clone;
+    }
 }

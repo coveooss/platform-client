@@ -6,4 +6,5 @@ export interface IDictionary<T> {
 	Keys(): string[];
 	Remove(key: string): T;
 	Values(): T[];
+	Clone(): IDictionary<T>;
 }

@@ -8,6 +8,18 @@ export class JsonUtils {
     return flatten(jsonObject);
   }
 
+  static removeFieldsFromJson(json:any, fieldsToIgnore?:Array<string>): any {
+    let ignoreList = fieldsToIgnore || new Array<string>();
+
+    Object.keys(json).forEach(key => {
+      if (ignoreList.indexOf(key) > -1) {
+        delete json[key];
+      }
+    });
+
+    return json;
+  }
+
   static convertJsonToDictionary(json:any, fieldsToIgnore?:Array<string>): Dictionary<any> {
     let ignoreList = fieldsToIgnore || new Array<string>();
     let newDictionary: Dictionary<any> = new Dictionary<any>();

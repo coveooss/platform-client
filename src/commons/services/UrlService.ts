@@ -13,10 +13,20 @@ export class UrlService {
     return `${config.coveo.platformUrl}/rest/organizations/${organizationId}`;
   }
 
+  /*** Sources API ***/
+  static getSourcesUrl(organizationId: string): string {
+    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/sources`;
+  }
+
+  static getSingleSourceRawUrl(organizationId: string, sourceId:string): string {
+    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/sources/${sourceId}/raw`;
+  }
+
   /*** Extensions API ***/
   static getExtensionsUrl(organizationId: string): string {
     return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/extensions`;
   }
+
   static getSingleExtensionsUrl(organizationId: string, extensionId: string): string {
     return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/extensions/${extensionId}`;
   }

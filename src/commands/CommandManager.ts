@@ -35,7 +35,7 @@ export function HandleCommand(command: string) {
     try {
       cmd.Validate();
     } catch (error) {
-      throw new Error('Some of the parameters and/or flags are not valid (' + error.message + ').');
+      throw new Error('Some of the validations failed (' + error.message + ').');
     }
 
     try {

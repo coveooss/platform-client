@@ -18,8 +18,9 @@ export class GraduateCommand extends BaseCommand implements ICommand {
     this.optionalParameters.Add('originapikey', '');
     this.optionalParameters.Add('destinationapikey', '');
 
-    this.validations.Add('(this.optionalParameters["originapikey"] != "")', 'Need an API key for the origin organization (originApiKey), as a parameter or in the settings file');
-    this.validations.Add('(this.optionalParameters["destinationapikey"] != "")',
+    this.validations.Add('(command.optionalParameters.Item("originapikey") != "")',
+      'Need an API key for the origin organization (originApiKey), as a parameter or in the settings file');
+    this.validations.Add('(command.optionalParameters.Item("destinationapikey") != "")',
       'Need an API key for the destination organization (destinationApiKey), as a parameter or in the settings file');
 
   }

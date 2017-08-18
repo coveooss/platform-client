@@ -16,14 +16,6 @@ import * as chalk from 'chalk';
 import { Logger } from '../commons/logger';
 
 export class OrganizationController {
-  // Maximum 2 organizations as we will support only support 1 to 1 commands for now.
-  private organization1: IOrganization;
-  private organization2: IOrganization;
-  // Sub controllers
-  private sources: SourceController;
-  private fields: FieldController;
-  private pipelines: PipelineController;
-
   constructor() { }
 
   public diff(organization1: IOrganization, organization2: IOrganization, fieldsToIgnore: Array<string>): IDiffResult<any> {
@@ -55,13 +47,13 @@ export class OrganizationController {
       // Diff the origanizations
       diffResults = DiffUtils.diff(organization1.Configuration, organization2.Configuration, fieldsToIgnore);
     } catch (err) {
-      Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err.stack);
+      Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err);
     }
 
     return diffResults;
   }
 
-  private getOrganization(organization: IOrganization): request.RequestResponse {
+  public getOrganization(organization: IOrganization): request.RequestResponse {
     var response = syncrequest(
       'GET',
       UrlService.getOrganizationUrl(organization.Id),

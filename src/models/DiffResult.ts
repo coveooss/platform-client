@@ -16,4 +16,12 @@ export class DiffResult<T> implements IDiffResult<T> {
       this.UPDATED_NEW = new Dictionary<T>();
       this.DELETED = new Dictionary<T>();
   }
+
+  public ContainsItems(): boolean {
+    if ((this.NEW.Count() + this.UPDATED_NEW.Count() + this.UPDATED_OLD.Count() + this.DELETED.Count()) > 0) {
+      return true;
+    }
+
+    return false;
+  }
 }

@@ -1,10 +1,10 @@
 // External packages
 
 // Internal packages
-import {ICoveoObject} from '../commons/interfaces/ICoveoObject';
-import {BaseModel} from './BaseModel';
+import { ISource } from '../commons/interfaces/ISource';
+import { BaseModel } from './BaseModel';
 
-export class Source extends BaseModel implements ICoveoObject {
+export class Source extends BaseModel implements ISource {
     constructor(id:string) {
         super(id);
     }
