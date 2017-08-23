@@ -11,11 +11,13 @@ import { FileUtils } from '../commons/utils/FileUtils';
 import { Dictionary } from '../commons/collections/Dictionary';
 import { OrganizationController } from '../controllers/OrganizationController';
 import { SourceController } from '../controllers/SourceController';
+import { ExtensionController } from '../controllers/ExtensionController';
 import { FieldController } from '../controllers/FieldController';
 import { IOrganization } from '../commons/interfaces/IOrganization';
 import { Organization } from '../models/OrganizationModel';
 import { config } from '../config/index';
 import { DiffResult } from '../models/DiffResult';
+import { DiffUtils } from '../commons/utils/DiffUtils';
 import * as opn from 'opn';
 
 // Command class
@@ -72,31 +74,24 @@ export class DiffCommand extends BaseCommand implements ICommand {
     if (this.inScope('sources')) {
       let sourceDiff: Dictionary<IDiffResult<any>> = sourceController.diff(organization1, organization2, fieldsToIgnore);
 
-      // Create a first subsection for added and deleted sources
-      diffResults.Add(
-        'Added and deleted sources',
-        sourceDiff.Item('ADD_DELETE')
-      );
-      sourceDiff.Remove('ADD_DELETE');
-
-      // Create other subsections for updated sources, if any.
-      if (sourceDiff.Count() > 0) {
-        sourceDiff.Keys().forEach(function (key: string) {
-          diffResults.Add(
-            key,
-            sourceDiff.Item(key)
-          );
-        });
-      }
+      diffResults = DiffUtils.addToMainDiff('Added and Deleted Sources', diffResults, sourceDiff);
     }
 
     // Extensions
-    // HERE, call the proper method.
+    let extensionController: ExtensionController = new ExtensionController();
+    if (this.inScope('extensions')) {
+      let extensionsDiff: Dictionary<IDiffResult<any>> = extensionController.diff(organization1, organization2, fieldsToIgnore);
 
-    // Sources
+      diffResults = DiffUtils.addToMainDiff('Added and Deleted Extensions', diffResults, extensionsDiff);
+    }
+
+    // Security providers
     // HERE, call the proper method.
 
     // Pipelines
+    // HERE, call the proper method.
+
+    // UA
     // HERE, call the proper method.
 
     /*** Fields Diff ***/

@@ -51,27 +51,58 @@ export class SourceController {
         });
       });
 
-      let test: IDiffResult<any> = DiffUtils.diffArrays(organization1.Sources.Values()[0].Mappings, organization1.Sources.Values()[0].Mappings, fieldsToIgnore, true);
-      // TODO: diff the mappings
-      // TODO: diff the extensions
-      // TODO: diff the objects to get
-      // TODO: Like, remove configuration.extendedDataFiles.ObjectsToGet
-
       // Diff the sources in terms of "existence"
       diffResultsExistence = DiffUtils.diffDictionaryEntries(organization1.Sources.Clone(), organization2.Sources.Clone());
-      diffResults.Add('ADD_DELETE', diffResultsExistence);
 
       // Diff the sources that could have been changed
       diffResultsExistence.UPDATED_NEW.Keys().forEach(function (key: string) {
-        let sourceDiff: DiffResult<any> = DiffUtils.diff(organization1.Sources.Item(key), organization2.Sources.Item(key), fieldsToIgnore);
-        if (sourceDiff.ContainsItems()) {
-          diffResults.Add(
-            key,
-            sourceDiff
-          )
+        let sourceDiff: IDiffResult<any>  = new DiffResult<any>();
+
+        let sourceConfigurationDiff: IDiffResult<any> = DiffUtils.diff(organization1.Sources.Item(key), organization2.Sources.Item(key), fieldsToIgnore);
+        sourceDiff = DiffUtils.addToResultIfDiffContainsItems('SourceConfiguration', sourceDiff, sourceConfigurationDiff);
+
+        let mappingDiff: IDiffResult<any> = DiffUtils.diffArrays(
+          organization1.Sources.Item(key).Mappings,
+          organization2.Sources.Item(key).Mappings,
+          fieldsToIgnore,
+          false
+        );
+        sourceDiff = DiffUtils.addToResultIfDiffContainsItems('Mappings', sourceDiff, sourceConfigurationDiff);
+
+        let preConversionDiff: IDiffResult<any> = DiffUtils.diffArrays(
+          organization1.Sources.Item(key).PreConversionExtensions,
+          organization2.Sources.Item(key).PreConversionExtensions,
+          fieldsToIgnore,
+          false
+        );
+        sourceDiff = DiffUtils.addToResultIfDiffContainsItems('PreConversionExtensions', sourceDiff, preConversionDiff);
+
+        let postConversionDiff: IDiffResult<any> = DiffUtils.diffArrays(
+          organization1.Sources.Item(key).PostConversionExtensions,
+          organization2.Sources.Item(key).PostConversionExtensions,
+          fieldsToIgnore,
+          false
+        );
+        sourceDiff = DiffUtils.addToResultIfDiffContainsItems('PreConversionExtensions', sourceDiff, postConversionDiff);
+
+        // Salesforce not really supported as it is "human must do manual stuff" by design
+        // So let's just compare the string of the extendedDataFiles and that will be pretty much it
+        if (organization1.Sources.Item(key).ExtendedDataFiles !== organization2.Sources.Item(key).ExtendedDataFiles) {
+          sourceDiff.NEW.Add('Extended Data Files', 'Extended Data Files have changed');
         }
+
+        // If the diff contains item, add it to the overall result
+        if (sourceDiff.ContainsItems()) {
+          diffResults.Add(key, sourceDiff);
+        }
+
         diffResultsExistence.UPDATED_NEW.Remove(key);
       });
+
+      // Add the result if it still contains items
+      if (diffResultsExistence.ContainsItems()) {
+          diffResults.Add('ADD_DELETE', diffResultsExistence);
+      }
     } catch (err) {
       // TODO: Move the loogers from all files to their base classes when possible
       Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err);

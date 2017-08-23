@@ -119,5 +119,39 @@ export class DiffUtils {
         array[index] = JSON.stringify(JsonUtils.removeFieldsFromJson(array[index], fieldsToIgnore));
     }
   }
+
+  static addToResultIfDiffContainsItems(section: string, mainResultList: IDiffResult<any>, diffResult: IDiffResult<any>): IDiffResult<any> {
+    if (diffResult.ContainsItems()) {
+        mainResultList.UPDATED_NEW.Add(
+            section,
+            diffResult
+        );
+    }
+
+    return mainResultList;
+  }
+
+  static addToMainDiff (addedDeletedmessage: string, mainDiff: Dictionary<IDiffResult<any>>, diffToAdd: Dictionary<IDiffResult<any>>): Dictionary<IDiffResult<any>> {
+      // Create a first subsection for added and deleted items
+      if (diffToAdd.ContainsKey('ADD_DELETE')) {
+        mainDiff.Add(
+            addedDeletedmessage,
+            diffToAdd.Item('ADD_DELETE')
+        );
+        diffToAdd.Remove('ADD_DELETE');
+      }
+
+      // Create other subsections for updated items, if any.
+      if (diffToAdd.Count() > 0) {
+        diffToAdd.Keys().forEach(function (key: string) {
+          mainDiff.Add(
+            key,
+            diffToAdd.Item(key)
+          );
+        });
+      }
+
+      return mainDiff;
+  }
 }
 

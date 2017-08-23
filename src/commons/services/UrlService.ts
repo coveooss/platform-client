@@ -27,8 +27,8 @@ export class UrlService {
     return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/extensions`;
   }
 
-  static getSingleExtensionsUrl(organizationId: string, extensionId: string): string {
-    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/extensions/${extensionId}`;
+  static getSingleExtensionsUrl(organizationId: string, extensionId: string, versionId: string): string {
+    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/extensions/${extensionId}/versions${versionId}`;
   }
 
   /*** Fields API ***/
