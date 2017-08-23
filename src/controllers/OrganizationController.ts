@@ -2,9 +2,6 @@
 import { RequestResponse } from 'request';
 // Internal packages
 import { IOrganization } from '../commons/interfaces/IOrganization';
-import { SourceController } from './SourceController';
-import { FieldController } from './FieldController';
-import { PipelineController } from './PipelineController';
 import { UrlService } from '../commons/services/UrlService';
 import { DiffUtils } from '../commons/utils/DiffUtils';
 import { RequestUtils } from '../commons/utils/RequestUtils';

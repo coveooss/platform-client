@@ -7,4 +7,5 @@ export interface IDictionary<T> {
 	Remove(key: string): T;
 	Values(): T[];
 	Clone(): IDictionary<T>;
+	Clear(): void;
 }

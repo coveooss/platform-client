@@ -88,7 +88,10 @@ export class SourceController {
         // Salesforce not really supported as it is "human must do manual stuff" by design
         // So let's just compare the string of the extendedDataFiles and that will be pretty much it
         if (organization1.Sources.Item(key).ExtendedDataFiles !== organization2.Sources.Item(key).ExtendedDataFiles) {
-          sourceDiff.NEW.Add('Extended Data Files', 'Extended Data Files have changed');
+          sourceDiff.NEW.Add(
+            'Extended Data Files',
+            'Extended Data Files, used by the salesforce source, have changed. You should validate the salesforce source configuration between the 2 organizations.'
+          );
         }
 
         // If the diff contains item, add it to the overall result

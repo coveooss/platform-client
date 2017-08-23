@@ -12,6 +12,8 @@ import { Dictionary } from '../commons/collections/Dictionary';
 import { OrganizationController } from '../controllers/OrganizationController';
 import { SourceController } from '../controllers/SourceController';
 import { ExtensionController } from '../controllers/ExtensionController';
+import { SecurityProviderController } from '../controllers/SecurityProviderController';
+import { QueryPipelineController } from '../controllers/QueryPipelineController';
 import { FieldController } from '../controllers/FieldController';
 import { IOrganization } from '../commons/interfaces/IOrganization';
 import { Organization } from '../models/OrganizationModel';
@@ -35,7 +37,7 @@ export class DiffCommand extends BaseCommand implements ICommand {
     this.optionalParameters.Add('destinationapikey', '');
     this.optionalParameters.Add('outputfile', `${config.workingDirectory}output/diff-${Date.now()}.html`);
     this.optionalParameters.Add('fieldstoignore', 'id,configuration.parameters.OrganizationId.value,configuration.parameters.SourceId.value');
-    this.optionalParameters.Add('scope', 'organization,fields,extensions,sources,pipelines,hostedsearchpages');
+    this.optionalParameters.Add('scope', 'organization,fields,extensions,sources,securityproviders,querypipelines,hostedsearchpages');
     this.optionalParameters.Add('openinbrowser', 'false');
 
     this.validations.Add('(command.optionalParameters.Item("originapikey") != "")',
@@ -69,6 +71,14 @@ export class DiffCommand extends BaseCommand implements ICommand {
       );
     }
 
+    // Security providers
+    let securityProviderController: SecurityProviderController = new SecurityProviderController();
+    if (this.inScope('securityproviders')) {
+      let sourceDiff: Dictionary<IDiffResult<any>> = securityProviderController.diff(organization1, organization2, fieldsToIgnore);
+
+      diffResults = DiffUtils.addToMainDiff('Added and Deleted Security Providers', diffResults, sourceDiff);
+    }
+
     // Sources
     let sourceController: SourceController = new SourceController();
     if (this.inScope('sources')) {
@@ -85,10 +95,18 @@ export class DiffCommand extends BaseCommand implements ICommand {
       diffResults = DiffUtils.addToMainDiff('Added and Deleted Extensions', diffResults, extensionsDiff);
     }
 
-    // Security providers
-    // HERE, call the proper method.
+    // Query pipelines
+    let queryPipelineController: QueryPipelineController = new QueryPipelineController();
+    if (this.inScope('querypipelines')) {
+      let queryPipelinesDiff: Dictionary<IDiffResult<any>> = queryPipelineController.diff(organization1, organization2, fieldsToIgnore);
 
-    // Pipelines
+      diffResults = DiffUtils.addToMainDiff('Added and Deleted Query Pipelines', diffResults, queryPipelinesDiff);
+    }
+
+    // Search API Authentication
+    // HERE, call the proper method. Only validate the existence of the pipeline, then add a warning.
+
+    // Hosted Search Pages
     // HERE, call the proper method.
 
     // UA

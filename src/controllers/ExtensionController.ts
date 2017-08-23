@@ -95,9 +95,9 @@ export class ExtensionController {
     );
   }
 
-  public getSingleExtension(organization: IOrganization, sourceId: string, versionId: string): RequestResponse {
+  public getSingleExtension(organization: IOrganization, extensionId: string, versionId: string): RequestResponse {
     return RequestUtils.getRequestAndReturnJson(
-      UrlService.getSingleExtensionsUrl(organization.Id, sourceId, versionId),
+      UrlService.getSingleExtensionUrl(organization.Id, extensionId, versionId),
       organization.ApiKey
     );
   }

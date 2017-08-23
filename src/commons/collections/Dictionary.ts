@@ -69,4 +69,9 @@ export class Dictionary<T> implements IDictionary<T> {
 
         return clone;
     }
+
+    public Clear(): void {
+        this.items = {};
+        this.count = 0;
+    }
 }

@@ -27,8 +27,22 @@ export class UrlService {
     return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/extensions`;
   }
 
-  static getSingleExtensionsUrl(organizationId: string, extensionId: string, versionId: string): string {
+  static getSingleExtensionUrl(organizationId: string, extensionId: string, versionId: string): string {
     return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/extensions/${extensionId}/versions${versionId}`;
+  }
+
+  /*** Search API ***/
+  static getQueryPipelinesUrl(organizationId: string, apiKey: string): string {
+    return `${config.coveo.platformUrl}/rest/search/admin/pipelines/?access_token=${apiKey}&organizationId=${organizationId}`
+  }
+
+  /*** Security Providers API ***/
+  static getSecurityProvidersUrl(organizationId: string): string {
+    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/securityproviders`;
+  }
+
+  static getSingleSecurityProviderUrl(organizationId: string, securityProviderId: string): string {
+    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/securityproviders/${securityProviderId}/raw`;
   }
 
   /*** Fields API ***/

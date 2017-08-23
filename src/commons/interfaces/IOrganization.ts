@@ -9,5 +9,7 @@ export interface IOrganization extends ICoveoObject {
 	ApiKey: string;
 	Sources: Dictionary<ISource>;
 	Extensions: Dictionary<ICoveoObject>;
+	QueryPipelines: Dictionary<ICoveoObject>;
+	SecurityProviders: Dictionary<ICoveoObject>;
 	Clone(): IOrganization;
 };
