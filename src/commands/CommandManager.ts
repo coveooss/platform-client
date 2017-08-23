@@ -42,7 +42,7 @@ export function HandleCommand(command: string) {
       // Execute the command
       cmd.Execute();
     } catch (error) {
-      throw new Error('An error occured while processing the command(' + error.message + ').');
+      throw new Error('An error occured while processing the command(' + error.message + ').' + error.stack);
     }
 
     // Return the command

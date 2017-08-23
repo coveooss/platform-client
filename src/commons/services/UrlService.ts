@@ -32,8 +32,16 @@ export class UrlService {
   }
 
   /*** Search API ***/
-  static getQueryPipelinesUrl(organizationId: string, apiKey: string): string {
-    return `${config.coveo.platformUrl}/rest/search/admin/pipelines/?access_token=${apiKey}&organizationId=${organizationId}`
+  static getQueryPipelinesUrl(organizationId: string): string {
+    return `${config.coveo.platformUrl}/rest/search/admin/pipelines/?&organizationId=${organizationId}`
+  }
+
+  static getSearchApiAuthenticationsUrl(organizationId: string): string {
+    return `${config.coveo.platformUrl}rest/organizations/${organizationId}/authentication?&organizationId=${organizationId}`
+  }
+
+  static getHostedSearchPagesUrl(organizationId: string): string {
+    return `${config.coveo.platformUrl}rest/organizations/${organizationId}/pages/`
   }
 
   /*** Security Providers API ***/

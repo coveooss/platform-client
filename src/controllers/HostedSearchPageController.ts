@@ -3,7 +3,6 @@ import { RequestResponse } from 'request';
 // Internal packages
 import { ICoveoObject } from '../commons/interfaces/ICoveoObject'
 import { IOrganization } from '../commons/interfaces/IOrganization'
-import { QueryPipeline } from '../models/QueryPipelineModel';
 import { UrlService } from '../commons/services/UrlService';
 import { IDiffResult } from '../commons/interfaces/IDiffResult';
 import { DiffResult } from '../models/DiffResult';
@@ -14,7 +13,7 @@ import { JsonUtils } from '../commons/utils/JsonUtils';
 import { DiffUtils } from '../commons/utils/DiffUtils';
 import { RequestUtils } from '../commons/utils/RequestUtils';
 
-export class QueryPipelineController {
+export class HostedSearchPagesController {
     constructor() { }
 
     public diff(organization1: IOrganization, organization2: IOrganization, fieldsToIgnore: Array<string>): Dictionary<IDiffResult<any>> {
@@ -24,28 +23,41 @@ export class QueryPipelineController {
         try {
             // Load the configuration of the organizations
             let organizations: Array<IOrganization> = [organization1, organization2];
-            let context: QueryPipelineController = this;
+            let context: HostedSearchPagesController = this;
 
             organizations.forEach(function (organization: IOrganization) {
-                let queryPipelines: any = context.getQueryPipelines(organization);
-                queryPipelines.forEach(function (pipeline: any) {
-                    organization.QueryPipelines.Add(
-                        pipeline['name'],
-                        pipeline
+                let searchPages: any = context.getHostedSearchPages(organization);
+                searchPages.forEach(function (searchPage: any) {
+                    organization.HostedSearchPages.Add(
+                        searchPage['name'],
+                        searchPage
                     );
                 });
             });
 
-            // Diff the pipelines in terms of "existence"
-            diffResultsExistence = DiffUtils.diffDictionaryEntries(organization1.QueryPipelines.Clone(), organization2.QueryPipelines.Clone());
+            // Diff the hosted search pages in terms of "existence"
+            diffResultsExistence = DiffUtils.diffDictionaryEntries(organization1.HostedSearchPages.Clone(), organization2.HostedSearchPages.Clone());
 
-            diffResultsExistence.UPDATED_NEW.Clear();
+            // Diff the hosted search pages that could have been changed
+            diffResultsExistence.UPDATED_NEW.Keys().forEach(function (key: string) {
+                let hostedSearchPageDiff = DiffUtils.diff(
+                    organization1.HostedSearchPages.Item(key).Configuration,
+                    organization2.HostedSearchPages.Item(key).Configuration,
+                    fieldsToIgnore
+                )
+
+                if (hostedSearchPageDiff.ContainsItems()) {
+                    diffResults.Add(key, hostedSearchPageDiff);
+                }
+
+                diffResultsExistence.UPDATED_NEW.Remove(key);
+            });
 
             // Add the result if it still contains items
             if (diffResultsExistence.ContainsItems()) {
                 diffResults.Add('ADD_DELETE', diffResultsExistence);
             }
-            } catch (err) {
+        } catch (err) {
             // TODO: Move the loogers from all files to their base classes when possible
             Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err);
 
@@ -55,9 +67,9 @@ export class QueryPipelineController {
         return diffResults;
     }
 
-    public getQueryPipelines(organization: IOrganization): RequestResponse {
+    public getHostedSearchPages(organization: IOrganization): RequestResponse {
         return RequestUtils.getRequestAndReturnJson(
-            UrlService.getQueryPipelinesUrl(organization.Id),
+            UrlService.getHostedSearchPagesUrl(organization.Id),
             organization.ApiKey
         );
     }

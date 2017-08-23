@@ -1,7 +1,5 @@
-// Old school import so we can access other libraries
-declare function require(name: string): any;
 // External packages
-// import * as opn from 'opn';
+import * as opn from 'opn';
 import { IDiffResult } from '../commons/interfaces/IDiffResult';
 // Internal packages
 import { BaseCommand } from './BaseCommand';
@@ -11,16 +9,17 @@ import { FileUtils } from '../commons/utils/FileUtils';
 import { Dictionary } from '../commons/collections/Dictionary';
 import { OrganizationController } from '../controllers/OrganizationController';
 import { SourceController } from '../controllers/SourceController';
+import { SearchApiAuthenticationController } from '../controllers/SearchApiAuthenticationController';
 import { ExtensionController } from '../controllers/ExtensionController';
 import { SecurityProviderController } from '../controllers/SecurityProviderController';
 import { QueryPipelineController } from '../controllers/QueryPipelineController';
+import { HostedSearchPagesController } from '../controllers/HostedSearchPageController';
 import { FieldController } from '../controllers/FieldController';
 import { IOrganization } from '../commons/interfaces/IOrganization';
 import { Organization } from '../models/OrganizationModel';
 import { config } from '../config/index';
 import { DiffResult } from '../models/DiffResult';
 import { DiffUtils } from '../commons/utils/DiffUtils';
-import * as opn from 'opn';
 
 // Command class
 export class DiffCommand extends BaseCommand implements ICommand {
@@ -36,7 +35,7 @@ export class DiffCommand extends BaseCommand implements ICommand {
     this.optionalParameters.Add('originapikey', '');
     this.optionalParameters.Add('destinationapikey', '');
     this.optionalParameters.Add('outputfile', `${config.workingDirectory}output/diff-${Date.now()}.html`);
-    this.optionalParameters.Add('fieldstoignore', 'id,configuration.parameters.OrganizationId.value,configuration.parameters.SourceId.value');
+    this.optionalParameters.Add('fieldstoignore', 'id,html,configuration.parameters.OrganizationId.value,configuration.parameters.SourceId.value');
     this.optionalParameters.Add('scope', 'organization,fields,extensions,sources,securityproviders,querypipelines,hostedsearchpages');
     this.optionalParameters.Add('openinbrowser', 'false');
 
@@ -74,9 +73,9 @@ export class DiffCommand extends BaseCommand implements ICommand {
     // Security providers
     let securityProviderController: SecurityProviderController = new SecurityProviderController();
     if (this.inScope('securityproviders')) {
-      let sourceDiff: Dictionary<IDiffResult<any>> = securityProviderController.diff(organization1, organization2, fieldsToIgnore);
+      let securityProviderDiff: Dictionary<IDiffResult<any>> = securityProviderController.diff(organization1, organization2, fieldsToIgnore);
 
-      diffResults = DiffUtils.addToMainDiff('Added and Deleted Security Providers', diffResults, sourceDiff);
+      diffResults = DiffUtils.addToMainDiff('Added and Deleted Security Providers', diffResults, securityProviderDiff);
     }
 
     // Sources
@@ -84,7 +83,7 @@ export class DiffCommand extends BaseCommand implements ICommand {
     if (this.inScope('sources')) {
       let sourceDiff: Dictionary<IDiffResult<any>> = sourceController.diff(organization1, organization2, fieldsToIgnore);
 
-      diffResults = DiffUtils.addToMainDiff('Added and Deleted Sources', diffResults, sourceDiff);
+      diffResults = DiffUtils.addToMainDiff('Added, modified and Deleted Sources', diffResults, sourceDiff);
     }
 
     // Extensions
@@ -92,7 +91,7 @@ export class DiffCommand extends BaseCommand implements ICommand {
     if (this.inScope('extensions')) {
       let extensionsDiff: Dictionary<IDiffResult<any>> = extensionController.diff(organization1, organization2, fieldsToIgnore);
 
-      diffResults = DiffUtils.addToMainDiff('Added and Deleted Extensions', diffResults, extensionsDiff);
+      diffResults = DiffUtils.addToMainDiff('Added, modified and Deleted Extensions', diffResults, extensionsDiff);
     }
 
     // Query pipelines
@@ -104,10 +103,20 @@ export class DiffCommand extends BaseCommand implements ICommand {
     }
 
     // Search API Authentication
-    // HERE, call the proper method. Only validate the existence of the pipeline, then add a warning.
+    let searchApiAuthenticationController: SearchApiAuthenticationController = new SearchApiAuthenticationController();
+    if (this.inScope('querypipelines')) {
+      let searchApiAuthenticationDiff: Dictionary<IDiffResult<any>> = searchApiAuthenticationController.diff(organization1, organization2, fieldsToIgnore);
+
+      diffResults = DiffUtils.addToMainDiff('Added, modified or deleted Authentications', diffResults, searchApiAuthenticationDiff);
+    }
 
     // Hosted Search Pages
-    // HERE, call the proper method.
+    let hostedSearhPagesController: HostedSearchPagesController = new HostedSearchPagesController();
+    if (this.inScope('hostedsearchpages')) {
+      let hostedSearchPagesDiff: Dictionary<IDiffResult<any>> = hostedSearhPagesController.diff(organization1, organization2, fieldsToIgnore);
+
+      diffResults = DiffUtils.addToMainDiff('Added, modified or deleted Hosted Search Pages', diffResults, hostedSearchPagesDiff);
+    }
 
     // UA
     // HERE, call the proper method.

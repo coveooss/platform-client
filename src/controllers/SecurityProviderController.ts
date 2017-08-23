@@ -29,15 +29,15 @@ export class SecurityProviderController {
         organizations.forEach(function (organization: IOrganization) {
             let securityProviders: any = context.getSecurityProviders(organization);
             securityProviders.forEach(function (securityProvider: any) {
-            let newSecurityProvider: ICoveoObject = new SecurityProvider(
-                securityProvider['id'],
-                context.getSingleSecurityProvider(organization, securityProvider['id'])
-            );
+                let newSecurityProvider: ICoveoObject = new SecurityProvider(
+                    securityProvider['id'],
+                    context.getSingleSecurityProvider(organization, securityProvider['id'])
+                );
 
-            organization.SecurityProviders.Add(
-                securityProvider['name'],
-                newSecurityProvider
-            );
+                organization.SecurityProviders.Add(
+                    securityProvider['name'],
+                    newSecurityProvider
+                );
             });
         });
 

@@ -10,6 +10,8 @@ export interface IOrganization extends ICoveoObject {
 	Sources: Dictionary<ISource>;
 	Extensions: Dictionary<ICoveoObject>;
 	QueryPipelines: Dictionary<ICoveoObject>;
+	Authentications: Dictionary<ICoveoObject>;
+	HostedSearchPages: Dictionary<ICoveoObject>;
 	SecurityProviders: Dictionary<ICoveoObject>;
 	Clone(): IOrganization;
 };

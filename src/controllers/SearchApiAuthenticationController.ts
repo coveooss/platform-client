@@ -3,7 +3,6 @@ import { RequestResponse } from 'request';
 // Internal packages
 import { ICoveoObject } from '../commons/interfaces/ICoveoObject'
 import { IOrganization } from '../commons/interfaces/IOrganization'
-import { QueryPipeline } from '../models/QueryPipelineModel';
 import { UrlService } from '../commons/services/UrlService';
 import { IDiffResult } from '../commons/interfaces/IDiffResult';
 import { DiffResult } from '../models/DiffResult';
@@ -14,7 +13,7 @@ import { JsonUtils } from '../commons/utils/JsonUtils';
 import { DiffUtils } from '../commons/utils/DiffUtils';
 import { RequestUtils } from '../commons/utils/RequestUtils';
 
-export class QueryPipelineController {
+export class SearchApiAuthenticationController {
     constructor() { }
 
     public diff(organization1: IOrganization, organization2: IOrganization, fieldsToIgnore: Array<string>): Dictionary<IDiffResult<any>> {
@@ -24,22 +23,35 @@ export class QueryPipelineController {
         try {
             // Load the configuration of the organizations
             let organizations: Array<IOrganization> = [organization1, organization2];
-            let context: QueryPipelineController = this;
+            let context: SearchApiAuthenticationController = this;
 
             organizations.forEach(function (organization: IOrganization) {
-                let queryPipelines: any = context.getQueryPipelines(organization);
-                queryPipelines.forEach(function (pipeline: any) {
-                    organization.QueryPipelines.Add(
-                        pipeline['name'],
-                        pipeline
+                let authentications: any = context.getSearchApiAuthentications(organization);
+                authentications.forEach(function (authentication: any) {
+                    organization.Authentications.Add(
+                        authentication['name'],
+                        authentication
                     );
                 });
             });
 
-            // Diff the pipelines in terms of "existence"
-            diffResultsExistence = DiffUtils.diffDictionaryEntries(organization1.QueryPipelines.Clone(), organization2.QueryPipelines.Clone());
+            // Diff the authentications in terms of "existence"
+            diffResultsExistence = DiffUtils.diffDictionaryEntries(organization1.Authentications.Clone(), organization2.Authentications.Clone());
 
-            diffResultsExistence.UPDATED_NEW.Clear();
+            // Diff the authentications that could have been changed
+            diffResultsExistence.UPDATED_NEW.Keys().forEach(function (key: string) {
+                let authenticationDiff = DiffUtils.diff(
+                    organization1.Authentications.Item(key).Configuration,
+                    organization2.Authentications.Item(key).Configuration,
+                    fieldsToIgnore
+                )
+
+                if (authenticationDiff.ContainsItems()) {
+                    diffResults.Add(key, authenticationDiff);
+                }
+
+                diffResultsExistence.UPDATED_NEW.Remove(key);
+            });
 
             // Add the result if it still contains items
             if (diffResultsExistence.ContainsItems()) {
@@ -55,9 +67,9 @@ export class QueryPipelineController {
         return diffResults;
     }
 
-    public getQueryPipelines(organization: IOrganization): RequestResponse {
+    public getSearchApiAuthentications(organization: IOrganization): RequestResponse {
         return RequestUtils.getRequestAndReturnJson(
-            UrlService.getQueryPipelinesUrl(organization.Id),
+            UrlService.getSearchApiAuthenticationsUrl(organization.Id),
             organization.ApiKey
         );
     }

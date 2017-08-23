@@ -18,7 +18,7 @@ export class DiffUtils {
         flat1.Keys().forEach(function (key: string){
             if (flat2.ContainsKey(key)) {
                 // The key is in both dictionary, compare the values
-                if (flat1.Item(key) !== flat2.Item(key)) {
+                if (String(flat1.Item(key)) !== String(flat2.Item(key))) {
                     // Values are different, add it
                     // We always compare as if the first org would replace the second org config.
                     diffResult.UPDATED_OLD.Add(key, flat2.Item(key));
