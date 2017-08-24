@@ -127,14 +127,12 @@ export class UsageAnalyticsController {
         // Dimensions
         let customDimensions: any = this.getCustomDimensions(organization);
         customDimensions.forEach(function (customDimension: any) {
-            let newCustomDimension: ICoveoObject = new CustomDimension(
-                customDimension['returnName'],
-                customDimension
-            );
-
             organization.CustomDimensions.Add(
                 customDimension['returnName'],
-                newCustomDimension
+                new CustomDimension(
+                    customDimension['returnName'],
+                    customDimension
+                )
             );
         });
     }
@@ -143,14 +141,12 @@ export class UsageAnalyticsController {
         // Filters
         let namedFilters: any = this.getNamedFilters(organization);
         namedFilters['filters'].forEach(function (namedFilter: any) {
-            let newNamedFilter: ICoveoObject = new NamedFilter(
-                namedFilter['id'],
-                namedFilter
-            );
-
             organization.NamedFilters.Add(
                 namedFilter['id'],
-                newNamedFilter
+                new NamedFilter(
+                    namedFilter['id'],
+                    namedFilter
+                )
             );
         });
     }
@@ -159,14 +155,12 @@ export class UsageAnalyticsController {
         // Reports
         let reports: any = this.getReports(organization);
         reports['reports'].forEach(function (report: any) {
-            let newReport: ICoveoObject = new NamedFilter(
-                report['id'],
-                report
-            );
-
             organization.Reports.Add(
                 report['displayName'],
-                newReport
+                new NamedFilter(
+                    report['id'],
+                    report
+                )
             );
         });
     }

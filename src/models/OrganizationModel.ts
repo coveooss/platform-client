@@ -11,25 +11,33 @@ import { HostedSearchPage } from './HostedSearchPageModel';
 import { CustomDimension } from './CustomDimensionModel';
 import { NamedFilter } from './NamedFilterModel';
 import { Report } from './ReportModel';
-import { Authentication } from './AuthenticationModel';
-import { FieldResult } from './FieldResultModel';
+import { SearchApiAuthentication } from './SearchApiAuthenticationModel';
+import { Field } from './FieldModel';
 import { Dictionary } from '../commons/collections/Dictionary';
 
 export class Organization extends BaseModel implements IOrganization {
     private apiKey: string = '';
+    private fields: Dictionary<Field> = new Dictionary<Field>();
     private sources: Dictionary<Source> = new Dictionary<Source>();
     private extensions: Dictionary<Extension> = new Dictionary<Extension>();
     private securityProviders: Dictionary<SecurityProvider> = new Dictionary<SecurityProvider>();
-    private authentications: Dictionary<Authentication> = new Dictionary<Authentication>();
+    private authentications: Dictionary<SearchApiAuthentication> = new Dictionary<SearchApiAuthentication>();
     private queryPipelines: Dictionary<QueryPipeline> = new Dictionary<QueryPipeline>();
     private hostedSearchPages: Dictionary<HostedSearchPage> = new Dictionary<HostedSearchPage>();
     private customDimensions: Dictionary<CustomDimension> = new Dictionary<CustomDimension>();
     private namedFilters: Dictionary<NamedFilter> = new Dictionary<NamedFilter>();
     private reports: Dictionary<Report> = new Dictionary<Report>();
-    private fields: FieldResult;
 
     get ApiKey(): string {
         return this.apiKey;
+    }
+
+    get Fields(): Dictionary<Field> {
+        return this.fields;
+    }
+
+    set Fields(value: Dictionary<Field>) {
+        this.fields = value;
     }
 
     get Sources(): Dictionary<Source> {
@@ -56,27 +64,27 @@ export class Organization extends BaseModel implements IOrganization {
         this.securityProviders = value;
     }
 
-    get QueryPipelines(): Dictionary<SecurityProvider> {
+    get QueryPipelines(): Dictionary<QueryPipeline> {
         return this.queryPipelines;
     }
 
-    set QueryPipelines(value: Dictionary<SecurityProvider>) {
+    set QueryPipelines(value: Dictionary<QueryPipeline>) {
         this.queryPipelines = value;
     }
 
-    get Authentications(): Dictionary<SecurityProvider> {
+    get Authentications(): Dictionary<SearchApiAuthentication> {
         return this.authentications;
     }
 
-    set Authentications(value: Dictionary<SecurityProvider>) {
+    set Authentications(value: Dictionary<SearchApiAuthentication>) {
         this.authentications = value;
     }
 
-    get HostedSearchPages(): Dictionary<SecurityProvider> {
+    get HostedSearchPages(): Dictionary<HostedSearchPage> {
         return this.hostedSearchPages;
     }
 
-    set HostedSearchPages(value: Dictionary<SecurityProvider>) {
+    set HostedSearchPages(value: Dictionary<HostedSearchPage>) {
         this.hostedSearchPages = value;
     }
 

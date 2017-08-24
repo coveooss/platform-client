@@ -3,6 +3,7 @@ import { RequestResponse } from 'request';
 // Internal packages
 import { ICoveoObject } from '../commons/interfaces/ICoveoObject'
 import { IOrganization } from '../commons/interfaces/IOrganization'
+import { HostedSearchPage } from '../models/HostedSearchPageModel';
 import { UrlService } from '../commons/services/UrlService';
 import { IDiffResult } from '../commons/interfaces/IDiffResult';
 import { DiffResult } from '../models/DiffResult';
@@ -73,7 +74,10 @@ export class HostedSearchPagesController {
         searchPages.forEach(function (searchPage: any) {
             organization.HostedSearchPages.Add(
                 searchPage['name'],
-                searchPage
+                new HostedSearchPage (
+                    searchPage['name'],
+                    searchPage
+                )
             );
         });
     }

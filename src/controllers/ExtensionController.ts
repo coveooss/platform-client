@@ -95,14 +95,12 @@ export class ExtensionController {
       let extensions: any = this.getExtensions(organization);
       let context = this;
       extensions.forEach(function (extension: any) {
-        let newExtension: ICoveoObject = new Extension(
-          extension['id'],
-          context.getSingleExtension(organization, extension['id'], extension['versionId'])
-        );
-
         organization.Extensions.Add(
           extension['name'],
-          newExtension
+          new Extension(
+            extension['id'],
+            context.getSingleExtension(organization, extension['id'], extension['versionId'])
+          )
         );
       });
   }

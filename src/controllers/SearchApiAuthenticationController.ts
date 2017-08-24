@@ -12,6 +12,7 @@ import { StaticErrorMessage } from '../commons/errors';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 import { DiffUtils } from '../commons/utils/DiffUtils';
 import { RequestUtils } from '../commons/utils/RequestUtils';
+import { SearchApiAuthentication } from '../models/SearchApiAuthenticationModel';
 
 export class SearchApiAuthenticationController {
     constructor() { }
@@ -73,7 +74,10 @@ export class SearchApiAuthenticationController {
         authentications.forEach(function (authentication: any) {
             organization.Authentications.Add(
                 authentication['name'],
-                authentication
+                new SearchApiAuthentication (
+                    authentication['name'],
+                    authentication
+                )
             );
         });
     }

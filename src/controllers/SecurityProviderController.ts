@@ -78,14 +78,12 @@ export class SecurityProviderController {
         let securityProviders: any = this.getSecurityProviders(organization);
         let context = this;
         securityProviders.forEach(function (securityProvider: any) {
-            let newSecurityProvider: ICoveoObject = new SecurityProvider(
-                securityProvider['id'],
-                context.getSingleSecurityProvider(organization, securityProvider['id'])
-            );
-
             organization.SecurityProviders.Add(
                 securityProvider['name'],
-                newSecurityProvider
+                new SecurityProvider(
+                    securityProvider['id'],
+                    context.getSingleSecurityProvider(organization, securityProvider['id'])
+                )
             );
         });
     }

@@ -2,7 +2,6 @@
 import { RequestResponse } from 'request';
 // Internal packages
 import { ICoveoObject } from '../commons/interfaces/ICoveoObject';
-import { IFieldResult } from '../commons/interfaces/IFieldResult';
 import { Field } from '../models/FieldModel';
 import { UrlService } from '../commons/services/UrlService';
 import { IOrganization } from '../commons/interfaces/IOrganization';
@@ -13,6 +12,7 @@ import { Logger } from '../commons/logger';
 import { Dictionary } from '../commons/collections/Dictionary';
 import { StaticErrorMessage } from '../commons/errors';
 import { JsonUtils } from '../commons/utils/JsonUtils';
+import { DiffUtils } from '../commons/utils/DiffUtils';
 
 export class FieldController {
   constructor() { }
@@ -21,34 +21,29 @@ export class FieldController {
         let diffResults: Dictionary<IDiffResult<any>> = new Dictionary<IDiffResult<any>>();
         let diffResultsExistence: DiffResult<string> = new DiffResult<string>();
 
-        /*
         try {
             // Load the configuration of the organizations
             let organizations: Array<IOrganization> = [organization1, organization2];
-            let context: HostedSearchPagesController = this;
-
+            let context: FieldController = this;
             organizations.forEach(function (organization: IOrganization) {
-                context.loadHostedSearchPages(organization);
+                context.loadFields(organization);
             });
-
-            // Diff the hosted search pages in terms of "existence"
-            diffResultsExistence = DiffUtils.diffDictionaryEntries(organization1.HostedSearchPages.Clone(), organization2.HostedSearchPages.Clone());
-
-            // Diff the hosted search pages that could have been changed
+            // Diff the fields in terms of "existence"
+            diffResultsExistence = DiffUtils.diffDictionaryEntries(organization1.Fields.Clone(), organization2.Fields.Clone());
+            // Diff the fields that could have been changed
             diffResultsExistence.UPDATED_NEW.Keys().forEach(function (key: string) {
-                let hostedSearchPageDiff = DiffUtils.diff(
-                    organization1.HostedSearchPages.Item(key).Configuration,
-                    organization2.HostedSearchPages.Item(key).Configuration,
+                let fieldDiff = DiffUtils.diff(
+                    organization1.Fields.Item(key).Configuration,
+                    organization2.Fields.Item(key).Configuration,
                     fieldsToIgnore
                 )
 
-                if (hostedSearchPageDiff.ContainsItems()) {
-                    diffResults.Add(key, hostedSearchPageDiff);
+                if (fieldDiff.ContainsItems()) {
+                    diffResults.Add(key, fieldDiff);
                 }
 
                 diffResultsExistence.UPDATED_NEW.Remove(key);
             });
-
             // Add the result if it still contains items
             if (diffResultsExistence.ContainsItems()) {
                 diffResults.Add('ADD_DELETE', diffResultsExistence);
@@ -59,31 +54,37 @@ export class FieldController {
 
             throw err;
         }
-        */
 
         return diffResults;
     }
 
-    public getFields(organization: IOrganization): RequestResponse {
-      // TODO: Obtenir tous les fields.      
+    public getFieldsPage(organization: IOrganization, page: number): RequestResponse {
       return RequestUtils.getRequestAndReturnJson(
-          UrlService.getFieldUrl(organization.Id),
+          UrlService.getFieldsPageUrl(organization.Id, page),
           organization.ApiKey
       );
     }
 
-    public loadHostedSearchPages(organization: IOrganization): void {
-        let fields: any = this.getFields(organization);
-        fields.forEach(function (field: any) {
-          let newField: ICoveoObject = new Field(
-            field['name'],
-            field
-          );
+    public loadFields(organization: IOrganization): void {
+      // TODO: Obtenir tous les fields.
+      let currentPage: number = 0;
+      let totalPages: number = 0;
 
-          organization.HostedSearchPages.Add(
+      do {
+        let jsonResponse: any = this.getFieldsPage(organization, currentPage)
+
+        jsonResponse['items'].forEach(function (field: any) {
+          organization.Fields.Add(
+            field['name'],
+            new Field (
               field['name'],
-              newField
-          );
+              field
+            )
+          )
         });
+
+        totalPages = Number(jsonResponse['totalPages']);
+        currentPage++;
+      } while (currentPage < totalPages);
     }
 }

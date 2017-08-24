@@ -28,7 +28,7 @@ export class UrlService {
   }
 
   static getSingleExtensionUrl(organizationId: string, extensionId: string, versionId: string): string {
-    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/extensions/${extensionId}/versions${versionId}`;
+    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/extensions/${extensionId}/versions/${versionId}`;
   }
 
   /*** Search API ***/
@@ -67,8 +67,8 @@ export class UrlService {
   }
 
   /*** Fields API ***/
-  static getFieldUrl(organizationId: string, options?: any): string {
-    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/indexes/page/fields${this.serialize(options)}`;
+  static getFieldsPageUrl(organizationId: string, page: number): string {
+    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/indexes/page/fields?&page=${page}&perPage=1000&origin=ALL`;
   }
 
   /**

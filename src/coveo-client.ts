@@ -11,6 +11,7 @@ import { config } from './config/index';
 import { InitializeConsole } from './console/terminal-manager';
 import * as command from './commands/CommandManager';
 import { helpText, helpDisclaimer } from './console/help';
+import { Logger } from './commons/logger';
 let pkg: any = require('./../package.json');
 
 // Clear the console and display the package name and some other information
@@ -45,7 +46,7 @@ function processCommand() {
         try {
           let cmd = command.HandleCommand(arguments[0]['command']);
         } catch (error) {
-          console.log(error.message);
+          Logger.error(error.message);
           console.log(helpText);
         }
     }

@@ -61,7 +61,10 @@ export class QueryPipelineController {
         queryPipelines.forEach(function (pipeline: any) {
             organization.QueryPipelines.Add(
                 pipeline['name'],
-                pipeline
+                new QueryPipeline(
+                    pipeline['name'],
+                    pipeline
+                )
             );
         });
     }
