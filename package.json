@@ -26,6 +26,7 @@
     "fs-extra": "4.0.1",
     "gulp-sass": "3.1.0",
     "gulp-shell": "^0.6.3",
+    "gulp-util": "^3.0.8",
     "inquirer": "3.2.1",
     "js-yaml": "3.9.1",
     "json-loader": "^0.5.7",
