@@ -8,7 +8,7 @@ const WebpackDevServer = require('webpack-dev-server');
 gulp.task('dev', ['watch'], () => {
   let stream = nodemon({
     exec: 'npm start',
-    env: { 'NODE_ENV': 'development' }
+    env: { 'NODE_ENV': process.env.NODE_ENV}
   });
   return stream;
 });
