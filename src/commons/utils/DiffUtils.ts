@@ -52,10 +52,10 @@ export class DiffUtils {
         dict1.Keys().forEach(function (key: string){
             if (dict2.ContainsKey(key)) {
                 // The key is in both dictionary, mark it as "update"
-                diffResult.UPDATED_NEW.Add(key, `Possible source update ${key}`);
+                diffResult.UPDATED_NEW.Add(key, `Possible item update ${key}`);
             } else {
                 // This is a new key, add it
-                diffResult.NEW.Add(key, `A source was added: ${key}`);
+                diffResult.NEW.Add(key, `An item was added: ${key}`);
             }
 
             // Remove the item from the second json, so we will know at the end what has been removed in the first one
@@ -64,7 +64,7 @@ export class DiffUtils {
 
         // Add the keys that were not in the first json to the deleted list
         dict2.Keys().forEach(function (key: string) {
-            diffResult.DELETED.Add(key, `A source was deleted: ${key}`);
+            diffResult.DELETED.Add(key, `An item was deleted: ${key}`);
         });
     } catch (err) {
         throw new Error('An error occured while processing the diff: ' + err);

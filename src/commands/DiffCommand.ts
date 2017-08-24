@@ -11,6 +11,7 @@ import { OrganizationController } from '../controllers/OrganizationController';
 import { SourceController } from '../controllers/SourceController';
 import { SearchApiAuthenticationController } from '../controllers/SearchApiAuthenticationController';
 import { ExtensionController } from '../controllers/ExtensionController';
+import { UsageAnalyticsController } from '../controllers/UsageAnalyticsController';
 import { SecurityProviderController } from '../controllers/SecurityProviderController';
 import { QueryPipelineController } from '../controllers/QueryPipelineController';
 import { HostedSearchPagesController } from '../controllers/HostedSearchPageController';
@@ -35,9 +36,9 @@ export class DiffCommand extends BaseCommand implements ICommand {
     this.optionalParameters.Add('originapikey', '');
     this.optionalParameters.Add('destinationapikey', '');
     this.optionalParameters.Add('outputfile', `${config.workingDirectory}output/diff-${Date.now()}.html`);
-    this.optionalParameters.Add('fieldstoignore', 'id,html,configuration.parameters.OrganizationId.value,configuration.parameters.SourceId.value');
-    this.optionalParameters.Add('scope', 'organization,fields,extensions,sources,securityproviders,querypipelines,hostedsearchpages');
-    this.optionalParameters.Add('openinbrowser', 'false');
+    this.optionalParameters.Add('fieldstoignore', 'id,account,html,configuration.parameters.OrganizationId.value,configuration.parameters.SourceId.value');
+    this.optionalParameters.Add('scope', 'organization,fields,extensions,authentications,usageanalytics,sources,securityproviders,querypipelines,hostedsearchpages');
+    this.optionalParameters.Add('openinbrowser', 'true');
 
     this.validations.Add('(command.optionalParameters.Item("originapikey") != "")',
       'Need an API key for the origin organization (originApiKey), as a parameter or in the settings file');
@@ -61,69 +62,78 @@ export class DiffCommand extends BaseCommand implements ICommand {
     // Create an array of diffs to put the results for each section
     let diffResults: Dictionary<IDiffResult<any>> = new Dictionary<IDiffResult<any>>();
 
-    // Organizations
-    let organizationController: OrganizationController = new OrganizationController();
+    /*** Organizations Diff ***/
     if (this.inScope('organization')) {
+      let organizationController: OrganizationController = new OrganizationController();
       diffResults.Add(
         'Organization configuration',
         organizationController.diff(organization1, organization2, fieldsToIgnore)
       );
     }
 
-    // Security providers
-    let securityProviderController: SecurityProviderController = new SecurityProviderController();
+    /*** Fields Diff ***/
+    if (this.inScope('fields')) {
+      let fieldController: FieldController = new FieldController();
+      let fieldDiff: Dictionary<IDiffResult<any>> = fieldController.diff(organization1, organization2, fieldsToIgnore);
+
+      diffResults = DiffUtils.addToMainDiff('Added or deleted Fields', diffResults, fieldDiff);
+    }
+
+    /*** Security providers Diff ***/
     if (this.inScope('securityproviders')) {
+      let securityProviderController: SecurityProviderController = new SecurityProviderController();
       let securityProviderDiff: Dictionary<IDiffResult<any>> = securityProviderController.diff(organization1, organization2, fieldsToIgnore);
 
-      diffResults = DiffUtils.addToMainDiff('Added and Deleted Security Providers', diffResults, securityProviderDiff);
+      diffResults = DiffUtils.addToMainDiff('Added or deleted Security Providers', diffResults, securityProviderDiff);
     }
 
-    // Sources
-    let sourceController: SourceController = new SourceController();
+    /*** Sources Diff ***/
     if (this.inScope('sources')) {
+      let sourceController: SourceController = new SourceController();
       let sourceDiff: Dictionary<IDiffResult<any>> = sourceController.diff(organization1, organization2, fieldsToIgnore);
 
-      diffResults = DiffUtils.addToMainDiff('Added, modified and Deleted Sources', diffResults, sourceDiff);
+      diffResults = DiffUtils.addToMainDiff('Added or deleted Sources', diffResults, sourceDiff);
     }
 
-    // Extensions
-    let extensionController: ExtensionController = new ExtensionController();
+    /*** Extensions Diff ***/
     if (this.inScope('extensions')) {
+      let extensionController: ExtensionController = new ExtensionController();
       let extensionsDiff: Dictionary<IDiffResult<any>> = extensionController.diff(organization1, organization2, fieldsToIgnore);
 
-      diffResults = DiffUtils.addToMainDiff('Added, modified and Deleted Extensions', diffResults, extensionsDiff);
+      diffResults = DiffUtils.addToMainDiff('Added or deleted Extensions', diffResults, extensionsDiff);
     }
 
-    // Query pipelines
-    let queryPipelineController: QueryPipelineController = new QueryPipelineController();
+    /*** Query pipelines Diff ***/
     if (this.inScope('querypipelines')) {
+      let queryPipelineController: QueryPipelineController = new QueryPipelineController();
       let queryPipelinesDiff: Dictionary<IDiffResult<any>> = queryPipelineController.diff(organization1, organization2, fieldsToIgnore);
 
-      diffResults = DiffUtils.addToMainDiff('Added and Deleted Query Pipelines', diffResults, queryPipelinesDiff);
+      diffResults = DiffUtils.addToMainDiff('Added or deleted Query Pipelines', diffResults, queryPipelinesDiff);
     }
 
-    // Search API Authentication
-    let searchApiAuthenticationController: SearchApiAuthenticationController = new SearchApiAuthenticationController();
-    if (this.inScope('querypipelines')) {
+    /*** Search API Authentication Diff ***/
+    if (this.inScope('authentications')) {
+      let searchApiAuthenticationController: SearchApiAuthenticationController = new SearchApiAuthenticationController();
       let searchApiAuthenticationDiff: Dictionary<IDiffResult<any>> = searchApiAuthenticationController.diff(organization1, organization2, fieldsToIgnore);
 
-      diffResults = DiffUtils.addToMainDiff('Added, modified or deleted Authentications', diffResults, searchApiAuthenticationDiff);
+      diffResults = DiffUtils.addToMainDiff('Added or deleted Authentications', diffResults, searchApiAuthenticationDiff);
     }
 
-    // Hosted Search Pages
-    let hostedSearhPagesController: HostedSearchPagesController = new HostedSearchPagesController();
+    /*** Hosted Search Pages Diff ***/
     if (this.inScope('hostedsearchpages')) {
+      let hostedSearhPagesController: HostedSearchPagesController = new HostedSearchPagesController();
       let hostedSearchPagesDiff: Dictionary<IDiffResult<any>> = hostedSearhPagesController.diff(organization1, organization2, fieldsToIgnore);
 
-      diffResults = DiffUtils.addToMainDiff('Added, modified or deleted Hosted Search Pages', diffResults, hostedSearchPagesDiff);
+      diffResults = DiffUtils.addToMainDiff('Added or deleted Hosted Search Pages', diffResults, hostedSearchPagesDiff);
     }
 
-    // UA
-    // HERE, call the proper method.
+    /*** UA Diff ***/
+    if (this.inScope('usageanalytics')) {
+      let usageAnalyticsController: UsageAnalyticsController = new UsageAnalyticsController();
+      let usageAnalyticsDiff: Dictionary<IDiffResult<any>> = usageAnalyticsController.diff(organization1, organization2, fieldsToIgnore);
 
-    /*** Fields Diff ***/
-
-    let fieldController: FieldController = new FieldController(organization1, organization2);
+      diffResults = DiffUtils.addToMainDiff('Added or deleted Usage Analytics Reports', diffResults, usageAnalyticsDiff);
+    }
 
     // TODO: type values
     // TODO: Put it at the end. We should store all the diffresults first, then build the report

@@ -8,6 +8,9 @@ import { SecurityProvider } from './SecurityProviderModel';
 import { QueryPipeline } from './QueryPipelineModel';
 import { Source } from './SourceModel';
 import { HostedSearchPage } from './HostedSearchPageModel';
+import { CustomDimension } from './CustomDimensionModel';
+import { NamedFilter } from './NamedFilterModel';
+import { Report } from './ReportModel';
 import { Authentication } from './AuthenticationModel';
 import { FieldResult } from './FieldResultModel';
 import { Dictionary } from '../commons/collections/Dictionary';
@@ -20,6 +23,9 @@ export class Organization extends BaseModel implements IOrganization {
     private authentications: Dictionary<Authentication> = new Dictionary<Authentication>();
     private queryPipelines: Dictionary<QueryPipeline> = new Dictionary<QueryPipeline>();
     private hostedSearchPages: Dictionary<HostedSearchPage> = new Dictionary<HostedSearchPage>();
+    private customDimensions: Dictionary<CustomDimension> = new Dictionary<CustomDimension>();
+    private namedFilters: Dictionary<NamedFilter> = new Dictionary<NamedFilter>();
+    private reports: Dictionary<Report> = new Dictionary<Report>();
     private fields: FieldResult;
 
     get ApiKey(): string {
@@ -72,6 +78,30 @@ export class Organization extends BaseModel implements IOrganization {
 
     set HostedSearchPages(value: Dictionary<SecurityProvider>) {
         this.hostedSearchPages = value;
+    }
+
+    get CustomDimensions(): Dictionary<CustomDimension> {
+        return this.customDimensions;
+    }
+
+    set CustomDimensions(value: Dictionary<CustomDimension>) {
+        this.customDimensions = value;
+    }
+
+    get NamedFilters(): Dictionary<NamedFilter> {
+        return this.namedFilters;
+    }
+
+    set NamedFilters(value: Dictionary<NamedFilter>) {
+        this.namedFilters = value;
+    }
+
+    get Reports(): Dictionary<Report> {
+        return this.reports;
+    }
+
+    set Reports(value: Dictionary<Report>) {
+        this.reports = value;
     }
 
     constructor(id: string, apiKey: string) {

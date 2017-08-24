@@ -26,13 +26,7 @@ export class HostedSearchPagesController {
             let context: HostedSearchPagesController = this;
 
             organizations.forEach(function (organization: IOrganization) {
-                let searchPages: any = context.getHostedSearchPages(organization);
-                searchPages.forEach(function (searchPage: any) {
-                    organization.HostedSearchPages.Add(
-                        searchPage['name'],
-                        searchPage
-                    );
-                });
+                context.loadHostedSearchPages(organization);
             });
 
             // Diff the hosted search pages in terms of "existence"
@@ -72,5 +66,15 @@ export class HostedSearchPagesController {
             UrlService.getHostedSearchPagesUrl(organization.Id),
             organization.ApiKey
         );
+    }
+
+    public loadHostedSearchPages(organization: IOrganization): void {
+        let searchPages: any = this.getHostedSearchPages(organization);
+        searchPages.forEach(function (searchPage: any) {
+            organization.HostedSearchPages.Add(
+                searchPage['name'],
+                searchPage
+            );
+        });
     }
 }

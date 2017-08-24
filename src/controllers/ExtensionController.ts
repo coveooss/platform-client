@@ -25,18 +25,7 @@ export class ExtensionController {
       let context: ExtensionController = this;
 
       organizations.forEach(function (organization: IOrganization) {
-        let extensions: any = context.getExtensions(organization);
-        extensions.forEach(function (extension: any) {
-          let newExtension: ICoveoObject = new Extension(
-            extension['id'],
-            context.getSingleExtension(organization, extension['id'], extension['versionId'])
-          );
-
-          organization.Extensions.Add(
-            extension['name'],
-            newExtension
-          );
-        });
+        context.loadExtensions(organization);
       });
 
       // Diff the extensions in terms of "existence"
@@ -100,5 +89,21 @@ export class ExtensionController {
       UrlService.getSingleExtensionUrl(organization.Id, extensionId, versionId),
       organization.ApiKey
     );
+  }
+
+  public loadExtensions(organization: IOrganization): void {
+      let extensions: any = this.getExtensions(organization);
+      let context = this;
+      extensions.forEach(function (extension: any) {
+        let newExtension: ICoveoObject = new Extension(
+          extension['id'],
+          context.getSingleExtension(organization, extension['id'], extension['versionId'])
+        );
+
+        organization.Extensions.Add(
+          extension['name'],
+          newExtension
+        );
+      });
   }
 }

@@ -37,11 +37,24 @@ export class UrlService {
   }
 
   static getSearchApiAuthenticationsUrl(organizationId: string): string {
-    return `${config.coveo.platformUrl}rest/organizations/${organizationId}/authentication?&organizationId=${organizationId}`
+    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/authentication?&organizationId=${organizationId}`
   }
 
   static getHostedSearchPagesUrl(organizationId: string): string {
-    return `${config.coveo.platformUrl}rest/organizations/${organizationId}/pages/`
+    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/pages/`
+  }
+
+  /*** Usage Analytics API ***/
+  static getCustomDimensionsUrl(organizationId: string): string {
+    return `${config.coveo.platformUrl}/rest/ua/v15/dimensions/custom?includeOnlyParents=false&org=${organizationId}`;
+  }
+
+  static getNamedFiltersUrl(organizationId: string): string {
+    return `${config.coveo.platformUrl}/rest/ua/v15/filters/reporting?org=${organizationId}`;
+  }
+
+  static getReportsUrl(organizationId: string): string {
+    return `${config.coveo.platformUrl}/rest/ua/v15/reports?org=${organizationId}&indludeConfig=true`;
   }
 
   /*** Security Providers API ***/

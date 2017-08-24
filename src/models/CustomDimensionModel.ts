@@ -4,8 +4,9 @@
 import {ICoveoObject} from '../commons/interfaces/ICoveoObject';
 import {BaseModel} from './BaseModel';
 
-export class Dimension extends BaseModel implements ICoveoObject {
-    constructor(id: string) {
+export class CustomDimension extends BaseModel implements ICoveoObject {
+    constructor(id: string, configuration: any) {
         super(id);
+        this.Configuration = configuration;
     }
 }

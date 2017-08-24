@@ -24,7 +24,7 @@ export class OrganizationController {
       let organizations: Array<IOrganization> = [organization1, organization2];
 
       organizations.forEach(function (organization: IOrganization) {
-        organization.Configuration = context.getOrganization(organization);
+        context.loadOrganization(organization);
       });
 
       // Diff the origanizations
@@ -42,5 +42,9 @@ export class OrganizationController {
       UrlService.getOrganizationUrl(organization.Id),
       organization.ApiKey
     );
+  }
+
+  public loadOrganization(organization: IOrganization): void {
+    organization.Configuration = this.getOrganization(organization);
   }
 }

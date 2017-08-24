@@ -27,13 +27,7 @@ export class QueryPipelineController {
             let context: QueryPipelineController = this;
 
             organizations.forEach(function (organization: IOrganization) {
-                let queryPipelines: any = context.getQueryPipelines(organization);
-                queryPipelines.forEach(function (pipeline: any) {
-                    organization.QueryPipelines.Add(
-                        pipeline['name'],
-                        pipeline
-                    );
-                });
+                context.loadQueryPipelines(organization);
             });
 
             // Diff the pipelines in terms of "existence"
@@ -60,5 +54,15 @@ export class QueryPipelineController {
             UrlService.getQueryPipelinesUrl(organization.Id),
             organization.ApiKey
         );
+    }
+
+    public loadQueryPipelines(organization: IOrganization): void {
+        let queryPipelines: any = this.getQueryPipelines(organization);
+        queryPipelines.forEach(function (pipeline: any) {
+            organization.QueryPipelines.Add(
+                pipeline['name'],
+                pipeline
+            );
+        });
     }
 }

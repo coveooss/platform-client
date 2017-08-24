@@ -26,13 +26,7 @@ export class SearchApiAuthenticationController {
             let context: SearchApiAuthenticationController = this;
 
             organizations.forEach(function (organization: IOrganization) {
-                let authentications: any = context.getSearchApiAuthentications(organization);
-                authentications.forEach(function (authentication: any) {
-                    organization.Authentications.Add(
-                        authentication['name'],
-                        authentication
-                    );
-                });
+                context.loadSearchApiAuthentications(organization);
             });
 
             // Diff the authentications in terms of "existence"
@@ -72,5 +66,15 @@ export class SearchApiAuthenticationController {
             UrlService.getSearchApiAuthenticationsUrl(organization.Id),
             organization.ApiKey
         );
+    }
+
+    public loadSearchApiAuthentications(organization: IOrganization): void {
+        let authentications: any = this.getSearchApiAuthentications(organization);
+        authentications.forEach(function (authentication: any) {
+            organization.Authentications.Add(
+                authentication['name'],
+                authentication
+            );
+        });
     }
 }

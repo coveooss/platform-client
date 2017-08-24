@@ -1,80 +1,89 @@
 // External Packages
-import * as request from 'request';
-import { IncomingMessage } from 'http'
-import * as _ from 'underscore';
+import { RequestResponse } from 'request';
 // Internal packages
 import { ICoveoObject } from '../commons/interfaces/ICoveoObject';
 import { IFieldResult } from '../commons/interfaces/IFieldResult';
+import { Field } from '../models/FieldModel';
 import { UrlService } from '../commons/services/UrlService';
 import { IOrganization } from '../commons/interfaces/IOrganization';
+import { RequestUtils } from '../commons/utils/RequestUtils';
 import { IDiffResult } from '../commons/interfaces/IDiffResult';
+import { DiffResult } from '../models/DiffResult';
+import { Logger } from '../commons/logger';
+import { Dictionary } from '../commons/collections/Dictionary';
+import { StaticErrorMessage } from '../commons/errors';
+import { JsonUtils } from '../commons/utils/JsonUtils';
 
 export class FieldController {
+  constructor() { }
 
-  constructor(private organization1: IOrganization, private organization2: IOrganization) {
+    public diff(organization1: IOrganization, organization2: IOrganization, fieldsToIgnore: Array<string>): Dictionary<IDiffResult<any>> {
+        let diffResults: Dictionary<IDiffResult<any>> = new Dictionary<IDiffResult<any>>();
+        let diffResultsExistence: DiffResult<string> = new DiffResult<string>();
 
-  }
+        /*
+        try {
+            // Load the configuration of the organizations
+            let organizations: Array<IOrganization> = [organization1, organization2];
+            let context: HostedSearchPagesController = this;
 
-  public getFields(organization: IOrganization) {
-    let url = UrlService.getFieldUrl(organization.Id, { page: '2', numberOfResults: '100' });
+            organizations.forEach(function (organization: IOrganization) {
+                context.loadHostedSearchPages(organization);
+            });
 
-    return new Promise((resolve: (value?: any | Thenable<{}>) => void, reject: (error: any) => void) => {
-      request(url, {
-        auth: { 'bearer': organization.ApiKey },
-        json: true
-      }, (err: any, response: request.RequestResponse, body: IFieldResult) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(body)
+            // Diff the hosted search pages in terms of "existence"
+            diffResultsExistence = DiffUtils.diffDictionaryEntries(organization1.HostedSearchPages.Clone(), organization2.HostedSearchPages.Clone());
+
+            // Diff the hosted search pages that could have been changed
+            diffResultsExistence.UPDATED_NEW.Keys().forEach(function (key: string) {
+                let hostedSearchPageDiff = DiffUtils.diff(
+                    organization1.HostedSearchPages.Item(key).Configuration,
+                    organization2.HostedSearchPages.Item(key).Configuration,
+                    fieldsToIgnore
+                )
+
+                if (hostedSearchPageDiff.ContainsItems()) {
+                    diffResults.Add(key, hostedSearchPageDiff);
+                }
+
+                diffResultsExistence.UPDATED_NEW.Remove(key);
+            });
+
+            // Add the result if it still contains items
+            if (diffResultsExistence.ContainsItems()) {
+                diffResults.Add('ADD_DELETE', diffResultsExistence);
+            }
+        } catch (err) {
+            // TODO: Move the loogers from all files to their base classes when possible
+            Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err);
+
+            throw err;
         }
-      })
-    });
-  }
+        */
 
-  public updateFields() {
-  }
+        return diffResults;
+    }
 
-  public createFields() {
-  }
+    public getFields(organization: IOrganization): RequestResponse {
+      // TODO: Obtenir tous les fields.      
+      return RequestUtils.getRequestAndReturnJson(
+          UrlService.getFieldUrl(organization.Id),
+          organization.ApiKey
+      );
+    }
 
-  public deleteFields() {
-  }
+    public loadHostedSearchPages(organization: IOrganization): void {
+        let fields: any = this.getFields(organization);
+        fields.forEach(function (field: any) {
+          let newField: ICoveoObject = new Field(
+            field['name'],
+            field
+          );
 
-  private partitionFieldSet(firstFieldSet: ICoveoObject[], secondFieldSet: ICoveoObject[]): any {
-    // private partitionFieldSet(): IDiff<IFieldModel> {
-    let deletedFields = [];
-    let newFields = []
-    let updatedFields = []
-
-    console.log('--------------');
-    console.log(firstFieldSet);
-    console.log('--------------');
-    console.log(secondFieldSet);
-    console.log('--------------');
-
-    let same = _.foldl(firstFieldSet, (current: ICoveoObject[], x: ICoveoObject) => {
-      let ready = _.matcher(x);
-      return current.concat(_.filter(secondFieldSet, ready));
-    }, [])
-
-    return same;
-  }
-
-  public diff(callback: Function) {
-    // this.getFields(this.organization1)
-    Promise.all([this.getFields(this.organization1), this.getFields(this.organization2)])
-      .then((values: IFieldResult[]) => {
-        console.log('*********************');
-        // console.log(values[0].totalEntries);
-        console.log(this.partitionFieldSet(values[0].Items, values[1].Items));
-        console.log('*********************');
-        // callback(values)
-      })
-      .catch((err: any) => {
-        console.log(err);
-
-      })
-  }
-
+          organization.HostedSearchPages.Add(
+              field['name'],
+              newField
+          );
+        });
+    }
 }

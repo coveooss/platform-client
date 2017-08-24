@@ -27,18 +27,7 @@ export class SecurityProviderController {
         let context: SecurityProviderController = this;
 
         organizations.forEach(function (organization: IOrganization) {
-            let securityProviders: any = context.getSecurityProviders(organization);
-            securityProviders.forEach(function (securityProvider: any) {
-                let newSecurityProvider: ICoveoObject = new SecurityProvider(
-                    securityProvider['id'],
-                    context.getSingleSecurityProvider(organization, securityProvider['id'])
-                );
-
-                organization.SecurityProviders.Add(
-                    securityProvider['name'],
-                    newSecurityProvider
-                );
-            });
+            context.loadSecurityProviders(organization);
         });
 
         // Diff the security providers in terms of "existence"
@@ -83,5 +72,21 @@ export class SecurityProviderController {
             UrlService.getSingleSecurityProviderUrl(organization.Id, securityProviderId),
             organization.ApiKey
         );
+    }
+
+    public loadSecurityProviders(organization: IOrganization): void {
+        let securityProviders: any = this.getSecurityProviders(organization);
+        let context = this;
+        securityProviders.forEach(function (securityProvider: any) {
+            let newSecurityProvider: ICoveoObject = new SecurityProvider(
+                securityProvider['id'],
+                context.getSingleSecurityProvider(organization, securityProvider['id'])
+            );
+
+            organization.SecurityProviders.Add(
+                securityProvider['name'],
+                newSecurityProvider
+            );
+        });
     }
 }

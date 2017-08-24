@@ -13,5 +13,8 @@ export interface IOrganization extends ICoveoObject {
 	Authentications: Dictionary<ICoveoObject>;
 	HostedSearchPages: Dictionary<ICoveoObject>;
 	SecurityProviders: Dictionary<ICoveoObject>;
+	CustomDimensions: Dictionary<ICoveoObject>;
+	NamedFilters: Dictionary<ICoveoObject>;
+	Reports: Dictionary<ICoveoObject>;
 	Clone(): IOrganization;
 };

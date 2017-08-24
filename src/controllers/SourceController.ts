@@ -28,27 +28,7 @@ export class SourceController {
       let context: SourceController = this;
 
       organizations.forEach(function (organization: IOrganization) {
-        let sources: any = context.getSources(organization);
-        sources.forEach(function (source: any) {
-          let newSource: ISource = new Source(
-            source['id'],
-            context.getSingleSourceRaw(organization, source['id'])
-          );
-
-          newSource.Mappings = newSource.Configuration['mappings'];
-          delete newSource.Configuration['mappings'];
-          newSource.PreConversionExtensions = newSource.Configuration['preConversionExtensions'];
-          delete newSource.Configuration['preConversionExtensions'];
-          newSource.PostConversionExtensions = newSource.Configuration['postConversionExtensions'];
-          delete newSource.Configuration['postConversionExtensions'];
-          newSource.ExtendedDataFiles = newSource.Configuration['configuration']['extendedDataFiles'];
-          delete newSource.Configuration['configuration']['extendedDataFiles'];
-
-          organization.Sources.Add(
-            source['name'],
-            newSource
-          );
-        });
+        context.loadSources(organization);
       });
 
       // Diff the sources in terms of "existence"
@@ -128,5 +108,30 @@ export class SourceController {
       UrlService.getSingleSourceRawUrl(organization.Id, sourceId),
       organization.ApiKey
     );
+  }
+
+  public loadSources(organization: IOrganization): void {
+    let sources: any = this.getSources(organization);
+    let context = this;
+    sources.forEach(function (source: any) {
+      let newSource: ISource = new Source(
+        source['id'],
+        context.getSingleSourceRaw(organization, source['id'])
+      );
+
+      newSource.Mappings = newSource.Configuration['mappings'];
+      delete newSource.Configuration['mappings'];
+      newSource.PreConversionExtensions = newSource.Configuration['preConversionExtensions'];
+      delete newSource.Configuration['preConversionExtensions'];
+      newSource.PostConversionExtensions = newSource.Configuration['postConversionExtensions'];
+      delete newSource.Configuration['postConversionExtensions'];
+      newSource.ExtendedDataFiles = newSource.Configuration['configuration']['extendedDataFiles'];
+      delete newSource.Configuration['configuration']['extendedDataFiles'];
+
+      organization.Sources.Add(
+        source['name'],
+        newSource
+      );
+    });
   }
 }
