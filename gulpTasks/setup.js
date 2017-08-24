@@ -2,8 +2,7 @@ const gulp = require('gulp');
 const ejs = require('gulp-ejs');
 const livereload = require('gulp-livereload');
 
-gulp.task('setup', ['ejs']);
-// gulp.task('setup', ['ejs', 'copy']);
+gulp.task('setup', ['ejs', 'copy']);
 
 gulp.task('ejs', function() {
   return gulp.src('views/**/*.ejs')
