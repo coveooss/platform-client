@@ -135,22 +135,27 @@ export class DiffCommand extends BaseCommand implements ICommand {
       diffResults = DiffUtils.addToMainDiff('Added or deleted Usage Analytics Reports', diffResults, usageAnalyticsDiff);
     }
 
+    let diffReport: string = '';
 
-    // TODO: Build the sections based on the diff results provided
-    let formattedDiff: Array<string> = new Array<string>();
-    diffResults.Keys().forEach(function (key: string) {
-      if (diffResults.Item(key).ContainsItems()) {
-        formattedDiff.push(DiffResultsItemTemplate(key, diffResults.Item(key)));
-      }
-    });
+    if (this.optionalParameters.Item('openinbrowser') === 'true') {
+      // TODO: Build the sections based on the diff results provided
+      let formattedDiff: Array<string> = new Array<string>();
+      diffResults.Keys().forEach(function (key: string) {
+        if (diffResults.Item(key).ContainsItems()) {
+          formattedDiff.push(DiffResultsItemTemplate(key, diffResults.Item(key)));
+        }
+      });
 
-    // TODO: Do something if formatted diff is empty... like showing a "the org are the same" message
-    // Format the whole diff document
-    let diffReport: string = DiffResultsPageHtmlTemplate(
-      organization1.Id,
-      organization2.Id,
-      formattedDiff
-    );
+      // TODO: Do something if formatted diff is empty... like showing a "the org are the same" message
+      // Format the whole diff document
+      diffReport = DiffResultsPageHtmlTemplate(
+        organization1.Id,
+        organization2.Id,
+        formattedDiff
+      );
+    } else {
+      diffReport = JSON.stringify(diffResults);
+    }
 
     // Write the report file to disk
     FileUtils.writeFile(this.optionalParameters.Item('outputfile'), diffReport, function (err: NodeJS.ErrnoException) {
