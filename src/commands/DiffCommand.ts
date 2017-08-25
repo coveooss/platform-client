@@ -136,6 +136,7 @@ export class DiffCommand extends BaseCommand implements ICommand {
     }
 
     let diffReport: string = '';
+    let extension: string = '.html';
 
     if (this.optionalParameters.Item('openinbrowser') === 'true') {
       // TODO: Build the sections based on the diff results provided
@@ -155,10 +156,11 @@ export class DiffCommand extends BaseCommand implements ICommand {
       );
     } else {
       diffReport = JSON.stringify(diffResults);
+      extension = 'json';
     }
 
     // Write the report file to disk
-    FileUtils.writeFile(this.optionalParameters.Item('outputfile'), diffReport, function (err: NodeJS.ErrnoException) {
+    FileUtils.writeFile(this.optionalParameters.Item('outputfile').replace('html', extension), diffReport, function (err: NodeJS.ErrnoException) {
       if (err) {
         throw console.error(err);
       }
