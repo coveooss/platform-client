@@ -11,14 +11,13 @@ let commandMap: Dictionary<any> = new Dictionary<any>();
 commandMap.Add(GraduateCommand.COMMAND_NAME, GraduateCommand);
 commandMap.Add(DiffCommand.COMMAND_NAME, DiffCommand);
 
-export function HandleCommand(command: string) {
+export function HandleCommand(command: Array<string>) {
   try {
-    let elements: Array<string> = command.toLowerCase().split(' ');
     let cmd: ICommand;
 
     // Get the command...
     try {
-      let requestedCommand = commandMap.Item(elements[0])
+      let requestedCommand = commandMap.Item(command[0])
       cmd = <ICommand>(new (requestedCommand)());
     } catch (error) {
       throw new Error('Unreckognized command.');
@@ -26,7 +25,7 @@ export function HandleCommand(command: string) {
 
     // Parse the command
     try {
-      cmd.Parse(elements);
+      cmd.Parse(command);
     } catch (error) {
       throw new Error('Some of the parameters and/or flags are not valid (' + error.message + ').');
     }

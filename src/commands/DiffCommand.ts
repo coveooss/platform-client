@@ -135,19 +135,6 @@ export class DiffCommand extends BaseCommand implements ICommand {
       diffResults = DiffUtils.addToMainDiff('Added or deleted Usage Analytics Reports', diffResults, usageAnalyticsDiff);
     }
 
-    // TODO: type values
-    // TODO: Put it at the end. We should store all the diffresults first, then build the report
-    // TODO: Not use a callback for something that should be sequential.
-    /*
-    let testDiff = DiffResultsItemTemplate('Diff Section', fieldController.diff(((values: any) => {
-      console.log('*********************');
-      console.log(values);
-      console.log('*********************');
-
-    })));
-    diffResults.Add('Fields', <any>testDiff);
-    */
-
     // TODO: Build the sections based on the diff results provided
     let formattedDiff: Array<string> = new Array<string>();
     diffResults.Keys().forEach(function (key: string) {

@@ -6,12 +6,13 @@ import * as inquirer from 'inquirer';
 let clear: any = require('clear');
 let CLI: any = require('clui');
 let figlet: any = require('figlet');
-import { config } from './config/index';
+import * as storage from 'node-persist';
 // Internal packages
 import { InitializeConsole } from './console/terminal-manager';
 import * as command from './commands/CommandManager';
 import { helpText, helpDisclaimer } from './console/help';
 import { Logger } from './commons/logger';
+import { config } from './config/index';
 let pkg: any = require('./../package.json');
 
 // Clear the console and display the package name and some other information
@@ -30,24 +31,47 @@ if (config.env !== 'production') {
   console.log(chalk.white('Environment:', config.env));
 }
 
+let commandHistory: Array<string> = new Array<string>();
+
 // Handle the commands by sending them to the parser
-function processCommand() {
-  if (arguments) {
-    switch (arguments[0]['command']) {
+function processCommand(parametersList: Array<string>) {
+  if (parametersList) {
+    addToHistory(parametersList.join(' '));
+    switch (parametersList[0]) {
       case 'exit':
         console.log('Exiting coveo-console...');
         console.log('');
         process.exit();
         break
+      // TODO: Convertir en commande...
+      case 'history':
+        if (parametersList.length === 1) {
+          showHistory();
+        } else {
+          try {
+            let selectedCommand: number = Number(parametersList[1])
+
+            let commandToExecute: Array<string> = commandHistory[selectedCommand].split(' ');
+            if (commandToExecute[0] === 'help') {
+              displayHelp();
+            } else {
+              let cmd = command.HandleCommand(commandToExecute);
+            }
+          } catch (error) {
+            Logger.error(error.message);
+          }
+        }
+        break;
+      // TODO: Convertir en commande...
       case 'help':
-        console.log(helpText);
+        displayHelp();
         break;
       default:
         try {
-          let cmd = command.HandleCommand(arguments[0]['command']);
+          let cmd = command.HandleCommand(parametersList);
         } catch (error) {
           Logger.error(error.message);
-          console.log(helpText);
+          console.log(helpDisclaimer);
         }
     }
 
@@ -55,5 +79,45 @@ function processCommand() {
   }
 }
 
+function addToHistory(command_text: string): void {
+  commandHistory.push(command_text);
+  if (commandHistory.length > 5) {
+    delete commandHistory[0];
+  }
+
+  storage.setItem('command_history', commandHistory);
+  storage.persist();
+}
+
+function showHistory(): void {
+  if (commandHistory.length > 0) {
+    console.log('Please enter "history" AND the number of the command you wish to execute, then "enter". Ex.: "history 1"');
+    console.log('');
+  }
+
+  for (let index = 0; index < commandHistory.length; index++) {
+    console.log(`[${index}] ${commandHistory[index]}`)
+  }
+}
+
+function displayHelp(): void {
+  console.log(helpText);
+}
+
 // Initialize the console
+storage.initSync({
+	dir: './storage',
+	stringify: JSON.stringify,
+	parse: JSON.parse,
+	encoding: 'utf8',
+	logging: false,
+	continuous: true,
+	interval: false,
+  ttl: false
+});
+
+if (storage.keys().indexOf('command_history') > -1) {
+    commandHistory = storage.getItemSync('command_history');
+}
+
 InitializeConsole(processCommand);

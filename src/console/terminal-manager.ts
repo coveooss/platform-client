@@ -1,7 +1,27 @@
-import * as inquirer from 'inquirer';
+// import * as inquirer from 'inquirer';
+// const Prompt = require('../vendor/modified-inquirer-prompt/prompt.js');
+const UI = require('readline-ui');
 
-export function InitializeConsole(callback: () => void) {
-  let promptText = [
+export function InitializeConsole(callback: Function) {
+  process.stdin.resume();
+  console.log('');
+  process.stdout.write('coveo-client# ');
+
+  process.stdin.once('data', function (data: any) {
+    if (data) {
+      data = String(data).trim().toLowerCase().split(' ');
+    } else {
+      data = null;
+    }
+    callback(data);
+  });
+
+  process.stdin.on('keypress', function (char: any, key: any) {
+    process.stdout.write('1');
+  });
+
+  /*
+  let promptConfig = [
     {
       name: 'command',
       type: 'input',
@@ -19,6 +39,7 @@ export function InitializeConsole(callback: () => void) {
   console.log('');
 
   inquirer
-    .prompt(promptText)
+    .prompt(promptConfig)
     .then(callback);
+  */
 }
