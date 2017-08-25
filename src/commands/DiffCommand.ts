@@ -1,6 +1,5 @@
 // External packages
 import * as opn from 'opn';
-import { IDiffResult } from '../commons/interfaces/IDiffResult';
 // Internal packages
 import { BaseCommand } from './BaseCommand';
 import { ICommand } from '../commons/interfaces/ICommand';
@@ -21,6 +20,7 @@ import { Organization } from '../models/OrganizationModel';
 import { config } from '../config/index';
 import { DiffResult } from '../models/DiffResult';
 import { DiffUtils } from '../commons/utils/DiffUtils';
+import { IDiffResult } from '../commons/interfaces/IDiffResult';
 
 // Command class
 export class DiffCommand extends BaseCommand implements ICommand {
@@ -134,6 +134,7 @@ export class DiffCommand extends BaseCommand implements ICommand {
 
       diffResults = DiffUtils.addToMainDiff('Added or deleted Usage Analytics Reports', diffResults, usageAnalyticsDiff);
     }
+
 
     // TODO: Build the sections based on the diff results provided
     let formattedDiff: Array<string> = new Array<string>();

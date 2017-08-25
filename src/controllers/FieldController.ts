@@ -31,7 +31,7 @@ export class FieldController {
             // Diff the fields in terms of "existence"
             diffResultsExistence = DiffUtils.diffDictionaryEntries(organization1.Fields.Clone(), organization2.Fields.Clone());
             // Diff the fields that could have been changed
-            diffResultsExistence.UPDATED_NEW.Keys().forEach(function (key: string) {
+            diffResultsExistence.UPDATED.Keys().forEach(function (key: string) {
                 let fieldDiff = DiffUtils.diff(
                     organization1.Fields.Item(key).Configuration,
                     organization2.Fields.Item(key).Configuration,
@@ -42,7 +42,7 @@ export class FieldController {
                     diffResults.Add(key, fieldDiff);
                 }
 
-                diffResultsExistence.UPDATED_NEW.Remove(key);
+                diffResultsExistence.UPDATED.Remove(key);
             });
             // Add the result if it still contains items
             if (diffResultsExistence.ContainsItems()) {

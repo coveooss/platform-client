@@ -1,4 +1,21 @@
 <div>
   <h2><%-sectionTitle%></h2>
-  <div id="visual"><%-JSON.stringify(diffResults)%></div>
+  <textarea id="txt-<%-sectionId%>" class="hidden" autocomplete="off">
+    <%-JSON.stringify(diffResults)%>
+  </textarea>
+  <pre id="json-renderer-<%-sectionId%>"></pre>
+
+    <script>
+        try {
+          var input = eval('(' + $('#txt-<%-sectionId%>').val() + ')');
+        }
+        catch (error) {
+          console.log("Cannot read JSON: " + error);
+        }
+        var options = {
+          collapsed: false,
+          withQuotes: true
+        };
+        $('#json-renderer-<%-sectionId%>').jsonViewer(input, options);
+    </script>
 </div>

@@ -32,7 +32,7 @@ export class ExtensionController {
       diffResultsExistence = DiffUtils.diffDictionaryEntries(organization1.Extensions.Clone(), organization2.Extensions.Clone());
 
       // Diff the extensions that could have been changed
-      diffResultsExistence.UPDATED_NEW.Keys().forEach(function (key: string) {
+      diffResultsExistence.UPDATED.Keys().forEach(function (key: string) {
         let extensionDiff: IDiffResult<any>  = new DiffResult<any>();
 
         // Check the requiredDataStreams
@@ -60,7 +60,7 @@ export class ExtensionController {
           diffResults.Add(key, extensionDiff);
         }
 
-        diffResultsExistence.UPDATED_NEW.Remove(key);
+        diffResultsExistence.UPDATED.Remove(key);
       });
 
       // Add the result if it still contains items

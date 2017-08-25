@@ -79,11 +79,17 @@ function processCommand(parametersList: Array<string>) {
   }
 }
 
-function addToHistory(command_text: string): void {
-  commandHistory.push(command_text);
-  if (commandHistory.length > 5) {
-    delete commandHistory[0];
+function addToHistory(commandText: string): void {
+  if (commandText.toLowerCase().substring(0, 7) === 'history') {
+    return;
   }
+
+  commandHistory.reverse();
+  commandHistory.push(commandText);
+  if (commandHistory.length > 5) {
+    commandHistory.splice(0, commandHistory.length - 5);
+  }
+  commandHistory.reverse();
 
   storage.setItem('command_history', commandHistory);
   storage.persist();

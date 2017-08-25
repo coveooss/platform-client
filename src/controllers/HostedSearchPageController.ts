@@ -34,7 +34,7 @@ export class HostedSearchPagesController {
             diffResultsExistence = DiffUtils.diffDictionaryEntries(organization1.HostedSearchPages.Clone(), organization2.HostedSearchPages.Clone());
 
             // Diff the hosted search pages that could have been changed
-            diffResultsExistence.UPDATED_NEW.Keys().forEach(function (key: string) {
+            diffResultsExistence.UPDATED.Keys().forEach(function (key: string) {
                 let hostedSearchPageDiff = DiffUtils.diff(
                     organization1.HostedSearchPages.Item(key).Configuration,
                     organization2.HostedSearchPages.Item(key).Configuration,
@@ -45,7 +45,7 @@ export class HostedSearchPagesController {
                     diffResults.Add(key, hostedSearchPageDiff);
                 }
 
-                diffResultsExistence.UPDATED_NEW.Remove(key);
+                diffResultsExistence.UPDATED.Remove(key);
             });
 
             // Add the result if it still contains items

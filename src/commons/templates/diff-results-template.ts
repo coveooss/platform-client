@@ -1,6 +1,7 @@
 // External packages
 import * as ejs from 'ejs';
 import * as fs from 'fs-extra';
+const randomId = require('random-id');
 // Internal packages
 import { StringUtils } from '../utils/StringUtils';
 import { DiffResult } from '../../models/DiffResult';
@@ -20,6 +21,7 @@ export function DiffResultsPageHtmlTemplate(organization1: string, organization2
 
 export function DiffResultsItemTemplate(sectionTitle: string, diffResults: DiffResult<any>): string {
   let data = {
+    sectionId: randomId(),
     sectionTitle: sectionTitle,
     diffResults: diffResults
   };

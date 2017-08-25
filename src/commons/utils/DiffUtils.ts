@@ -21,8 +21,7 @@ export class DiffUtils {
                 if (String(flat1.Item(key)) !== String(flat2.Item(key))) {
                     // Values are different, add it
                     // We always compare as if the first org would replace the second org config.
-                    diffResult.UPDATED_OLD.Add(key, flat2.Item(key));
-                    diffResult.UPDATED_NEW.Add(key, flat1.Item(key));
+                    diffResult.UPDATED.Add(key, 'OLD VALUE: ' + [flat2.Item(key) + ', NEW VALUE: ' + flat1.Item(key)]);
                 }
             } else {
                 // This is a new key, add it
@@ -52,7 +51,7 @@ export class DiffUtils {
         dict1.Keys().forEach(function (key: string){
             if (dict2.ContainsKey(key)) {
                 // The key is in both dictionary, mark it as "update"
-                diffResult.UPDATED_NEW.Add(key, `Possible item update ${key}`);
+                diffResult.UPDATED.Add(key, `Possible item update ${key}`);
             } else {
                 // This is a new key, add it
                 diffResult.NEW.Add(key, `An item was added: ${key}`);
@@ -102,7 +101,7 @@ export class DiffUtils {
         for (let index = 0; index < array1.length; index++) {
             if (array1[index] !== array2[index]) {
                 orderingHasChanged = true;
-                diffResult.UPDATED_NEW.Add(
+                diffResult.UPDATED.Add(
                     'Ordering has changed',
                     `The order of the elements in the array has changed, starting at item ${index}`
                 );
@@ -122,7 +121,7 @@ export class DiffUtils {
 
   static addToResultIfDiffContainsItems(section: string, mainResultList: IDiffResult<any>, diffResult: IDiffResult<any>): IDiffResult<any> {
     if (diffResult.ContainsItems()) {
-        mainResultList.UPDATED_NEW.Add(
+        mainResultList.UPDATED.Add(
             section,
             diffResult
         );

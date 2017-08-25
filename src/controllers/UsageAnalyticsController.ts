@@ -40,7 +40,7 @@ export class UsageAnalyticsController {
             diffResultsExistenceNamedFilters = DiffUtils.diffDictionaryEntries(organization1.NamedFilters.Clone(), organization2.NamedFilters.Clone());
             diffResultsExistenceReports = DiffUtils.diffDictionaryEntries(organization1.Reports.Clone(), organization2.Reports.Clone());
             // Diff the items that could have been changed for the dimensions
-            diffResultsExistenceCustomDimensions.UPDATED_NEW.Keys().forEach(function (key: string) {
+            diffResultsExistenceCustomDimensions.UPDATED.Keys().forEach(function (key: string) {
                 let customDimensionDiff = DiffUtils.diff(
                     organization1.CustomDimensions.Item(key).Configuration,
                     organization2.CustomDimensions.Item(key).Configuration,
@@ -51,10 +51,10 @@ export class UsageAnalyticsController {
                     diffResults.Add('CustomDimension::' + key, customDimensionDiff);
                 }
 
-                diffResultsExistenceCustomDimensions.UPDATED_NEW.Remove(key);
+                diffResultsExistenceCustomDimensions.UPDATED.Remove(key);
             });
             // Diff the items that could have been changed for the dimensions
-            diffResultsExistenceNamedFilters.UPDATED_NEW.Keys().forEach(function (key: string) {
+            diffResultsExistenceNamedFilters.UPDATED.Keys().forEach(function (key: string) {
                 let namedFilterDiff = DiffUtils.diff(
                     organization1.NamedFilters.Item(key).Configuration,
                     organization2.NamedFilters.Item(key).Configuration,
@@ -65,10 +65,10 @@ export class UsageAnalyticsController {
                     diffResults.Add('NamedFilter::' + key, namedFilterDiff);
                 }
 
-                diffResultsExistenceNamedFilters.UPDATED_NEW.Remove(key);
+                diffResultsExistenceNamedFilters.UPDATED.Remove(key);
             });
             // Diff the items that could have been changed for the dimensions
-            diffResultsExistenceReports.UPDATED_NEW.Keys().forEach(function (key: string) {
+            diffResultsExistenceReports.UPDATED.Keys().forEach(function (key: string) {
                 let reportDiff = DiffUtils.diff(
                     organization1.Reports.Item(key).Configuration,
                     organization2.Reports.Item(key).Configuration,
@@ -79,7 +79,7 @@ export class UsageAnalyticsController {
                     diffResults.Add('Report::' + key, reportDiff);
                 }
 
-                diffResultsExistenceCustomDimensions.UPDATED_NEW.Remove(key);
+                diffResultsExistenceReports.UPDATED.Remove(key);
             });
 
             // Add the existence results if it still contains items

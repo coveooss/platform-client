@@ -33,7 +33,7 @@ export class QueryPipelineController {
             // Diff the pipelines in terms of "existence"
             diffResultsExistence = DiffUtils.diffDictionaryEntries(organization1.QueryPipelines.Clone(), organization2.QueryPipelines.Clone());
 
-            diffResultsExistence.UPDATED_NEW.Clear();
+            diffResultsExistence.UPDATED.Clear();
 
             // Add the result if it still contains items
             if (diffResultsExistence.ContainsItems()) {

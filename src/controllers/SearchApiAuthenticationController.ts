@@ -34,7 +34,7 @@ export class SearchApiAuthenticationController {
             diffResultsExistence = DiffUtils.diffDictionaryEntries(organization1.Authentications.Clone(), organization2.Authentications.Clone());
 
             // Diff the authentications that could have been changed
-            diffResultsExistence.UPDATED_NEW.Keys().forEach(function (key: string) {
+            diffResultsExistence.UPDATED.Keys().forEach(function (key: string) {
                 let authenticationDiff = DiffUtils.diff(
                     organization1.Authentications.Item(key).Configuration,
                     organization2.Authentications.Item(key).Configuration,
@@ -45,7 +45,7 @@ export class SearchApiAuthenticationController {
                     diffResults.Add(key, authenticationDiff);
                 }
 
-                diffResultsExistence.UPDATED_NEW.Remove(key);
+                diffResultsExistence.UPDATED.Remove(key);
             });
 
             // Add the result if it still contains items

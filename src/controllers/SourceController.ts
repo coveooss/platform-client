@@ -35,7 +35,7 @@ export class SourceController {
       diffResultsExistence = DiffUtils.diffDictionaryEntries(organization1.Sources.Clone(), organization2.Sources.Clone());
 
       // Diff the sources that could have been changed
-      diffResultsExistence.UPDATED_NEW.Keys().forEach(function (key: string) {
+      diffResultsExistence.UPDATED.Keys().forEach(function (key: string) {
         let sourceDiff: IDiffResult<any>  = new DiffResult<any>();
 
         let sourceConfigurationDiff: IDiffResult<any> = DiffUtils.diff(organization1.Sources.Item(key), organization2.Sources.Item(key), fieldsToIgnore);
@@ -79,7 +79,7 @@ export class SourceController {
           diffResults.Add(key, sourceDiff);
         }
 
-        diffResultsExistence.UPDATED_NEW.Remove(key);
+        diffResultsExistence.UPDATED.Remove(key);
       });
 
       // Add the result if it still contains items

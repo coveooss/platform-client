@@ -34,7 +34,7 @@ export class SecurityProviderController {
         diffResultsExistence = DiffUtils.diffDictionaryEntries(organization1.SecurityProviders.Clone(), organization2.SecurityProviders.Clone());
 
         // Diff the security providers that could have been changed
-        diffResultsExistence.UPDATED_NEW.Keys().forEach(function (key: string) {
+        diffResultsExistence.UPDATED.Keys().forEach(function (key: string) {
             let securityProviderDiff: IDiffResult<any>  = new DiffResult<any>();
 
             securityProviderDiff = DiffUtils.diff(organization1.SecurityProviders.Item(key).Configuration, organization2.SecurityProviders.Item(key).Configuration, fieldsToIgnore);
@@ -43,7 +43,7 @@ export class SecurityProviderController {
                 diffResults.Add(key, securityProviderDiff);
             }
 
-            diffResultsExistence.UPDATED_NEW.Remove(key);
+            diffResultsExistence.UPDATED.Remove(key);
         });
 
         // Add the result if it still contains items
