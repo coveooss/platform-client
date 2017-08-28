@@ -111,6 +111,7 @@ function displayHelp(): void {
 }
 
 // Initialize the console
+// TODO: Manage the fact that you can execute it from different places...
 storage.initSync({
 	dir: './storage',
 	stringify: JSON.stringify,

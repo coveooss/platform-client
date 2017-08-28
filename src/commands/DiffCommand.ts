@@ -160,14 +160,14 @@ export class DiffCommand extends BaseCommand implements ICommand {
     }
 
     // Write the report file to disk
-    FileUtils.writeFile(this.optionalParameters.Item('outputfile').replace('html', extension), diffReport, function (err: NodeJS.ErrnoException) {
+    FileUtils.writeFile(this.optionalParameters.Item('outputfile').replace('.html', extension), diffReport, function (err: NodeJS.ErrnoException) {
       if (err) {
         throw console.error(err);
       }
     });
 
     // Display the report location and, if the option is set to true, open in browser.
-    console.log('Diff is done, you can view results here: ' + this.optionalParameters.Item('outputfile'));
+    console.log('Diff is done, you can view results here: ' + this.optionalParameters.Item('outputfile').replace('.html', extension));
 
     if (this.optionalParameters.Item('openinbrowser') === 'true') {
       opn(this.optionalParameters.Item('outputfile'));

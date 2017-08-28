@@ -53,7 +53,7 @@ export class UsageAnalyticsController {
 
                 diffResultsExistenceCustomDimensions.UPDATED.Remove(key);
             });
-            // Diff the items that could have been changed for the dimensions
+            // Diff the items that could have been changed for the named filters
             diffResultsExistenceNamedFilters.UPDATED.Keys().forEach(function (key: string) {
                 let namedFilterDiff = DiffUtils.diff(
                     organization1.NamedFilters.Item(key).Configuration,
@@ -67,12 +67,13 @@ export class UsageAnalyticsController {
 
                 diffResultsExistenceNamedFilters.UPDATED.Remove(key);
             });
-            // Diff the items that could have been changed for the dimensions
+            // Diff the items that could have been changed for the reports
             diffResultsExistenceReports.UPDATED.Keys().forEach(function (key: string) {
                 let reportDiff = DiffUtils.diff(
                     organization1.Reports.Item(key).Configuration,
                     organization2.Reports.Item(key).Configuration,
-                    fieldsToIgnore
+                    fieldsToIgnore,
+                    true
                 )
 
                 if (reportDiff.ContainsItems()) {

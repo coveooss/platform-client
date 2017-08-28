@@ -7,13 +7,17 @@ import { DiffResult } from '../../models/DiffResult';
 import { JsonUtils } from './JsonUtils';
 
 export class DiffUtils {
-  static diff(json1: any, json2: any, fieldsToIgnore: Array<string>): IDiffResult<any> {
+  static diff(json1: any, json2: any, fieldsToIgnore: Array<string>, recursiveFieldsRemoval: boolean = false): IDiffResult<any> {
     let diffResult: IDiffResult<any> = new DiffResult<any>();
 
     try {
         // Flatten the json so we can push only the differences and their paths in the result
         let flat1: Dictionary<any> = JsonUtils.convertJsonToDictionary(flatten(json1), fieldsToIgnore);
         let flat2: Dictionary<any> = JsonUtils.convertJsonToDictionary(flatten(json2), fieldsToIgnore);
+        if (recursiveFieldsRemoval) {
+            flat1 = JsonUtils.recurivelyRemoveFieldsFromJson(flat1, fieldsToIgnore);
+            flat2 = JsonUtils.recurivelyRemoveFieldsFromJson(flat2, fieldsToIgnore);
+        }
 
         flat1.Keys().forEach(function (key: string){
             if (flat2.ContainsKey(key)) {

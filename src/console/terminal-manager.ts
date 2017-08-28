@@ -1,6 +1,6 @@
-// import * as inquirer from 'inquirer';
-// const Prompt = require('../vendor/modified-inquirer-prompt/prompt.js');
+// External modules
 const UI = require('readline-ui');
+// Internal modules
 
 export function InitializeConsole(callback: Function) {
   process.stdin.resume();
@@ -15,31 +15,4 @@ export function InitializeConsole(callback: Function) {
     }
     callback(data);
   });
-
-  process.stdin.on('keypress', function (char: any, key: any) {
-    process.stdout.write('1');
-  });
-
-  /*
-  let promptConfig = [
-    {
-      name: 'command',
-      type: 'input',
-      message: 'coveo-client>',
-      validate(value: string) {
-        if (value) {
-          return true;
-        } else {
-          return 'Please enter a command...';
-        }
-      }
-    }
-  ];
-
-  console.log('');
-
-  inquirer
-    .prompt(promptConfig)
-    .then(callback);
-  */
 }
