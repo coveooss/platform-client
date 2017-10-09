@@ -1,7 +1,3 @@
-// External modules
-const UI = require('readline-ui');
-// Internal modules
-
 export function InitializeConsole(callback: Function) {
   process.stdin.resume();
   console.log('');

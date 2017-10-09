@@ -1,14 +1,13 @@
 // External packages
 // Internal packages
-import { GraduateCommand } from './GraduateCommand';
+// import { GraduateCommand } from './GraduateCommand';
 import { DiffCommand } from './DiffCommand';
 import { Dictionary } from '../commons/collections/Dictionary'
 import { ICommand } from '../commons/interfaces/ICommand'
-import { BaseCommand } from './BaseCommand';
 
 // Register available commands
 let commandMap: Dictionary<any> = new Dictionary<any>();
-commandMap.Add(GraduateCommand.COMMAND_NAME, GraduateCommand);
+// commandMap.Add(GraduateCommand.COMMAND_NAME, GraduateCommand);
 commandMap.Add(DiffCommand.COMMAND_NAME, DiffCommand);
 
 export function HandleCommand(command: Array<string>) {

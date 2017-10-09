@@ -1,7 +1,8 @@
 {
   "items": [{
       "name": "allmetadatavalues",
-      "system": false
+      "system": false,
+      "yo": false
     },
     {
       "name": "sfuserid",
@@ -17,5 +18,5 @@
     }
   ],
   "totalPages": 2,
-  "totalEntries": 410
+  "totalEntries": 6
 }

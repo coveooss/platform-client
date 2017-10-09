@@ -1,130 +1,55 @@
-// Old school import so we can access the package.json file and other libraries
-declare function require(name: string): any;
-// External packages
-import * as chalk from 'chalk';
-import * as inquirer from 'inquirer';
-let clear: any = require('clear');
-let CLI: any = require('clui');
-let figlet: any = require('figlet');
-import * as storage from 'node-persist';
-// Internal packages
-import { InitializeConsole } from './console/terminal-manager';
-import * as command from './commands/CommandManager';
-import { helpText, helpDisclaimer } from './console/help';
-import { Logger } from './commons/logger';
+import { GraduateCommand } from './commands/GraduateCommand';
+import { StringUtils } from './commons/utils/StringUtils';
 import { config } from './config/index';
-let pkg: any = require('./../package.json');
+const program = require('commander');
+const pkg: any = require('./../package.json');
 
-// Clear the console and display the package name and some other information
-clear();
-console.log(
-  chalk
-    .white
-    .bold(
-    figlet.textSync('COVEO-client', { horizontalLayout: 'full' })
-    )
-);
-console.log('Version: %s', pkg.version);
-console.log(pkg.description);
-console.log(helpDisclaimer);
-if (config.env !== 'production') {
-  console.log(chalk.white('Environment:', config.env));
-}
+console.log(`Environment: ${config.env}\n`);
 
-let commandHistory: Array<string> = new Array<string>();
+// function setEnvironment(env: string) { }
 
-// Handle the commands by sending them to the parser
-function processCommand(parametersList: Array<string>) {
-  if (parametersList) {
-    addToHistory(parametersList.join(' '));
-    switch (parametersList[0]) {
-      case 'exit':
-        console.log('Exiting coveo-console...');
-        console.log('');
-        process.exit();
-        break
-      // TODO: Convertir en commande...
-      case 'history':
-        if (parametersList.length === 1) {
-          showHistory();
-        } else {
-          try {
-            let selectedCommand: number = Number(parametersList[1])
+program
+  // TODO set Environment
+  // .option('--env [value]', 'Environment', setEnvironment)
+  .version(pkg.version)
 
-            let commandToExecute: Array<string> = commandHistory[selectedCommand].split(' ');
-            if (commandToExecute[0] === 'help') {
-              displayHelp();
-            } else {
-              let cmd = command.HandleCommand(commandToExecute);
-            }
-          } catch (error) {
-            Logger.error(error.message);
-          }
-        }
-        break;
-      // TODO: Convertir en commande...
-      case 'help':
-        displayHelp();
-        break;
-      default:
-        try {
-          let cmd = command.HandleCommand(parametersList);
-        } catch (error) {
-          Logger.error(error.message);
-          console.log(helpDisclaimer);
-        }
+program
+  .command('graduate <originOrganization> <destinationOrganization> <originApiKey> <destinationApiKey>')
+  .description('Graduate one organisation to an other')
+  .option('-f, --fields', 'Graduate fields')
+  .option('-s, --sources', 'Graduate sources')
+  .option('-e, --extensions', 'Graduate extensions')
+  .option('-u, --update', 'Graduate updated data only')
+  .option('-d, --delete', 'Only delete data that is no longer in the origin Organization')
+  .option('-c, --create', 'Only create data that is not existing in the destination Organization')
+  .action((originOrganization: string, destinationOrganization: string, originApiKey: string, destinationApiKey: string, options: any) => {
+    let command = new GraduateCommand(originOrganization, destinationOrganization, originApiKey, destinationApiKey);
+
+    if (options.fields) {
+      command.graduateFields()
     }
+    if (options.sources) {
+      command.graduateSources()
+    }
+    if (options.extensions) {
+      command.graduateExtensions()
+    }
+  });
 
-    InitializeConsole(processCommand);
-  }
-}
+program
+  .command('initSettings')
+  .description('Launch interactive setting')
+// .action((json, orgId, sourceId) => { pushDocuments([json], orgId, sourceId) });
 
-function addToHistory(commandText: string): void {
-  if (commandText.toLowerCase().substring(0, 7) === 'history') {
-    return;
-  }
+program
+  .command('loadSettings <filePath>')
+  .description('Execute commande from json file')
+  .action((filePath: string) => {
+    console.log('*********************');
+    console.log(filePath);
+    console.log('*********************');
 
-  commandHistory.reverse();
-  commandHistory.push(commandText);
-  if (commandHistory.length > 5) {
-    commandHistory.splice(0, commandHistory.length - 5);
-  }
-  commandHistory.reverse();
+  });
 
-  storage.setItem('command_history', commandHistory);
-  storage.persist();
-}
 
-function showHistory(): void {
-  if (commandHistory.length > 0) {
-    console.log('Please enter "history" AND the number of the command you wish to execute, then "enter". Ex.: "history 1"');
-    console.log('');
-  }
-
-  for (let index = 0; index < commandHistory.length; index++) {
-    console.log(`[${index}] ${commandHistory[index]}`)
-  }
-}
-
-function displayHelp(): void {
-  console.log(helpText);
-}
-
-// Initialize the console
-// TODO: Manage the fact that you can execute it from different places...
-storage.initSync({
-	dir: './storage',
-	stringify: JSON.stringify,
-	parse: JSON.parse,
-	encoding: 'utf8',
-	logging: false,
-	continuous: true,
-	interval: false,
-  ttl: false
-});
-
-if (storage.keys().indexOf('command_history') > -1) {
-    commandHistory = storage.getItemSync('command_history');
-}
-
-InitializeConsole(processCommand);
+program.parse(process.argv);

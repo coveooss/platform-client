@@ -10,8 +10,12 @@
     {
       "name": "authorloginname",
       "system": false
+    },
+    {
+      "name": "tobedeleted",
+      "system": false
     }
   ],
-  "totalPages": 2,
-  "totalEntries": 410
+  "totalPages": 1,
+  "totalEntries": 4
 }

@@ -1,31 +1,38 @@
-// External packages
-// Internal packages
 import { BaseCommand } from './BaseCommand';
-import { ICommand } from '../commons/interfaces/ICommand';
+import { IOrganization } from '../commons/interfaces/IOrganization';
+import { Organization } from '../models/OrganizationModel';
+import { FieldController } from '../controllers/FieldController';
+import { UrlService } from '../commons/services/UrlService';
 
-// Command class
-export class GraduateCommand extends BaseCommand implements ICommand {
-  // Command name
-  static COMMAND_NAME: string = 'graduate';
+export class GraduateCommand {
+  private organization1: IOrganization;
+  private organization2: IOrganization;
 
-  constructor() {
-    super();
+  constructor(
+    originOrganization: string,
+    destinationOrganization: string,
+    originApiKey: string,
+    destinationApiKey: string,
+  ) {
+    this.organization1 = new Organization(originOrganization, originApiKey);
+    this.organization2 = new Organization(destinationOrganization, destinationApiKey);
+  }
 
-    this.mandatoryParameters.push('originOrganization');
-    this.mandatoryParameters.push('destinationOrganization');
+  public graduateFields() {
+    let fieldController: FieldController = new FieldController();
+    let graduation = fieldController.graduate(this.organization1, this.organization2);
 
-    this.optionalParameters.Add('settings', '');
-    this.optionalParameters.Add('originapikey', '');
-    this.optionalParameters.Add('destinationapikey', '');
+    // TODO: print response of graduation command
+    
+  }
 
-    this.validations.Add('(command.optionalParameters.Item("originapikey") != "")',
-      'Need an API key for the origin organization (originApiKey), as a parameter or in the settings file');
-    this.validations.Add('(command.optionalParameters.Item("destinationapikey") != "")',
-      'Need an API key for the destination organization (destinationApiKey), as a parameter or in the settings file');
+  public graduateSources() {
 
   }
 
-  public Execute() { }
+  public graduateExtensions() {
+
+  }
 
 }
 

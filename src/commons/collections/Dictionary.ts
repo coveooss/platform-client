@@ -8,6 +8,10 @@ export class Dictionary<T> implements IDictionary<T> {
 
     private count: number = 0;
 
+    // public Equals<T>(dict: Dictionary<T>): boolean {
+    //     let a = dict.Values();
+    // }
+
     public ContainsKey(key: string): boolean {
         return this.items.hasOwnProperty(key);
     }
@@ -61,10 +65,10 @@ export class Dictionary<T> implements IDictionary<T> {
 
     public Clone(): Dictionary<T> {
         let clone: Dictionary<T> = new Dictionary<T>();
-        let orgiginal = this;
+        let original = this;
 
         this.Keys().forEach(function (key: string) {
-            clone.Add(key, orgiginal.Item(key));
+            clone.Add(key, original.Item(key));
         });
 
         return clone;

@@ -6,16 +6,67 @@ import { Field } from '../models/FieldModel';
 import { UrlService } from '../commons/services/UrlService';
 import { IOrganization } from '../commons/interfaces/IOrganization';
 import { RequestUtils } from '../commons/utils/RequestUtils';
-import { IDiffResult } from '../commons/interfaces/IDiffResult';
+import { IDiffResult, IDiffResultArray } from '../commons/interfaces/IDiffResult';
 import { DiffResult } from '../models/DiffResult';
 import { Logger } from '../commons/logger';
 import { Dictionary } from '../commons/collections/Dictionary';
 import { StaticErrorMessage } from '../commons/errors';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 import { DiffUtils } from '../commons/utils/DiffUtils';
+import * as _ from 'underscore';
+import { IStringMap } from '../commons/interfaces/IStringMap';
+import * as request from 'request';
 
 export class FieldController {
-  constructor() { }
+    constructor() { }
+
+    /**
+     * Perform a diff and return the result that will be used for the graduate command
+     *
+     * @param {IOrganization} organization1 Origin Organisation
+     * @param {IOrganization} organization2 Final Organisation
+     * @returns {IDiffResult<string>} The Diff result
+     * @memberof FieldController
+     */
+    public graduate(organization1: IOrganization, organization2: IOrganization){
+        Logger.info('Graduating fields')
+
+        // Make async so we can load fields of both orgs at the same time
+        this.loadFieldsSync(organization1);
+        this.loadFieldsSync(organization2);
+
+        let diffResult = DiffUtils.getDiffResult(
+            <Dictionary<Field>>organization1.Fields.Clone(),
+            <Dictionary<Field>>organization2.Fields.Clone()
+        );
+
+        // TODO: make async
+        this.deleteFields(organization2, this.getFieldModels(diffResult.DELETED));
+        this.createFields(organization2, this.getFieldModels(diffResult.NEW));
+        this.updateFields(organization2, this.getFieldModels(diffResult.UPDATED));
+
+        // return response and summary
+    }
+
+    public createFields(org: IOrganization, fieldModels: IStringMap<string>[]) {
+
+    }
+
+    public updateFields(org: IOrganization, fieldModels: IStringMap<string>[]) {
+
+    }
+
+    public deleteFields(org: IOrganization, fieldModels: IStringMap<string>[]) {
+
+    }
+
+    public getFieldModels(fields: Field[]): IStringMap<string>[] {
+        let payload: IStringMap<string>[] = [];
+        _.each(fields, (field: Field) => {
+            payload.push(field.Configuration);
+        })
+        return payload;
+    }
 
     public diff(organization1: IOrganization, organization2: IOrganization, fieldsToIgnore: Array<string>): Dictionary<IDiffResult<any>> {
         let diffResults: Dictionary<IDiffResult<any>> = new Dictionary<IDiffResult<any>>();
@@ -26,7 +77,7 @@ export class FieldController {
             let organizations: Array<IOrganization> = [organization1, organization2];
             let context: FieldController = this;
             organizations.forEach(function (organization: IOrganization) {
-                context.loadFields(organization);
+                context.loadFieldsSync(organization);
             });
             // Diff the fields in terms of "existence"
             diffResultsExistence = DiffUtils.diffDictionaryEntries(organization1.Fields.Clone(), organization2.Fields.Clone());
@@ -58,33 +109,62 @@ export class FieldController {
         return diffResults;
     }
 
-    public getFieldsPage(organization: IOrganization, page: number): RequestResponse {
-      return RequestUtils.getRequestAndReturnJson(
-          UrlService.getFieldsPageUrl(organization.Id, page),
-          organization.ApiKey
-      );
+    public getFieldsPage(organization: IOrganization, page: number): Promise<RequestResponse> {
+        return RequestUtils.get(
+            UrlService.getFieldsPageUrl(organization.Id, page),
+            organization.ApiKey
+        );
+    }
+
+    public getFieldsPageSync(organization: IOrganization, page: number): RequestResponse {
+        return RequestUtils.getRequestAndReturnJson(
+            UrlService.getFieldsPageUrl(organization.Id, page),
+            organization.ApiKey
+        );
+    }
+
+    public loadFieldsSync(organization: IOrganization): void {
+        let currentPage: number = 0;
+        let totalPages: number = 0;
+
+        do {
+            let jsonResponse: any = this.getFieldsPageSync(organization, currentPage)
+
+            jsonResponse['items'].forEach(function (field: any) {
+                organization.Fields.Add(
+                    field['name'],
+                    new Field(
+                        field['name'],
+                        field
+                    )
+                )
+            });
+
+            totalPages = Number(jsonResponse['totalPages']);
+            currentPage++;
+        } while (currentPage < totalPages);
     }
 
     public loadFields(organization: IOrganization): void {
-      // TODO: Obtenir tous les fields.
-      let currentPage: number = 0;
-      let totalPages: number = 0;
+        let currentPage: number = 0;
+        let totalPages: number = 0;
 
-      do {
-        let jsonResponse: any = this.getFieldsPage(organization, currentPage)
+        do {
+            // TODO: make async
+            let jsonResponse: any = this.getFieldsPageSync(organization, currentPage)
 
-        jsonResponse['items'].forEach(function (field: any) {
-          organization.Fields.Add(
-            field['name'],
-            new Field (
-              field['name'],
-              field
-            )
-          )
-        });
+            jsonResponse['items'].forEach(function (field: any) {
+                organization.Fields.Add(
+                    field['name'],
+                    new Field(
+                        field['name'],
+                        field
+                    )
+                )
+            });
 
-        totalPages = Number(jsonResponse['totalPages']);
-        currentPage++;
-      } while (currentPage < totalPages);
+            totalPages = Number(jsonResponse['totalPages']);
+            currentPage++;
+        } while (currentPage < totalPages);
     }
 }

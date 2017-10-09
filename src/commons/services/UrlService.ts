@@ -5,7 +5,6 @@ declare function require(path: string): any;
 // Internal packages
 import { ObjectUtils } from '../utils/ObjectUtils';
 import { config } from './../../config/index';
-const URLSearchParams = require('url-search-params');
 
 export class UrlService {
   /*** Organization API ***/
@@ -68,29 +67,18 @@ export class UrlService {
 
   /*** Fields API ***/
   static getFieldsPageUrl(organizationId: string, page: number): string {
-    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/indexes/page/fields?&page=${page}&perPage=1000&origin=ALL`;
+    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/indexes/page/fields?&page=${page}&perPage=400&origin=USER`;
   }
 
-  /**
-   * Serializes the form element so it can be passed to the back end through the url.
-   * The objects properties are the keys and the objects values are the values.
-   * ex: { "a":1, "b":2, "c":3 } would look like ?a=1&b=2&c=3
-   * @param  {any} obj - The options to be url encoded
-   * @returns string - The url encoded string
-   */
-  static serialize(obj: any): string {
-    let containParams = false;
-    const params: URLSearchParams = new URLSearchParams();
+  static updateFields(organizationId: string): string {
+    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/indexes/fields/batch/update`;
+  }
 
-    for (const key in obj) {
-      if (obj.hasOwnProperty(key) && ObjectUtils.exists(obj[key])) {
-        containParams = true;
-        const element = obj[key];
-        params.set(key, element.toString());
-      }
-    }
+  static createFields(organizationId: string): string {
+    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/indexes/fields/batch/create`;
+  }
 
-    const queryString = containParams ? '?' : '';
-    return `${queryString}${ObjectUtils.anyTypeToString(params)}`;
+  static deleteFields(organizationId: string): string {
+    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/indexes/fields/batch/delete`;
   }
 }

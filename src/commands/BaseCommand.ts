@@ -1,5 +1,4 @@
 // External packages
-import * as yaml from 'js-yaml';
 import * as fs from 'fs';
 import * as _ from 'underscore';
 // Internal packages
@@ -45,7 +44,7 @@ export abstract class BaseCommand implements ICommand {
 
   public LoadSettings(filename: string): void {
     try {
-      const settings = yaml.safeLoad(fs.readFileSync(filename, 'utf8'));
+      const settings = {};
       // TODO: Load the values for real
       console.log(settings);
     } catch (e) {

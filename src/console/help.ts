@@ -1,8 +1,7 @@
 export let helpText = `
-    INSERT
-    HELP
-    TEXT
-    HERE
+diff
+graduate
+settings
 `;
 
 export let helpDisclaimer = '\n\rType "help" to display the list of available commands.';

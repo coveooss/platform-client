@@ -10,3 +10,9 @@ export interface IDiffResult<T> {
 
   ContainsItems(): boolean;
 };
+
+export interface IDiffResultArray<T> {
+  NEW: T[];
+  UPDATED: T[];
+  DELETED: T[];
+};
