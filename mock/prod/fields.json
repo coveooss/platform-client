@@ -1,0 +1,21 @@
+{
+  "items": [{
+      "name": "allmetadatavalues",
+      "system": false
+    },
+    {
+      "name": "sfuserid",
+      "system": false
+    },
+    {
+      "name": "authorloginname",
+      "system": false
+    },
+    {
+      "name": "tobedeleted",
+      "system": false
+    }
+  ],
+  "totalPages": 1,
+  "totalEntries": 4
+}

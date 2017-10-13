@@ -1,0 +1,13 @@
+{
+  "items": [{
+      "name": "extraField1",
+      "system": false
+    },
+    {
+      "name": "extraField2",
+      "system": false
+    }
+  ],
+  "totalPages": 2,
+  "totalEntries": 6
+}

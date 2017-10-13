@@ -1,0 +1,25 @@
+Command
+  MandatoryParameters
+    - origin: myuatorg
+    - destination: myprodorg
+  OptionalParameters
+    - originapikey: xxf5fc1b9b-ca41-47a0-9ce9-e6a586926ce6
+    - destinationapikey: xx60f1aead-d498-4747-b799-401914fe5e09
+
+Organization
+  name: myuatorg
+  Sources
+    Source
+    - name: MySource
+    - Overrides
+      - baseUrl: http://uat.mywebsite.com
+      - username: uatuser
+Organization
+  name: myprodorg
+  Sources
+      Source
+      - name: MySource
+      - Overrides
+        - name: MyProdSource
+        - baseUrl: http://prod.mywebsite.com
+        - username: produser

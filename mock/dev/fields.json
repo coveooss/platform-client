@@ -1,0 +1,22 @@
+{
+  "items": [{
+      "name": "allmetadatavalues",
+      "system": false,
+      "yo": false
+    },
+    {
+      "name": "sfuserid",
+      "system": false
+    },
+    {
+      "name": "authorloginname",
+      "system": true
+    },
+    {
+      "name": "sfvendornamec",
+      "system": false
+    }
+  ],
+  "totalPages": 2,
+  "totalEntries": 6
+}
