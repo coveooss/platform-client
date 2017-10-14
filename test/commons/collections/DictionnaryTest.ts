@@ -69,17 +69,54 @@ export const DictionnaryTest = () => {
         dict.Add('animal', 'cat');
         dict.Add('fruit', 'apple');
         dict.Add('number', '32');
+        expect(dict.Count()).to.equal(4);
         expect(dict.Keys()).to.be.eql(['planet', 'animal', 'fruit', 'number']);
       });
 
       it('Should return all the values of the dictionnary', () => {
         let dict: Dictionary<string> = new Dictionary();
-        expect(dict.Keys()).to.be.an('array').that.is.empty;
+        expect(dict.Values()).to.be.an('array').that.is.empty;
         dict.Add('planet', 'mars');
         dict.Add('animal', 'cat');
         dict.Add('fruit', 'apple');
         dict.Add('number', '32');
+        expect(dict.Count()).to.equal(4);
         expect(dict.Values()).to.be.eql(['mars', 'cat', 'apple', '32']);
+      });
+
+      it('Should clears all the values of the dictionnary', () => {
+        let dict: Dictionary<string> = new Dictionary();
+        expect(dict.Values()).to.be.an('array').that.is.empty;
+        dict.Add('planet', 'mars');
+        dict.Add('animal', 'cat');
+        dict.Add('fruit', 'apple');
+        dict.Add('number', '32');
+        expect(dict.Count()).to.equal(4);
+        expect(dict.Values()).to.be.eql(['mars', 'cat', 'apple', '32']);
+
+        dict.Clear();
+        expect(dict.Values()).to.be.an('array').that.is.empty;
+        expect(dict.Keys()).to.be.an('array').that.is.empty;
+        expect(dict.Count()).to.equal(0);
+      });
+
+      it('Should clones all the items of the dictionnary', () => {
+        let dict: Dictionary<string> = new Dictionary();
+        let clone: Dictionary<string> = new Dictionary();
+        expect(dict.Values()).to.be.an('array').that.is.empty;
+        dict.Add('planet', 'mars');
+        dict.Add('animal', 'cat');
+        dict.Add('fruit', 'apple');
+        dict.Add('number', '32');
+
+        expect(clone.Count()).to.equal(0);
+        expect(clone.Values()).to.be.an('array').that.is.empty;
+        clone = dict.Clone();
+
+        dict.Add('extra', 'item');
+
+        expect(clone.Count()).to.equal(4);
+        expect(clone.Values()).to.be.eql(['mars', 'cat', 'apple', '32']);
       });
 
     });
