@@ -6,7 +6,7 @@ import { IDiffResult } from './../interfaces/IDiffResult';
 import { DiffResult } from '../../models/DiffResult';
 import { JsonUtils } from './JsonUtils';
 import * as _ from 'underscore';
-import { IDiffResultArray } from '../interfaces/IDiffResult';
+import { DiffResultArray } from '../../models/DiffResultArray';
 
 export class DiffUtils {
   static diff(json1: any, json2: any, fieldsToIgnore: Array<string>, recursiveFieldsRemoval: boolean = false): IDiffResult<any> {
@@ -59,29 +59,25 @@ export class DiffUtils {
    * @param {Dictionary<T>} dict2 Final dictionary
    * @returns {IDiffResultArray<T>} Result between dictionnaries
    */
-  static getDiffResult<T>(dict1: Dictionary<T>, dict2: Dictionary<T>): IDiffResultArray<T> {
-    let diffResult: IDiffResultArray<T> = { NEW: [], UPDATED: [], DELETED: [] };
+  static getDiffResult<T>(dict1: Dictionary<T>, dict2: Dictionary<T>): DiffResultArray<T> {
+    let diffResult: DiffResultArray<T> = new DiffResultArray();
 
-    try {
-      dict1.Keys().forEach(function (key: string) {
-        if (dict2.ContainsKey(key)) {
-          if (!_.isEqual(dict1.Item(key), dict2.Item(key))) {
-            diffResult.UPDATED.push(dict1.Item(key));
-          }
-        } else {
-          diffResult.NEW.push(dict1.Item(key));
+    dict1.Keys().forEach((key: string) => {
+      if (dict2.ContainsKey(key)) {
+        if (!_.isEqual(dict1.Item(key), dict2.Item(key))) {
+          diffResult.UPDATED.push(dict1.Item(key));
         }
+      } else {
+        diffResult.NEW.push(dict1.Item(key));
+      }
 
-        dict2.Remove(key);
-      });
+      dict2.Remove(key);
+    });
 
-      // Add the keys that were not in the first json to the deleted list
-      dict2.Keys().forEach(function (key: string) {
-        diffResult.DELETED.push(dict2.Item(key));
-      });
-    } catch (err) {
-      throw new Error('An error occured while processing the diff: ' + err);
-    }
+    // Add the keys that were not in the first json to the deleted list
+    dict2.Keys().forEach((key: string) => {
+      diffResult.DELETED.push(dict2.Item(key));
+    });
 
     // Return the diff results to the caller.
     return diffResult;

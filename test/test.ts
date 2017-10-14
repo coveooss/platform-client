@@ -6,7 +6,10 @@ process.env.NODE_ENV = 'test';
 
 import { OrganizationModelTest } from './models/OrganizationModelTest';
 import { DictionnaryTest } from './commons/collections/DictionnaryTest';
+import { DiffUtilsTest } from './utils/DiffUtilsTest';
+import { DiffResultArrayTest } from './models/DiffResultArrayTest';
 
 OrganizationModelTest();
-
 DictionnaryTest();
+DiffResultArrayTest();
+DiffUtilsTest();

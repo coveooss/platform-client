@@ -2,15 +2,20 @@
 
 // Internal packages
 import { IDictionary } from '../interfaces/IDictionary'
+import { IStringMap } from '../interfaces/IStringMap';
+import * as _ from 'underscore';
 
 export class Dictionary<T> implements IDictionary<T> {
-    private items: { [index: string]: T } = {};
-
+    private items: IStringMap<T> = {};
     private count: number = 0;
 
-    // public Equals<T>(dict: Dictionary<T>): boolean {
-    //     let a = dict.Values();
-    // }
+    constructor(obj?: IStringMap<T>) {
+        if (obj) {
+            _.each(obj, (v: T, k: string) => {
+                this.Add(k, v);
+            })
+        }
+    }
 
     public ContainsKey(key: string): boolean {
         return this.items.hasOwnProperty(key);
@@ -29,12 +34,11 @@ export class Dictionary<T> implements IDictionary<T> {
     }
 
     public Remove(key: string): T {
-        let val = this.items[key];
         if (this.ContainsKey(key)) {
             this.count--;
             delete this.items[key];
         }
-        return val;
+        return this.items[key];
     }
 
     public Item(key: string): T {

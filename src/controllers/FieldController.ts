@@ -6,7 +6,7 @@ import { Field } from '../models/FieldModel';
 import { UrlService } from '../commons/services/UrlService';
 import { IOrganization } from '../commons/interfaces/IOrganization';
 import { RequestUtils } from '../commons/utils/RequestUtils';
-import { IDiffResult, IDiffResultArray } from '../commons/interfaces/IDiffResult';
+import { IDiffResult } from '../commons/interfaces/IDiffResult';
 import { DiffResult } from '../models/DiffResult';
 import { Logger } from '../commons/logger';
 import { Dictionary } from '../commons/collections/Dictionary';
