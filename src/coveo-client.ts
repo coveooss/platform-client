@@ -1,10 +1,11 @@
 import { GraduateCommand } from './commands/GraduateCommand';
 import { StringUtils } from './commons/utils/StringUtils';
 import { config } from './config/index';
+import { Logger } from './commons/logger';
 const program = require('commander');
 const pkg: any = require('./../package.json');
 
-console.log(`Environment: ${config.env}\n`);
+Logger.info(`Environment: ${config.env}\n`);
 
 // function setEnvironment(env: string) { }
 

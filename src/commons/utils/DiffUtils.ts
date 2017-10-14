@@ -50,6 +50,15 @@ export class DiffUtils {
     return diffResult;
   }
 
+  /**
+   * Return the differences between 2 dictionaries
+   *
+   * @static
+   * @template T
+   * @param {Dictionary<T>} dict1 Initial dictionary
+   * @param {Dictionary<T>} dict2 Final dictionary
+   * @returns {IDiffResultArray<T>} Result between dictionnaries
+   */
   static getDiffResult<T>(dict1: Dictionary<T>, dict2: Dictionary<T>): IDiffResultArray<T> {
     let diffResult: IDiffResultArray<T> = { NEW: [], UPDATED: [], DELETED: [] };
 

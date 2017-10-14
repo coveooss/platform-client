@@ -21,27 +21,6 @@
       "system": false
     },
     {
-      "name": "newfield",
-      "description": "New field in prod only",
-      "type": "STRING",
-      "includeInQuery": true,
-      "includeInResults": true,
-      "mergeWithLexicon": false,
-      "smartDateFacet": false,
-      "facet": false,
-      "multiValueFacet": false,
-      "sort": false,
-      "ranking": false,
-      "stemming": false,
-      "multiValueFacetTokenizers": ";",
-      "useCacheForNestedQuery": false,
-      "useCacheForSort": false,
-      "useCacheForNumericQuery": false,
-      "useCacheForComputedFacet": false,
-      "dateFormat": "",
-      "system": false
-    },
-    {
       "name": "authorloginname",
       "description": "Login Name of the item author",
       "type": "STRING",
@@ -66,13 +45,13 @@
       "name": "bcc",
       "description": "The bcc email field",
       "type": "STRING",
-      "includeInQuery": false,
+      "includeInQuery": true,
       "includeInResults": true,
       "mergeWithLexicon": true,
       "smartDateFacet": false,
       "facet": false,
       "multiValueFacet": true,
-      "sort": true,
+      "sort": false,
       "ranking": false,
       "stemming": false,
       "multiValueFacetTokenizers": ";",
@@ -84,7 +63,7 @@
       "system": false
     },
     {
-      "name": "newField",
+      "name": "cleansourceparent",
       "description": "",
       "type": "STRING",
       "includeInQuery": true,
@@ -105,6 +84,6 @@
       "system": false
     }
   ],
-  "totalPages": 1,
-  "totalEntries": 4
+  "totalPages": 2,
+  "totalEntries": 6
 }

@@ -1,26 +1,20 @@
 const express = require('express');
-const devField = require('./dev/fields.json');
-const devField2 = require('./dev/fields2.json');
-const devField0 = require('./dev/fields0.json');
-const prodField = require('./prod/fields.json');
 const app = express()
+const fields = require('./routes/fields.js');
 
-app.get('/rest/organizations/dev/indexes/page/fields', function(req, res) {
-  if (req.query.page == 0) {
-    res.send(devField)
-  } else if (req.query.page == 1) {
-    res.send(devField2)
-  } else {
-    res.send(devField0)
-  }
+/*-----------------------------------*\
+ Fields API
+\*-----------------------------------*/
+app.get('/rest/organizations/:org/indexes/page/fields', function(req, res) {
+  fields.getFields(req, res);
 });
 
-app.get('/rest/organizations/prod/indexes/page/fields', function(req, res) {
-  res.send(prodField)
+app.post('/rest/organizations/:org/indexes/page/fields/batch/create', function(req, res) {
+  fields.createFields(req, res);
 });
 
-app.get('/', function(req, res) {
-  res.send('HELLO!')
+app.post('/rest/organizations/:org/indexes/page/fields/batch/update', function(req, res) {
+  fields.updateFields(req, res);
 });
 
 app.listen(3000, function() {

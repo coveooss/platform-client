@@ -15,6 +15,7 @@ import { SearchApiAuthentication } from './SearchApiAuthenticationModel';
 import { Field } from './FieldModel';
 import { Dictionary } from '../commons/collections/Dictionary';
 
+// TODO: Add a test class
 export class Organization extends BaseModel implements IOrganization {
     private apiKey: string = '';
     private fields: Dictionary<Field> = new Dictionary<Field>();

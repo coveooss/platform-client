@@ -1,0 +1,10 @@
+{
+  "originOrganization": {
+    "id": "coveoclientdevkladnekl",
+    "apiKey": "xxad080a6e-7e44-4778-989f-9c36cd5a57cd"
+  },
+  "destinationOrganization": {
+    "id": "coveoclientprod5sitrni5",
+    "apiKey": "xxa03864d1-9cf4-4770-86af-385ce80ec939"
+  }
+}

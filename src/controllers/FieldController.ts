@@ -18,153 +18,167 @@ import { IStringMap } from '../commons/interfaces/IStringMap';
 import * as request from 'request';
 
 export class FieldController {
-    constructor() { }
+  constructor() { }
 
-    /**
-     * Perform a diff and return the result that will be used for the graduate command
-     *
-     * @param {IOrganization} organization1 Origin Organisation
-     * @param {IOrganization} organization2 Final Organisation
-     * @returns {IDiffResult<string>} The Diff result
-     * @memberof FieldController
-     */
-    public graduate(organization1: IOrganization, organization2: IOrganization){
-        Logger.info('Graduating fields')
+  /**
+   * Perform a diff and return the result that will be used for the graduate command
+   *
+   * @param {IOrganization} organization1 Origin Organisation
+   * @param {IOrganization} organization2 Final Organisation
+   * @returns {IDiffResult<string>} The Diff result
+   * @memberof FieldController
+   */
+  public graduate(organization1: IOrganization, organization2: IOrganization) {
+    Logger.info('Graduating fields')
 
-        // Make async so we can load fields of both orgs at the same time
-        this.loadFieldsSync(organization1);
-        this.loadFieldsSync(organization2);
+    // Make async so we can load fields of both orgs at the same time
+    this.loadFieldsSync(organization1);
+    this.loadFieldsSync(organization2);
 
-        let diffResult = DiffUtils.getDiffResult(
-            <Dictionary<Field>>organization1.Fields.Clone(),
-            <Dictionary<Field>>organization2.Fields.Clone()
-        );
+    let diffResult = DiffUtils.getDiffResult(
+      <Dictionary<Field>>organization1.Fields.Clone(),
+      <Dictionary<Field>>organization2.Fields.Clone()
+    );
 
-        // TODO: make async
-        this.deleteFields(organization2, this.getFieldModels(diffResult.DELETED));
-        this.createFields(organization2, this.getFieldModels(diffResult.NEW));
-        this.updateFields(organization2, this.getFieldModels(diffResult.UPDATED));
+    console.log('*********************');
+    console.log(diffResult);
+    console.log('*********************');
 
-        // return response and summary
+    // TODO: make async
+    // this.deleteFields(organization2, this.getFieldModels(diffResult.DELETED));
+    // this.createFields(organization2, this.getFieldModels(diffResult.NEW));
+    // this.updateFields(organization2, this.getFieldModels(diffResult.UPDATED));
+
+    // return response and summary
+  }
+
+  public createFields(org: IOrganization, fieldModels: IStringMap<string>[]): number {
+    if (fieldModels.length === 0) {
+      return 0;
     }
+    let url = UrlService.createFields(org.Id);
+    RequestUtils.post(url, org.ApiKey, fieldModels);
+    return fieldModels.length;
+  }
 
-    public createFields(org: IOrganization, fieldModels: IStringMap<string>[]) {
-
+  public updateFields(org: IOrganization, fieldModels: IStringMap<string>[]) {
+    if (fieldModels.length === 0) {
+      return 0;
     }
+    let url = UrlService.updateFields(org.Id);
+    RequestUtils.put(url, org.ApiKey, fieldModels);
+    return fieldModels.length;
+  }
 
-    public updateFields(org: IOrganization, fieldModels: IStringMap<string>[]) {
+  public deleteFields(org: IOrganization, fieldModels: IStringMap<string>[]) {
+    // TODO
+  }
 
-    }
+  public getFieldModels(fields: Field[]): IStringMap<string>[] {
+    let payload: IStringMap<string>[] = [];
+    _.each(fields, (field: Field) => {
+      payload.push(field.Configuration);
+    })
+    return payload;
+  }
 
-    public deleteFields(org: IOrganization, fieldModels: IStringMap<string>[]) {
+  public diff(organization1: IOrganization, organization2: IOrganization, fieldsToIgnore: Array<string>): Dictionary<IDiffResult<any>> {
+    let diffResults: Dictionary<IDiffResult<any>> = new Dictionary<IDiffResult<any>>();
+    let diffResultsExistence: DiffResult<string> = new DiffResult<string>();
 
-    }
+    try {
+      // Load the configuration of the organizations
+      let organizations: Array<IOrganization> = [organization1, organization2];
+      let context: FieldController = this;
+      organizations.forEach(function (organization: IOrganization) {
+        context.loadFieldsSync(organization);
+      });
+      // Diff the fields in terms of "existence"
+      diffResultsExistence = DiffUtils.diffDictionaryEntries(organization1.Fields.Clone(), organization2.Fields.Clone());
+      // Diff the fields that could have been changed
+      diffResultsExistence.UPDATED.Keys().forEach(function (key: string) {
+        let fieldDiff = DiffUtils.diff(
+          organization1.Fields.Item(key).Configuration,
+          organization2.Fields.Item(key).Configuration,
+          fieldsToIgnore
+        )
 
-    public getFieldModels(fields: Field[]): IStringMap<string>[] {
-        let payload: IStringMap<string>[] = [];
-        _.each(fields, (field: Field) => {
-            payload.push(field.Configuration);
-        })
-        return payload;
-    }
-
-    public diff(organization1: IOrganization, organization2: IOrganization, fieldsToIgnore: Array<string>): Dictionary<IDiffResult<any>> {
-        let diffResults: Dictionary<IDiffResult<any>> = new Dictionary<IDiffResult<any>>();
-        let diffResultsExistence: DiffResult<string> = new DiffResult<string>();
-
-        try {
-            // Load the configuration of the organizations
-            let organizations: Array<IOrganization> = [organization1, organization2];
-            let context: FieldController = this;
-            organizations.forEach(function (organization: IOrganization) {
-                context.loadFieldsSync(organization);
-            });
-            // Diff the fields in terms of "existence"
-            diffResultsExistence = DiffUtils.diffDictionaryEntries(organization1.Fields.Clone(), organization2.Fields.Clone());
-            // Diff the fields that could have been changed
-            diffResultsExistence.UPDATED.Keys().forEach(function (key: string) {
-                let fieldDiff = DiffUtils.diff(
-                    organization1.Fields.Item(key).Configuration,
-                    organization2.Fields.Item(key).Configuration,
-                    fieldsToIgnore
-                )
-
-                if (fieldDiff.ContainsItems()) {
-                    diffResults.Add(key, fieldDiff);
-                }
-
-                diffResultsExistence.UPDATED.Remove(key);
-            });
-            // Add the result if it still contains items
-            if (diffResultsExistence.ContainsItems()) {
-                diffResults.Add('ADD_DELETE', diffResultsExistence);
-            }
-        } catch (err) {
-            // TODO: Move the loogers from all files to their base classes when possible
-            Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err);
-
-            throw err;
+        if (fieldDiff.ContainsItems()) {
+          diffResults.Add(key, fieldDiff);
         }
 
-        return diffResults;
+        diffResultsExistence.UPDATED.Remove(key);
+      });
+      // Add the result if it still contains items
+      if (diffResultsExistence.ContainsItems()) {
+        diffResults.Add('ADD_DELETE', diffResultsExistence);
+      }
+    } catch (err) {
+      // TODO: Move the loogers from all files to their base classes when possible
+      Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err);
+
+      throw err;
     }
 
-    public getFieldsPage(organization: IOrganization, page: number): Promise<RequestResponse> {
-        return RequestUtils.get(
-            UrlService.getFieldsPageUrl(organization.Id, page),
-            organization.ApiKey
-        );
-    }
+    return diffResults;
+  }
 
-    public getFieldsPageSync(organization: IOrganization, page: number): RequestResponse {
-        return RequestUtils.getRequestAndReturnJson(
-            UrlService.getFieldsPageUrl(organization.Id, page),
-            organization.ApiKey
-        );
-    }
+  public getFieldsPage(organization: IOrganization, page: number): Promise<RequestResponse> {
+    return RequestUtils.get(
+      UrlService.getFieldsPageUrl(organization.Id, page),
+      organization.ApiKey
+    );
+  }
 
-    public loadFieldsSync(organization: IOrganization): void {
-        let currentPage: number = 0;
-        let totalPages: number = 0;
+  public getFieldsPageSync(organization: IOrganization, page: number): RequestResponse {
+    return RequestUtils.getRequestAndReturnJson(
+      UrlService.getFieldsPageUrl(organization.Id, page),
+      organization.ApiKey
+    );
+  }
 
-        do {
-            let jsonResponse: any = this.getFieldsPageSync(organization, currentPage)
+  public loadFieldsSync(organization: IOrganization): void {
+    let currentPage: number = 0;
+    let totalPages: number = 0;
 
-            jsonResponse['items'].forEach(function (field: any) {
-                organization.Fields.Add(
-                    field['name'],
-                    new Field(
-                        field['name'],
-                        field
-                    )
-                )
-            });
+    do {
+      let jsonResponse: any = this.getFieldsPageSync(organization, currentPage)
 
-            totalPages = Number(jsonResponse['totalPages']);
-            currentPage++;
-        } while (currentPage < totalPages);
-    }
+      jsonResponse['items'].forEach(function (field: any) {
+        organization.Fields.Add(
+          field['name'],
+          new Field(
+            field['name'],
+            field
+          )
+        )
+      });
 
-    public loadFields(organization: IOrganization): void {
-        let currentPage: number = 0;
-        let totalPages: number = 0;
+      totalPages = Number(jsonResponse['totalPages']);
+      currentPage++;
+    } while (currentPage < totalPages);
+  }
 
-        do {
-            // TODO: make async
-            let jsonResponse: any = this.getFieldsPageSync(organization, currentPage)
+  public loadFields(organization: IOrganization): void {
+    let currentPage: number = 0;
+    let totalPages: number = 0;
 
-            jsonResponse['items'].forEach(function (field: any) {
-                organization.Fields.Add(
-                    field['name'],
-                    new Field(
-                        field['name'],
-                        field
-                    )
-                )
-            });
+    do {
+      // TODO: make async
+      let jsonResponse: any = this.getFieldsPageSync(organization, currentPage)
 
-            totalPages = Number(jsonResponse['totalPages']);
-            currentPage++;
-        } while (currentPage < totalPages);
-    }
+      jsonResponse['items'].forEach(function (field: any) {
+        organization.Fields.Add(
+          field['name'],
+          new Field(
+            field['name'],
+            field
+          )
+        )
+      });
+
+      totalPages = Number(jsonResponse['totalPages']);
+      currentPage++;
+    } while (currentPage < totalPages);
+  }
 }

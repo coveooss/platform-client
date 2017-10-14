@@ -27,6 +27,10 @@ gulp.task('watchTS', ['src'], () => {
   gulp.watch('src/**/*.ts', ['src']);
 });
 
+gulp.task('watchTest', () => {
+  gulp.watch('test/**/*.ts', ['test']);
+});
+
 // Watches the SCSS files.
 gulp.task('watchCSS', ['css'], () => {
   gulp.watch('scss/**/*.scss', ['css']);

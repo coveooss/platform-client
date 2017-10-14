@@ -30,8 +30,10 @@ export class Dictionary<T> implements IDictionary<T> {
 
     public Remove(key: string): T {
         let val = this.items[key];
-        delete this.items[key];
-        this.count--;
+        if (this.ContainsKey(key)) {
+            this.count--;
+            delete this.items[key];
+        }
         return val;
     }
 
