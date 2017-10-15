@@ -11,11 +11,6 @@ gulp.task('src', () => {
 });
 
 // Transpiling the source files into the bin/ folder
-gulp.task('compile', () => {
-  return gulp.src('*.js', {read: false})
-  
-  .pipe(shell([
-    'webpack --process --colors --minimize'
-  ]))
-
-});
+gulp.task('compile', shell.task([
+  'webpack --process --colors --minimize'
+]));

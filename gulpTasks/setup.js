@@ -9,18 +9,14 @@ gulp.task('ejs', function() {
     .pipe(gulp.dest('./bin/views'))
 })
 
-gulp.task('copy', ['copyJS']);
+gulp.task('copy', ['copyJS', 'copyEnv']);
 
 gulp.task('copyJS', function() {
   return gulp.src('vendor/**/*.js')
     .pipe(gulp.dest('./bin/js'))
 })
 
-// gulp.task('ejs', function() {
-//   gulp.src(['views/pages/*.ejs'])
-//     .pipe(ejs({
-//       prototypeTitle: 'Coveo Client',
-//     }, { ext: '.html' }))
-//     .pipe(gulp.dest('./bin'))
-//     .pipe(livereload());
-// });
+gulp.task('copyEnv', function() {
+  return gulp.src('environments/**/*.js')
+    .pipe(gulp.dest('./bin/environments'))
+})

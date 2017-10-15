@@ -12,13 +12,13 @@ gulp.task('dev', ['watchTS'], () => {
   return stream;
 });
 
-gulp.task('devTest', ['watchTest'],() => {
+gulp.task('devTest', ['buildTest', 'watchTest'],() => {
   let stream = nodemon({
     exec: 'npm test',
     // legacyWatch: true,
-    runOnChangeOnly: true,
+    // runOnChangeOnly: true,
     watch: 'test',
-    env: { 'NODE_ENV': 'test' }
+    env: { 'NODE_ENV': process.env.NODE_ENV }
   });
   return stream;
 });

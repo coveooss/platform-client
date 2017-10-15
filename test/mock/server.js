@@ -5,18 +5,22 @@ const fields = require('./routes/fields.js');
 /*-----------------------------------*\
  Fields API
 \*-----------------------------------*/
-app.get('/rest/organizations/:org/indexes/page/fields', function(req, res) {
+app.get('/rest/organizations/:org/indexes/page/fields', (req, res) => {
   fields.getFields(req, res);
 });
 
-app.post('/rest/organizations/:org/indexes/page/fields/batch/create', function(req, res) {
+app.post('/rest/organizations/:org/indexes/page/fields/batch/create', (req, res) => {
   fields.createFields(req, res);
 });
 
-app.post('/rest/organizations/:org/indexes/page/fields/batch/update', function(req, res) {
+app.post('/rest/organizations/:org/indexes/page/fields/batch/update', (req, res) => {
   fields.updateFields(req, res);
 });
 
-app.listen(3000, function() {
+app.post('/', (req, res) => {
+  res.send('Mock API')
+});
+
+app.listen(3000, () => {
   console.log('Mock API listening on port 3000!')
 })

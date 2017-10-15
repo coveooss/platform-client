@@ -1,3 +1,4 @@
+import { Logger } from '../commons/logger';
 export interface IConfig {
 	workingDirectory: string;
 	color: string;
@@ -15,9 +16,13 @@ class Config {
 		this.env = process.env.NODE_ENV || 'development';
 	}
 
-	public getConfiguration(): IConfig {
-		const conf = require(`./../../config/${this.env}.js`)
-		return conf;
+	public getConfiguration(): IConfig  {
+		try {
+			return require(`./../environments/${this.env}.js`)
+		} catch (error) {
+			Logger.error('Unable to load environment', error)
+			throw new Error('Invalid environment');
+		}
 	}
 }
 
