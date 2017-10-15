@@ -1,5 +1,6 @@
 const devField = require('./../dev/fields-page-1.json');
 const devField2 = require('./../dev/fields-page-2.json');
+const devField3 = require('./../dev/fields-page-3.json');
 const prodField = require('./../prod/fields.json');
 
 exports.getFields = function(req, res) {
@@ -11,6 +12,8 @@ exports.getFields = function(req, res) {
       response = devField;
     } else if (req.query.page == 1) {
       response = devField2;
+    } else if (req.query.page == 2) {
+      response = devField3;
     } else {
       response ={
         'items': [],
