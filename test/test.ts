@@ -16,4 +16,4 @@ OrganizationModelTest();
 DictionnaryTest();
 DiffResultArrayTest();
 DiffUtilsTest();
-// UrlServiceTest();
+UrlServiceTest();
