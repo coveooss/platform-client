@@ -118,18 +118,4 @@ export class Organization extends BaseModel implements IOrganization {
 
         this.apiKey = apiKey;
     }
-
-    public Clone(): IOrganization {
-        let clone: IOrganization = new Organization(this.Id, this.ApiKey);
-
-        clone.Name = this.Name;
-        clone.Sources = this.sources.Clone();
-        clone.Extensions = this.extensions.Clone();
-        clone.SecurityProviders = this.securityProviders.Clone();
-        clone.Authentications = this.authentications.Clone();
-        clone.HostedSearchPages = this.hostedSearchPages.Clone();
-        clone.Configuration = this.Configuration;
-
-        return clone;
-    }
 }

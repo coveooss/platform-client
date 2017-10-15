@@ -17,5 +17,4 @@ export interface IOrganization extends ICoveoObject {
 	CustomDimensions: Dictionary<ICoveoObject>;
 	NamedFilters: Dictionary<ICoveoObject>;
 	Reports: Dictionary<ICoveoObject>;
-	Clone(): IOrganization;
 };
