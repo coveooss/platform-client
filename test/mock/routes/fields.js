@@ -6,19 +6,24 @@ exports.getFields = function(req, res) {
   let orgId = req.params.org;
 
   if (orgId === 'dev') {
+    let response = {};
     if (req.query.page == 0) {
-      res.send(devField)
+      response = devField;
     } else if (req.query.page == 1) {
-      res.send(devField2)
+      response = devField2;
     } else {
-      res.send({
+      response ={
         'items': [],
         'totalPages': 2,
         'totalEntries': 6
-      })
+      };
     }
+
+    // Add latency to the response
+    setTimeout((() => { res.send(response) }), 2000);
+
   } else if (orgId === 'prod') {
-    res.send(prodField);
+    setTimeout((() => { res.send(prodField) }), 2000);
   } else {
     res.status(404).send({ 'errorCode': 'ORGANIZATION_NOT_FOUND' });
   }

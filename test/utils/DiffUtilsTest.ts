@@ -13,9 +13,9 @@ export const DiffUtilsTest = () => {
     dict1.Add('key4', [4, 'd']);
 
     let dict2: Dictionary<Array<any>> = new Dictionary({
-      key1: [1, 'a'],
-      key2: [2, 'b'],
       key3: [3, 'c'],
+      key2: [2, 'b'],
+      key1: [1, 'a'],
       key4: [4, 'd']
     });
 
@@ -25,26 +25,26 @@ export const DiffUtilsTest = () => {
     });
 
     let dictUpdated: Dictionary<Array<any>> = new Dictionary({
+      key3: [3, 'c'],
       key1: [1, 'aaa'],
       key2: [2, 'bb'],
-      key3: [3, 'c'],
       key4: [22, 'd']
     });
 
     let dictCreated: Dictionary<Array<any>> = new Dictionary({
+      key4: [4, 'd'],
       key1: [1, 'a'],
+      key5: [5, 'e'],
       key2: [2, 'b'],
       key3: [3, 'c'],
-      key4: [4, 'd'],
-      key5: [5, 'e'],
       key6: [6, 'f']
     });
 
     let dictAll: Dictionary<Array<any>> = new Dictionary({
       key1: [11, 'a'],
-      key2: [2, 'b'],
-      key4: [4, 'd'],
       Charizard: [6, 'fire'],
+      key4: [4, 'd'],
+      key2: [2, 'b'],
       Sandshrew: [27, 'ground']
     });
 
