@@ -1,12 +1,11 @@
 import { BaseCommand } from './BaseCommand';
-import { IOrganization } from '../commons/interfaces/IOrganization';
 import { Organization } from '../models/OrganizationModel';
 import { FieldController } from '../controllers/FieldController';
 import { UrlService } from '../commons/services/UrlService';
 
 export class GraduateCommand {
-  private organization1: IOrganization;
-  private organization2: IOrganization;
+  private organization1: Organization;
+  private organization2: Organization;
 
   constructor(
     originOrganization: string,

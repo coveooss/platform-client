@@ -15,7 +15,6 @@ import { SecurityProviderController } from '../controllers/SecurityProviderContr
 import { QueryPipelineController } from '../controllers/QueryPipelineController';
 import { HostedSearchPagesController } from '../controllers/HostedSearchPageController';
 import { FieldController } from '../controllers/FieldController';
-import { IOrganization } from '../commons/interfaces/IOrganization';
 import { Organization } from '../models/OrganizationModel';
 import { config } from '../config/index';
 import { DiffResult } from '../models/DiffResult';
@@ -47,11 +46,11 @@ export class DiffCommand extends BaseCommand implements ICommand {
   }
 
   public Execute(): void {
-    let organization1: IOrganization = new Organization(
+    let organization1: Organization = new Organization(
       this.mandatoryParameters[0],
       this.optionalParameters.Item('originapikey')
     );
-    let organization2: IOrganization = new Organization(
+    let organization2: Organization = new Organization(
       this.mandatoryParameters[1],
       this.optionalParameters.Item('destinationapikey')
     );

@@ -48,31 +48,41 @@ export const DiffUtilsTest = () => {
       Sandshrew: [27, 'ground']
     });
 
+    it('Should not alter dictionnaries', () => {
+      let dict1Clone = dict1.Clone();
+      let dictAllClone = dictAll.Clone();
+
+      let diff: DiffResultArray<Array<any>> = DiffUtils.getDiffResult(dict1, dictAll);
+
+      expect(dict1).to.eql(dict1Clone);
+      expect(dictAll).to.eql(dictAllClone);
+    });
+
     it('Should not return any differences', () => {
-      let diff: DiffResultArray<Array<any>> = DiffUtils.getDiffResult(dict1.Clone(), dict2.Clone());
+      let diff: DiffResultArray<Array<any>> = DiffUtils.getDiffResult(dict1, dict2);
       expect(diff.ContainsItems()).to.be.false;
     });
 
     it('Should return the new items', () => {
-      let diff: DiffResultArray<Array<any>> = DiffUtils.getDiffResult(dict1.Clone(), dictDeleted.Clone());
+      let diff: DiffResultArray<Array<any>> = DiffUtils.getDiffResult(dict1, dictDeleted);
       expect(diff.ContainsItems()).to.be.true;
       expect(diff.NEW).to.eql([[1, 'a'], [3, 'c']]);
     });
 
     it('Should return the updated items', () => {
-      let diff: DiffResultArray<Array<any>> = DiffUtils.getDiffResult(dict1.Clone(), dictUpdated.Clone());
+      let diff: DiffResultArray<Array<any>> = DiffUtils.getDiffResult(dict1, dictUpdated);
       expect(diff.ContainsItems()).to.be.true;
       expect(diff.UPDATED).to.eql([[1, 'a'], [2, 'b'], [4, 'd']]);
     });
 
     it('Should return the deleted items', () => {
-      let diff: DiffResultArray<Array<any>> = DiffUtils.getDiffResult(dict1.Clone(), dictCreated.Clone());
+      let diff: DiffResultArray<Array<any>> = DiffUtils.getDiffResult(dict1, dictCreated);
       expect(diff.ContainsItems()).to.be.true;
       expect(diff.DELETED).to.eql([[5, 'e'], [6, 'f']]);
     });
 
     it('Should return all modifications', () => {
-      let diff: DiffResultArray<Array<any>> = DiffUtils.getDiffResult(dict1.Clone(), dictAll.Clone());
+      let diff: DiffResultArray<Array<any>> = DiffUtils.getDiffResult(dict1, dictAll);
       expect(diff.ContainsItems()).to.be.true;
 
       expect(diff.NEW).to.eql([[3, 'c']]);

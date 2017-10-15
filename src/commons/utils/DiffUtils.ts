@@ -56,27 +56,28 @@ export class DiffUtils {
    * @static
    * @template T
    * @param {Dictionary<T>} dict1 Initial dictionary
-   * @param {Dictionary<T>} dict2 Final dictionary
+   * @param {Dictionary<T>} dict2Copy Final dictionary
    * @returns {IDiffResultArray<T>} Result between dictionnaries
    */
   static getDiffResult<T>(dict1: Dictionary<T>, dict2: Dictionary<T>): DiffResultArray<T> {
+    let dict2Copy = dict2.Clone();
     let diffResult: DiffResultArray<T> = new DiffResultArray();
 
     dict1.Keys().forEach((key: string) => {
-      if (dict2.ContainsKey(key)) {
-        if (!_.isEqual(dict1.Item(key), dict2.Item(key))) {
+      if (dict2Copy.ContainsKey(key)) {
+        if (!_.isEqual(dict1.Item(key), dict2Copy.Item(key))) {
           diffResult.UPDATED.push(dict1.Item(key));
         }
       } else {
         diffResult.NEW.push(dict1.Item(key));
       }
 
-      dict2.Remove(key);
+      dict2Copy.Remove(key);
     });
 
     // Add the keys that were not in the first json to the deleted list
-    dict2.Keys().forEach((key: string) => {
-      diffResult.DELETED.push(dict2.Item(key));
+    dict2Copy.Keys().forEach((key: string) => {
+      diffResult.DELETED.push(dict2Copy.Item(key));
     });
 
     // Return the diff results to the caller.

@@ -1,10 +1,7 @@
-// External Packages
 import { RequestResponse } from 'request';
-// Internal packages
 import { ICoveoObject } from '../commons/interfaces/ICoveoObject';
 import { Field } from '../models/FieldModel';
 import { UrlService } from '../commons/services/UrlService';
-import { IOrganization } from '../commons/interfaces/IOrganization';
 import { RequestUtils } from '../commons/utils/RequestUtils';
 import { IDiffResult } from '../commons/interfaces/IDiffResult';
 import { DiffResult } from '../models/DiffResult';
@@ -13,8 +10,9 @@ import { Dictionary } from '../commons/collections/Dictionary';
 import { StaticErrorMessage } from '../commons/errors';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 import { DiffUtils } from '../commons/utils/DiffUtils';
-import * as _ from 'underscore';
 import { IStringMap } from '../commons/interfaces/IStringMap';
+import { Organization } from '../models/OrganizationModel';
+import * as _ from 'underscore';
 import * as request from 'request';
 
 export class FieldController {
@@ -23,36 +21,31 @@ export class FieldController {
   /**
    * Perform a diff and return the result that will be used for the graduate command
    *
-   * @param {IOrganization} organization1 Origin Organisation
-   * @param {IOrganization} organization2 Final Organisation
+   * @param {Organization} organization1 Origin Organisation
+   * @param {Organization} organization2 Final Organisation
    * @returns {IDiffResult<string>} The Diff result
    * @memberof FieldController
    */
-  public graduate(organization1: IOrganization, organization2: IOrganization) {
+  public graduate(organization1: Organization, organization2: Organization) {
     Logger.info('Graduating fields')
 
-    // Make async so we can load fields of both orgs at the same time
-    this.loadFieldsSync(organization1);
-    this.loadFieldsSync(organization2);
+    Promise.all([this.loadFields(organization1), this.loadFields(organization2)])
+      .then(() => {
+        let diffResult = DiffUtils.getDiffResult(organization1.Fields, organization2.Fields);
 
-    let diffResult = DiffUtils.getDiffResult(
-      <Dictionary<Field>>organization1.Fields.Clone(),
-      <Dictionary<Field>>organization2.Fields.Clone()
-    );
+        // TODO: make async
+        // this.deleteFields(organization2, this.getFieldModels(diffResult.DELETED));
+        // this.createFields(organization2, this.getFieldModels(diffResult.NEW));
+        // this.updateFields(organization2, this.getFieldModels(diffResult.UPDATED));
 
-    console.log('*********************');
-    console.log(diffResult);
-    console.log('*********************');
+      }).catch((err: any) => {
 
-    // TODO: make async
-    // this.deleteFields(organization2, this.getFieldModels(diffResult.DELETED));
-    // this.createFields(organization2, this.getFieldModels(diffResult.NEW));
-    // this.updateFields(organization2, this.getFieldModels(diffResult.UPDATED));
+      })
 
     // return response and summary
   }
 
-  public createFields(org: IOrganization, fieldModels: IStringMap<string>[]): number {
+  public createFields(org: Organization, fieldModels: IStringMap<string>[]): number {
     if (fieldModels.length === 0) {
       return 0;
     }
@@ -61,7 +54,7 @@ export class FieldController {
     return fieldModels.length;
   }
 
-  public updateFields(org: IOrganization, fieldModels: IStringMap<string>[]) {
+  public updateFields(org: Organization, fieldModels: IStringMap<string>[]) {
     if (fieldModels.length === 0) {
       return 0;
     }
@@ -70,27 +63,23 @@ export class FieldController {
     return fieldModels.length;
   }
 
-  public deleteFields(org: IOrganization, fieldModels: IStringMap<string>[]) {
+  public deleteFields(org: Organization, fieldModels: IStringMap<string>[]) {
     // TODO
   }
 
   public getFieldModels(fields: Field[]): IStringMap<string>[] {
-    let payload: IStringMap<string>[] = [];
-    _.each(fields, (field: Field) => {
-      payload.push(field.Configuration);
-    })
-    return payload;
+    return _.pluck(fields, 'fieldModel');
   }
 
-  public diff(organization1: IOrganization, organization2: IOrganization, fieldsToIgnore: Array<string>): Dictionary<IDiffResult<any>> {
+  public diff(organization1: Organization, organization2: Organization, fieldsToIgnore: Array<string>): Dictionary<IDiffResult<any>> {
     let diffResults: Dictionary<IDiffResult<any>> = new Dictionary<IDiffResult<any>>();
     let diffResultsExistence: DiffResult<string> = new DiffResult<string>();
 
     try {
       // Load the configuration of the organizations
-      let organizations: Array<IOrganization> = [organization1, organization2];
+      let organizations: Array<Organization> = [organization1, organization2];
       let context: FieldController = this;
-      organizations.forEach(function (organization: IOrganization) {
+      organizations.forEach(function (organization: Organization) {
         context.loadFieldsSync(organization);
       });
       // Diff the fields in terms of "existence"
@@ -98,8 +87,8 @@ export class FieldController {
       // Diff the fields that could have been changed
       diffResultsExistence.UPDATED.Keys().forEach(function (key: string) {
         let fieldDiff = DiffUtils.diff(
-          organization1.Fields.Item(key).Configuration,
-          organization2.Fields.Item(key).Configuration,
+          organization1.Fields.Item(key).fieldModel,
+          organization2.Fields.Item(key).fieldModel,
           fieldsToIgnore
         )
 
@@ -123,32 +112,23 @@ export class FieldController {
     return diffResults;
   }
 
-  public getFieldsPage(organization: IOrganization, page: number): Promise<RequestResponse> {
-    return RequestUtils.get(
-      UrlService.getFieldsPageUrl(organization.Id, page),
-      organization.ApiKey
-    );
-  }
-
-  public getFieldsPageSync(organization: IOrganization, page: number): RequestResponse {
+  public getFieldsPageSync(organization: Organization, page: number): RequestResponse {
     return RequestUtils.getRequestAndReturnJson(
       UrlService.getFieldsPageUrl(organization.Id, page),
       organization.ApiKey
     );
   }
 
-  public loadFieldsSync(organization: IOrganization): void {
+  public loadFieldsSync(organization: Organization): void {
     let currentPage: number = 0;
     let totalPages: number = 0;
 
     do {
       let jsonResponse: any = this.getFieldsPageSync(organization, currentPage)
 
-      jsonResponse['items'].forEach(function (field: any) {
-        organization.Fields.Add(
-          field['name'],
-          new Field(field['name'], field)
-        )
+      jsonResponse['items'].forEach((f: IStringMap<string>) => {
+        let field = new Field(f);
+        organization.Fields.Add(field.name, field)
       });
 
       totalPages = Number(jsonResponse['totalPages']);
@@ -156,23 +136,59 @@ export class FieldController {
     } while (currentPage < totalPages);
   }
 
-  public loadFields(organization: IOrganization): void {
-    let currentPage: number = 0;
-    let totalPages: number = 0;
-
-    do {
-      // TODO: make async
-      let jsonResponse: any = this.getFieldsPageSync(organization, currentPage)
-
-      jsonResponse['items'].forEach(function (field: any) {
-        organization.Fields.Add(
-          field['name'],
-          new Field(field['name'], field)
-        )
-      });
-
-      totalPages = Number(jsonResponse['totalPages']);
-      currentPage++;
-    } while (currentPage < totalPages);
+  public getFieldsPage(organization: Organization, page: number): Promise<RequestResponse> {
+    // TODO: add loading bar here!
+    return RequestUtils.get(
+      UrlService.getFieldsPageUrl(organization.Id, page),
+      organization.ApiKey
+    );
   }
+
+  public loadFields(organization: Organization): Promise<{}> {
+    // tslint:disable-next-line:typedef
+    return new Promise((resolve, reject) => {
+
+      this.getFieldsPage(organization, 0)
+        .then((response: RequestResponse) => {
+          Logger.debug(`Done loading first page fields from ${organization.Id}`);
+          this.addLoadedFieldsToORganization(organization, response.body.items);
+          Logger.debug('Adding loaded fields to organization');
+
+          if (response.body.totalPages > 1) {
+            this.loadOtherPages(organization, response.body.totalPages)
+              .then(() => resolve())
+              .catch((err: any) => {
+                Logger.error(StaticErrorMessage.UNABLE_TO_LOAD_OTHER_FIELDS);
+                reject(err)
+              });
+          } else {
+            resolve();
+          }
+
+        }).catch((err: any) => {
+          Logger.error(StaticErrorMessage.UNABLE_TO_LOAD_FIELDS);
+          reject(err);
+        })
+    })
+  }
+
+  public loadOtherPages(organization: Organization, totalPages: number): Promise<void> {
+    Logger.debug(`Loading ${totalPages} pages of fields from ${organization.Id}.`);
+    let pageArray = _.map(new Array(totalPages - 1), (v: number, idx: number) => idx + 1);
+    return Promise
+      .all(_.map(pageArray, (page: number) => this.getFieldsPage(organization, page)))
+      .then((otherPages: RequestResponse[]) => {
+        _.each(otherPages, (response: RequestResponse) => {
+          this.addLoadedFieldsToORganization(organization, response.body.items);
+        })
+      })
+  }
+
+  public addLoadedFieldsToORganization(organization: Organization, fields: IStringMap<string>[]) {
+    fields.forEach((f: IStringMap<string>) => {
+      let field = new Field(f);
+      organization.Fields.Add(field.name, field)
+    });
+  }
+
 }
