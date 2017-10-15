@@ -26,10 +26,13 @@ export class Logger {
         })
     }
 
-    // public static debug(message: string, ...meta: any[]) {
-    //     if (process.env.NODE_ENV !== 'production') {
-    //         ...
-    //     }
-    // }
+    public static debug(message: string, ...meta: any[]) {
+        if (process.env.NODE_ENV === 'local-server') {
+            console.log(chalk.yellow.bold('[Debug]: ' + message));
+            _.each(meta, (m: any) => {
+                console.log(chalk.yellow(m.toString()));
+            })
+        }
+    }
 
 };
