@@ -2,7 +2,6 @@
 import { RequestResponse } from 'request';
 // Internal packages
 import { ICoveoObject } from '../commons/interfaces/ICoveoObject'
-import { ISource } from '../commons/interfaces/ISource'
 import { IOrganization } from '../commons/interfaces/IOrganization'
 import { Source } from '../models/SourceModel';
 import { UrlService } from '../commons/services/UrlService';
@@ -114,7 +113,7 @@ export class SourceController {
     let sources: any = this.getSources(organization);
     let context = this;
     sources.forEach(function (source: any) {
-      let newSource: ISource = new Source(
+      let newSource: Source = new Source(
         source['id'],
         context.getSingleSourceRaw(organization, source['id'])
       );

@@ -1,12 +1,10 @@
-// External packages
+import { IStringMap } from './IStringMap';
 
-// Internal packages
-import { ICoveoObject } from './ICoveoObject';
-import { Dictionary } from '../collections/Dictionary';
-
-export interface ISource extends ICoveoObject {
-    Mappings: Array<any>;
-    PreConversionExtensions: Array<any>;
-    PostConversionExtensions: Array<any>;
-    ExtendedDataFiles: any;
+export interface ISource {
+  Id: string;
+  Configuration: any;
+  Mappings: IStringMap<string>[];
+  PreConversionExtensions: any[];
+  PostConversionExtensions: any[];
+  ExtendedDataFiles: any;
 };

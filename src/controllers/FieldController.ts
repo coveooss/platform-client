@@ -147,10 +147,7 @@ export class FieldController {
       jsonResponse['items'].forEach(function (field: any) {
         organization.Fields.Add(
           field['name'],
-          new Field(
-            field['name'],
-            field
-          )
+          new Field(field['name'], field)
         )
       });
 
@@ -170,10 +167,7 @@ export class FieldController {
       jsonResponse['items'].forEach(function (field: any) {
         organization.Fields.Add(
           field['name'],
-          new Field(
-            field['name'],
-            field
-          )
+          new Field(field['name'], field)
         )
       });
 
