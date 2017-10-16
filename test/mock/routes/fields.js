@@ -15,7 +15,7 @@ exports.getFields = function(req, res) {
     } else if (req.query.page == 2) {
       response = devField3;
     } else {
-      response ={
+      response = {
         'items': [],
         'totalPages': 2,
         'totalEntries': 6
@@ -32,8 +32,14 @@ exports.getFields = function(req, res) {
   }
 };
 
-exports.createFields = function(req, res) {};
+exports.createFields = function(req, res) {
+  res.send(202);
+};
 
-exports.updateFields = function(req, res) {};
+exports.updateFields = function(req, res) {
+  res.send(202);
+};
 
-exports.deleteFields = function(req, res) {};
+exports.deleteFields = function(req, res) {
+  res.send(202);
+};

@@ -17,6 +17,10 @@ app.post('/rest/organizations/:org/indexes/page/fields/batch/update', (req, res)
   fields.updateFields(req, res);
 });
 
+app.post('/rest/organizations/:org/indexes/page/fields/batch/delete', (req, res) => {
+  fields.deleteFields(req, res);
+});
+
 app.post('/', (req, res) => {
   res.send('Mock API')
 });
