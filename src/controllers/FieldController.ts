@@ -14,8 +14,16 @@ import { IStringMap } from '../commons/interfaces/IStringMap';
 import { Organization } from '../models/OrganizationModel';
 import * as _ from 'underscore';
 import * as request from 'request';
+import { ArrayUtils } from '../commons/utils/ArrayUtils';
 
 export class FieldController {
+
+  /**
+   * To prevent having too large fields batches that can't be processed.
+   * The Maximum allowed number of fields is 500.
+   */
+  private fieldsPerBatch: number = 500;
+
   constructor() { }
 
   /**
@@ -34,9 +42,9 @@ export class FieldController {
         let diffResult = DiffUtils.getDiffResult(organization1.Fields, organization2.Fields);
 
         // TODO: make async
+        this.createFields(organization2, this.getFieldModels(diffResult.NEW));
+        this.updateFields(organization2, this.getFieldModels(diffResult.UPDATED));
         // this.deleteFields(organization2, this.getFieldModels(diffResult.DELETED));
-        // this.createFields(organization2, this.getFieldModels(diffResult.NEW));
-        // this.updateFields(organization2, this.getFieldModels(diffResult.UPDATED));
 
       }).catch((err: any) => {
 
@@ -45,22 +53,24 @@ export class FieldController {
     // return response and summary
   }
 
-  public createFields(org: Organization, fieldModels: IStringMap<string>[]): number {
+  public createFields(org: Organization, fieldModels: IStringMap<string>[]) {
     if (fieldModels.length === 0) {
-      return 0;
+      return;
     }
     let url = UrlService.createFields(org.Id);
-    RequestUtils.post(url, org.ApiKey, fieldModels);
-    return fieldModels.length;
+    _.each(ArrayUtils.chunkArray(fieldModels, this.fieldsPerBatch), (batch: IStringMap<string>[]) => {
+      RequestUtils.post(url, org.ApiKey, fieldModels);
+    })
   }
 
   public updateFields(org: Organization, fieldModels: IStringMap<string>[]) {
     if (fieldModels.length === 0) {
-      return 0;
+      return;
     }
     let url = UrlService.updateFields(org.Id);
-    RequestUtils.put(url, org.ApiKey, fieldModels);
-    return fieldModels.length;
+    _.each(ArrayUtils.chunkArray(fieldModels, this.fieldsPerBatch), (batch: IStringMap<string>[]) => {
+      RequestUtils.put(url, org.ApiKey, fieldModels);
+    })
   }
 
   public deleteFields(org: Organization, fieldModels: IStringMap<string>[]) {
