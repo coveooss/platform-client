@@ -9,15 +9,15 @@ app.get('/rest/organizations/:org/indexes/page/fields', (req, res) => {
   fields.getFields(req, res);
 });
 
-app.post('/rest/organizations/:org/indexes/page/fields/batch/create', (req, res) => {
+app.post('/rest/organizations/:org/indexes/fields/batch/create', (req, res) => {
   fields.createFields(req, res);
 });
 
-app.post('/rest/organizations/:org/indexes/page/fields/batch/update', (req, res) => {
+app.put('/rest/organizations/:org/indexes/fields/batch/update', (req, res) => {
   fields.updateFields(req, res);
 });
 
-app.post('/rest/organizations/:org/indexes/page/fields/batch/delete', (req, res) => {
+app.delete('/rest/organizations/:org/indexes/fields/batch/delete', (req, res) => {
   fields.deleteFields(req, res);
 });
 

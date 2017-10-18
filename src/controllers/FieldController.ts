@@ -15,6 +15,7 @@ import { Organization } from '../models/OrganizationModel';
 import * as _ from 'underscore';
 import * as request from 'request';
 import { ArrayUtils } from '../commons/utils/ArrayUtils';
+import { Assert } from '../commons/misc/Assert';
 
 export class FieldController {
 
@@ -40,37 +41,60 @@ export class FieldController {
     Promise.all([this.loadFields(organization1), this.loadFields(organization2)])
       .then(() => {
         let diffResult = DiffUtils.getDiffResult(organization1.Fields, organization2.Fields);
+        console.log('*********************');
+        console.log(diffResult);
+        console.log('*********************');
 
         // TODO: make async
-        this.createFields(organization2, this.getFieldModels(diffResult.NEW));
-        this.updateFields(organization2, this.getFieldModels(diffResult.UPDATED));
-        // this.deleteFields(organization2, this.getFieldModels(diffResult.DELETED));
+        // this.deleteFields(organization2, this.getFieldModels(diffResult.DELETED))
+        if (diffResult.NEW.length > 0) {
+          this.createFields(organization2, this.getFieldModels(diffResult.NEW))
+            .then((a) => {
+              console.log('********** done creating fields ***********');
+              
+            }).catch((err: any) => {
+              Logger.error(StaticErrorMessage.UNABLE_TO_CREATE_FIELDS, err)
+            })
+          }
+          if (diffResult.UPDATED.length > 0) {
+            this.updateFields(organization2, this.getFieldModels(diffResult.UPDATED))
+            .then((a) => {
+              console.log('********** done updating fields ***********');
+
+            }).catch((err: any) => {
+              Logger.error(StaticErrorMessage.UNABLE_TO_UPDATE_FIELDS, err)
+            })
+        }
+
 
       }).catch((err: any) => {
-
+        Logger.error(StaticErrorMessage.UNABLE_TO_LOAD_FIELDS, err);
       })
 
     // return response and summary
   }
 
   public createFields(org: Organization, fieldModels: IStringMap<string>[]) {
-    if (fieldModels.length === 0) {
-      return;
-    }
+    Assert.isLargerThan(0, fieldModels.length);
+    console.log('**********CREATE***********');
+    console.log(fieldModels);
+    console.log('*********************');
     let url = UrlService.createFields(org.Id);
-    _.each(ArrayUtils.chunkArray(fieldModels, this.fieldsPerBatch), (batch: IStringMap<string>[]) => {
-      RequestUtils.post(url, org.ApiKey, fieldModels);
-    })
+    return Promise.all(_.map(ArrayUtils.chunkArray(fieldModels, this.fieldsPerBatch), (batch: IStringMap<string>[]) => {
+      return RequestUtils.post(url, org.ApiKey, batch);
+    }));
   }
 
   public updateFields(org: Organization, fieldModels: IStringMap<string>[]) {
-    if (fieldModels.length === 0) {
-      return;
-    }
+    Assert.isLargerThan(0, fieldModels.length);
+    console.log('**********UPDATE***********');
+    console.log(fieldModels);
+    console.log('*********************');
+    
     let url = UrlService.updateFields(org.Id);
-    _.each(ArrayUtils.chunkArray(fieldModels, this.fieldsPerBatch), (batch: IStringMap<string>[]) => {
-      RequestUtils.put(url, org.ApiKey, fieldModels);
-    })
+    return Promise.all(_.map(ArrayUtils.chunkArray(fieldModels, this.fieldsPerBatch), (batch: IStringMap<string>[]) => {
+      return RequestUtils.put(url, org.ApiKey, batch);
+    }));
   }
 
   public deleteFields(org: Organization, fieldModels: IStringMap<string>[]) {
@@ -168,7 +192,6 @@ export class FieldController {
             this.loadOtherPages(organization, response.body.totalPages)
               .then(() => resolve())
               .catch((err: any) => {
-                Logger.error(StaticErrorMessage.UNABLE_TO_LOAD_OTHER_FIELDS);
                 reject(err)
               });
           } else {
@@ -176,7 +199,6 @@ export class FieldController {
           }
 
         }).catch((err: any) => {
-          Logger.error(StaticErrorMessage.UNABLE_TO_LOAD_FIELDS);
           reject(err);
         })
     })
