@@ -2,6 +2,8 @@ import { GraduateCommand } from './commands/GraduateCommand';
 import { StringUtils } from './commons/utils/StringUtils';
 import { config } from './config/index';
 import { Logger } from './commons/logger';
+import { IAnswerVariables, InquirerQuestions } from './console/inquirerQuestions';
+import * as inquirer from 'inquirer';
 const program = require('commander');
 const pkg: any = require('./../package.json');
 
@@ -14,6 +16,7 @@ program
   // .option('--env [value]', 'Environment', setEnvironment)
   .version(pkg.version)
 
+// Basic Graduation command
 program
   .command('graduate <originOrganization> <destinationOrganization> <originApiKey> <destinationApiKey>')
   .description('Graduate one organisation to an other')
@@ -37,6 +40,16 @@ program
     }
   });
 
+let prompt = inquirer.createPromptModule();
+let questions = new InquirerQuestions();
+
+prompt(questions.getQuestions()).then((answers: IAnswerVariables) => {
+  console.log('*********************');
+  console.log(answers);
+  console.log('*********************');
+  
+  let settings = questions.genSettings(answers);
+})
 program
   .command('initSettings')
   .description('Launch interactive setting')
