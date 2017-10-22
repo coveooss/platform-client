@@ -41,24 +41,22 @@ export class FieldController {
     Promise.all([this.loadFields(organization1), this.loadFields(organization2)])
       .then(() => {
         let diffResult = DiffUtils.getDiffResult(organization1.Fields, organization2.Fields);
-        console.log('*********************');
-        console.log(diffResult);
-        console.log('*********************');
 
-        // TODO: make async
-        // this.deleteFields(organization2, this.getFieldModels(diffResult.DELETED))
         if (diffResult.NEW.length > 0) {
+          Logger.verbose(`Creating ${diffResult.NEW.length} new field${diffResult.NEW.length > 1 ? 's' : ''} in ${organization2.Id}`);
           this.createFields(organization2, this.getFieldModels(diffResult.NEW))
-            .then((a) => {
+            .then((response: RequestResponse[]) => {
               console.log('********** done creating fields ***********');
-              
+
             }).catch((err: any) => {
               Logger.error(StaticErrorMessage.UNABLE_TO_CREATE_FIELDS, err)
             })
-          }
-          if (diffResult.UPDATED.length > 0) {
-            this.updateFields(organization2, this.getFieldModels(diffResult.UPDATED))
-            .then((a) => {
+        }
+
+        if (diffResult.UPDATED.length > 0) {
+          Logger.verbose(`Updating ${diffResult.UPDATED.length} existing field${diffResult.NEW.length > 1 ? 's' : ''} in ${organization2.Id}`)
+          this.updateFields(organization2, this.getFieldModels(diffResult.UPDATED))
+            .then((response: RequestResponse[]) => {
               console.log('********** done updating fields ***********');
 
             }).catch((err: any) => {
@@ -76,9 +74,6 @@ export class FieldController {
 
   public createFields(org: Organization, fieldModels: IStringMap<string>[]) {
     Assert.isLargerThan(0, fieldModels.length);
-    console.log('**********CREATE***********');
-    console.log(fieldModels);
-    console.log('*********************');
     let url = UrlService.createFields(org.Id);
     return Promise.all(_.map(ArrayUtils.chunkArray(fieldModels, this.fieldsPerBatch), (batch: IStringMap<string>[]) => {
       return RequestUtils.post(url, org.ApiKey, batch);
@@ -87,10 +82,6 @@ export class FieldController {
 
   public updateFields(org: Organization, fieldModels: IStringMap<string>[]) {
     Assert.isLargerThan(0, fieldModels.length);
-    console.log('**********UPDATE***********');
-    console.log(fieldModels);
-    console.log('*********************');
-    
     let url = UrlService.updateFields(org.Id);
     return Promise.all(_.map(ArrayUtils.chunkArray(fieldModels, this.fieldsPerBatch), (batch: IStringMap<string>[]) => {
       return RequestUtils.put(url, org.ApiKey, batch);
@@ -171,7 +162,7 @@ export class FieldController {
   }
 
   public getFieldsPage(organization: Organization, page: number): Promise<RequestResponse> {
-    // TODO: add loading bar here!
+    Logger.verbose(`Fecthing field page ${page} from ${organization.Id}`);
     return RequestUtils.get(
       UrlService.getFieldsPageUrl(organization.Id, page),
       organization.ApiKey
@@ -184,9 +175,7 @@ export class FieldController {
 
       this.getFieldsPage(organization, 0)
         .then((response: RequestResponse) => {
-          Logger.debug(`Done loading first page fields from ${organization.Id}`);
-          this.addLoadedFieldsToORganization(organization, response.body.items);
-          Logger.debug('Adding loaded fields to organization');
+          this.addLoadedFieldsToOrganization(organization, response.body.items);
 
           if (response.body.totalPages > 1) {
             this.loadOtherPages(organization, response.body.totalPages)
@@ -205,18 +194,18 @@ export class FieldController {
   }
 
   public loadOtherPages(organization: Organization, totalPages: number): Promise<void> {
-    Logger.debug(`Loading ${totalPages} pages of fields from ${organization.Id}.`);
+    Logger.verbose(`Loading ${totalPages - 1} more pages of fields from ${organization.Id}`);
     let pageArray = _.map(new Array(totalPages - 1), (v: number, idx: number) => idx + 1);
     return Promise
       .all(_.map(pageArray, (page: number) => this.getFieldsPage(organization, page)))
       .then((otherPages: RequestResponse[]) => {
         _.each(otherPages, (response: RequestResponse) => {
-          this.addLoadedFieldsToORganization(organization, response.body.items);
+          this.addLoadedFieldsToOrganization(organization, response.body.items);
         })
       })
   }
 
-  public addLoadedFieldsToORganization(organization: Organization, fields: IStringMap<string>[]) {
+  public addLoadedFieldsToOrganization(organization: Organization, fields: IStringMap<string>[]) {
     fields.forEach((f: IStringMap<string>) => {
       let field = new Field(f);
       organization.Fields.Add(field.name, field)

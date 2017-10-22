@@ -19,16 +19,9 @@ export class Logger {
         })
     }
 
-    public static warn(message: string, ...meta: any[]) {
-        console.log(chalk.yellow.bold(message));
-        _.each(meta, (m: any) => {
-            // console.log(chalk.yellow(m.toString()));
-        })
-    }
-
-    public static debug(message: string, ...meta: any[]) {
-        if (process.env.NODE_ENV === 'local-server') {
-            console.log(chalk.yellow.bold('[Debug]: ' + message));
+    public static verbose(message: string, ...meta: any[]) {
+        if (process.env.LOG_LEVEL === 'verbose') {
+            console.log(chalk.yellow.bold(message));
             _.each(meta, (m: any) => {
                 console.log(chalk.yellow(m.toString()));
             })
