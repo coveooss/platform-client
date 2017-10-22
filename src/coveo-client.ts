@@ -11,14 +11,6 @@ const program = require('commander');
 const pkg: any = require('./../package.json');
 const prompt = inquirer.createPromptModule();
 
-function setEnvironmentIfNecessary() {
-  let i = process.argv.indexOf('--env');
-  if (i !== -1 && i + 1 < process.argv.length) {
-    let env = process.argv[i + 1]
-    process.env.NODE_ENV = env;
-  }
-}
-
 program
   // TODO set Environment
   .option('--env [value]', 'Environment')
@@ -42,6 +34,7 @@ program
   .option('-P, --POST', 'Allow POST operations on the destination Organization')
   .option('-p, --PUT', 'Allow PUT operations on the destination Organization')
   .option('-d, --DELETE', 'Allow DELETE operations on the destination Organization')
+  .option('-v, --verbose', 'Display graduation information', setLogLevelToVerbose)
   .action((originOrganization: string, destinationOrganization: string, originApiKey: string, destinationApiKey: string, options: any) => {
     let command = new GraduateCommand(originOrganization, destinationOrganization, originApiKey, destinationApiKey);
 
@@ -94,3 +87,16 @@ program
 
 
 program.parse(process.argv);
+
+// Utils
+function setEnvironmentIfNecessary() {
+  let i = process.argv.indexOf('--env');
+  if (i !== -1 && i + 1 < process.argv.length) {
+    let env = process.argv[i + 1]
+    process.env.NODE_ENV = env;
+  }
+}
+
+function setLogLevelToVerbose() {
+  process.env.LOG_LEVEL = 'verbose';
+}

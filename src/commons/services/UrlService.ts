@@ -5,6 +5,7 @@ declare function require(path: string): any;
 // Internal packages
 import { ObjectUtils } from '../utils/ObjectUtils';
 import { config } from './../../config/index';
+import { Assert } from '../misc/Assert';
 
 export class UrlService {
   /*** Organization API ***/
@@ -78,7 +79,8 @@ export class UrlService {
     return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/indexes/fields/batch/create`;
   }
 
-  static deleteFields(organizationId: string): string {
-    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/indexes/fields/batch/delete`;
+  static deleteFields(organizationId: string, fieldList: string[], separator: string = '%2C'): string {
+    Assert.isLargerThan(0, fieldList.length);
+    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/indexes/fields/batch/delete?fields=${fieldList.join(separator)}`;
   }
 }

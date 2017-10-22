@@ -6,4 +6,5 @@ export class StaticErrorMessage {
   public static UNABLE_TO_LOAD_OTHER_FIELDS: string = 'Unable to load other field pages';
   public static UNABLE_TO_CREATE_FIELDS: string = 'Unable to create new fields';
   public static UNABLE_TO_UPDATE_FIELDS: string = 'Unable to update fields';
+  public static UNABLE_TO_DELETE_FIELDS: string = 'Unable to delete fields';
 }

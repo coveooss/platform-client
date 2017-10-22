@@ -98,7 +98,26 @@ export class RequestUtils {
     });
   }
 
-  // TODO
-  static delete(url: string, apiKey: string, body: any): any {
+  static delete(url: string, apiKey: string): any {
+    return new Promise((resolve: (value?: any | Thenable<{}>) => void, reject: (error: any) => void) => {
+      request(
+        url,
+        {
+          method: 'DELETE',
+          auth: { 'bearer': apiKey },
+          json: true
+        },
+        (err: any, response: request.RequestResponse) => {
+          if (err) {
+            reject(err);
+          } else {
+            if (response.statusCode === 201 || response.statusCode === 204) {
+              resolve(response)
+            } else {
+              reject(JSON.stringify(response.body));
+            }
+          }
+        })
+    });
   }
 }

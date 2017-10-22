@@ -64,6 +64,17 @@ export class FieldController {
             })
         }
 
+        if (diffResult.DELETED.length > 0) {
+          Logger.verbose(`Deleting ${diffResult.UPDATED.length} existing field${diffResult.NEW.length > 1 ? 's' : ''} from ${organization2.Id}`)
+          this.deleteFields(organization2, _.pluck(diffResult.DELETED, 'name'))
+            .then((response: RequestResponse[]) => {
+              console.log('********** done updating fields ***********');
+
+            }).catch((err: any) => {
+              Logger.error(StaticErrorMessage.UNABLE_TO_DELETE_FIELDS, err)
+            })
+        }
+
 
       }).catch((err: any) => {
         Logger.error(StaticErrorMessage.UNABLE_TO_LOAD_FIELDS, err);
@@ -88,8 +99,12 @@ export class FieldController {
     }));
   }
 
-  public deleteFields(org: Organization, fieldModels: IStringMap<string>[]) {
-    // TODO
+  public deleteFields(org: Organization, fieldList: string[]) {
+    Assert.isLargerThan(0, fieldList.length);
+    return Promise.all(_.map(ArrayUtils.chunkArray(fieldList, this.fieldsPerBatch), (batch: string[]) => {
+      let url = UrlService.deleteFields(org.Id, batch);
+      return RequestUtils.delete(url, org.ApiKey);
+    }));
   }
 
   public getFieldModels(fields: Field[]): IStringMap<string>[] {
