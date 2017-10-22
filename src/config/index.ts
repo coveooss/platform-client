@@ -1,4 +1,6 @@
 import { Logger } from '../commons/logger';
+import * as chalk from 'chalk';
+
 export interface IConfig {
 	workingDirectory: string;
 	color: string;
@@ -16,8 +18,9 @@ class Config {
 		this.env = process.env.NODE_ENV || 'development';
 	}
 
-	public getConfiguration(): IConfig  {
+	public getConfiguration(): IConfig {
 		try {
+			Logger.info(`Loading ${chalk.underline(this.env)} environment`);
 			return require(`./../environments/${this.env}.js`)
 		} catch (error) {
 			Logger.error('Unable to load environment', error)

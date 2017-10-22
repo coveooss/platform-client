@@ -1,6 +1,7 @@
+setEnvironmentIfNecessary();
+
 import { GraduateCommand } from './commands/GraduateCommand';
 import { StringUtils } from './commons/utils/StringUtils';
-import { config } from './config/index';
 import { Logger } from './commons/logger';
 import { InteractiveMode, IAnswer } from './console/InteractiveMode';
 import { SettingsController } from './console/SettingsController';
@@ -10,14 +11,26 @@ const program = require('commander');
 const pkg: any = require('./../package.json');
 const prompt = inquirer.createPromptModule();
 
-Logger.info(`Environment: ${config.env}\n`);
-
-// function setEnvironment(env: string) { }
+function setEnvironmentIfNecessary() {
+  let i = process.argv.indexOf('--env');
+  if (i !== -1 && i + 1 < process.argv.length) {
+    let env = process.argv[i + 1]
+    process.env.NODE_ENV = env;
+  }
+}
 
 program
   // TODO set Environment
-  // .option('--env [value]', 'Environment', setEnvironment)
+  .option('--env [value]', 'Environment')
   .version(pkg.version)
+
+program.on('--help', function () {
+  console.log('');
+  console.log('  Examples:');
+  console.log('');
+  console.log('    $ graduate dev-org prod-org dev-api-key prod-api-key --fields -Ppd');
+  console.log('');
+});
 
 // Basic Graduation command
 program
