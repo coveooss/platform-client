@@ -3,6 +3,7 @@ import { StringUtils } from './commons/utils/StringUtils';
 import { config } from './config/index';
 import { Logger } from './commons/logger';
 import { InteractiveMode, IAnswer } from './console/InteractiveMode';
+import { SettingsController } from './console/SettingsController';
 import * as inquirer from 'inquirer';
 import * as fs from 'fs-extra';
 const program = require('commander');
@@ -25,9 +26,9 @@ program
   .option('-f, --fields', 'Graduate fields')
   .option('-s, --sources', 'Graduate sources')
   .option('-e, --extensions', 'Graduate extensions')
-  .option('-u, --update', 'Graduate updated data only')
-  .option('-d, --delete', 'Only delete data that is no longer in the origin Organization')
-  .option('-c, --create', 'Only create data that is not existing in the destination Organization')
+  .option('-P, --POST', 'Allow POST operations on the destination Organization')
+  .option('-p, --PUT', 'Allow PUT operations on the destination Organization')
+  .option('-d, --DELETE', 'Allow DELETE operations on the destination Organization')
   .action((originOrganization: string, destinationOrganization: string, originApiKey: string, destinationApiKey: string, options: any) => {
     let command = new GraduateCommand(originOrganization, destinationOrganization, originApiKey, destinationApiKey);
 
@@ -50,7 +51,7 @@ program
     interactiveMode.start()
       .then((answers: IAnswer) => {
         let fileName = answers.filename;
-        let settings = interactiveMode.genSettings(answers);
+        let settings = SettingsController.genSettings(answers);
         // Saving settings into a file
         fs.writeJSON(fileName, settings, { spaces: 2 })
           .then(() => {
@@ -66,9 +67,16 @@ program
 
 program
   // Currently loads the file from current directory
-  .command('loadSettings <filePath>')
+  .command('loadSettings <filename>')
   .description('Execute commande from json file')
   .action((filename: string) => {
+    fs.readJson(filename)
+      .then((settings: any) => {
+        Logger.info('To complete');
+      })
+      .catch((err: any) => {
+        Logger.error(err)
+      })
   });
 
 
