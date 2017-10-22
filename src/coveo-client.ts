@@ -2,10 +2,12 @@ import { GraduateCommand } from './commands/GraduateCommand';
 import { StringUtils } from './commons/utils/StringUtils';
 import { config } from './config/index';
 import { Logger } from './commons/logger';
-import { IAnswerVariables, InquirerQuestions } from './console/inquirerQuestions';
+import { InteractiveMode, IAnswer } from './console/InteractiveMode';
 import * as inquirer from 'inquirer';
+import * as fs from 'fs-extra';
 const program = require('commander');
 const pkg: any = require('./../package.json');
+const prompt = inquirer.createPromptModule();
 
 Logger.info(`Environment: ${config.env}\n`);
 
@@ -40,29 +42,33 @@ program
     }
   });
 
-let prompt = inquirer.createPromptModule();
-let questions = new InquirerQuestions();
-
-prompt(questions.getQuestions()).then((answers: IAnswerVariables) => {
-  console.log('*********************');
-  console.log(answers);
-  console.log('*********************');
-  
-  let settings = questions.genSettings(answers);
-})
 program
-  .command('initSettings')
+  .command('init')
   .description('Launch interactive setting')
-// .action((json, orgId, sourceId) => { pushDocuments([json], orgId, sourceId) });
+  .action(() => {
+    let interactiveMode = new InteractiveMode();
+    interactiveMode.start()
+      .then((answers: IAnswer) => {
+        let fileName = answers.filename;
+        let settings = interactiveMode.genSettings(answers);
+        // Saving settings into a file
+        fs.writeJSON(fileName, settings, { spaces: 2 })
+          .then(() => {
+            Logger.info('File Saved');
+          }).catch((err: any) => {
+            Logger.error('Unable to save setting file', err)
+          })
+      })
+      .catch((err: any) => {
+        Logger.error('Error in interactive mode', err)
+      })
+  });
 
 program
+  // Currently loads the file from current directory
   .command('loadSettings <filePath>')
   .description('Execute commande from json file')
-  .action((filePath: string) => {
-    console.log('*********************');
-    console.log(filePath);
-    console.log('*********************');
-
+  .action((filename: string) => {
   });
 
 

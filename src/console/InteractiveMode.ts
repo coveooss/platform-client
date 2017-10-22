@@ -1,11 +1,13 @@
 import { Question } from 'inquirer';
 import { Answers } from 'inquirer';
 import { Utils } from '../commons/utils/Utils';
+import * as inquirer from 'inquirer';
+import { Logger } from '../commons/logger';
 
 export interface IGraduateSettingOptions {
-  create: boolean,
-  update: boolean,
-  delete: boolean
+  POST: boolean,
+  PUT: boolean,
+  DELETE: boolean
 };
 
 export interface ISourceContentSettingOptions {
@@ -40,33 +42,38 @@ export interface ISettings {
   }
 };
 
-export interface IAnswerVariables {
-  ORIGIN_ORG_ID: string;
-  ORIGIN_ORG_KEY: string;
-  DESTINATION_ORG_ID: string;
-  DESTINATION_ORG_KEY: string;
-  COMMAND: string;
-  GRADUATE_FIELDS_OPERATION: string;
-  GRADUATE_SOURCES_OPERATION: string;
-  GRADUATE_EXTENSIONS_OPERATION: string;
-  CONTENT_TO_GRADUATE: string;
-  SOURCE_CONTENT_TO_GRADUATE: string;
-  FILENAME: string;
+export interface IAnswer {
+  originOrganizationId: string;
+  originOrganizationKey: string;
+  destinationOrganizationId: string;
+  destinationOrganizationKey: string;
+  command: string;
+  graduateFieldsOperation: string[];
+  graduateSourceOperation: string[];
+  graduateExtensionsOperation: string[];
+  contentToGraduate: string[];
+  sourceContentToGraduate: string[];
+  filename: string;
 };
 
-export class InquirerQuestions implements IAnswerVariables {
+export class InteractiveMode {
 
   public ORIGIN_ORG_ID: string = 'originOrganizationId';
   public ORIGIN_ORG_KEY: string = 'originOrganizationKey';
-  public DESTINATION_ORG_ID: string = 'originOrganizationId';
-  public DESTINATION_ORG_KEY: string = 'originOrganizationKey';
+  public DESTINATION_ORG_ID: string = 'destinationOrganizationId';
+  public DESTINATION_ORG_KEY: string = 'destinationOrganizationKey';
   public COMMAND: string = 'command';
   public GRADUATE_FIELDS_OPERATION: string = 'graduateFieldsOperation';
   public GRADUATE_SOURCES_OPERATION: string = 'graduateSourceOperation';
   public GRADUATE_EXTENSIONS_OPERATION: string = 'graduateExtensionsOperation';
-  public CONTENT_TO_GRADUATE: string = 'objectsToGraduate';
-  public SOURCE_CONTENT_TO_GRADUATE: string = 'objectsToGraduate';
+  public CONTENT_TO_GRADUATE: string = 'contentToGraduate';
+  public SOURCE_CONTENT_TO_GRADUATE: string = 'sourceContentToGraduate';
   public FILENAME: string = 'filename';
+
+  public start(): Promise<Answers> {
+    const prompt = inquirer.createPromptModule();
+    return prompt(this.getQuestions())
+  }
 
   public getOriginOrganizationId(): Question {
     return {
@@ -109,17 +116,24 @@ export class InquirerQuestions implements IAnswerVariables {
       type: 'list',
       name: this.COMMAND,
       message: 'Command to execute?',
-      choices: ['graduate'] // TODO: add diff command here
+      choices: [
+        { name: 'graduate', checked: true },
+        { name: 'diff', disabled: 'Not implemented yet' }
+      ]
     }
   }
 
-  public getCONTENTsToGraduate(): Question {
+  public getContentsToGraduate(): Question {
     return {
       type: 'checkbox',
       name: this.CONTENT_TO_GRADUATE,
       message: 'Graduate Fields?',
-      choices: ['fields', 'extensions', 'sources'],
-      when: (answer: Answers) => answer[this.COMMAND].indexOf('graduate') !== -1,
+      choices: [
+        { name: 'fields' },
+        { name: 'extensions', disabled: 'Not implemented yet' },
+        { name: 'sources' }
+      ],
+      when: (answer: IAnswer) => answer.command.indexOf('graduate') !== -1,
       validate: this.checkboxValidator('You need to select at least 1 content to graduate.')
     };
   }
@@ -137,8 +151,13 @@ export class InquirerQuestions implements IAnswerVariables {
       type: 'checkbox',
       name: this.SOURCE_CONTENT_TO_GRADUATE,
       message: 'What parts of the source you want to graduate?',
-      choices: ['Configuration', 'Objects (Salesforce only)', 'Mappings', 'Extensions'],
-      when: (answer: Answers) => answer[this.CONTENT_TO_GRADUATE].indexOf('sources') !== -1,
+      choices: [
+        { name: 'Configuration', value: 'configuration' },
+        { name: 'Objects (Salesforce only)', value: 'objects' },
+        { name: 'Mappings', value: 'mappings' },
+        { name: 'Extensions', value: 'extensions' }
+      ],
+      when: (answer: IAnswer) => answer.contentToGraduate.indexOf('sources') !== -1,
       validate: this.checkboxValidator('You need to select at least 1 source content to graduate.')
     };
   }
@@ -164,10 +183,12 @@ export class InquirerQuestions implements IAnswerVariables {
     return {
       type: 'checkbox',
       name: variable,
-      message: `Select the operations to apply to the ${content} graduation:`,
-      choices: ['Create', 'Update', 'Delete'],
+      message: `Select the allowed operations on the destination organization for the ${content} graduation:`,
+      choices: ['POST', 'PUT', 'DELETE'],
       validate: this.checkboxValidator('You need to select at least 1 graduate operation.'),
-      when: (answer: Answers) => answer[this.CONTENT_TO_GRADUATE].indexOf(content) !== -1,
+      when: (answer: IAnswer) => {
+        return answer.contentToGraduate.indexOf(content) !== -1
+      }
     };
   }
 
@@ -178,7 +199,7 @@ export class InquirerQuestions implements IAnswerVariables {
       this.getDestinationOrganizationId(),
       this.getDestinationOrganizationKey(),
       this.getCommandList(),
-      this.getCONTENTsToGraduate(),
+      this.getContentsToGraduate(),
       this.getGraduateOperationForFields(),
       this.getGraduateOperationForExtensions(),
       this.getSourceElementToGraduate(),
@@ -194,21 +215,61 @@ export class InquirerQuestions implements IAnswerVariables {
     return (input: string, answers?: Answers) => Utils.isEmptyArray(input) ? message : true;
   }
 
-  public genSettings(answers: IAnswerVariables) {
+  public genSettings(answers: IAnswer): ISettings {
     let settings: ISettings = {
       organizations: {
         origin: {
-          id: answers.ORIGIN_ORG_ID,
-          apiKey: answers.ORIGIN_ORG_KEY
+          id: answers.originOrganizationId,
+          apiKey: answers.originOrganizationKey
         },
         destination: {
-          id: answers.DESTINATION_ORG_ID,
-          apiKey: answers.DESTINATION_ORG_KEY
+          id: answers.destinationOrganizationId,
+          apiKey: answers.destinationOrganizationKey
         }
       },
       graduate: {}
     };
-    
-    // answers
+
+    // TODO: Remove code duplication
+
+    if (answers.contentToGraduate) {
+      if (answers.contentToGraduate.indexOf('fields') !== -1) {
+        settings.graduate.fields = {
+          options: {
+            POST: answers.graduateFieldsOperation.indexOf('POST') !== -1,
+            PUT: answers.graduateFieldsOperation.indexOf('PUT') !== -1,
+            DELETE: answers.graduateFieldsOperation.indexOf('DELETE') !== -1
+          }
+        }
+      }
+
+      if (answers.contentToGraduate.indexOf('extensions') !== -1) {
+        settings.graduate.extensions = {
+          options: {
+            POST: answers.graduateExtensionsOperation.indexOf('POST') !== -1,
+            PUT: answers.graduateExtensionsOperation.indexOf('PUT') !== -1,
+            DELETE: answers.graduateExtensionsOperation.indexOf('DELETE') !== -1
+          }
+        }
+      }
+
+      if (answers.contentToGraduate.indexOf('sources') !== -1) {
+        settings.graduate.sources = {
+          options: {
+            POST: answers.graduateSourceOperation.indexOf('POST') !== -1,
+            PUT: answers.graduateSourceOperation.indexOf('PUT') !== -1,
+            DELETE: answers.graduateSourceOperation.indexOf('DELETE') !== -1
+          },
+          content: {
+            configuration: answers.sourceContentToGraduate.indexOf('configuration') !== -1,
+            objects: answers.sourceContentToGraduate.indexOf('objects') !== -1,
+            mapping: answers.sourceContentToGraduate.indexOf('mapping') !== -1,
+            extensions: answers.sourceContentToGraduate.indexOf('extensions') !== -1
+          }
+        }
+      }
+    }
+
+    return settings;
   }
 }
