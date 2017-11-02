@@ -1,3 +1,4 @@
+/*
 // Old school import so we can access the package.json file and other libraries
 declare function require(name: string): any;
 // External packages
@@ -31,10 +32,10 @@ if (config.env !== 'production') {
   console.log(chalk.white('Environment:', config.env));
 }
 
-let commandHistory: Array<string> = new Array<string>();
+let commandHistory: string[] = new Array<string>();
 
 // Handle the commands by sending them to the parser
-function processCommand(parametersList: Array<string>) {
+function processCommand(parametersList: string[]) {
   if (parametersList) {
     addToHistory(parametersList.join(' '));
     switch (parametersList[0]) {
@@ -42,16 +43,16 @@ function processCommand(parametersList: Array<string>) {
         console.log('Exiting coveo-console...');
         console.log('');
         process.exit();
-        break
+        break;
       // TODO: Convertir en commande...
       case 'history':
         if (parametersList.length === 1) {
           showHistory();
         } else {
           try {
-            let selectedCommand: number = Number(parametersList[1])
+            let selectedCommand: number = Number(parametersList[1]);
 
-            let commandToExecute: Array<string> = commandHistory[selectedCommand].split(' ');
+            let commandToExecute: string[] = commandHistory[selectedCommand].split(' ');
             if (commandToExecute[0] === 'help') {
               displayHelp();
             } else {
@@ -102,7 +103,7 @@ function showHistory(): void {
   }
 
   for (let index = 0; index < commandHistory.length; index++) {
-    console.log(`[${index}] ${commandHistory[index]}`)
+    console.log(`[${index}] ${commandHistory[index]}`);
   }
 }
 
@@ -113,18 +114,20 @@ function displayHelp(): void {
 // Initialize the console
 // TODO: Manage the fact that you can execute it from different places...
 storage.initSync({
-	dir: './storage',
-	stringify: JSON.stringify,
-	parse: JSON.parse,
-	encoding: 'utf8',
-	logging: false,
-	continuous: true,
-	interval: false,
+  dir: './storage',
+  stringify: JSON.stringify,
+  parse: JSON.parse,
+  encoding: 'utf8',
+  logging: false,
+  continuous: true,
+  interval: false,
   ttl: false
 });
 
 if (storage.keys().indexOf('command_history') > -1) {
-    commandHistory = storage.getItemSync('command_history');
+  commandHistory = storage.getItemSync('command_history');
 }
 
 InitializeConsole(processCommand);
+
+*/

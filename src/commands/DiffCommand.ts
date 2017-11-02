@@ -3,7 +3,7 @@ import * as opn from 'opn';
 // Internal packages
 import { BaseCommand } from './BaseCommand';
 import { ICommand } from '../commons/interfaces/ICommand';
-import { DiffResultsPageHtmlTemplate, DiffResultsItemTemplate } from '../commons/templates/diff-results-template'
+import { DiffResultsPageHtmlTemplate, DiffResultsItemTemplate } from '../commons/templates/diff-results-template';
 import { FileUtils } from '../commons/utils/FileUtils';
 import { Dictionary } from '../commons/collections/Dictionary';
 import { OrganizationController } from '../controllers/OrganizationController';
@@ -22,178 +22,161 @@ import { DiffUtils } from '../commons/utils/DiffUtils';
 import { IDiffResult } from '../commons/interfaces/IDiffResult';
 
 // Command class
-export class DiffCommand extends BaseCommand implements ICommand {
-  // Command name
-  static COMMAND_NAME: string = 'diff';
+export class DiffCommand {
+  private organization1: Organization;
+  private organization2: Organization;
 
-  constructor() {
-    super();
-
-    this.mandatoryParameters.push('originOrganization');
-    this.mandatoryParameters.push('destinationOrganization');
-
-    this.optionalParameters.Add('originapikey', '');
-    this.optionalParameters.Add('destinationapikey', '');
-    this.optionalParameters.Add('outputfile', `${config.workingDirectory}output/diff-${Date.now()}.html`);
-    this.optionalParameters.Add('fieldstoignore', 'id,account,html,configuration.parameters.OrganizationId.value,configuration.parameters.SourceId.value');
-    this.optionalParameters.Add('scope', 'organization,fields,extensions,authentications,usageanalytics,sources,securityproviders,querypipelines,hostedsearchpages');
-    this.optionalParameters.Add('openinbrowser', 'true');
-
-    this.validations.Add('(command.optionalParameters.Item("originapikey") != "")',
-      'Need an API key for the origin organization (originApiKey), as a parameter or in the settings file');
-    this.validations.Add('(command.optionalParameters.Item("destinationapikey") != "")',
-      'Need an API key for the destination organization (destinationApiKey), as a parameter or in the settings file');
+  constructor(
+    originOrganization: string,
+    destinationOrganization: string,
+    originApiKey: string,
+    destinationApiKey: string,
+  ) {
+    this.organization1 = new Organization(originOrganization, originApiKey);
+    this.organization2 = new Organization(destinationOrganization, destinationApiKey);
   }
 
-  public Execute(): void {
-    let organization1: Organization = new Organization(
-      this.mandatoryParameters[0],
-      this.optionalParameters.Item('originapikey')
-    );
-    let organization2: Organization = new Organization(
-      this.mandatoryParameters[1],
-      this.optionalParameters.Item('destinationapikey')
-    );
+  // public diff(): void {
+  //   let organization1: Organization = new Organization(
+  //     this.mandatoryParameters[0],
+  //     this.optionalParameters.Item('originapikey')
+  //   );
+  //   let organization2: Organization = new Organization(
+  //     this.mandatoryParameters[1],
+  //     this.optionalParameters.Item('destinationapikey')
+  //   );
 
-    // Get the params to strip.
-    let fieldsToIgnore: Array<string> = this.optionalParameters.Item('fieldstoignore').toLowerCase().split(',');
+  //   // Get the params to strip.
+  //   let fieldsToIgnore: string[] = this.optionalParameters.Item('fieldstoignore').toLowerCase().split(',');
 
-    // Create an array of diffs to put the results for each section
-    let diffResults: Dictionary<IDiffResult<any>> = new Dictionary<IDiffResult<any>>();
+  //   // Create an array of diffs to put the results for each section
+  //   let diffResults: Dictionary<IDiffResult<any>> = new Dictionary<IDiffResult<any>>();
 
-    /*** Organizations Diff ***/
-    if (this.inScope('organization')) {
-      let organizationController: OrganizationController = new OrganizationController();
-      diffResults.Add(
-        'Organization configuration',
-        organizationController.diff(organization1, organization2, fieldsToIgnore)
-      );
-    }
+  //   /*** Organizations Diff ***/
+  //   if (this.inScope('organization')) {
+  //     let organizationController: OrganizationController = new OrganizationController();
+  //     diffResults.Add(
+  //       'Organization configuration',
+  //       organizationController.diff(organization1, organization2, fieldsToIgnore)
+  //     );
+  //   }
 
-    /*** Fields Diff ***/
-    if (this.inScope('fields')) {
-      let fieldController: FieldController = new FieldController();
-      let fieldDiff: Dictionary<IDiffResult<any>> = fieldController.diff(organization1, organization2, fieldsToIgnore);
+  //   /*** Fields Diff ***/
+  //   let fieldController: FieldController = new FieldController();
+  //   let fieldDiff: Dictionary<IDiffResult<any>> = fieldController.diff(organization1, organization2, fieldsToIgnore);
 
-      diffResults = DiffUtils.addToMainDiff('Added or deleted Fields', diffResults, fieldDiff);
-    }
+  //   diffResults = DiffUtils.addToMainDiff('Added or deleted Fields', diffResults, fieldDiff);
 
-    /*** Security providers Diff ***/
-    if (this.inScope('securityproviders')) {
-      let securityProviderController: SecurityProviderController = new SecurityProviderController();
-      let securityProviderDiff: Dictionary<IDiffResult<any>> = securityProviderController.diff(organization1, organization2, fieldsToIgnore);
+  //   /*** Security providers Diff ***/
+  //   if (this.inScope('securityproviders')) {
+  //     let securityProviderController: SecurityProviderController = new SecurityProviderController();
+  //     let securityProviderDiff: Dictionary<IDiffResult<any>> = securityProviderController.diff(organization1, organization2, fieldsToIgnore);
 
-      diffResults = DiffUtils.addToMainDiff('Added or deleted Security Providers', diffResults, securityProviderDiff);
-    }
+  //     diffResults = DiffUtils.addToMainDiff('Added or deleted Security Providers', diffResults, securityProviderDiff);
+  //   }
 
-    /*** Sources Diff ***/
-    if (this.inScope('sources')) {
-      let sourceController: SourceController = new SourceController();
-      let sourceDiff: Dictionary<IDiffResult<any>> = sourceController.diff(organization1, organization2, fieldsToIgnore);
+  //   /*** Sources Diff ***/
+  //   if (this.inScope('sources')) {
+  //     let sourceController: SourceController = new SourceController();
+  //     let sourceDiff: Dictionary<IDiffResult<any>> = sourceController.diff(organization1, organization2, fieldsToIgnore);
 
-      diffResults = DiffUtils.addToMainDiff('Added or deleted Sources', diffResults, sourceDiff);
-    }
+  //     diffResults = DiffUtils.addToMainDiff('Added or deleted Sources', diffResults, sourceDiff);
+  //   }
 
-    /*** Extensions Diff ***/
-    if (this.inScope('extensions')) {
-      let extensionController: ExtensionController = new ExtensionController();
-      let extensionsDiff: Dictionary<IDiffResult<any>> = extensionController.diff(organization1, organization2, fieldsToIgnore);
+  //   /*** Extensions Diff ***/
+  //   if (this.inScope('extensions')) {
+  //     let extensionController: ExtensionController = new ExtensionController();
+  //     let extensionsDiff: Dictionary<IDiffResult<any>> = extensionController.diff(organization1, organization2, fieldsToIgnore);
 
-      diffResults = DiffUtils.addToMainDiff('Added or deleted Extensions', diffResults, extensionsDiff);
-    }
+  //     diffResults = DiffUtils.addToMainDiff('Added or deleted Extensions', diffResults, extensionsDiff);
+  //   }
 
-    /*** Query pipelines Diff ***/
-    if (this.inScope('querypipelines')) {
-      let queryPipelineController: QueryPipelineController = new QueryPipelineController();
-      let queryPipelinesDiff: Dictionary<IDiffResult<any>> = queryPipelineController.diff(organization1, organization2, fieldsToIgnore);
+  //   /*** Query pipelines Diff ***/
+  //   if (this.inScope('querypipelines')) {
+  //     let queryPipelineController: QueryPipelineController = new QueryPipelineController();
+  //     let queryPipelinesDiff: Dictionary<IDiffResult<any>> = queryPipelineController.diff(organization1, organization2, fieldsToIgnore);
 
-      diffResults = DiffUtils.addToMainDiff('Added or deleted Query Pipelines', diffResults, queryPipelinesDiff);
-    }
+  //     diffResults = DiffUtils.addToMainDiff('Added or deleted Query Pipelines', diffResults, queryPipelinesDiff);
+  //   }
 
-    /*** Search API Authentication Diff ***/
-    if (this.inScope('authentications')) {
-      let searchApiAuthenticationController: SearchApiAuthenticationController = new SearchApiAuthenticationController();
-      let searchApiAuthenticationDiff: Dictionary<IDiffResult<any>> = searchApiAuthenticationController.diff(organization1, organization2, fieldsToIgnore);
+  //   /*** Search API Authentication Diff ***/
+  //   if (this.inScope('authentications')) {
+  //     let searchApiAuthenticationController: SearchApiAuthenticationController = new SearchApiAuthenticationController();
+  //     let searchApiAuthenticationDiff: Dictionary<IDiffResult<any>> = searchApiAuthenticationController.diff(organization1, organization2, fieldsToIgnore);
 
-      diffResults = DiffUtils.addToMainDiff('Added or deleted Authentications', diffResults, searchApiAuthenticationDiff);
-    }
+  //     diffResults = DiffUtils.addToMainDiff('Added or deleted Authentications', diffResults, searchApiAuthenticationDiff);
+  //   }
 
-    /*** Hosted Search Pages Diff ***/
-    if (this.inScope('hostedsearchpages')) {
-      let hostedSearhPagesController: HostedSearchPagesController = new HostedSearchPagesController();
-      let hostedSearchPagesDiff: Dictionary<IDiffResult<any>> = hostedSearhPagesController.diff(organization1, organization2, fieldsToIgnore);
+  //   /*** Hosted Search Pages Diff ***/
+  //   if (this.inScope('hostedsearchpages')) {
+  //     let hostedSearhPagesController: HostedSearchPagesController = new HostedSearchPagesController();
+  //     let hostedSearchPagesDiff: Dictionary<IDiffResult<any>> = hostedSearhPagesController.diff(organization1, organization2, fieldsToIgnore);
 
-      diffResults = DiffUtils.addToMainDiff('Added or deleted Hosted Search Pages', diffResults, hostedSearchPagesDiff);
-    }
+  //     diffResults = DiffUtils.addToMainDiff('Added or deleted Hosted Search Pages', diffResults, hostedSearchPagesDiff);
+  //   }
 
-    /*** UA Diff ***/
-    if (this.inScope('usageanalytics')) {
-      let usageAnalyticsController: UsageAnalyticsController = new UsageAnalyticsController();
-      let usageAnalyticsDiff: Dictionary<IDiffResult<any>> = usageAnalyticsController.diff(organization1, organization2, fieldsToIgnore);
+  //   /*** UA Diff ***/
+  //   if (this.inScope('usageanalytics')) {
+  //     let usageAnalyticsController: UsageAnalyticsController = new UsageAnalyticsController();
+  //     let usageAnalyticsDiff: Dictionary<IDiffResult<any>> = usageAnalyticsController.diff(organization1, organization2, fieldsToIgnore);
 
-      diffResults = DiffUtils.addToMainDiff('Added or deleted Usage Analytics Reports', diffResults, usageAnalyticsDiff);
-    }
+  //     diffResults = DiffUtils.addToMainDiff('Added or deleted Usage Analytics Reports', diffResults, usageAnalyticsDiff);
+  //   }
 
-    let diffReport: string = '';
-    let extension: string = '.html';
+  //   let diffReport: string = '';
+  //   let extension: string = '.html';
 
-    if (this.optionalParameters.Item('openinbrowser') === 'true') {
-      // TODO: Build the sections based on the diff results provided
-      let formattedDiff: Array<string> = new Array<string>();
-      diffResults.Keys().forEach(function (key: string) {
-        if (diffResults.Item(key).ContainsItems()) {
-          formattedDiff.push(DiffResultsItemTemplate(key, diffResults.Item(key)));
-        }
-      });
+  //   // TODO: Build the sections based on the diff results provided
+  //   let formattedDiff: string[] = new Array<string>();
+  //   diffResults.Keys().forEach((key: string) => {
+  //     if (diffResults.Item(key).ContainsItems()) {
+  //       formattedDiff.push(DiffResultsItemTemplate(key, diffResults.Item(key)));
+  //     }
+  //   });
 
-      // TODO: Do something if formatted diff is empty... like showing a "the org are the same" message
-      // Format the whole diff document
-      diffReport = DiffResultsPageHtmlTemplate(
-        organization1.Id,
-        organization2.Id,
-        formattedDiff
-      );
-    } else {
-      diffReport = JSON.stringify(diffResults);
-      extension = 'json';
-    }
+  //   // TODO: Do something if formatted diff is empty... like showing a "the org are the same" message
+  //   // Format the whole diff document
+  //   diffReport = DiffResultsPageHtmlTemplate(
+  //     organization1.Id,
+  //     organization2.Id,
+  //     formattedDiff
+  //   );
 
-    // Write the report file to disk
-    FileUtils.writeFile(this.optionalParameters.Item('outputfile').replace('.html', extension), diffReport, function (err: NodeJS.ErrnoException) {
-      if (err) {
-        throw console.error(err);
-      }
-    });
+  //   // Write the report file to disk
+  //   FileUtils.writeFile(this.optionalParameters.Item('outputfile').replace('.html', extension), diffReport, function(err: NodeJS.ErrnoException) {
+  //     if (err) {
+  //       throw console.error(err);
+  //     }
+  //   });
 
-    // Display the report location and, if the option is set to true, open in browser.
-    console.log('Diff is done, you can view results here: ' + this.optionalParameters.Item('outputfile').replace('.html', extension));
+  //   // Display the report location and, if the option is set to true, open in browser.
+  //   console.log('Diff is done, you can view results here: ' + this.optionalParameters.Item('outputfile').replace('.html', extension));
 
-    if (this.optionalParameters.Item('openinbrowser') === 'true') {
-      opn(this.optionalParameters.Item('outputfile'));
-    }
-  }
+  //   if (this.optionalParameters.Item('openinbrowser') === 'true') {
+  //     opn(this.optionalParameters.Item('outputfile'));
+  //   }
+  // }
 
-  private inScope(section: string): boolean {
-    return (this.optionalParameters.Item('scope').indexOf(section) > -1);
-  }
+  // private inScope(section: string): boolean {
+  //   return (this.optionalParameters.Item('scope').indexOf(section) > -1);
+  // }
 
-  private jsonDiffOptions(): {} {
-    return {
-      objectHash: function (obj: any) {
-        return obj._id || obj.id;
-      },
-      arrays: {
-        detectMove: true,
-        includeValueOnMove: false
-      },
-      textDiff: {
-        minLength: 60
-      },
-      propertyFilter: function (name: any, context: any) {
-        return name.slice(0, 1) !== '$';
-      },
-      cloneDiffValues: false
-    }
-  }
+  // private jsonDiffOptions(): {} {
+  //   return {
+  //     objectHash(obj: any) {
+  //       return obj._id || obj.id;
+  //     },
+  //     arrays: {
+  //       detectMove: true,
+  //       includeValueOnMove: false
+  //     },
+  //     textDiff: {
+  //       minLength: 60
+  //     },
+  //     propertyFilter(name: any, context: any) {
+  //       return name.slice(0, 1) !== '$';
+  //     },
+  //     cloneDiffValues: false
+  //   };
+  // }
 }
-

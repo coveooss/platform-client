@@ -16,6 +16,9 @@ import * as _ from 'underscore';
 import * as request from 'request';
 import { ArrayUtils } from '../commons/utils/ArrayUtils';
 import { Assert } from '../commons/misc/Assert';
+import * as opn from 'opn';
+import { FileUtils } from '../commons/utils/FileUtils';
+import * as fs from 'fs-extra';
 
 export class FieldController {
 
@@ -226,5 +229,4 @@ export class FieldController {
       organization.Fields.Add(field.name, field)
     });
   }
-
 }

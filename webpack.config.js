@@ -2,10 +2,10 @@ require('colors');
 const webpack = require('webpack');
 const minimize = process.argv.indexOf('--minimize') !== -1;
 const failPlugin = require('webpack-fail-plugin');
-var path = require('path');
-var fs = require('fs');
-var nodeModules = {};
-var nodeExternals = require('webpack-node-externals');
+const path = require('path');
+const fs = require('fs');
+const nodeModules = {};
+const nodeExternals = require('webpack-node-externals');
 
 if (minimize) {
     console.log('Building minified version of the library'.bgGreen.red);
@@ -14,7 +14,7 @@ if (minimize) {
 }
 
 // Fail plugin will allow the webpack ts-loader to fail correctly when the TS compilation fails
-var plugins = [failPlugin];
+const plugins = [failPlugin];
 
 plugins.push(new webpack.HotModuleReplacementPlugin({
     multiStep: true
@@ -23,7 +23,6 @@ plugins.push(new webpack.HotModuleReplacementPlugin({
 if (minimize) {
     plugins.push(new webpack.optimize.UglifyJsPlugin());
 }
-
 
 module.exports = {
     name: 'client',

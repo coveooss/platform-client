@@ -1,0 +1,41 @@
+{
+  "organizations": {
+    "origin": {
+      "id": "ccli1i4fjw14o",
+      "apiKey": "xx95696078-7cfe-4edd-83a9-bf1714f82ff4"
+    },
+    "destination": {
+      "id": "ccli2kkfdkgfm",
+      "apiKey": "xxc6649339-c11c-428e-b7b6-b6a4cabf5db1"
+    }
+  },
+  "graduate": {
+    "sources": {
+      "options": {
+        "create": true,
+        "delete": true,
+        "update": true
+      },
+      "content": {
+        "configuration": false,
+        "objects": false,
+        "mapping": false,
+        "extensions": false
+      }
+    },
+    "fields": {
+      "options": {
+        "create": true,
+        "delete": true,
+        "update": true
+      }
+    },
+    "extensions": {
+      "options": {
+        "create": true,
+        "delete": true,
+        "update": true
+      }
+    }
+  }
+}

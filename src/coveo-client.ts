@@ -7,6 +7,12 @@ import { InteractiveMode, IAnswer } from './console/InteractiveMode';
 import { SettingsController } from './console/SettingsController';
 import * as inquirer from 'inquirer';
 import * as fs from 'fs-extra';
+import { FieldController } from './controllers/FieldController';
+import { IDiffResult } from './commons/interfaces/IDiffResult';
+import { Dictionary } from './commons/collections/Dictionary';
+import { Organization } from './models/OrganizationModel';
+import { config } from './config/index';
+
 const program = require('commander');
 const pkg: any = require('./../package.json');
 const prompt = inquirer.createPromptModule();
@@ -14,7 +20,7 @@ const prompt = inquirer.createPromptModule();
 program
   // TODO set Environment
   .option('--env [value]', 'Environment')
-  .version(pkg.version)
+  .version(pkg.version);
 
 program.on('--help', function () {
   console.log('');
@@ -39,14 +45,43 @@ program
     let command = new GraduateCommand(originOrganization, destinationOrganization, originApiKey, destinationApiKey);
 
     if (options.fields) {
-      command.graduateFields()
+      command.graduateFields();
     }
     if (options.sources) {
-      command.graduateSources()
+      command.graduateSources();
     }
     if (options.extensions) {
-      command.graduateExtensions()
+      command.graduateExtensions();
     }
+  });
+
+// Basic Diff command
+program
+  .command('diff <originOrganization> <destinationOrganization> <originApiKey> <destinationApiKey>')
+  .description('Diff 2 Organizations')
+  .option('-f, --fields', 'Diff fields')
+  .option('-s, --sources', 'Diff sources')
+  .option('-e, --extensions', 'Diff extensions')
+  .option('-b, --openInBrowser', 'Open Diff in default Browser')
+  .option('-i, --ignoreFields', 'Fields to ignore', [])
+  .option('-o, --outputfile', 'Output file', `${config.workingDirectory}output/diff-${Date.now()}.html`)
+  .option('-v, --verbose', 'Display diff information', setLogLevelToVerbose)
+  .action((originOrganization: string, destinationOrganization: string, originApiKey: string, destinationApiKey: string, options: any) => {
+    let command = new GraduateCommand(originOrganization, destinationOrganization, originApiKey, destinationApiKey);
+
+    if (options.fields) {
+      let organization1: Organization = new Organization(originOrganization, originApiKey);
+      let organization2: Organization = new Organization(destinationOrganization, destinationApiKey);
+      let fieldController: FieldController = new FieldController();
+      let fieldDiff: Dictionary<IDiffResult<any>> = fieldController.diff(organization1, organization2, ['']);
+      // command.graduateFields()
+    }
+    // if (options.sources) {
+    //   command.graduateSources()
+    // }
+    // if (options.extensions) {
+    //   command.graduateExtensions()
+    // }
   });
 
 program
@@ -64,11 +99,11 @@ program
             Logger.info('File Saved');
           }).catch((err: any) => {
             Logger.error('Unable to save setting file', err)
-          })
+          });
       })
       .catch((err: any) => {
         Logger.error('Error in interactive mode', err)
-      })
+      });
   });
 
 program
@@ -82,9 +117,8 @@ program
       })
       .catch((err: any) => {
         Logger.error(err)
-      })
+      });
   });
-
 
 program.parse(process.argv);
 
@@ -92,7 +126,7 @@ program.parse(process.argv);
 function setEnvironmentIfNecessary() {
   let i = process.argv.indexOf('--env');
   if (i !== -1 && i + 1 < process.argv.length) {
-    let env = process.argv[i + 1]
+    let env = process.argv[i + 1];
     process.env.NODE_ENV = env;
   }
 }

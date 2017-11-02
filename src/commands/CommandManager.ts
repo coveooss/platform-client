@@ -2,22 +2,22 @@
 // Internal packages
 // import { GraduateCommand } from './GraduateCommand';
 import { DiffCommand } from './DiffCommand';
-import { Dictionary } from '../commons/collections/Dictionary'
-import { ICommand } from '../commons/interfaces/ICommand'
+import { Dictionary } from '../commons/collections/Dictionary';
+import { ICommand } from '../commons/interfaces/ICommand';
 
 // Register available commands
 let commandMap: Dictionary<any> = new Dictionary<any>();
 // commandMap.Add(GraduateCommand.COMMAND_NAME, GraduateCommand);
-commandMap.Add(DiffCommand.COMMAND_NAME, DiffCommand);
+// commandMap.Add(DiffCommand.COMMAND_NAME, DiffCommand);
 
-export function HandleCommand(command: Array<string>) {
+export function HandleCommand(command: string[]) {
   try {
     let cmd: ICommand;
 
     // Get the command...
     try {
-      let requestedCommand = commandMap.Item(command[0])
-      cmd = <ICommand>(new (requestedCommand)());
+      let requestedCommand = commandMap.Item(command[0]);
+      cmd = (new (requestedCommand)()) as ICommand;
     } catch (error) {
       throw new Error('Unreckognized command.');
     }
