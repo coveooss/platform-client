@@ -38,6 +38,9 @@ module.exports = {
     externals: [nodeExternals()],
     resolve: {
         extensions: ['', '.ts', '.js'],
+        alias: {
+            env: __dirname + '/environments'
+          }
     },
     module: {
         loaders: [
