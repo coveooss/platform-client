@@ -8,6 +8,10 @@ export class FileUtils {
     fs.ensureDir(`${config.workingDirectory}output`)
       .then(() => {
         fs.writeFile(outputFile, data, errCallback);
-      })
+      });
+  }
+
+  static writeJson(outputFile: string, data: any, errCallback: (err: NodeJS.ErrnoException) => void): Promise<void> {
+    return fs.writeJSON(outputFile, data, { spaces: 2 });
   }
 }

@@ -19,10 +19,10 @@ export class GraduateCommand {
 
   public graduateFields() {
     let fieldController: FieldController = new FieldController();
-    let graduation = fieldController.graduate(this.organization1, this.organization2);
+    fieldController.graduate(this.organization1, this.organization2);
 
     // TODO: print response of graduation command
-    
+
   }
 
   public graduateSources() {
@@ -34,4 +34,3 @@ export class GraduateCommand {
   }
 
 }
-

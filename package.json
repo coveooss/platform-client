@@ -39,7 +39,7 @@
     "@types/mocha": "^2.2.43",
     "@types/node": "8.0.20",
     "@types/node-persist": "0.0.32",
-    "@types/opn": "3.0.28",
+    "@types/opn": "^3.0.28",
     "@types/promise": "^7.1.30",
     "@types/request": "^2.0.4",
     "@types/typescript": "2.0.0",
@@ -64,7 +64,8 @@
     "webpack": "1.15.0",
     "webpack-dev-server": "^1.14.1",
     "webpack-fail-plugin": "^1.0.6",
-    "webpack-node-externals": "^1.5.4"
+    "webpack-node-externals": "^1.5.4",
+    "webpack-shell-plugin": "^0.5.0"
   },
   "scripts": {
     "start": "node bin/coveo-client.js",

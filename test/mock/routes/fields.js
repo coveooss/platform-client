@@ -23,10 +23,10 @@ exports.getFields = function(req, res) {
     }
 
     // Add latency to the response
-    setTimeout((() => { res.send(response) }), 20);
+    setTimeout((() => { res.send(response) }), 1000);
 
   } else if (orgId === 'prod') {
-    setTimeout((() => { res.send(prodField) }), 20);
+    setTimeout((() => { res.send(prodField) }), 1000);
   } else {
     res.status(404).send({ 'errorCode': 'ORGANIZATION_NOT_FOUND' });
   }
@@ -41,5 +41,5 @@ exports.updateFields = function(req, res) {
 };
 
 exports.deleteFields = function(req, res) {
-  res.status(204).send({});
+  res.status(404).send({});
 };

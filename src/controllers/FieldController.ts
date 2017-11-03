@@ -39,9 +39,12 @@ export class FieldController {
    * @memberof FieldController
    */
   public graduate(organization1: Organization, organization2: Organization) {
-    Logger.info('Graduating fields')
+    Logger.info('Graduating fields');
 
     Promise.all([this.loadFields(organization1), this.loadFields(organization2)])
+    // ********************************************
+    // TODO: Ask confirmation to graduate
+    // ********************************************
       .then(() => {
         let diffResult = DiffUtils.getDiffResult(organization1.Fields, organization2.Fields);
 
@@ -52,52 +55,51 @@ export class FieldController {
               console.log('********** done creating fields ***********');
 
             }).catch((err: any) => {
-              Logger.error(StaticErrorMessage.UNABLE_TO_CREATE_FIELDS, err)
-            })
+              Logger.error(StaticErrorMessage.UNABLE_TO_CREATE_FIELDS, err);
+            });
         }
 
         if (diffResult.UPDATED.length > 0) {
-          Logger.verbose(`Updating ${diffResult.UPDATED.length} existing field${diffResult.NEW.length > 1 ? 's' : ''} in ${organization2.Id}`)
+          Logger.verbose(`Updating ${diffResult.UPDATED.length} existing field${diffResult.NEW.length > 1 ? 's' : ''} in ${organization2.Id}`);
           this.updateFields(organization2, this.getFieldModels(diffResult.UPDATED))
             .then((response: RequestResponse[]) => {
               console.log('********** done updating fields ***********');
 
             }).catch((err: any) => {
-              Logger.error(StaticErrorMessage.UNABLE_TO_UPDATE_FIELDS, err)
-            })
+              Logger.error(StaticErrorMessage.UNABLE_TO_UPDATE_FIELDS, err);
+            });
         }
 
         if (diffResult.DELETED.length > 0) {
-          Logger.verbose(`Deleting ${diffResult.UPDATED.length} existing field${diffResult.NEW.length > 1 ? 's' : ''} from ${organization2.Id}`)
+          Logger.verbose(`Deleting ${diffResult.UPDATED.length} existing field${diffResult.NEW.length > 1 ? 's' : ''} from ${organization2.Id}`);
           this.deleteFields(organization2, _.pluck(diffResult.DELETED, 'name'))
             .then((response: RequestResponse[]) => {
               console.log('********** done updating fields ***********');
 
             }).catch((err: any) => {
-              Logger.error(StaticErrorMessage.UNABLE_TO_DELETE_FIELDS, err)
-            })
+              Logger.error(StaticErrorMessage.UNABLE_TO_DELETE_FIELDS, err);
+            });
         }
-
 
       }).catch((err: any) => {
         Logger.error(StaticErrorMessage.UNABLE_TO_LOAD_FIELDS, err);
-      })
+      });
 
     // return response and summary
   }
 
-  public createFields(org: Organization, fieldModels: IStringMap<string>[]) {
+  public createFields(org: Organization, fieldModels: Array<IStringMap<string>>) {
     Assert.isLargerThan(0, fieldModels.length);
     let url = UrlService.createFields(org.Id);
-    return Promise.all(_.map(ArrayUtils.chunkArray(fieldModels, this.fieldsPerBatch), (batch: IStringMap<string>[]) => {
+    return Promise.all(_.map(ArrayUtils.chunkArray(fieldModels, this.fieldsPerBatch), (batch: Array<IStringMap<string>>) => {
       return RequestUtils.post(url, org.ApiKey, batch);
     }));
   }
 
-  public updateFields(org: Organization, fieldModels: IStringMap<string>[]) {
+  public updateFields(org: Organization, fieldModels: Array<IStringMap<string>>) {
     Assert.isLargerThan(0, fieldModels.length);
     let url = UrlService.updateFields(org.Id);
-    return Promise.all(_.map(ArrayUtils.chunkArray(fieldModels, this.fieldsPerBatch), (batch: IStringMap<string>[]) => {
+    return Promise.all(_.map(ArrayUtils.chunkArray(fieldModels, this.fieldsPerBatch), (batch: Array<IStringMap<string>>) => {
       return RequestUtils.put(url, org.ApiKey, batch);
     }));
   }
@@ -110,30 +112,30 @@ export class FieldController {
     }));
   }
 
-  public getFieldModels(fields: Field[]): IStringMap<string>[] {
+  public getFieldModels(fields: Field[]): Array<IStringMap<string>> {
     return _.pluck(fields, 'fieldModel');
   }
 
-  public diff(organization1: Organization, organization2: Organization, fieldsToIgnore: Array<string>): Dictionary<IDiffResult<any>> {
+  public diff(organization1: Organization, organization2: Organization, fieldsToIgnore: string[]): Dictionary<IDiffResult<any>> {
     let diffResults: Dictionary<IDiffResult<any>> = new Dictionary<IDiffResult<any>>();
     let diffResultsExistence: DiffResult<string> = new DiffResult<string>();
 
     try {
       // Load the configuration of the organizations
-      let organizations: Array<Organization> = [organization1, organization2];
+      let organizations: Organization[] = [organization1, organization2];
       let context: FieldController = this;
-      organizations.forEach(function (organization: Organization) {
+      organizations.forEach((organization: Organization) => {
         context.loadFieldsSync(organization);
       });
       // Diff the fields in terms of "existence"
       diffResultsExistence = DiffUtils.diffDictionaryEntries(organization1.Fields.Clone(), organization2.Fields.Clone());
       // Diff the fields that could have been changed
-      diffResultsExistence.UPDATED.Keys().forEach(function (key: string) {
+      diffResultsExistence.UPDATED.Keys().forEach((key: string) => {
         let fieldDiff = DiffUtils.diff(
           organization1.Fields.Item(key).fieldModel,
           organization2.Fields.Item(key).fieldModel,
           fieldsToIgnore
-        )
+        );
 
         if (fieldDiff.ContainsItems()) {
           diffResults.Add(key, fieldDiff);
@@ -167,11 +169,11 @@ export class FieldController {
     let totalPages: number = 0;
 
     do {
-      let jsonResponse: any = this.getFieldsPageSync(organization, currentPage)
+      let jsonResponse: any = this.getFieldsPageSync(organization, currentPage);
 
       jsonResponse['items'].forEach((f: IStringMap<string>) => {
         let field = new Field(f);
-        organization.Fields.Add(field.name, field)
+        organization.Fields.Add(field.name, field);
       });
 
       totalPages = Number(jsonResponse['totalPages']);
@@ -199,7 +201,7 @@ export class FieldController {
             this.loadOtherPages(organization, response.body.totalPages)
               .then(() => resolve())
               .catch((err: any) => {
-                reject(err)
+                reject(err);
               });
           } else {
             resolve();
@@ -207,8 +209,8 @@ export class FieldController {
 
         }).catch((err: any) => {
           reject(err);
-        })
-    })
+        });
+    });
   }
 
   public loadOtherPages(organization: Organization, totalPages: number): Promise<void> {
@@ -219,14 +221,14 @@ export class FieldController {
       .then((otherPages: RequestResponse[]) => {
         _.each(otherPages, (response: RequestResponse) => {
           this.addLoadedFieldsToOrganization(organization, response.body.items);
-        })
-      })
+        });
+      });
   }
 
-  public addLoadedFieldsToOrganization(organization: Organization, fields: IStringMap<string>[]) {
+  public addLoadedFieldsToOrganization(organization: Organization, fields: Array<IStringMap<string>>) {
     fields.forEach((f: IStringMap<string>) => {
       let field = new Field(f);
-      organization.Fields.Add(field.name, field)
+      organization.Fields.Add(field.name, field);
     });
   }
 }

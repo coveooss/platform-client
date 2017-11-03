@@ -1,7 +1,16 @@
 'use strict';
 
 const nodemon = require('gulp-nodemon');
-var gulp = require('gulp');
+const gulp = require('gulp');
+const WebpackShellPlugin = require('webpack-shell-plugin');
+
+// var plugins;
+
+// plugins = new WebpackShellPlugin({
+//   onBuildStart: ['echo "Starting----------------------------------------"'],
+//   // onBuildEnd: ['cat coveo-client.js | pbcopy && echo "process.env.DEV_SERVER = true;" > coveo-client.js && pbpaste >> coveo-client.js']
+//   onBuildEnd: ['echo "Dsadfg">>coveo-client.js']
+// });
 
 // gulp.task('devTest', ['buildTest', 'watchTest'],() => {
 //   let stream = nodemon({
@@ -18,10 +27,20 @@ var webpack = require('webpack');
 var WebpackDevServer = require('webpack-dev-server');
 var webpackConfig = require('../webpack.config.js');
 
-gulp.task('dev', ['watchTS'], (done) => {
 
-  // TODO: add a webpack server for the tests
-  webpackConfig.entry.unshift('webpack-dev-server/client?http://localhost:3001/');
+gulp.task('setupDevEnv', (done) => {
+  gulp.src('environments/**/*.js')
+    .pipe(gulp.dest('./bin/config/env'))
+  done();
+})
+
+gulp.task('dev', ['setupDevEnv', 'watchTS'], (done) => {
+
+  webpackConfig.entry.unshift('webpack-dev-server/client?http://localhost:8080/');
+
+  // Add Dev plugins
+  // webpackConfig.plugins.push(plugins);
+
   const compiler = webpack(webpackConfig);
 
   new WebpackDevServer(compiler, {

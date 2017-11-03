@@ -9,7 +9,7 @@ import * as _ from 'underscore';
 import { DiffResultArray } from '../../models/DiffResultArray';
 
 export class DiffUtils {
-  static diff(json1: any, json2: any, fieldsToIgnore: Array<string>, recursiveFieldsRemoval: boolean = false): IDiffResult<any> {
+  static diff(json1: any, json2: any, fieldsToIgnore: string[], recursiveFieldsRemoval: boolean = false): IDiffResult<any> {
     let diffResult: IDiffResult<any> = new DiffResult<any>();
 
     try {
@@ -21,7 +21,7 @@ export class DiffUtils {
         flat2 = JsonUtils.recurivelyRemoveFieldsFromJson(flat2, fieldsToIgnore);
       }
 
-      flat1.Keys().forEach(function (key: string) {
+      flat1.Keys().forEach((key: string) => {
         if (flat2.ContainsKey(key)) {
           // The key is in both dictionary, compare the values
           if (String(flat1.Item(key)) !== String(flat2.Item(key))) {
@@ -39,7 +39,7 @@ export class DiffUtils {
       });
 
       // Add the keys that were not in the first json to the deleted list
-      flat2.Keys().forEach(function (key: string) {
+      flat2.Keys().forEach((key: string) => {
         diffResult.DELETED.Add(key, flat2.Item(key));
       });
     } catch (err) {
@@ -88,7 +88,7 @@ export class DiffUtils {
     let diffResult: IDiffResult<string> = new DiffResult<string>();
 
     try {
-      dict1.Keys().forEach(function (key: string) {
+      dict1.Keys().forEach((key: string) => {
         if (dict2.ContainsKey(key)) {
           if (!_.isEqual(dict1.Item(key), dict2.Item(key))) {
             diffResult.UPDATED.Add(key, dict1.Item(key));
@@ -103,7 +103,7 @@ export class DiffUtils {
       });
 
       // Add the keys that were not in the first json to the deleted list
-      dict2.Keys().forEach(function (key: string) {
+      dict2.Keys().forEach((key: string) => {
         diffResult.DELETED.Add(key, dict2.Item(key));
       });
     } catch (err) {
@@ -115,7 +115,7 @@ export class DiffUtils {
   }
 
   // TODO: Do not work. Need to create unit tests
-  static diffArrays(array1: Array<any>, array2: Array<any>, fieldsToIgnore: Array<string>, checkOrdering?: boolean): IDiffResult<any> {
+  static diffArrays(array1: any[], array2: any[], fieldsToIgnore: string[], checkOrdering?: boolean): IDiffResult<any> {
     checkOrdering = checkOrdering || false;
 
     let diffResult: IDiffResult<any> = new DiffResult<any>();
@@ -123,14 +123,14 @@ export class DiffUtils {
     DiffUtils.removeFieldsToIgnoreAndStringify(array1, fieldsToIgnore);
     DiffUtils.removeFieldsToIgnoreAndStringify(array2, fieldsToIgnore);
 
-    array1.forEach(function (item: string) {
+    array1.forEach((item: string) => {
       if (array2.indexOf(item) === -1) {
         diffResult.NEW.Add('New element', item);
       }
     });
 
     if (!diffResult.ContainsItems() && array2.length > array1.length) {
-      array2.forEach(function (item: string) {
+      array2.forEach((item: string) => {
         if (array1.indexOf(item) === -1) {
           diffResult.DELETED.Add('Deleted element', item);
         }
@@ -155,7 +155,7 @@ export class DiffUtils {
     return diffResult;
   }
 
-  static removeFieldsToIgnoreAndStringify(array: Array<any>, fieldsToIgnore: Array<string>): void {
+  static removeFieldsToIgnoreAndStringify(array: any[], fieldsToIgnore: string[]): void {
     for (let index = 0; index < array.length; index++) {
       array[index] = JSON.stringify(JsonUtils.removeFieldsFromJson(array[index], fieldsToIgnore));
     }
@@ -184,7 +184,7 @@ export class DiffUtils {
 
     // Create other subsections for updated items, if any.
     if (diffToAdd.Count() > 0) {
-      diffToAdd.Keys().forEach(function (key: string) {
+      diffToAdd.Keys().forEach((key: string) => {
         mainDiff.Add(
           key,
           diffToAdd.Item(key)
@@ -195,4 +195,3 @@ export class DiffUtils {
     return mainDiff;
   }
 }
-

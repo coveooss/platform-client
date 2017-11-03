@@ -12,6 +12,7 @@ import { IDiffResult } from './commons/interfaces/IDiffResult';
 import { Dictionary } from './commons/collections/Dictionary';
 import { Organization } from './models/OrganizationModel';
 import { config } from './config/index';
+import { DiffCommand } from './commands/DiffCommand';
 
 const program = require('commander');
 const pkg: any = require('./../package.json');
@@ -22,7 +23,7 @@ program
   .option('--env [value]', 'Environment')
   .version(pkg.version);
 
-program.on('--help', function () {
+program.on('--help', () => {
   console.log('');
   console.log('  Examples:');
   console.log('');
@@ -67,21 +68,10 @@ program
   .option('-o, --outputfile', 'Output file', `${config.workingDirectory}output/diff-${Date.now()}.html`)
   .option('-v, --verbose', 'Display diff information', setLogLevelToVerbose)
   .action((originOrganization: string, destinationOrganization: string, originApiKey: string, destinationApiKey: string, options: any) => {
-    let command = new GraduateCommand(originOrganization, destinationOrganization, originApiKey, destinationApiKey);
-
+    let command = new DiffCommand(originOrganization, destinationOrganization, originApiKey, destinationApiKey);
     if (options.fields) {
-      let organization1: Organization = new Organization(originOrganization, originApiKey);
-      let organization2: Organization = new Organization(destinationOrganization, destinationApiKey);
-      let fieldController: FieldController = new FieldController();
-      let fieldDiff: Dictionary<IDiffResult<any>> = fieldController.diff(organization1, organization2, ['']);
-      // command.graduateFields()
+      command.diffFields();
     }
-    // if (options.sources) {
-    //   command.graduateSources()
-    // }
-    // if (options.extensions) {
-    //   command.graduateExtensions()
-    // }
   });
 
 program
@@ -98,11 +88,11 @@ program
           .then(() => {
             Logger.info('File Saved');
           }).catch((err: any) => {
-            Logger.error('Unable to save setting file', err)
+            Logger.error('Unable to save setting file', err);
           });
       })
       .catch((err: any) => {
-        Logger.error('Error in interactive mode', err)
+        Logger.error('Error in interactive mode', err);
       });
   });
 
@@ -116,7 +106,7 @@ program
         Logger.info('To complete');
       })
       .catch((err: any) => {
-        Logger.error(err)
+        Logger.error(err);
       });
   });
 
