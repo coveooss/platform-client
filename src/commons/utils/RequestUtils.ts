@@ -2,7 +2,7 @@
 let syncrequest = require('sync-request');
 // Internal packages
 import { Dictionary } from '../collections/Dictionary';
-import { StaticErrorMessage } from '../errors'
+import { StaticErrorMessage } from '../errors';
 import * as request from 'request';
 
 export class RequestUtils {
@@ -13,8 +13,8 @@ export class RequestUtils {
       'GET',
       url,
       {
-        'headers': {
-          'authorization': 'Bearer ' + apiKey
+        headers: {
+          authorization: 'Bearer ' + apiKey
         }
       }
     );
@@ -34,7 +34,7 @@ export class RequestUtils {
       request(
         url,
         {
-          auth: { 'bearer': apiKey },
+          auth: { bearer: apiKey },
           json: true
         },
         (err: any, response: request.RequestResponse) => {
@@ -42,12 +42,12 @@ export class RequestUtils {
             reject(err);
           } else {
             if (response.statusCode === 200) {
-              resolve(response)
+              resolve(response);
             } else {
               reject(JSON.stringify(response.body));
             }
           }
-        })
+        });
     });
   }
 
@@ -58,7 +58,7 @@ export class RequestUtils {
         {
           method: 'POST',
           body: data,
-          auth: { 'bearer': apiKey },
+          auth: { bearer: apiKey },
           json: true
         },
         (err: any, response: request.RequestResponse) => {
@@ -66,12 +66,12 @@ export class RequestUtils {
             reject(err);
           } else {
             if (response.statusCode === 201 || response.statusCode === 204) {
-              resolve(response)
+              resolve(response);
             } else {
               reject(JSON.stringify(response.body));
             }
           }
-        })
+        });
     });
   }
   static put(url: string, apiKey: string, data: any): Promise<request.RequestResponse> {
@@ -81,7 +81,7 @@ export class RequestUtils {
         {
           method: 'PUT',
           body: data,
-          auth: { 'bearer': apiKey },
+          auth: { bearer: apiKey },
           json: true
         },
         (err: any, response: request.RequestResponse) => {
@@ -89,12 +89,12 @@ export class RequestUtils {
             reject(err);
           } else {
             if (response.statusCode === 201 || response.statusCode === 204) {
-              resolve(response)
+              resolve(response);
             } else {
               reject(JSON.stringify(response.body));
             }
           }
-        })
+        });
     });
   }
 
@@ -104,7 +104,7 @@ export class RequestUtils {
         url,
         {
           method: 'DELETE',
-          auth: { 'bearer': apiKey },
+          auth: { bearer: apiKey },
           json: true
         },
         (err: any, response: request.RequestResponse) => {
@@ -112,12 +112,12 @@ export class RequestUtils {
             reject(err);
           } else {
             if (response.statusCode === 201 || response.statusCode === 204) {
-              resolve(response)
+              resolve(response);
             } else {
               reject(JSON.stringify(response.body));
             }
           }
-        })
+        });
     });
   }
 }

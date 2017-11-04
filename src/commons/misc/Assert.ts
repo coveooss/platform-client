@@ -12,7 +12,7 @@ export class Assert {
     } else {
       throw new Error('Assertion Failed!');
     }
-  };
+  }
 
   static fail(message?: string) {
     Assert.failureHandler(message);

@@ -12,12 +12,12 @@ import { JsonUtils } from '../commons/utils/JsonUtils';
 import { DiffUtils } from '../commons/utils/DiffUtils';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { Organization } from '../models/OrganizationModel';
-import * as _ from 'underscore';
-import * as request from 'request';
 import { ArrayUtils } from '../commons/utils/ArrayUtils';
 import { Assert } from '../commons/misc/Assert';
-import * as opn from 'opn';
 import { FileUtils } from '../commons/utils/FileUtils';
+import * as _ from 'underscore';
+import * as request from 'request';
+import * as opn from 'opn';
 import * as fs from 'fs-extra';
 
 export class FieldController {

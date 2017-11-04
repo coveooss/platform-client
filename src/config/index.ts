@@ -24,17 +24,8 @@ class Config {
       Logger.info(`Loading ${chalk.underline(this.env)} environment`);
       return require(`env/${this.env}.js`);
     } catch (error) {
-      Logger.error('Unable to load environment.\nFallback on Development environment.', error);
-
-      // TODO: fix this!
-      // Hack since aliases will not work in developing mode
-      return {
-        workingDirectory: './',
-        color: 'green',
-        env: 'development',
-        coveo: { platformUrl: 'https://platformdev.cloud.coveo.com' }
-      };
-      // throw new Error('Invalid environment');
+      Logger.error('Unable to load environment.', error);
+      throw new Error('Invalid environment');
     }
   }
 }
