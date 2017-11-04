@@ -20,10 +20,10 @@ export const UrlServiceTest = () => {
       expect(createFields).to.equal(`${config.coveo.platformUrl}/rest/organizations/myOrgId/indexes/fields/batch/create`);
     });
 
-    it('Should generate the url to get fields', () => {
-      let deleteFields = UrlService.deleteFields('myOrgId');
-      expect(deleteFields).to.equal(`${config.coveo.platformUrl}/rest/organizations/myOrgId/indexes/fields/batch/delete`);
+    it('Should generate the url to delete fields', () => {
+      let deleteFields = UrlService.deleteFields('myOrgId', ['rambo', 'unicorne']);
+      expect(deleteFields).to.equal(`${config.coveo.platformUrl}/rest/organizations/myOrgId/indexes/fields/batch/delete?fields=rambo%2Cunicorne`);
     });
 
   });
-}
+};
