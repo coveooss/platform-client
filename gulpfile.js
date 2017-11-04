@@ -17,13 +17,13 @@ gulp.task('build:prod', function(done) {
 });
 
 gulp.task('build', function(done) {
-  runsequence('clean', ['setup', 'css'], 'compile', done);
+  runsequence('clean', 'setup', 'compile', done);
 });
 
 gulp.task('watch', ['watchTS', 'watchEJS', 'watchCSS']);
 
 // Watches the typescript files.
-gulp.task('watchTS', ['src'], () => {
+gulp.task('watchTS', ['build'], () => {
   gulp.watch('src/**/*.ts', ['src']);
 });
 

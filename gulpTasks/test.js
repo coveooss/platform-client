@@ -4,18 +4,16 @@ const ts = require('gulp-typescript');
 const tsProject = ts.createProject('tsconfig.test.json');
 
 // Transpiling the source files into the bin/ folder
-gulp.task('buildTest', ['setTestEnvironment', 'copyTestEnv'], () => {
-  const tsResult = tsProject.src()
-    .pipe(tsProject());
-  return tsResult.js.pipe(gulp.dest('./bin'));
-});
+gulp.task('buildTest',
+  shell.task(['node node_modules/webpack/bin/webpack.js --config webpack.test.config.js --process --colors'])
+);
 
 gulp.task('setTestEnvironment', () => {
   process.env.NODE_ENV = 'local-server';
 });
 
 gulp.task('test', ['buildTest'], shell.task([
-  './node_modules/mocha/bin/mocha bin/test/test.js'
+  './node_modules/mocha/bin/mocha bin/tests/test.js'
 ]));
 
 gulp.task('copyTestEnv', function() {
