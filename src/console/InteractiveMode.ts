@@ -16,7 +16,7 @@ export interface IAnswer {
   contentToGraduate: string[];
   sourceContentToGraduate: string[];
   filename: string;
-};
+}
 
 export class InteractiveMode {
 
@@ -34,7 +34,7 @@ export class InteractiveMode {
 
   public start(): Promise<Answers> {
     const prompt = inquirer.createPromptModule();
-    return prompt(this.getQuestions())
+    return prompt(this.getQuestions());
   }
 
   public getOriginOrganizationId(): Question {
@@ -82,7 +82,7 @@ export class InteractiveMode {
         { name: 'graduate', checked: true },
         { name: 'diff', disabled: 'Not implemented yet' }
       ]
-    }
+    };
   }
 
   public getContentsToGraduate(): Question {
@@ -149,7 +149,7 @@ export class InteractiveMode {
       choices: ['POST', 'PUT', 'DELETE'],
       validate: this.checkboxValidator('You need to select at least 1 graduate operation.'),
       when: (answer: IAnswer) => {
-        return answer.contentToGraduate.indexOf(content) !== -1
+        return answer.contentToGraduate.indexOf(content) !== -1;
       }
     };
   }

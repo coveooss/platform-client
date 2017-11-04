@@ -1,4 +1,5 @@
 // External packages
+// TODO: use asyn request instead;
 let syncrequest = require('sync-request');
 // Internal packages
 import { Dictionary } from '../collections/Dictionary';

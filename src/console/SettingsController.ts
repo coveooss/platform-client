@@ -1,17 +1,17 @@
 import { IAnswer } from './InteractiveMode';
 
 export interface IGraduateSettingOptions {
-  POST: boolean,
-  PUT: boolean,
-  DELETE: boolean
-};
+  POST: boolean;
+  PUT: boolean;
+  DELETE: boolean;
+}
 
 export interface ISourceContentSettingOptions {
-  configuration: boolean,
-  objects: boolean,
-  mapping: boolean,
-  extensions: boolean
-};
+  configuration: boolean;
+  objects: boolean;
+  mapping: boolean;
+  extensions: boolean;
+}
 
 export interface ISettings {
   organizations: {
@@ -23,7 +23,7 @@ export interface ISettings {
       id: string,
       apiKey: string
     }
-  },
+  };
   graduate: {
     sources?: {
       options: IGraduateSettingOptions,
@@ -35,8 +35,8 @@ export interface ISettings {
     extensions?: {
       options: IGraduateSettingOptions
     }
-  }
-};
+  };
+}
 
 export class SettingsController {
 
@@ -68,7 +68,7 @@ export class SettingsController {
             PUT: answers.graduateFieldsOperation.indexOf('PUT') !== -1,
             DELETE: answers.graduateFieldsOperation.indexOf('DELETE') !== -1
           }
-        }
+        };
       }
 
       if (answers.contentToGraduate.indexOf('extensions') !== -1) {
@@ -78,7 +78,7 @@ export class SettingsController {
             PUT: answers.graduateExtensionsOperation.indexOf('PUT') !== -1,
             DELETE: answers.graduateExtensionsOperation.indexOf('DELETE') !== -1
           }
-        }
+        };
       }
 
       if (answers.contentToGraduate.indexOf('sources') !== -1) {
@@ -94,7 +94,7 @@ export class SettingsController {
             mapping: answers.sourceContentToGraduate.indexOf('mapping') !== -1,
             extensions: answers.sourceContentToGraduate.indexOf('extensions') !== -1
           }
-        }
+        };
       }
     }
 

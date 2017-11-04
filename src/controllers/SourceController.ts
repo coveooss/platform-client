@@ -1,8 +1,8 @@
 // External packages
 import { RequestResponse } from 'request';
 // Internal packages
-import { ICoveoObject } from '../commons/interfaces/ICoveoObject'
-import { IOrganization } from '../commons/interfaces/IOrganization'
+import { ICoveoObject } from '../commons/interfaces/ICoveoObject';
+import { IOrganization } from '../commons/interfaces/IOrganization';
 import { Source } from '../models/SourceModel';
 import { UrlService } from '../commons/services/UrlService';
 import { IDiffResult } from '../commons/interfaces/IDiffResult';
@@ -17,16 +17,16 @@ import { RequestUtils } from '../commons/utils/RequestUtils';
 export class SourceController {
   constructor() { }
 
-  public diff(organization1: IOrganization, organization2: IOrganization, fieldsToIgnore: Array<string>): Dictionary<IDiffResult<any>> {
+  public diff(organization1: IOrganization, organization2: IOrganization, fieldsToIgnore: string[]): Dictionary<IDiffResult<any>> {
     let diffResults: Dictionary<IDiffResult<any>> = new Dictionary<IDiffResult<any>>();
     let diffResultsExistence: DiffResult<string> = new DiffResult<string>();
 
     try {
       // Load the configuration of the organizations
-      let organizations: Array<IOrganization> = [organization1, organization2];
+      let organizations: IOrganization[] = [organization1, organization2];
       let context: SourceController = this;
 
-      organizations.forEach(function (organization: IOrganization) {
+      organizations.forEach((organization: IOrganization) => {
         context.loadSources(organization);
       });
 
@@ -34,8 +34,8 @@ export class SourceController {
       diffResultsExistence = DiffUtils.diffDictionaryEntries(organization1.Sources.Clone(), organization2.Sources.Clone());
 
       // Diff the sources that could have been changed
-      diffResultsExistence.UPDATED.Keys().forEach(function (key: string) {
-        let sourceDiff: IDiffResult<any>  = new DiffResult<any>();
+      diffResultsExistence.UPDATED.Keys().forEach((key: string) => {
+        let sourceDiff: IDiffResult<any> = new DiffResult<any>();
 
         let sourceConfigurationDiff: IDiffResult<any> = DiffUtils.diff(organization1.Sources.Item(key), organization2.Sources.Item(key), fieldsToIgnore);
         sourceDiff = DiffUtils.addToResultIfDiffContainsItems('SourceConfiguration', sourceDiff, sourceConfigurationDiff);
@@ -83,7 +83,7 @@ export class SourceController {
 
       // Add the result if it still contains items
       if (diffResultsExistence.ContainsItems()) {
-          diffResults.Add('ADD_DELETE', diffResultsExistence);
+        diffResults.Add('ADD_DELETE', diffResultsExistence);
       }
     } catch (err) {
       // TODO: Move the loogers from all files to their base classes when possible
@@ -112,7 +112,7 @@ export class SourceController {
   public loadSources(organization: IOrganization): void {
     let sources: any = this.getSources(organization);
     let context = this;
-    sources.forEach(function (source: any) {
+    sources.forEach((source: any) => {
       let newSource: Source = new Source(
         source['id'],
         context.getSingleSourceRaw(organization, source['id'])
