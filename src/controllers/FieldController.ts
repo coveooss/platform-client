@@ -17,8 +17,8 @@ import { Assert } from '../commons/misc/Assert';
 import { FileUtils } from '../commons/utils/FileUtils';
 import * as _ from 'underscore';
 import * as request from 'request';
-import * as opn from 'opn';
 import * as fs from 'fs-extra';
+import { DiffResultArray } from '../models/DiffResultArray';
 
 export class FieldController {
 
@@ -42,9 +42,9 @@ export class FieldController {
     Logger.info('Graduating fields');
 
     Promise.all([this.loadFields(organization1), this.loadFields(organization2)])
-    // ********************************************
-    // TODO: Ask confirmation to graduate
-    // ********************************************
+      // ********************************************
+      // TODO: Ask confirmation to graduate
+      // ********************************************
       .then(() => {
         let diffResult = DiffUtils.getDiffResult(organization1.Fields, organization2.Fields);
 
@@ -116,45 +116,11 @@ export class FieldController {
     return _.pluck(fields, 'fieldModel');
   }
 
-  public diff(organization1: Organization, organization2: Organization, fieldsToIgnore: string[]): Dictionary<IDiffResult<any>> {
-    let diffResults: Dictionary<IDiffResult<any>> = new Dictionary<IDiffResult<any>>();
-    let diffResultsExistence: DiffResult<string> = new DiffResult<string>();
-
-    try {
-      // Load the configuration of the organizations
-      let organizations: Organization[] = [organization1, organization2];
-      let context: FieldController = this;
-      organizations.forEach((organization: Organization) => {
-        context.loadFieldsSync(organization);
+  public diff(organization1: Organization, organization2: Organization, fieldsToIgnore: string[]): Promise<DiffResultArray<Field>> {
+    return Promise.all([this.loadFields(organization1), this.loadFields(organization2)])
+      .then(() => {
+        return DiffUtils.getDiffResult(organization1.Fields, organization2.Fields);
       });
-      // Diff the fields in terms of "existence"
-      diffResultsExistence = DiffUtils.diffDictionaryEntries(organization1.Fields.Clone(), organization2.Fields.Clone());
-      // Diff the fields that could have been changed
-      diffResultsExistence.UPDATED.Keys().forEach((key: string) => {
-        let fieldDiff = DiffUtils.diff(
-          organization1.Fields.Item(key).fieldModel,
-          organization2.Fields.Item(key).fieldModel,
-          fieldsToIgnore
-        );
-
-        if (fieldDiff.ContainsItems()) {
-          diffResults.Add(key, fieldDiff);
-        }
-
-        diffResultsExistence.UPDATED.Remove(key);
-      });
-      // Add the result if it still contains items
-      if (diffResultsExistence.ContainsItems()) {
-        diffResults.Add('ADD_DELETE', diffResultsExistence);
-      }
-    } catch (err) {
-      // TODO: Move the loogers from all files to their base classes when possible
-      Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err);
-
-      throw err;
-    }
-
-    return diffResults;
   }
 
   public getFieldsPageSync(organization: Organization, page: number): RequestResponse {

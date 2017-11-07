@@ -1,18 +1,17 @@
-// External packages
-import { flatten } from 'flat';
-// Internal packages
 import { Dictionary } from '../collections/Dictionary';
+import { IStringMap } from '../interfaces/IStringMap';
+import { flatten, unflatten } from 'flat';
+import * as _ from 'underscore';
 
 export class JsonUtils {
   static flatten(jsonObject: any): any {
     return flatten(jsonObject);
   }
 
-  static removeFieldsFromJson(json: any, fieldsToIgnore?: string[]): any {
-    let ignoreList = fieldsToIgnore || new Array<string>();
-
+  // TODO: old-> remove
+  static removeFieldsFromJsonOld(json: any, fieldsToIgnore: string[] = []): any {
     Object.keys(json).forEach((key: string) => {
-      if (ignoreList.indexOf(key) > -1) {
+      if (fieldsToIgnore.indexOf(key) > -1) {
         delete json[key];
       }
     });
@@ -20,6 +19,33 @@ export class JsonUtils {
     return json;
   }
 
+  static removeFieldsFromJson(obj: any, fields: string[] = []): any {
+    if (fields.length === 0) {
+      // Do not waste time for nothing
+      return obj;
+    }
+
+    let map = flatten(obj);
+
+    map = _.omit(map, (value: any, key: string) => {
+      let keys = key.split('.');
+      return _.intersection(keys, fields).length > 0;
+    });
+
+    return unflatten(map);
+  }
+
+  static hasKey(obj: any, fields: string[] = []): boolean {
+    const map = flatten(obj);
+    let noCommonElements = Object.keys(map).every((key: string) => {
+      let keys = key.split('.');
+      return _.intersection(keys, fields).length === 0;
+    });
+
+    return !noCommonElements;
+  }
+
+  // TODO: old-> remove
   static recurivelyRemoveFieldsFromJson(items: Dictionary<any>, fieldsToIgnore?: string[]): Dictionary<any> {
     let ignoreList = fieldsToIgnore || new Array<string>();
     items.Keys().forEach((key: string) => {

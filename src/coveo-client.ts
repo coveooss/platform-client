@@ -16,7 +16,6 @@ import { DiffCommand } from './commands/DiffCommand';
 
 const program = require('commander');
 const pkg: any = require('./../package.json');
-const prompt = inquirer.createPromptModule();
 
 program
   // TODO set Environment

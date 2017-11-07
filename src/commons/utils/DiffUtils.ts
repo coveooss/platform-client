@@ -1,14 +1,20 @@
-// External packages
 import { flatten } from 'flat';
-// Internal packages
 import { Dictionary } from '../collections/Dictionary';
 import { IDiffResult } from './../interfaces/IDiffResult';
 import { DiffResult } from '../../models/DiffResult';
 import { JsonUtils } from './JsonUtils';
-import * as _ from 'underscore';
 import { DiffResultArray } from '../../models/DiffResultArray';
+import * as _ from 'underscore';
+
+export interface IDiffOptions {
+  fieldsToIgnore?: string[];
+}
 
 export class DiffUtils {
+  static defaultOptions: IDiffOptions = {
+    fieldsToIgnore: []
+  };
+
   static diff(json1: any, json2: any, fieldsToIgnore: string[], recursiveFieldsRemoval: boolean = false): IDiffResult<any> {
     let diffResult: IDiffResult<any> = new DiffResult<any>();
 
@@ -59,17 +65,24 @@ export class DiffUtils {
    * @param {Dictionary<T>} dict2Copy Final dictionary
    * @returns {IDiffResultArray<T>} Result between dictionnaries
    */
-  static getDiffResult<T>(dict1: Dictionary<T>, dict2: Dictionary<T>): DiffResultArray<T> {
+
+  static getDiffResult<T>(dict1: Dictionary<T>, dict2: Dictionary<T>, diffOptions?: IDiffOptions): DiffResultArray<T> {
+    let options: IDiffOptions = _.extend({}, DiffUtils.defaultOptions, diffOptions);
     let dict2Copy = dict2.Clone();
+    let dict1Copy = dict1.Clone();
     let diffResult: DiffResultArray<T> = new DiffResultArray();
 
-    dict1.Keys().forEach((key: string) => {
+    dict1Copy.Keys().forEach((key: string) => {
+      let value: T = dict1Copy.Item(key);
+      // Remove undesired fields from the diff result
+      value = JsonUtils.removeFieldsFromJsonOld(value, options.fieldsToIgnore);
+
       if (dict2Copy.ContainsKey(key)) {
-        if (!_.isEqual(dict1.Item(key), dict2Copy.Item(key))) {
-          diffResult.UPDATED.push(dict1.Item(key));
+        if (!_.isEqual(value, dict2Copy.Item(key))) {
+          diffResult.UPDATED.push(value);
         }
       } else {
-        diffResult.NEW.push(dict1.Item(key));
+        diffResult.NEW.push(value);
       }
 
       dict2Copy.Remove(key);
@@ -157,7 +170,7 @@ export class DiffUtils {
 
   static removeFieldsToIgnoreAndStringify(array: any[], fieldsToIgnore: string[]): void {
     for (let index = 0; index < array.length; index++) {
-      array[index] = JSON.stringify(JsonUtils.removeFieldsFromJson(array[index], fieldsToIgnore));
+      array[index] = JSON.stringify(JsonUtils.removeFieldsFromJsonOld(array[index], fieldsToIgnore));
     }
   }
 

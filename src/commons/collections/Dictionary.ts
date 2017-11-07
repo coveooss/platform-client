@@ -1,7 +1,7 @@
 // External packages
 
 // Internal packages
-import { IDictionary } from '../interfaces/IDictionary'
+import { IDictionary } from '../interfaces/IDictionary';
 import { IStringMap } from '../interfaces/IStringMap';
 import * as _ from 'underscore';
 
@@ -13,7 +13,7 @@ export class Dictionary<T> implements IDictionary<T> {
         if (obj) {
             _.each(obj, (v: T, k: string) => {
                 this.Add(k, v);
-            })
+            });
         }
     }
 
@@ -46,7 +46,7 @@ export class Dictionary<T> implements IDictionary<T> {
     }
 
     public Keys(): string[] {
-        let keySet: Array<string> = [];
+        let keySet: string[] = [];
 
         for (let prop in this.items) {
             if (this.items.hasOwnProperty(prop)) {
@@ -57,8 +57,8 @@ export class Dictionary<T> implements IDictionary<T> {
         return keySet;
     }
 
-    public Values(): Array<T> {
-        let values: Array<T> = [];
+    public Values(): T[] {
+        let values: T[] = [];
 
         for (let prop in this.items) {
             if (this.items.hasOwnProperty(prop)) {
@@ -73,8 +73,8 @@ export class Dictionary<T> implements IDictionary<T> {
         let clone: Dictionary<T> = new Dictionary<T>();
         let original = this;
 
-        this.Keys().forEach(function (key: string) {
-            clone.Add(key, original.Item(key));
+        this.Keys().forEach((key: string) => {
+            clone.Add(key, JSON.parse(JSON.stringify(original.Item(key))));
         });
 
         return clone;

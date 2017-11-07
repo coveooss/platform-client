@@ -4,9 +4,7 @@ const requireDir = require('require-dir');
 const runsequence = require('run-sequence');
 const gutil = require('gulp-util');
 
-
 process.env.NODE_ENV = gutil.env.config || 'development';
-process.env.CUSTOM_BUNDLE = gutil.env.bundle || 'support';
 
 requireDir('./gulpTasks');
 

@@ -3,7 +3,7 @@ import * as opn from 'opn';
 // Internal packages
 import { BaseCommand } from './BaseCommand';
 import { ICommand } from '../commons/interfaces/ICommand';
-import { DiffResultsPageHtmlTemplate, DiffResultsItemTemplate } from '../commons/templates/diff-results-template'
+import { DiffResultsPageHtmlTemplate, DiffResultsItemTemplate } from '../commons/templates/diff-results-template';
 import { FileUtils } from '../commons/utils/FileUtils';
 import { Dictionary } from '../commons/collections/Dictionary';
 import { OrganizationController } from '../controllers/OrganizationController';
@@ -56,7 +56,7 @@ export class DiffCommand extends BaseCommand implements ICommand {
     );
 
     // Get the params to strip.
-    let fieldsToIgnore: Array<string> = this.optionalParameters.Item('fieldstoignore').toLowerCase().split(',');
+    let fieldsToIgnore: string[] = this.optionalParameters.Item('fieldstoignore').toLowerCase().split(',');
 
     // Create an array of diffs to put the results for each section
     let diffResults: Dictionary<IDiffResult<any>> = new Dictionary<IDiffResult<any>>();
@@ -72,9 +72,9 @@ export class DiffCommand extends BaseCommand implements ICommand {
 
     /*** Fields Diff ***/
     let fieldController: FieldController = new FieldController();
-    let fieldDiff: Dictionary<IDiffResult<any>> = fieldController.diff(organization1, organization2, fieldsToIgnore);
+    // let fieldDiff: Dictionary<IDiffResult<any>> = fieldController.diff(organization1, organization2, fieldsToIgnore);
 
-    diffResults = DiffUtils.addToMainDiff('Added or deleted Fields', diffResults, fieldDiff);
+    // diffResults = DiffUtils.addToMainDiff('Added or deleted Fields', diffResults, fieldDiff);
 
     /*** Security providers Diff ***/
     if (this.inScope('securityproviders')) {
@@ -135,24 +135,24 @@ export class DiffCommand extends BaseCommand implements ICommand {
     let diffReport: string = '';
     let extension: string = '.html';
 
-      // TODO: Build the sections based on the diff results provided
-      let formattedDiff: Array<string> = new Array<string>();
-      diffResults.Keys().forEach(function (key: string) {
-        if (diffResults.Item(key).ContainsItems()) {
-          formattedDiff.push(DiffResultsItemTemplate(key, diffResults.Item(key)));
-        }
-      });
+    // TODO: Build the sections based on the diff results provided
+    let formattedDiff: string[] = new Array<string>();
+    diffResults.Keys().forEach((key: string) => {
+      if (diffResults.Item(key).ContainsItems()) {
+        formattedDiff.push(DiffResultsItemTemplate(key, diffResults.Item(key)));
+      }
+    });
 
-      // TODO: Do something if formatted diff is empty... like showing a "the org are the same" message
-      // Format the whole diff document
-      diffReport = DiffResultsPageHtmlTemplate(
-        organization1.Id,
-        organization2.Id,
-        formattedDiff
-      );
+    // TODO: Do something if formatted diff is empty... like showing a "the org are the same" message
+    // Format the whole diff document
+    diffReport = DiffResultsPageHtmlTemplate(
+      organization1.Id,
+      organization2.Id,
+      formattedDiff
+    );
 
     // Write the report file to disk
-    FileUtils.writeFile(this.optionalParameters.Item('outputfile').replace('.html', extension), diffReport, function (err: NodeJS.ErrnoException) {
+    FileUtils.writeFile(this.optionalParameters.Item('outputfile').replace('.html', extension), diffReport, (err: NodeJS.ErrnoException) => {
       if (err) {
         throw console.error(err);
       }
@@ -172,7 +172,7 @@ export class DiffCommand extends BaseCommand implements ICommand {
 
   private jsonDiffOptions(): {} {
     return {
-      objectHash: function (obj: any) {
+      objectHash(obj: any) {
         return obj._id || obj.id;
       },
       arrays: {
@@ -182,11 +182,10 @@ export class DiffCommand extends BaseCommand implements ICommand {
       textDiff: {
         minLength: 60
       },
-      propertyFilter: function (name: any, context: any) {
+      propertyFilter(name: any, context: any) {
         return name.slice(0, 1) !== '$';
       },
       cloneDiffValues: false
-    }
+    };
   }
 }
-

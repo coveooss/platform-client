@@ -1,7 +1,5 @@
 const gulp = require('gulp');
 const shell = require('gulp-shell');
-const ts = require('gulp-typescript');
-const tsProject = ts.createProject('tsconfig.test.json');
 
 // Transpiling the source files into the bin/ folder
 gulp.task('buildTest',

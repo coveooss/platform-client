@@ -1,5 +1,6 @@
 import { expect, should, assert } from 'chai';
 import { ArrayUtils } from '../../src/commons/utils/ArrayUtils';
+import { Logger } from '../../src/commons/logger';
 
 export const ArrayUtilTest = () => {
   describe('chunkArray', () => {
@@ -26,6 +27,7 @@ export const ArrayUtilTest = () => {
 
     it('Should create chunks one array even if the chucksize is bigger than the array length', () => {
       let array: number[] = [1, 2, 3];
+      Logger.info('The next Assertion error is expected.');
       expect(() => ArrayUtils.chunkArray(array, 0)).to.throw();
     });
 

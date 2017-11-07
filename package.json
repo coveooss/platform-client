@@ -69,7 +69,9 @@
   },
   "scripts": {
     "start": "node bin/coveo-client.js",
-    "test": "./node_modules/mocha/bin/mocha bin/tests/test.js"
+    "test": "./node_modules/mocha/bin/mocha bin/tests/test.js",
+    "build": "gulp",
+    "minimize": "gulp --minimize"
   },
   "author": "Jean-Francois Cloutier & Yassine Lakhdar",
   "license": "GPL-3.0"

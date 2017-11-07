@@ -17,9 +17,8 @@ It's also built on nodejs/typescript.
 
 ## Important Gulp Tasks
 
-* `gulp default`: Builds the entire project (CSS, templates, TypeScript, etc.)
-* `gulp compile`: Builds only the TypeScript code and generates its output in the `./bin` folder.
-* `gulp css`: Builds only the Sass code and generates its output in the `./bin` folder.
+* `gulp default`: Builds the entire project
+<!-- * `gulp css`: Builds only the Sass code and generates its output in the `./bin` folder. -->
 <!-- * `gulp doc`: Generates the documentation website for the project. -->
 * `gulp dev`: Starts a nodemon dev server for the project.
 * `gulp devTest`: Starts a nodemon dev server for the tests.
@@ -58,4 +57,3 @@ Any time you hit Save in a source file, the bundle will be recompiled to the bin
 ## Authors
 - Jean-François Cloutier (https://github.com/ancientwinds)
 - Yassine Lakhdar (https://github.com/y-lakhdar)
-
