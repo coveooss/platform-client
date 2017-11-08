@@ -51,38 +51,35 @@ export class FieldController {
         if (diffResult.NEW.length > 0) {
           Logger.verbose(`Creating ${diffResult.NEW.length} new field${diffResult.NEW.length > 1 ? 's' : ''} in ${organization2.Id}`);
           this.createFields(organization2, this.getFieldModels(diffResult.NEW))
-            .then((response: RequestResponse[]) => {
-              console.log('********** done creating fields ***********');
-
+            .then((responses: RequestResponse[]) => {
+              this.graduateSuccessHandler(responses, 'Create fields response:');
             }).catch((err: any) => {
-              Logger.error(StaticErrorMessage.UNABLE_TO_CREATE_FIELDS, err);
+              this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_CREATE_FIELDS);
             });
         }
 
         if (diffResult.UPDATED.length > 0) {
           Logger.verbose(`Updating ${diffResult.UPDATED.length} existing field${diffResult.NEW.length > 1 ? 's' : ''} in ${organization2.Id}`);
           this.updateFields(organization2, this.getFieldModels(diffResult.UPDATED))
-            .then((response: RequestResponse[]) => {
-              console.log('********** done updating fields ***********');
-
+            .then((responses: RequestResponse[]) => {
+              this.graduateSuccessHandler(responses, 'Update fields response:');
             }).catch((err: any) => {
-              Logger.error(StaticErrorMessage.UNABLE_TO_UPDATE_FIELDS, err);
+              this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_UPDATE_FIELDS);
             });
         }
 
         if (diffResult.DELETED.length > 0) {
           Logger.verbose(`Deleting ${diffResult.UPDATED.length} existing field${diffResult.NEW.length > 1 ? 's' : ''} from ${organization2.Id}`);
           this.deleteFields(organization2, _.pluck(diffResult.DELETED, 'name'))
-            .then((response: RequestResponse[]) => {
-              console.log('********** done updating fields ***********');
-
+            .then((responses: RequestResponse[]) => {
+              this.graduateSuccessHandler(responses, 'Update fields response:');
             }).catch((err: any) => {
-              Logger.error(StaticErrorMessage.UNABLE_TO_DELETE_FIELDS, err);
+              this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_DELETE_FIELDS);
             });
         }
 
       }).catch((err: any) => {
-        Logger.error(StaticErrorMessage.UNABLE_TO_LOAD_FIELDS, err);
+        this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_FIELDS);
       });
 
     // return response and summary
@@ -90,6 +87,7 @@ export class FieldController {
 
   public createFields(org: Organization, fieldModels: Array<IStringMap<string>>) {
     Assert.isLargerThan(0, fieldModels.length);
+    Logger.verbose(`Creating ${fieldModels.length} fields from ${org.Id}`);
     let url = UrlService.createFields(org.Id);
     return Promise.all(_.map(ArrayUtils.chunkArray(fieldModels, this.fieldsPerBatch), (batch: Array<IStringMap<string>>) => {
       return RequestUtils.post(url, org.ApiKey, batch);
@@ -98,6 +96,7 @@ export class FieldController {
 
   public updateFields(org: Organization, fieldModels: Array<IStringMap<string>>) {
     Assert.isLargerThan(0, fieldModels.length);
+    Logger.verbose(`Updating ${fieldModels.length} fields from ${org.Id}`);
     let url = UrlService.updateFields(org.Id);
     return Promise.all(_.map(ArrayUtils.chunkArray(fieldModels, this.fieldsPerBatch), (batch: Array<IStringMap<string>>) => {
       return RequestUtils.put(url, org.ApiKey, batch);
@@ -106,6 +105,7 @@ export class FieldController {
 
   public deleteFields(org: Organization, fieldList: string[]) {
     Assert.isLargerThan(0, fieldList.length);
+    Logger.verbose(`Deleting ${fieldList.length} fields from ${org.Id}`);
     return Promise.all(_.map(ArrayUtils.chunkArray(fieldList, this.fieldsPerBatch), (batch: string[]) => {
       let url = UrlService.deleteFields(org.Id, batch);
       return RequestUtils.delete(url, org.ApiKey);
@@ -121,30 +121,6 @@ export class FieldController {
       .then(() => {
         return DiffUtils.getDiffResult(organization1.Fields, organization2.Fields);
       });
-  }
-
-  public getFieldsPageSync(organization: Organization, page: number): RequestResponse {
-    return RequestUtils.getRequestAndReturnJson(
-      UrlService.getFieldsPageUrl(organization.Id, page),
-      organization.ApiKey
-    );
-  }
-
-  public loadFieldsSync(organization: Organization): void {
-    let currentPage: number = 0;
-    let totalPages: number = 0;
-
-    do {
-      let jsonResponse: any = this.getFieldsPageSync(organization, currentPage);
-
-      jsonResponse['items'].forEach((f: IStringMap<string>) => {
-        let field = new Field(f);
-        organization.Fields.Add(field.name, field);
-      });
-
-      totalPages = Number(jsonResponse['totalPages']);
-      currentPage++;
-    } while (currentPage < totalPages);
   }
 
   public getFieldsPage(organization: Organization, page: number): Promise<RequestResponse> {
@@ -196,5 +172,21 @@ export class FieldController {
       let field = new Field(f);
       organization.Fields.Add(field.name, field);
     });
+  }
+
+  private graduateSuccessHandler(responses: RequestResponse[], successMessage: string) {
+    Logger.info(successMessage);
+    _.each(responses, (response: RequestResponse) => {
+      let info: any = { statusCode: response.statusCode };
+      if (response.statusMessage) {
+        info.statusMessage = response.statusMessage;
+      }
+      Logger.info(JSON.stringify(info));
+    });
+    Logger.verbose(`${JSON.stringify(responses)}`);
+  }
+
+  private graduateErrorHandler(err: any, errorMessage: string) {
+    Logger.error(errorMessage, err);
   }
 }

@@ -21,7 +21,7 @@ class Config {
 
   public getConfiguration(): IConfig {
     try {
-      Logger.info(`Loading ${chalk.underline(this.env)} environment`);
+      Logger.info(`Loading ${chalk.underline(this.env)} environment configuration`);
       return require(`env/${this.env}.js`);
     } catch (error) {
       Logger.error('Unable to load environment.', error);

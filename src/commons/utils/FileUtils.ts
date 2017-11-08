@@ -11,7 +11,11 @@ export class FileUtils {
       });
   }
 
-  static writeJson(outputFile: string, data: any, errCallback: (err: NodeJS.ErrnoException) => void): Promise<void> {
+  static appendToFile(outputFile: string, data: any): Promise<void> {
+    return fs.appendFile(outputFile, data);
+  }
+
+  static writeJson(outputFile: string, data: any): Promise<void> {
     return fs.writeJSON(outputFile, data, { spaces: 2 });
   }
 }

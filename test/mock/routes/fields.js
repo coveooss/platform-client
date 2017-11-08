@@ -41,5 +41,5 @@ exports.updateFields = function(req, res) {
 };
 
 exports.deleteFields = function(req, res) {
-  res.status(404).send({});
+  res.status(404).send({ statusMessage: 'NOt today' });
 };

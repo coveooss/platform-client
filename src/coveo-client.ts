@@ -1,3 +1,4 @@
+// TODO: set log file output before setting env
 setEnvironmentIfNecessary();
 
 import { GraduateCommand } from './commands/GraduateCommand';
@@ -18,7 +19,6 @@ const program = require('commander');
 const pkg: any = require('./../package.json');
 
 program
-  // TODO set Environment
   .option('--env [value]', 'Environment')
   .version(pkg.version);
 
@@ -40,8 +40,15 @@ program
   .option('-P, --POST', 'Allow POST operations on the destination Organization')
   .option('-p, --PUT', 'Allow PUT operations on the destination Organization')
   .option('-d, --DELETE', 'Allow DELETE operations on the destination Organization')
-  .option('-v, --verbose', 'Display graduation information', setLogLevelToVerbose)
+  .option('-o, --output <filename>', 'Output log data into a specific filename', Logger.filename)
+  .option('-l, --logLevel <level>', 'Possible values are: verbose, info (default), error, nothing', /^(verbose|info|error|nothing)$/i, 'info')
   .action((originOrganization: string, destinationOrganization: string, originApiKey: string, destinationApiKey: string, options: any) => {
+
+    // Set Logger
+    Logger.setLogLevel(options.logLevel);
+    Logger.setFilename(options.output);
+    Logger.newAction('Graduate');
+
     let command = new GraduateCommand(originOrganization, destinationOrganization, originApiKey, destinationApiKey);
 
     if (options.fields) {
@@ -64,8 +71,7 @@ program
   .option('-e, --extensions', 'Diff extensions')
   .option('-b, --openInBrowser', 'Open Diff in default Browser')
   .option('-i, --ignoreFields', 'Fields to ignore', [])
-  .option('-o, --outputfile', 'Output file', `${config.workingDirectory}output/diff-${Date.now()}.html`)
-  .option('-v, --verbose', 'Display diff information', setLogLevelToVerbose)
+  // .option('-o, --outputfile', 'Output file', `${config.workingDirectory}output/diff-${Date.now()}.html`)
   .action((originOrganization: string, destinationOrganization: string, originApiKey: string, destinationApiKey: string, options: any) => {
     let command = new DiffCommand(originOrganization, destinationOrganization, originApiKey, destinationApiKey);
     if (options.fields) {
@@ -118,8 +124,4 @@ function setEnvironmentIfNecessary() {
     let env = process.argv[i + 1];
     process.env.NODE_ENV = env;
   }
-}
-
-function setLogLevelToVerbose() {
-  process.env.LOG_LEVEL = 'verbose';
 }
