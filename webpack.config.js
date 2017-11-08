@@ -1,9 +1,11 @@
 require('colors');
 const webpack = require('webpack');
 const minimize = process.argv.indexOf('--minimize') !== -1;
+const devMode = process.argv.indexOf('--dev-mode') !== -1;
 const failPlugin = require('webpack-fail-plugin');
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
+const WebpackNotifierPlugin = require('webpack-notifier');
 
 if (minimize) {
   console.log('Building minified version of the library'.bgGreen.red);
@@ -17,6 +19,10 @@ const plugins = [failPlugin];
 plugins.push(new webpack.HotModuleReplacementPlugin({
   multiStep: true
 }));
+
+if (devMode) {
+  plugins.push(new WebpackNotifierPlugin());
+}
 
 if (minimize) {
   plugins.push(new webpack.optimize.UglifyJsPlugin());

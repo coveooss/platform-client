@@ -14,7 +14,7 @@ gulp.task('setupDevEnv', (done) => {
 })
 
 gulp.task('dev', ['build'], () => {
-  gulp.watch('src/**/*.ts', ['compile']);
+  gulp.watch('src/**/*.ts', ['compileForDev']);
 });
 
 gulp.task('devTest', ['buildTest', 'watchTest'],() => {

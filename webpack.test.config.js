@@ -8,9 +8,9 @@ const nodeModules = {};
 const nodeExternals = require('webpack-node-externals');
 
 if (minimize) {
-  console.log('Building minified version of the library'.bgGreen.red);
+  console.log('TEST: Building minified version of the library'.bgGreen.red);
 } else {
-  console.log('Building non minified version of the library'.bgGreen.red);
+  console.log('TEST: Building non minified version of the library'.bgGreen.red);
 }
 
 // Fail plugin will allow the webpack ts-loader to fail correctly when the TS compilation fails
