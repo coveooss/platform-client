@@ -67,6 +67,7 @@
     "no-string-literal": false,
     "no-unused-variable": true,
     "no-string-throw": true,
+    "no-var-requires": false,
     "no-switch-case-fall-through": true,
     "no-trailing-whitespace": true,
     "no-unused-expression": false,
