@@ -3,6 +3,11 @@ import { Answers } from 'inquirer';
 import { Utils } from '../commons/utils/Utils';
 import * as inquirer from 'inquirer';
 import { Logger } from '../commons/logger';
+import { GraduateCommand } from '../commands/GraduateCommand';
+import { DiffCommand } from '../commands/DiffCommand';
+import { FieldController } from '../controllers/FieldController';
+import { ExtensionController } from '../controllers/ExtensionController';
+import { SourceController } from '../controllers/SourceController';
 
 export interface IAnswer {
   originOrganizationId: string;
@@ -15,7 +20,9 @@ export interface IAnswer {
   graduateExtensionsOperation: string[];
   contentToGraduate: string[];
   sourceContentToGraduate: string[];
-  filename: string;
+  settingFilename: string;
+  logFilename: string;
+  force: boolean;
 }
 
 export class InteractiveMode {
@@ -30,7 +37,9 @@ export class InteractiveMode {
   public GRADUATE_EXTENSIONS_OPERATION: string = 'graduateExtensionsOperation';
   public CONTENT_TO_GRADUATE: string = 'contentToGraduate';
   public SOURCE_CONTENT_TO_GRADUATE: string = 'sourceContentToGraduate';
-  public FILENAME: string = 'filename';
+  public SETTING_FILENAME: string = 'settingFilename';
+  public LOG_FILENAME: string = 'logFilename';
+  public FORCE_GRADUATION: string = 'force';
 
   public start(): Promise<Answers> {
     const prompt = inquirer.createPromptModule();
@@ -79,8 +88,8 @@ export class InteractiveMode {
       name: this.COMMAND,
       message: 'Command to execute?',
       choices: [
-        { name: 'graduate', checked: true },
-        { name: 'diff', disabled: 'Not implemented yet' }
+        { name: GraduateCommand.COMMAND_NAME, checked: true },
+        { name: DiffCommand.COMMAND_NAME, disabled: 'Not implemented yet' }
       ]
     };
   }
@@ -91,21 +100,21 @@ export class InteractiveMode {
       name: this.CONTENT_TO_GRADUATE,
       message: 'Graduate Fields?',
       choices: [
-        { name: 'fields' },
-        { name: 'extensions', disabled: 'Not implemented yet' },
-        { name: 'sources' }
+        { name: FieldController.CONTROLLER_NAME },
+        { name: ExtensionController.CONTROLLER_NAME, disabled: 'Not implemented yet' },
+        { name: SourceController.CONTROLLER_NAME }
       ],
-      when: (answer: IAnswer) => answer.command.indexOf('graduate') !== -1,
+      when: (answer: IAnswer) => answer.command.indexOf(GraduateCommand.COMMAND_NAME) !== -1,
       validate: this.checkboxValidator('You need to select at least 1 content to graduate.')
     };
   }
 
   public getGraduateOperationForFields(): Question {
-    return this.getGraduateOperation('fields', this.GRADUATE_FIELDS_OPERATION);
+    return this.getGraduateOperation(FieldController.CONTROLLER_NAME, this.GRADUATE_FIELDS_OPERATION);
   }
 
   public getGraduateOperationForExtensions(): Question {
-    return this.getGraduateOperation('extensions', this.GRADUATE_EXTENSIONS_OPERATION);
+    return this.getGraduateOperation(ExtensionController.CONTROLLER_NAME, this.GRADUATE_EXTENSIONS_OPERATION);
   }
 
   public getSourceElementToGraduate(): Question {
@@ -119,38 +128,38 @@ export class InteractiveMode {
         { name: 'Mappings', value: 'mappings' },
         { name: 'Extensions', value: 'extensions' }
       ],
-      when: (answer: IAnswer) => answer.contentToGraduate.indexOf('sources') !== -1,
+      when: (answer: IAnswer) => answer.contentToGraduate.indexOf(SourceController.CONTROLLER_NAME) !== -1,
       validate: this.checkboxValidator('You need to select at least 1 source content to graduate.')
     };
   }
 
   public getGraduateOperationForSources(): Question {
-    return this.getGraduateOperation('sources', this.GRADUATE_SOURCES_OPERATION);
+    return this.getGraduateOperation(SourceController.CONTROLLER_NAME, this.GRADUATE_SOURCES_OPERATION);
   }
 
   public getFileNameForSettings(): Question {
+    return this.getGenericFilename(this.SETTING_FILENAME, 'settings', 'Enter settings filename: ');
+  }
+
+  public getFileNameForLogs(): Question {
+    return this.getGenericFilename(this.LOG_FILENAME, 'logs', 'Enter log filename: ');
+  }
+
+  public confirmGraduationAction(mes: string = 'Are you sure you want to perform this action?', variable: string): Question {
     return {
-      type: 'input',
-      name: this.FILENAME,
-      default: 'settings',
-      message: 'Enter fileName: ',
-      filter: (fn: string) => {
-        // TODO: let the user to add a absolute path
-        return `${fn}.json`;
-      }
+      type: 'confirm',
+      name: variable,
+      message: mes,
+      default: false
     };
   }
 
-  private getGraduateOperation(content: string, variable: string): Question {
+  public forceGraduation(mes: string = 'Are you sure you want to perform a graduation?', variable: string): Question {
     return {
-      type: 'checkbox',
+      type: 'confirm',
       name: variable,
-      message: `Select the allowed operations on the destination organization for the ${content} graduation:`,
-      choices: ['POST', 'PUT', 'DELETE'],
-      validate: this.checkboxValidator('You need to select at least 1 graduate operation.'),
-      when: (answer: IAnswer) => {
-        return answer.contentToGraduate.indexOf(content) !== -1;
-      }
+      message: mes,
+      default: false
     };
   }
 
@@ -168,6 +177,32 @@ export class InteractiveMode {
       this.getGraduateOperationForSources(),
       this.getFileNameForSettings()
     ];
+  }
+
+  private getGraduateOperation(content: string, variable: string): Question {
+    return {
+      type: 'checkbox',
+      name: variable,
+      message: `Select the allowed operations on the destination organization for the ${content} graduation:`,
+      choices: ['POST', 'PUT', 'DELETE'],
+      validate: this.checkboxValidator('You need to select at least 1 graduate operation.'),
+      when: (answer: IAnswer) => {
+        return answer.contentToGraduate.indexOf(content) !== -1;
+      }
+    };
+  }
+
+  private getGenericFilename(nameValue: string, defaultValue: string, messageValue: string): Question {
+    return {
+      type: 'input',
+      name: nameValue,
+      default: defaultValue,
+      message: messageValue,
+      filter: (fn: string) => {
+        // TODO: let the user to add a absolute path
+        return `${fn}.json`;
+      }
+    };
   }
 
   private inputValidator(message: string): (input: string, answers?: Answers) => boolean | string {

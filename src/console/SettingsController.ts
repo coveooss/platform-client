@@ -4,6 +4,7 @@ export interface IGraduateSettingOptions {
   POST: boolean;
   PUT: boolean;
   DELETE: boolean;
+  force: boolean;
 }
 
 export interface ISourceContentSettingOptions {
@@ -66,7 +67,8 @@ export class SettingsController {
           options: {
             POST: answers.graduateFieldsOperation.indexOf('POST') !== -1,
             PUT: answers.graduateFieldsOperation.indexOf('PUT') !== -1,
-            DELETE: answers.graduateFieldsOperation.indexOf('DELETE') !== -1
+            DELETE: answers.graduateFieldsOperation.indexOf('DELETE') !== -1,
+            force: answers.force
           }
         };
       }
@@ -76,7 +78,8 @@ export class SettingsController {
           options: {
             POST: answers.graduateExtensionsOperation.indexOf('POST') !== -1,
             PUT: answers.graduateExtensionsOperation.indexOf('PUT') !== -1,
-            DELETE: answers.graduateExtensionsOperation.indexOf('DELETE') !== -1
+            DELETE: answers.graduateExtensionsOperation.indexOf('DELETE') !== -1,
+            force: answers.force
           }
         };
       }
@@ -86,7 +89,8 @@ export class SettingsController {
           options: {
             POST: answers.graduateSourceOperation.indexOf('POST') !== -1,
             PUT: answers.graduateSourceOperation.indexOf('PUT') !== -1,
-            DELETE: answers.graduateSourceOperation.indexOf('DELETE') !== -1
+            DELETE: answers.graduateSourceOperation.indexOf('DELETE') !== -1,
+            force: answers.force
           },
           content: {
             configuration: answers.sourceContentToGraduate.indexOf('configuration') !== -1,

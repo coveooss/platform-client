@@ -20,6 +20,8 @@ export class DiffCommand {
     this.organization2 = new Organization(destinationOrganization, destinationApiKey);
   }
 
+  static COMMAND_NAME: string = 'diff';
+
   public diff(): void {
   }
 

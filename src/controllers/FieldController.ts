@@ -1,23 +1,19 @@
+import * as _ from 'underscore';
+import * as request from 'request';
+import * as fs from 'fs-extra';
 import { RequestResponse } from 'request';
-import { ICoveoObject } from '../commons/interfaces/ICoveoObject';
 import { Field } from '../models/FieldModel';
 import { UrlService } from '../commons/services/UrlService';
 import { RequestUtils } from '../commons/utils/RequestUtils';
-import { IDiffResult } from '../commons/interfaces/IDiffResult';
 import { DiffResult } from '../models/DiffResult';
 import { Logger } from '../commons/logger';
 import { Dictionary } from '../commons/collections/Dictionary';
 import { StaticErrorMessage } from '../commons/errors';
-import { JsonUtils } from '../commons/utils/JsonUtils';
 import { DiffUtils } from '../commons/utils/DiffUtils';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { Organization } from '../models/OrganizationModel';
 import { ArrayUtils } from '../commons/utils/ArrayUtils';
 import { Assert } from '../commons/misc/Assert';
-import { FileUtils } from '../commons/utils/FileUtils';
-import * as _ from 'underscore';
-import * as request from 'request';
-import * as fs from 'fs-extra';
 import { DiffResultArray } from '../models/DiffResultArray';
 
 export class FieldController {
@@ -30,54 +26,29 @@ export class FieldController {
 
   constructor() { }
 
+  static CONTROLLER_NAME: string = 'fields';
+
   /**
    * Perform a diff and return the result that will be used for the graduate command
    *
    * @param {Organization} organization1 Origin Organisation
    * @param {Organization} organization2 Final Organisation
-   * @returns {IDiffResult<string>} The Diff result
    * @memberof FieldController
    */
   public graduate(organization1: Organization, organization2: Organization) {
     Logger.info('Graduating fields');
 
     Promise.all([this.loadFields(organization1), this.loadFields(organization2)])
-      // ********************************************
-      // TODO: Ask confirmation to graduate
-      // ********************************************
+      // TODO: rethink controller: should the orgs should be included in the constructor ?
       .then(() => {
         let diffResult = DiffUtils.getDiffResult(organization1.Fields, organization2.Fields);
-
-        if (diffResult.NEW.length > 0) {
-          Logger.verbose(`Creating ${diffResult.NEW.length} new field${diffResult.NEW.length > 1 ? 's' : ''} in ${organization2.Id}`);
-          this.createFields(organization2, this.getFieldModels(diffResult.NEW))
-            .then((responses: RequestResponse[]) => {
-              this.graduateSuccessHandler(responses, 'Create fields response:');
-            }).catch((err: any) => {
-              this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_CREATE_FIELDS);
-            });
+        if (diffResult.ContainsItems) {
+          this.graduateNew(diffResult, organization1, organization2);
+          this.graduateUpdated(diffResult, organization1, organization2);
+          this.graduateDeleted(diffResult, organization1, organization2);
+        } else {
+          Logger.info('No Fields to graduate.');
         }
-
-        if (diffResult.UPDATED.length > 0) {
-          Logger.verbose(`Updating ${diffResult.UPDATED.length} existing field${diffResult.NEW.length > 1 ? 's' : ''} in ${organization2.Id}`);
-          this.updateFields(organization2, this.getFieldModels(diffResult.UPDATED))
-            .then((responses: RequestResponse[]) => {
-              this.graduateSuccessHandler(responses, 'Update fields response:');
-            }).catch((err: any) => {
-              this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_UPDATE_FIELDS);
-            });
-        }
-
-        if (diffResult.DELETED.length > 0) {
-          Logger.verbose(`Deleting ${diffResult.UPDATED.length} existing field${diffResult.NEW.length > 1 ? 's' : ''} from ${organization2.Id}`);
-          this.deleteFields(organization2, _.pluck(diffResult.DELETED, 'name'))
-            .then((responses: RequestResponse[]) => {
-              this.graduateSuccessHandler(responses, 'Update fields response:');
-            }).catch((err: any) => {
-              this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_DELETE_FIELDS);
-            });
-        }
-
       }).catch((err: any) => {
         this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_FIELDS);
       });
@@ -85,9 +56,45 @@ export class FieldController {
     // return response and summary
   }
 
+  private graduateNew(diffResult: DiffResultArray<Field>, organization1: Organization, organization2: Organization) {
+    if (diffResult.NEW.length > 0) {
+      Logger.verbose(`Creating ${diffResult.NEW.length} new field${diffResult.NEW.length > 1 ? 's' : ''} in ${organization2.Id} `);
+      this.createFields(organization2, this.getFieldModels(diffResult.NEW))
+        .then((responses: RequestResponse[]) => {
+          this.graduateSuccessHandler(responses, 'Create fields response:');
+        }).catch((err: any) => {
+          this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_CREATE_FIELDS);
+        });
+    }
+  }
+
+  private graduateUpdated(diffResult: DiffResultArray<Field>, organization1: Organization, organization2: Organization) {
+    if (diffResult.UPDATED.length > 0) {
+      Logger.verbose(`Updating ${diffResult.UPDATED.length} existing field${diffResult.NEW.length > 1 ? 's' : ''} in ${organization2.Id} `);
+      this.updateFields(organization2, this.getFieldModels(diffResult.UPDATED))
+        .then((responses: RequestResponse[]) => {
+          this.graduateSuccessHandler(responses, 'Update fields response:');
+        }).catch((err: any) => {
+          this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_UPDATE_FIELDS);
+        });
+    }
+  }
+
+  private graduateDeleted(diffResult: DiffResultArray<Field>, organization1: Organization, organization2: Organization) {
+    if (diffResult.DELETED.length > 0) {
+      Logger.verbose(`Deleting ${diffResult.UPDATED.length} existing field${diffResult.NEW.length > 1 ? 's' : ''} from ${organization2.Id} `);
+      this.deleteFields(organization2, _.pluck(diffResult.DELETED, 'name'))
+        .then((responses: RequestResponse[]) => {
+          this.graduateSuccessHandler(responses, 'Update fields response:');
+        }).catch((err: any) => {
+          this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_DELETE_FIELDS);
+        });
+    }
+  }
+
   public createFields(org: Organization, fieldModels: Array<IStringMap<string>>) {
     Assert.isLargerThan(0, fieldModels.length);
-    Logger.verbose(`Creating ${fieldModels.length} fields from ${org.Id}`);
+    Logger.verbose(`Creating ${fieldModels.length} fields from ${org.Id} `);
     let url = UrlService.createFields(org.Id);
     return Promise.all(_.map(ArrayUtils.chunkArray(fieldModels, this.fieldsPerBatch), (batch: Array<IStringMap<string>>) => {
       return RequestUtils.post(url, org.ApiKey, batch);
@@ -96,7 +103,7 @@ export class FieldController {
 
   public updateFields(org: Organization, fieldModels: Array<IStringMap<string>>) {
     Assert.isLargerThan(0, fieldModels.length);
-    Logger.verbose(`Updating ${fieldModels.length} fields from ${org.Id}`);
+    Logger.verbose(`Updating ${fieldModels.length} fields from ${org.Id} `);
     let url = UrlService.updateFields(org.Id);
     return Promise.all(_.map(ArrayUtils.chunkArray(fieldModels, this.fieldsPerBatch), (batch: Array<IStringMap<string>>) => {
       return RequestUtils.put(url, org.ApiKey, batch);
@@ -105,7 +112,7 @@ export class FieldController {
 
   public deleteFields(org: Organization, fieldList: string[]) {
     Assert.isLargerThan(0, fieldList.length);
-    Logger.verbose(`Deleting ${fieldList.length} fields from ${org.Id}`);
+    Logger.verbose(`Deleting ${fieldList.length} fields from ${org.Id} `);
     return Promise.all(_.map(ArrayUtils.chunkArray(fieldList, this.fieldsPerBatch), (batch: string[]) => {
       let url = UrlService.deleteFields(org.Id, batch);
       return RequestUtils.delete(url, org.ApiKey);
@@ -124,7 +131,7 @@ export class FieldController {
   }
 
   public getFieldsPage(organization: Organization, page: number): Promise<RequestResponse> {
-    Logger.verbose(`Fecthing field page ${page} from ${organization.Id}`);
+    Logger.verbose(`Fecthing field page ${page} from ${organization.Id} `);
     return RequestUtils.get(
       UrlService.getFieldsPageUrl(organization.Id, page),
       organization.ApiKey
@@ -156,7 +163,7 @@ export class FieldController {
   }
 
   public loadOtherPages(organization: Organization, totalPages: number): Promise<void> {
-    Logger.verbose(`Loading ${totalPages - 1} more pages of fields from ${organization.Id}`);
+    Logger.verbose(`Loading ${totalPages - 1} more pages of fields from ${organization.Id} `);
     let pageArray = _.map(new Array(totalPages - 1), (v: number, idx: number) => idx + 1);
     return Promise
       .all(_.map(pageArray, (page: number) => this.getFieldsPage(organization, page)))
@@ -183,7 +190,7 @@ export class FieldController {
       }
       Logger.info(JSON.stringify(info));
     });
-    Logger.verbose(`${JSON.stringify(responses)}`);
+    Logger.verbose(`${JSON.stringify(responses)} `);
   }
 
   private graduateErrorHandler(err: any, errorMessage: string) {

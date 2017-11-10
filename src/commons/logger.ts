@@ -29,28 +29,38 @@ export class Logger {
     if (Logger.level <= Logger.INFO) {
       this.log('INFO', 'green', message, meta);
     }
+    Logger.addToLogFile('INFO', message, meta);
   }
 
   public static error(message: string, ...meta: any[]) {
     if (Logger.level <= Logger.ERROR) {
       this.log('ERROR', 'red', message, meta);
     }
+    Logger.addToLogFile('ERROR', message, meta);
   }
 
   public static verbose(message: string, ...meta: any[]) {
     if (Logger.level <= Logger.VERBOSE) {
       this.log('VERBOSE', 'yellow', message, meta);
     }
+    Logger.addToLogFile('VERBOSE', message, meta);
+  }
+
+  public static addToLogFile(level: string, message: string, ...meta: any[]) {
+    let today = (new Date()).toLocaleString();
+    FileUtils.appendToFile(Logger.filename, [today, level, message, '\n'].join(' | '));
+    _.each(meta, (m: any) => {
+      if (!Utils.isEmptyString(m.toString())) {
+        FileUtils.appendToFile(Logger.filename, [today, level, m.toString(), '\n'].join(' | '));
+      }
+    });
   }
 
   public static log(level: string, color: 'green' | 'yellow' | 'red', message: string, ...meta: any[]) {
-    FileUtils.appendToFile(Logger.filename, level + ': ' + message + '\n');
     console.log(level + ': ' + chalk[color].bold(message));
     _.each(meta, (m: any) => {
-      m = m.toString();
-      if (!Utils.isEmptyString(m)) {
-        FileUtils.appendToFile(Logger.filename, level + ': ' + m + '\n');
-        console.log(level + ': ' + chalk[color](m));
+      if (!Utils.isEmptyString(m.toString())) {
+        console.log(level + ': ' + chalk[color](m.toString()));
       }
     });
   }

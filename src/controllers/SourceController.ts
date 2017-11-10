@@ -15,7 +15,10 @@ import { DiffUtils } from '../commons/utils/DiffUtils';
 import { RequestUtils } from '../commons/utils/RequestUtils';
 
 export class SourceController {
+
   constructor() { }
+
+  static CONTROLLER_NAME: string = 'sources';
 
   public diff(organization1: IOrganization, organization2: IOrganization, fieldsToIgnore: string[]): Dictionary<IDiffResult<any>> {
     let diffResults: Dictionary<IDiffResult<any>> = new Dictionary<IDiffResult<any>>();
