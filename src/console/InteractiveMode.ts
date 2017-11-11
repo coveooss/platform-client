@@ -1,8 +1,7 @@
+import * as inquirer from 'inquirer';
 import { Question } from 'inquirer';
 import { Answers } from 'inquirer';
 import { Utils } from '../commons/utils/Utils';
-import * as inquirer from 'inquirer';
-import { Logger } from '../commons/logger';
 import { GraduateCommand } from '../commands/GraduateCommand';
 import { DiffCommand } from '../commands/DiffCommand';
 import { FieldController } from '../controllers/FieldController';

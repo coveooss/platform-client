@@ -1,6 +1,5 @@
-import { Logger } from '../commons/logger';
 import * as chalk from 'chalk';
-declare const PP: any;
+import { Logger } from '../commons/logger';
 
 export interface IConfig {
   workingDirectory: string;

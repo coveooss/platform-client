@@ -7,7 +7,7 @@ import { SecurityProvider } from '../models/SecurityProviderModel';
 import { UrlService } from '../commons/services/UrlService';
 import { IDiffResult } from '../commons/interfaces/IDiffResult';
 import { DiffResult } from '../models/DiffResult';
-import { Logger } from '../commons/logger';
+// // import { Logger } from '../commons/logger';
 import { Dictionary } from '../commons/collections/Dictionary';
 import { StaticErrorMessage } from '../commons/errors';
 import { JsonUtils } from '../commons/utils/JsonUtils';
@@ -52,7 +52,7 @@ export class SecurityProviderController {
         }
         } catch (err) {
         // TODO: Move the loogers from all files to their base classes when possible
-        Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err);
+        // Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err);
 
         throw err;
         }

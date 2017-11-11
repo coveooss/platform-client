@@ -1,12 +1,9 @@
 import * as _ from 'underscore';
-import { Logger } from '../logger';
 import { Utils } from '../utils/Utils';
 
 export class Assert {
 
   static failureHandler = (message?: string) => {
-    Logger.error('Assertion Failed!', message);
-
     if (message && Utils.isNonEmptyString(message)) {
       throw new Error(message);
     } else {
