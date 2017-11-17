@@ -1,19 +1,12 @@
 import { ICoveoObject } from './ICoveoObject';
+import { Source } from '../../coveoObjects/Source';
+import { BaseCoveoObject } from '../../coveoObjects/BaseCoveoObject';
+import { Field } from '../../coveoObjects/Field';
 import { Dictionary } from '../collections/Dictionary';
-import { Source } from '../../models/SourceModel';
-import { BaseModel } from '../../models/BaseModel';
-import { Field } from '../../models/FieldModel';
 
 export interface IOrganization extends ICoveoObject {
-	ApiKey: string;
-	Fields: Dictionary<Field>;
-	Sources: Dictionary<Source>;
-	Extensions: Dictionary<BaseModel>;
-	QueryPipelines: Dictionary<BaseModel>;
-	Authentications: Dictionary<BaseModel>;
-	HostedSearchPages: Dictionary<BaseModel>;
-	SecurityProviders: Dictionary<BaseModel>;
-	CustomDimensions: Dictionary<BaseModel>;
-	NamedFilters: Dictionary<BaseModel>;
-	Reports: Dictionary<BaseModel>;
-};
+  getApiKey(): string;
+  getFields(): Dictionary<Field>;
+  getSources(): Dictionary<Source>;
+  getExtensions(): Dictionary<BaseCoveoObject>;
+}

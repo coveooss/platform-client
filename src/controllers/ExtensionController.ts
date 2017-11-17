@@ -1,12 +1,9 @@
-// External packages
 import { RequestResponse } from 'request';
-// Internal packages
-import { ICoveoObject } from '../commons/interfaces/ICoveoObject';
 import { IOrganization } from '../commons/interfaces/IOrganization';
-import { Extension } from '../models/ExtensionModel';
+import { Extension } from '../coveoObjects/Extension';
 import { UrlService } from '../commons/services/UrlService';
 import { IDiffResult } from '../commons/interfaces/IDiffResult';
-import { DiffResult } from '../models/DiffResult';
+import { DiffResult } from '../coveoObjects/DiffResult';
 import { Logger } from '../commons/logger';
 import { Dictionary } from '../commons/collections/Dictionary';
 import { StaticErrorMessage } from '../commons/errors';
@@ -19,7 +16,7 @@ export class ExtensionController {
   constructor() { }
 
   static CONTROLLER_NAME: string = 'extensions';
-
+/*
   public diff(organization1: IOrganization, organization2: IOrganization, fieldsToIgnore: string[]): Dictionary<IDiffResult<any>> {
     let diffResults: Dictionary<IDiffResult<any>> = new Dictionary<IDiffResult<any>>();
     let diffResultsExistence: DiffResult<string> = new DiffResult<string>();
@@ -109,4 +106,5 @@ export class ExtensionController {
       );
     });
   }
+  */
 }

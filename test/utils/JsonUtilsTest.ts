@@ -1,7 +1,7 @@
 import { expect, should } from 'chai';
 import { DiffUtils, IDiffOptions } from '../../src/commons/utils/DiffUtils';
 import { Dictionary } from '../../src/commons/collections/Dictionary';
-import { DiffResultArray } from '../../src/models/DiffResultArray';
+import { DiffResultArray } from '../../src/coveoObjects/DiffResultArray';
 import { IStringMap } from '../../src/commons/interfaces/IStringMap';
 import { JsonUtils } from '../../src/commons/utils/JsonUtils';
 
@@ -64,18 +64,18 @@ export const JsonUtilsTest = () => {
     describe('RemoveFieldFromJson', () => {
       it('It should not alter the initial object', () => {
         let obj = { one: 1, two: 2, three: 3 };
-        JsonUtils.removeFieldsFromJson(obj, ['two']);
+        JsonUtils.removeKeyValuePairsFromJson(obj, ['two']);
         expect(obj).to.eql({ one: 1, two: 2, three: 3 });
       });
 
       it('Should NOT remove specified fields from JSON object if not found', () => {
         let obj = { one: 1, two: 2, three: 3 };
-        expect(JsonUtils.removeFieldsFromJson(simpleObject, ['four'])).to.eql({ one: 1, two: 2, three: 3 });
+        expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, ['four'])).to.eql({ one: 1, two: 2, three: 3 });
       });
 
       it('Should remove specified fields from JSON object', () => {
         let obj = { one: 1, two: 2, three: 3 };
-        expect(JsonUtils.removeFieldsFromJson(simpleObject, ['two'])).to.eql({ one: 1, three: 3 });
+        expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, ['two'])).to.eql({ one: 1, three: 3 });
       });
 
       it('Should remove specified fields from JSON object', () => {
@@ -86,19 +86,19 @@ export const JsonUtilsTest = () => {
             identityType: [1, 2, 3]
           }
         };
-        expect(JsonUtils.removeFieldsFromJson(obj, ['identityType'])).to.eql({
+        expect(JsonUtils.removeKeyValuePairsFromJson(obj, ['identityType'])).to.eql({
           id: 0,
           value: {
             permission: 0
           }
         });
-        expect(JsonUtils.removeFieldsFromJson(obj, ['id'])).to.eql({
+        expect(JsonUtils.removeKeyValuePairsFromJson(obj, ['id'])).to.eql({
           value: {
             permission: 0,
             identityType: [1, 2, 3]
           }
         });
-        expect(JsonUtils.removeFieldsFromJson(obj, ['value'])).to.eql({
+        expect(JsonUtils.removeKeyValuePairsFromJson(obj, ['value'])).to.eql({
           id: 0
         });
       });

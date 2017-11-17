@@ -15,25 +15,6 @@ export class Logger {
   static level: number = Logger.INFO;
   static filename: string = 'coveo-cli.log';
 
-  public setSpinner() {
-    const spinner = new Ora({
-      text: 'Loading unicorns',
-      spinner: 'triangle'
-    });
-
-    spinner.start();
-
-    setTimeout(() => {
-      spinner.color = 'yellow';
-      spinner.text = 'Loading rainbows';
-    }, 1000);
-
-    setTimeout(() => {
-      spinner.succeed();
-    }, 2000);
-
-  }
-
   public static newAction(actionName: string) {
     let actionTime = new Date();
     let data = `\n\n#######################################\n${actionName}\n${actionTime}\n#######################################\n`;

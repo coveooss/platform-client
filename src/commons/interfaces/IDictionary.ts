@@ -1,11 +1,11 @@
 export interface IDictionary<T> {
-	Add(key: string, value: T): void;
-	ContainsKey(key: string): boolean;
-	Count(): number;
-	Item(key: string): T;
-	Keys(): string[];
-	Remove(key: string): T;
-	Values(): T[];
-	Clone(): IDictionary<T>;
-	Clear(): void;
+  add(key: string, value: T): void;
+  containsKey(key: string): boolean;
+  getCount(): number;
+  getItem(key: string): T;
+  keys(): string[];
+  remove(key: string): T;
+  values(): T[];
+  clone(): IDictionary<T>;
+  clear(): void;
 }

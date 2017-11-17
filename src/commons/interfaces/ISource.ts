@@ -1,10 +1,9 @@
 import { IStringMap } from './IStringMap';
 
 export interface ISource {
-  Id: string;
-  Configuration: any;
-  Mappings: IStringMap<string>[];
-  PreConversionExtensions: any[];
-  PostConversionExtensions: any[];
-  ExtendedDataFiles: any;
-};
+  getId(): string;
+  getConfiguration(): any;
+  getMappings(): Array<IStringMap<string>>;
+  getPreConversionExtensions(): any[];
+  getPostConversionExtensions(): any[];
+}

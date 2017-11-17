@@ -1,10 +1,10 @@
-import { FieldController } from '../controllers/FieldController';
-import { Organization } from '../models/OrganizationModel';
-import { Logger } from '../commons/logger';
-import { DiffResultArray } from '../models/DiffResultArray';
-import { Field } from '../models/FieldModel';
 import * as opn from 'opn';
 import * as fs from 'fs-extra';
+import { FieldController } from '../controllers/FieldController';
+import { Organization } from '../coveoObjects/Organization';
+import { Logger } from '../commons/logger';
+import { DiffResultArray } from '../coveoObjects/DiffResultArray';
+import { Field } from '../coveoObjects/Field';
 
 export class DiffCommand {
   private organization1: Organization;
@@ -31,8 +31,8 @@ export class DiffCommand {
   public diffFields() {
     let fieldController: FieldController = new FieldController();
     fieldController.diff(this.organization1, this.organization2, ['stemming'])
-      .then((diffResult: DiffResultArray<Field>) => {
-        fs.writeJSON('fieldDiff.json', diffResult, { spaces: 2 })
+      .then((diffResultArray: DiffResultArray<Field>) => {
+        fs.writeJSON('fieldDiff.json', diffResultArray, { spaces: 2 })
           .then(() => {
             Logger.info('File saved as fieldDiff.json');
             opn('fieldDiff.json');

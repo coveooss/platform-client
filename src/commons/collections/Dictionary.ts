@@ -1,10 +1,10 @@
-// External packages
-
-// Internal packages
+import * as _ from 'underscore';
 import { IDictionary } from '../interfaces/IDictionary';
 import { IStringMap } from '../interfaces/IStringMap';
-import * as _ from 'underscore';
 
+/**
+ * Dictionary template class. This class is really
+ */
 export class Dictionary<T> implements IDictionary<T> {
     private items: IStringMap<T> = {};
     private count: number = 0;
@@ -12,20 +12,20 @@ export class Dictionary<T> implements IDictionary<T> {
     constructor(obj?: IStringMap<T>) {
         if (obj) {
             _.each(obj, (v: T, k: string) => {
-                this.Add(k, v);
+                this.add(k, v);
             });
         }
     }
 
-    public ContainsKey(key: string): boolean {
+    public containsKey(key: string): boolean {
         return this.items.hasOwnProperty(key);
     }
 
-    public Count(): number {
+    public getCount(): number {
         return this.count;
     }
 
-    public Add(key: string, value: T): void {
+    public add(key: string, value: T): void {
         if (!this.items.hasOwnProperty(key)) {
             this.count++;
         }
@@ -33,19 +33,19 @@ export class Dictionary<T> implements IDictionary<T> {
         this.items[key] = value;
     }
 
-    public Remove(key: string): T {
-        if (this.ContainsKey(key)) {
+    public remove(key: string): T {
+        if (this.containsKey(key)) {
             this.count--;
             delete this.items[key];
         }
         return this.items[key];
     }
 
-    public Item(key: string): T {
+    public getItem(key: string): T {
         return this.items[key];
     }
 
-    public Keys(): string[] {
+    public keys(): string[] {
         let keySet: string[] = [];
 
         for (let prop in this.items) {
@@ -57,7 +57,7 @@ export class Dictionary<T> implements IDictionary<T> {
         return keySet;
     }
 
-    public Values(): T[] {
+    public values(): T[] {
         let values: T[] = [];
 
         for (let prop in this.items) {
@@ -69,18 +69,18 @@ export class Dictionary<T> implements IDictionary<T> {
         return values;
     }
 
-    public Clone(): Dictionary<T> {
+    public clone(): Dictionary<T> {
         let clone: Dictionary<T> = new Dictionary<T>();
         let original = this;
 
-        this.Keys().forEach((key: string) => {
-            clone.Add(key, JSON.parse(JSON.stringify(original.Item(key))));
+        this.keys().forEach((key: string) => {
+            clone.add(key, JSON.parse(JSON.stringify(original.getItem(key))));
         });
 
         return clone;
     }
 
-    public Clear(): void {
+    public clear(): void {
         this.items = {};
         this.count = 0;
     }

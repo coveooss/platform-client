@@ -11,7 +11,7 @@ import { SettingsController, IGraduateSettingOptions } from './console/SettingsC
 import { FieldController } from './controllers/FieldController';
 import { IDiffResult } from './commons/interfaces/IDiffResult';
 import { Dictionary } from './commons/collections/Dictionary';
-import { Organization } from './models/OrganizationModel';
+import { Organization } from './coveoObjects/Organization';
 import { config } from './config/index';
 import { DiffCommand } from './commands/DiffCommand';
 
@@ -60,7 +60,6 @@ program
     console.log('*********************');
     console.log(graduateOptions);
     console.log('*********************');
-    
 
     let command = new GraduateCommand(originOrganization, destinationOrganization, originApiKey, destinationApiKey, graduateOptions);
 

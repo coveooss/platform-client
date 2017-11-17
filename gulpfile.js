@@ -18,7 +18,7 @@ gulp.task('build', function(done) {
   runsequence('clean', 'setup', 'compile', done);
 });
 
-gulp.task('watch', ['watchTS', 'watchEJS', 'watchCSS']);
+gulp.task('watch', ['watchTS']);
 
 // Watches the typescript files.
 gulp.task('watchTS', ['build'], () => {
@@ -27,16 +27,6 @@ gulp.task('watchTS', ['build'], () => {
 
 gulp.task('watchTest', () => {
   gulp.watch('test/**/*.ts', ['test']);
-});
-
-// Watches the SCSS files.
-gulp.task('watchCSS', ['css'], () => {
-  gulp.watch('scss/**/*.scss', ['css']);
-});
-
-// Watches the EJS files.
-gulp.task('watchEJS', ['ejs'], () => {
-  gulp.watch('ejs/**/*.ejs', ['ejs']);
 });
 
 // Remove bin and all zip folders.

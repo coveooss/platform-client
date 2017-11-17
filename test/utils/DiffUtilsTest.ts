@@ -1,16 +1,16 @@
 import { expect, should } from 'chai';
 import { DiffUtils, IDiffOptions } from '../../src/commons/utils/DiffUtils';
 import { Dictionary } from '../../src/commons/collections/Dictionary';
-import { DiffResultArray } from '../../src/models/DiffResultArray';
+import { DiffResultArray } from '../../src/coveoObjects/DiffResultArray';
 
 export const DiffUtilsTest = () => {
   describe('Get Diff Result', () => {
 
     let dict1: Dictionary<any> = new Dictionary();
-    dict1.Add('key1', [1, 'a']);
-    dict1.Add('key2', [2, 'b']);
-    dict1.Add('key3', [3, 'c']);
-    dict1.Add('key4', [4, 'd']);
+    dict1.add('key1', [1, 'a']);
+    dict1.add('key2', [2, 'b']);
+    dict1.add('key3', [3, 'c']);
+    dict1.add('key4', [4, 'd']);
 
     let dict2: Dictionary<any> = new Dictionary({
       key3: [3, 'c'],
@@ -61,8 +61,8 @@ export const DiffUtilsTest = () => {
     });
 
     it('Should not alter dictionnaries', () => {
-      let dict1Clone = dict1.Clone();
-      let dictAllClone = dictAll.Clone();
+      let dict1Clone = dict1.clone();
+      let dictAllClone = dictAll.clone();
 
       let diff: DiffResultArray<any> = DiffUtils.getDiffResult(dict1, dictAll);
 
@@ -107,8 +107,8 @@ export const DiffUtilsTest = () => {
         fieldsToIgnore: ['random']
       };
 
-      let car1DictClone = car1Dict.Clone();
-      let car2DictClone = car2Dict.Clone();
+      let car1DictClone = car1Dict.clone();
+      let car2DictClone = car2Dict.clone();
 
       let diff: DiffResultArray<any> = DiffUtils.getDiffResult(car1DictClone, car2DictClone, options);
       expect(car1Dict).to.eql(car1DictClone);
@@ -135,8 +135,8 @@ export const DiffUtilsTest = () => {
         fieldsToIgnore: ['color', 'brand']
       };
 
-      let car1DictClone = car1Dict.Clone();
-      let car2DictClone = car2Dict.Clone();
+      let car1DictClone = car1Dict.clone();
+      let car2DictClone = car2Dict.clone();
 
       let diff: DiffResultArray<any> = DiffUtils.getDiffResult(car1DictClone, car2DictClone, options);
       expect(car1Dict).to.eql(car1DictClone);

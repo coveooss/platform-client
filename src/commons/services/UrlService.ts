@@ -3,7 +3,7 @@ declare function require(path: string): any;
 // External packages
 
 // Internal packages
-import { ObjectUtils } from '../utils/ObjectUtils';
+import { Utils } from '../utils/Utils';
 import { config } from './../../config/index';
 import { Assert } from '../misc/Assert';
 

@@ -1,6 +1,4 @@
-// External packages
 import * as fs from 'fs-extra';
-// Internal packages
 import { config } from './../../config/index';
 
 export class FileUtils {

@@ -1,3 +1,5 @@
+import { IStringMap } from './IStringMap';
+
 export interface IField {
-  name: string;
+  getFieldModel(): IStringMap<string>;
 }

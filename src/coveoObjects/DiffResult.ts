@@ -13,6 +13,6 @@ export class DiffResult<T> implements IDiffResult<T> {
   }
 
   public ContainsItems(): boolean {
-    return (this.NEW.Count() + this.UPDATED.Count() + this.DELETED.Count()) > 0;
+    return (this.NEW.getCount() + this.UPDATED.getCount() + this.DELETED.getCount()) > 0;
   }
 }

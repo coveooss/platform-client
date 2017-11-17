@@ -1,7 +1,7 @@
-import { Dictionary } from '../collections/Dictionary';
+import * as _ from 'underscore';
 import { IStringMap } from '../interfaces/IStringMap';
 import { flatten, unflatten } from 'flat';
-import * as _ from 'underscore';
+import { Dictionary } from '../collections/Dictionary';
 
 export class JsonUtils {
   static flatten(jsonObject: any): any {
@@ -9,18 +9,27 @@ export class JsonUtils {
   }
 
   // TODO: old-> remove
-  static removeFieldsFromJsonOld(json: any, fieldsToIgnore: string[] = []): any {
-    Object.keys(json).forEach((key: string) => {
-      if (fieldsToIgnore.indexOf(key) > -1) {
-        delete json[key];
-      }
-    });
+  // static removeFieldsFromJsonOld(json: any, fieldsToIgnore: string[] = []): any {
+  //   Object.keys(json).forEach((key: string) => {
+  //     if (fieldsToIgnore.indexOf(key) > -1) {
+  //       delete json[key];
+  //     }
+  //   });
 
-    return json;
-  }
+  //   return json;
+  // }
 
-  static removeFieldsFromJson(obj: any, fields: string[] = []): any {
-    if (fields.length === 0) {
+  /**
+   * Remove key value pairs from the JSON object.
+   *
+   * @static
+   * @param {*} obj JSON
+   * @param {string[]} [keysToRemove=[]]
+   * @returns {*}
+   */
+  // TODO: Test
+  static removeKeyValuePairsFromJson(obj: any, keysToRemove: string[] = []): any {
+    if (keysToRemove.length === 0) {
       // Do not waste time for nothing
       return obj;
     }
@@ -29,34 +38,28 @@ export class JsonUtils {
 
     map = _.omit(map, (value: any, key: string) => {
       let keys = key.split('.');
-      return _.intersection(keys, fields).length > 0;
+      return _.intersection(keys, keysToRemove).length > 0;
     });
 
     return unflatten(map);
   }
 
-  static hasKey(obj: any, fields: string[] = []): boolean {
+  /**
+   * Parse throught a JSON object and determine if the object contains the specified key
+   *
+   * @static
+   * @param {*} obj
+   * @param {string[]} [fields=[]]
+   * @returns {boolean} Contains or not the specified key
+   */
+  static hasKey(obj: any, keysToFind: string[] = []): boolean {
     const map = flatten(obj);
     let noCommonElements = Object.keys(map).every((key: string) => {
       let keys = key.split('.');
-      return _.intersection(keys, fields).length === 0;
+      return _.intersection(keys, keysToFind).length === 0;
     });
 
     return !noCommonElements;
-  }
-
-  // TODO: old-> remove
-  static recurivelyRemoveFieldsFromJson(items: Dictionary<any>, fieldsToIgnore?: string[]): Dictionary<any> {
-    let ignoreList = fieldsToIgnore || new Array<string>();
-    items.Keys().forEach((key: string) => {
-      ignoreList.forEach((field: string) => {
-        if (key.indexOf('.' + field + '.') > -1 || key.lastIndexOf('.' + field, key.length - (field.length + 1)) === key.length - (field.length + 1)) {
-          items.Remove(key);
-        }
-      });
-    });
-
-    return items;
   }
 
   static convertJsonToDictionary(json: any, fieldsToIgnore?: string[]): Dictionary<any> {
@@ -65,7 +68,7 @@ export class JsonUtils {
 
     Object.keys(json).forEach((key: string) => {
       if (ignoreList.indexOf(key) === -1) {
-        newDictionary.Add(key, json[key]);
+        newDictionary.add(key, json[key]);
       }
     });
 

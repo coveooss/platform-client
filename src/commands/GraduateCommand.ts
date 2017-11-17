@@ -1,7 +1,6 @@
 import * as _ from 'underscore';
 import * as inquirer from 'inquirer';
-import { BaseCommand } from './BaseCommand';
-import { Organization } from '../models/OrganizationModel';
+import { Organization } from '../coveoObjects/Organization';
 import { FieldController } from '../controllers/FieldController';
 import { UrlService } from '../commons/services/UrlService';
 import { IGraduateSettingOptions } from '../console/SettingsController';

@@ -1,6 +1,3 @@
-// External packages
-
-// Internal packages
 import { Dictionary } from '../collections/Dictionary';
 
 export interface IDiffResult<T> {
@@ -9,4 +6,4 @@ export interface IDiffResult<T> {
   DELETED: Dictionary<T>;
 
   ContainsItems(): boolean;
-};
+}
