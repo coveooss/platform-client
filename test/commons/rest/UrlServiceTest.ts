@@ -1,5 +1,5 @@
 import { expect, should } from 'chai';
-import { UrlService } from '../../../src/commons/services/UrlService';
+import { UrlService } from '../../../src/commons/rest/UrlService';
 import { config } from '../../../src/config/index';
 
 export const UrlServiceTest = () => {

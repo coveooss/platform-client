@@ -1,11 +1,11 @@
 // TODO: set log file output before setting env
+import { Logger } from './commons/logger';
 setEnvironmentIfNecessary();
 
 import * as inquirer from 'inquirer';
 import * as fs from 'fs-extra';
 import { GraduateCommand } from './commands/GraduateCommand';
 import { StringUtils } from './commons/utils/StringUtils';
-import { Logger } from './commons/logger';
 import { InteractiveMode, IAnswer } from './console/InteractiveMode';
 import { SettingsController, IGraduateSettingOptions } from './console/SettingsController';
 import { FieldController } from './controllers/FieldController';
@@ -57,9 +57,6 @@ program
       DELETE: !!options.DELETE,
       force: !!options.force
     };
-    console.log('*********************');
-    console.log(graduateOptions);
-    console.log('*********************');
 
     let command = new GraduateCommand(originOrganization, destinationOrganization, originApiKey, destinationApiKey, graduateOptions);
 

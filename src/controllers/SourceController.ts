@@ -1,7 +1,7 @@
 import { RequestResponse } from 'request';
 import { IOrganization } from '../commons/interfaces/IOrganization';
 import { Source } from '../coveoObjects/Source';
-import { UrlService } from '../commons/services/UrlService';
+import { UrlService } from '../commons/rest/UrlService';
 import { IDiffResult } from '../commons/interfaces/IDiffResult';
 import { DiffResult } from '../coveoObjects/DiffResult';
 import { Logger } from '../commons/logger';

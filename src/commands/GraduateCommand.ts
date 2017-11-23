@@ -2,7 +2,7 @@ import * as _ from 'underscore';
 import * as inquirer from 'inquirer';
 import { Organization } from '../coveoObjects/Organization';
 import { FieldController } from '../controllers/FieldController';
-import { UrlService } from '../commons/services/UrlService';
+import { UrlService } from '../commons/rest/UrlService';
 import { IGraduateSettingOptions } from '../console/SettingsController';
 import { InteractiveMode } from '../console/InteractiveMode';
 import { Logger } from '../commons/logger';
@@ -35,15 +35,17 @@ export class GraduateCommand {
   static COMMAND_NAME: string = 'graduate';
 
   public graduateFields() {
-    let fieldController: FieldController = new FieldController();
+    let fieldController: FieldController = new FieldController(this.organization1, this.organization2);
     let questions: inquirer.Questions = [];
     if (!this.options.force) {
+      // TODO: do not ask the question if this.options.POST, PUT, DELETe are false
+      // TODO: tailor the question for the user
       questions.push(this.interactiveMode.confirmGraduationAction(`Are you sure want to perform a field graduation?`, 'confirm'));
     }
     inquirer.prompt(questions)
       .then((res: inquirer.Answers) => {
         if (res.confirm) {
-          fieldController.graduate(this.organization1, this.organization2);
+          fieldController.graduate();
         } else {
           Logger.info('No fields were graduated');
         }

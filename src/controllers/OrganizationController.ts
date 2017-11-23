@@ -2,7 +2,7 @@ import * as _ from 'underscore';
 import * as chalk from 'chalk';
 import { RequestResponse } from 'request';
 import { IOrganization } from '../commons/interfaces/IOrganization';
-import { UrlService } from '../commons/services/UrlService';
+import { UrlService } from '../commons/rest/UrlService';
 import { DiffUtils } from '../commons/utils/DiffUtils';
 import { RequestUtils } from '../commons/utils/RequestUtils';
 import { DiffResult } from '../coveoObjects/DiffResult';

@@ -1,7 +1,7 @@
 import { DictionnaryTest } from './commons/collections/DictionnaryTest';
 import { DiffUtilsTest } from './utils/DiffUtilsTest';
 import { DiffResultArrayTest } from './coveoObjects/DiffResultArrayTest';
-import { UrlServiceTest } from './commons/services/UrlServiceTest';
+import { UrlServiceTest } from './commons/rest/UrlServiceTest';
 import { config } from '../src/config/index';
 import { Logger } from '../src/commons/logger';
 import { ArrayUtilTest } from './utils/ArrayUtilsTest';

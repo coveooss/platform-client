@@ -29,8 +29,8 @@ export class DiffCommand {
    * Perform a "diff" over the organization fields
    */
   public diffFields() {
-    let fieldController: FieldController = new FieldController();
-    fieldController.diff(this.organization1, this.organization2, ['stemming'])
+    let fieldController: FieldController = new FieldController(this.organization1, this.organization2);
+    fieldController.diff(['stemming']) // TODO: remove that hardcoded value
       .then((diffResultArray: DiffResultArray<Field>) => {
         fs.writeJSON('fieldDiff.json', diffResultArray, { spaces: 2 })
           .then(() => {
