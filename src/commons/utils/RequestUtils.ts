@@ -66,7 +66,7 @@ export class RequestUtils {
           if (err) {
             reject(err);
           } else {
-            if (response.statusCode === 201 || response.statusCode === 204) {
+            if (response.statusCode && response.statusCode >= 200 && response.statusCode < 300) {
               resolve(response);
             } else {
               reject(JSON.stringify(response.body));

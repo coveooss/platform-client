@@ -9,9 +9,12 @@ import { DiffResult } from '../coveoObjects/DiffResult';
 import { IDiffResult } from '../commons/interfaces/IDiffResult';
 import { StaticErrorMessage } from '../commons/errors';
 import { Logger } from '../commons/logger';
+import { BaseController } from './BaseController';
 
-export class OrganizationController {
-  constructor() { }
+export class OrganizationController extends BaseController {
+  constructor() {
+    super();
+  }
 /*
   public diff(organization1: IOrganization, organization2: IOrganization, fieldsToIgnore: string[]): IDiffResult<any> {
     let diffResults: DiffResult<any> = new DiffResult<any>();

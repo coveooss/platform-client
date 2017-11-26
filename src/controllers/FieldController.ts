@@ -15,8 +15,9 @@ import { ArrayUtils } from '../commons/utils/ArrayUtils';
 import { Assert } from '../commons/misc/Assert';
 import { DiffResultArray } from '../coveoObjects/DiffResultArray';
 import { FieldAPI } from '../commons/rest/FieldAPI';
+import { BaseController } from './BaseController';
 
-export class FieldController {
+export class FieldController extends BaseController {
 
   /**
    * To prevent having too large fields batches that can't be processed.
@@ -24,7 +25,9 @@ export class FieldController {
    */
   private fieldsPerBatch: number = 500;
 
-  constructor(private organization1: Organization, private organization2: Organization) { }
+  constructor(private organization1: Organization, private organization2: Organization) {
+    super();
+  }
 
   static CONTROLLER_NAME: string = 'fields';
 
@@ -36,6 +39,7 @@ export class FieldController {
    * @returns {Promise<DiffResultArray<Field>>}
    */
   public diff(fieldsToIgnore: string[]): Promise<DiffResultArray<Field>> {
+    Logger.verbose('performing diff on organizations.');
     return this.loadFieldForBothOrganizations(this.organization1, this.organization2)
       .then(() => {
         return DiffUtils.getDiffResult(this.organization1.getFields(), this.organization2.getFields());
@@ -46,52 +50,59 @@ export class FieldController {
    * Performs a diff and graduate the result.
    */
   public graduate() {
-    Logger.info('Graduating fields');
 
-    this.diff([])
+    return this.diff([])
       .then((diffResultArray: DiffResultArray<Field>) => {
-        if (diffResultArray.ContainsItems) {
-          this.graduateNew(diffResultArray, this.organization1, this.organization2);
-          this.graduateUpdated(diffResultArray, this.organization1, this.organization2);
-          this.graduateDeleted(diffResultArray, this.organization1, this.organization2);
+        if (diffResultArray.containsItems()) {
+          Logger.info(`${diffResultArray.NEW.length} new fields found`);
+          Logger.info(`${diffResultArray.DELETED.length} deleted fields found`);
+          Logger.info(`${diffResultArray.UPDATED.length} updated fields found`);
+
+          Logger.info('Graduating fields.');
+          return Promise.all([
+            this.graduateNew(diffResultArray),
+            this.graduateUpdated(diffResultArray),
+            this.graduateDeleted(diffResultArray)
+          ]);
         } else {
-          Logger.info('No Fields to graduate.');
+          Logger.warn('No Fields to graduate.');
+          return Promise.resolve([]);
         }
       }).catch((err: any) => {
         this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_FIELDS);
       });
   }
 
-  private graduateNew(diffResult: DiffResultArray<Field>, organization1: Organization, organization2: Organization) {
+  private graduateNew(diffResult: DiffResultArray<Field>): Promise<void> | undefined {
     if (diffResult.NEW.length > 0) {
-      Logger.verbose(`Creating ${diffResult.NEW.length} new field${diffResult.NEW.length > 1 ? 's' : ''} in ${organization2.getId()} `);
-      FieldAPI.createFields(organization2, this.extractFieldModel(diffResult.NEW), this.fieldsPerBatch)
+      Logger.verbose(`Creating ${diffResult.NEW.length} new field${diffResult.NEW.length > 1 ? 's' : ''} in ${this.organization2.getId()} `);
+      return FieldAPI.createFields(this.organization2, this.extractFieldModel(diffResult.NEW), this.fieldsPerBatch)
         .then((responses: RequestResponse[]) => {
-          this.graduateSuccessHandler(responses, 'Create fields response:');
+          this.graduateSuccessHandler(responses, 'POST operation successfully completed');
         }).catch((err: any) => {
           this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_CREATE_FIELDS);
         });
     }
   }
 
-  private graduateUpdated(diffResult: DiffResultArray<Field>, organization1: Organization, organization2: Organization) {
+  private graduateUpdated(diffResult: DiffResultArray<Field>): Promise<void> | undefined {
     if (diffResult.UPDATED.length > 0) {
-      Logger.verbose(`Updating ${diffResult.UPDATED.length} existing field${diffResult.NEW.length > 1 ? 's' : ''} in ${organization2.getId()} `);
-      FieldAPI.updateFields(organization2, this.extractFieldModel(diffResult.UPDATED), this.fieldsPerBatch)
+      Logger.verbose(`Updating ${diffResult.UPDATED.length} existing field${diffResult.NEW.length > 1 ? 's' : ''} in ${this.organization2.getId()} `);
+      return FieldAPI.updateFields(this.organization2, this.extractFieldModel(diffResult.UPDATED), this.fieldsPerBatch)
         .then((responses: RequestResponse[]) => {
-          this.graduateSuccessHandler(responses, 'Update fields response:');
+          this.graduateSuccessHandler(responses, 'PUT operation successfully completed');
         }).catch((err: any) => {
           this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_UPDATE_FIELDS);
         });
     }
   }
 
-  private graduateDeleted(diffResult: DiffResultArray<Field>, organization1: Organization, organization2: Organization) {
+  private graduateDeleted(diffResult: DiffResultArray<Field>): Promise<void> | undefined {
     if (diffResult.DELETED.length > 0) {
-      Logger.verbose(`Deleting ${diffResult.UPDATED.length} existing field${diffResult.NEW.length > 1 ? 's' : ''} from ${organization2.getId()} `);
-      FieldAPI.deleteFields(organization2, _.pluck(diffResult.DELETED, 'name'), this.fieldsPerBatch)
+      Logger.verbose(`Deleting ${diffResult.UPDATED.length} existing field${diffResult.NEW.length > 1 ? 's' : ''} from ${this.organization2.getId()} `);
+      return FieldAPI.deleteFields(this.organization2, _.pluck(diffResult.DELETED, 'name'), this.fieldsPerBatch)
         .then((responses: RequestResponse[]) => {
-          this.graduateSuccessHandler(responses, 'Update fields response:');
+          this.graduateSuccessHandler(responses, 'DELETE operation successfully completed');
         }).catch((err: any) => {
           this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_DELETE_FIELDS);
         });
@@ -99,23 +110,8 @@ export class FieldController {
   }
 
   private loadFieldForBothOrganizations(organization1: Organization, organization2: Organization, ): Promise<Array<{}>> {
+    Logger.verbose('Loading files for both organizations.');
     return Promise.all([FieldAPI.loadFields(organization1), FieldAPI.loadFields(organization2)]);
-  }
-
-  private graduateSuccessHandler(responses: RequestResponse[], successMessage: string) {
-    Logger.info(successMessage);
-    _.each(responses, (response: RequestResponse) => {
-      let info: any = { statusCode: response.statusCode };
-      if (response.statusMessage) {
-        info.statusMessage = response.statusMessage;
-      }
-      Logger.info(JSON.stringify(info));
-    });
-    Logger.verbose(`${JSON.stringify(responses)} `);
-  }
-
-  private graduateErrorHandler(err: any, errorMessage: string) {
-    Logger.error(errorMessage, err);
   }
 
   // Utils

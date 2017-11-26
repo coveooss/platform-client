@@ -10,10 +10,13 @@ import { StaticErrorMessage } from '../commons/errors';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 import { DiffUtils } from '../commons/utils/DiffUtils';
 import { RequestUtils } from '../commons/utils/RequestUtils';
+import { BaseController } from './BaseController';
 
-export class ExtensionController {
+export class ExtensionController extends BaseController {
 
-  constructor() { }
+  constructor() {
+    super();
+  }
 
   static CONTROLLER_NAME: string = 'extensions';
 /*

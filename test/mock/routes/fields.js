@@ -37,9 +37,14 @@ exports.createFields = function(req, res) {
 };
 
 exports.updateFields = function(req, res) {
-  res.status(204).send({});
+  setTimeout((() => { res.status(204).send({}) }), 1000);
 };
 
 exports.deleteFields = function(req, res) {
-  res.status(404).send({ statusMessage: 'NOt today' });
+  res.status(404).send(
+    {
+      "message": "Full authentication is required to access this resource",
+      "errorCode": "UNAUTHORIZED"
+    }
+  );
 };

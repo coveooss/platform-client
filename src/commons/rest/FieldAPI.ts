@@ -13,7 +13,6 @@ export class FieldAPI {
 
   public static createFields(org: Organization, fieldModels: Array<IStringMap<string>>, fieldsPerBatch: number) {
     Assert.isLargerThan(0, fieldModels.length);
-    Logger.verbose(`Creating ${fieldModels.length} fields from ${org.getId()} `);
     let url = UrlService.createFields(org.getId());
     return Promise.all(_.map(ArrayUtils.chunkArray(fieldModels, fieldsPerBatch), (batch: Array<IStringMap<string>>) => {
       return RequestUtils.post(url, org.getApiKey(), batch);
@@ -22,7 +21,6 @@ export class FieldAPI {
 
   public static updateFields(org: Organization, fieldModels: Array<IStringMap<string>>, fieldsPerBatch: number) {
     Assert.isLargerThan(0, fieldModels.length);
-    Logger.verbose(`Updating ${fieldModels.length} fields from ${org.getId()} `);
     let url = UrlService.updateFields(org.getId());
     return Promise.all(_.map(ArrayUtils.chunkArray(fieldModels, fieldsPerBatch), (batch: Array<IStringMap<string>>) => {
       return RequestUtils.put(url, org.getApiKey(), batch);
@@ -31,7 +29,6 @@ export class FieldAPI {
 
   public static deleteFields(org: Organization, fieldList: string[], fieldsPerBatch: number) {
     Assert.isLargerThan(0, fieldList.length);
-    Logger.verbose(`Deleting ${fieldList.length} fields from ${org.getId()} `);
     return Promise.all(_.map(ArrayUtils.chunkArray(fieldList, fieldsPerBatch), (batch: string[]) => {
       let url = UrlService.deleteFields(org.getId(), batch);
       return RequestUtils.delete(url, org.getApiKey());
@@ -72,7 +69,8 @@ export class FieldAPI {
 
   public static loadOtherPages(org: Organization, totalPages: number): Promise<void> {
     Logger.verbose(`Loading ${totalPages - 1} more pages of fields from ${org.getId()} `);
-    let pageArray = _.map(new Array(totalPages - 1), (v: number, idx: number) => idx + 1);
+    let emptyArray: number[] = new Array(totalPages - 1);
+    let pageArray = _.map(emptyArray, (v: number, idx: number) => idx + 1);
     return Promise
       .all(_.map(pageArray, (page: number) => this.getFieldsPage(org, page)))
       .then((otherPages: RequestResponse[]) => {

@@ -1,4 +1,5 @@
-import { IAnswer } from './InteractiveMode';
+import { Answers } from "inquirer";
+import { InteractiveMode } from './InteractiveMode';
 
 export interface IGraduateSettingOptions {
   POST: boolean;
@@ -45,58 +46,58 @@ export class SettingsController {
 
   }
 
-  static genSettings(answers: IAnswer): ISettings {
+  static genSettings(answers: Answers): ISettings {
     let settings: ISettings = {
       organizations: {
         origin: {
-          id: answers.originOrganizationId,
-          apiKey: answers.originOrganizationKey
+          id: answers[InteractiveMode.ORIGIN_ORG_ID],
+          apiKey: answers[InteractiveMode.ORIGIN_ORG_KEY]
         },
         destination: {
-          id: answers.destinationOrganizationId,
-          apiKey: answers.destinationOrganizationKey
+          id: answers[InteractiveMode.DESTINATION_ORG_ID],
+          apiKey: answers[InteractiveMode.DESTINATION_ORG_KEY]
         }
       },
       graduate: {}
     };
 
     // TODO: Remove code duplication
-    if (answers.contentToGraduate) {
-      if (answers.contentToGraduate.indexOf('fields') !== -1) {
+    if (answers[InteractiveMode.CONTENT_TO_GRADUATE]) {
+      if (answers[InteractiveMode.CONTENT_TO_GRADUATE].indexOf('fields') !== -1) {
         settings.graduate.fields = {
           options: {
-            POST: answers.graduateFieldsOperation.indexOf('POST') !== -1,
-            PUT: answers.graduateFieldsOperation.indexOf('PUT') !== -1,
-            DELETE: answers.graduateFieldsOperation.indexOf('DELETE') !== -1,
-            force: answers.force
+            POST: answers[InteractiveMode.GRADUATE_FIELDS_OPERATION].indexOf('POST') !== -1,
+            PUT: answers[InteractiveMode.GRADUATE_FIELDS_OPERATION].indexOf('PUT') !== -1,
+            DELETE: answers[InteractiveMode.GRADUATE_FIELDS_OPERATION].indexOf('DELETE') !== -1,
+            force: answers[InteractiveMode.FORCE_GRADUATION]
           }
         };
       }
 
-      if (answers.contentToGraduate.indexOf('extensions') !== -1) {
+      if (answers[InteractiveMode.CONTENT_TO_GRADUATE].indexOf('extensions') !== -1) {
         settings.graduate.extensions = {
           options: {
-            POST: answers.graduateExtensionsOperation.indexOf('POST') !== -1,
-            PUT: answers.graduateExtensionsOperation.indexOf('PUT') !== -1,
-            DELETE: answers.graduateExtensionsOperation.indexOf('DELETE') !== -1,
-            force: answers.force
+            POST: answers[InteractiveMode.GRADUATE_EXTENSIONS_OPERATION].indexOf('POST') !== -1,
+            PUT: answers[InteractiveMode.GRADUATE_EXTENSIONS_OPERATION].indexOf('PUT') !== -1,
+            DELETE: answers[InteractiveMode.GRADUATE_EXTENSIONS_OPERATION].indexOf('DELETE') !== -1,
+            force: answers[InteractiveMode.FORCE_GRADUATION]
           }
         };
       }
 
-      if (answers.contentToGraduate.indexOf('sources') !== -1) {
+      if (answers[InteractiveMode.CONTENT_TO_GRADUATE].indexOf('sources') !== -1) {
         settings.graduate.sources = {
           options: {
-            POST: answers.graduateSourceOperation.indexOf('POST') !== -1,
-            PUT: answers.graduateSourceOperation.indexOf('PUT') !== -1,
-            DELETE: answers.graduateSourceOperation.indexOf('DELETE') !== -1,
-            force: answers.force
+            POST: answers[InteractiveMode.GRADUATE_SOURCES_OPERATION].indexOf('POST') !== -1,
+            PUT: answers[InteractiveMode.GRADUATE_SOURCES_OPERATION].indexOf('PUT') !== -1,
+            DELETE: answers[InteractiveMode.GRADUATE_SOURCES_OPERATION].indexOf('DELETE') !== -1,
+            force: answers[InteractiveMode.FORCE_GRADUATION]
           },
           content: {
-            configuration: answers.sourceContentToGraduate.indexOf('configuration') !== -1,
-            objects: answers.sourceContentToGraduate.indexOf('objects') !== -1,
-            mapping: answers.sourceContentToGraduate.indexOf('mapping') !== -1,
-            extensions: answers.sourceContentToGraduate.indexOf('extensions') !== -1
+            configuration: answers[InteractiveMode.SOURCE_CONTENT_TO_GRADUATE].indexOf('configuration') !== -1,
+            objects: answers[InteractiveMode.SOURCE_CONTENT_TO_GRADUATE].indexOf('objects') !== -1,
+            mapping: answers[InteractiveMode.SOURCE_CONTENT_TO_GRADUATE].indexOf('mapping') !== -1,
+            extensions: answers[InteractiveMode.SOURCE_CONTENT_TO_GRADUATE].indexOf('extensions') !== -1
           }
         };
       }

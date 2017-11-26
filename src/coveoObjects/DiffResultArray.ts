@@ -9,11 +9,11 @@ export class DiffResultArray<T> {
     this.DELETED = [];
   }
 
-  public Count(): number {
+  public getCount(): number {
     return this.NEW.length + this.UPDATED.length + this.DELETED.length;
   }
 
-  public ContainsItems(): boolean {
+  public containsItems(): boolean {
     return (this.NEW.length + this.UPDATED.length + this.DELETED.length) > 0;
   }
 }

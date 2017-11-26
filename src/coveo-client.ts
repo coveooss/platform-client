@@ -1,12 +1,10 @@
-// TODO: set log file output before setting env
-import { Logger } from './commons/logger';
 setEnvironmentIfNecessary();
 
 import * as inquirer from 'inquirer';
 import * as fs from 'fs-extra';
 import { GraduateCommand } from './commands/GraduateCommand';
 import { StringUtils } from './commons/utils/StringUtils';
-import { InteractiveMode, IAnswer } from './console/InteractiveMode';
+import { InteractiveMode } from './console/InteractiveMode';
 import { SettingsController, IGraduateSettingOptions } from './console/SettingsController';
 import { FieldController } from './controllers/FieldController';
 import { IDiffResult } from './commons/interfaces/IDiffResult';
@@ -14,9 +12,12 @@ import { Dictionary } from './commons/collections/Dictionary';
 import { Organization } from './coveoObjects/Organization';
 import { config } from './config/index';
 import { DiffCommand } from './commands/DiffCommand';
+import { Logger } from './commons/logger';
 
 const program = require('commander');
 const pkg: any = require('./../package.json');
+
+// TODO: init loader here
 
 program
   .option('--env [value]', 'Environment')
@@ -41,7 +42,7 @@ program
   .option('-p, --PUT', 'Allow PUT operations on the destination Organization')
   .option('-d, --DELETE', 'Allow DELETE operations on the destination Organization')
   .option('-F, --force', 'Force graduation without confirmation prompt')
-  .option('-o, --output <filename>', 'Output log data into a specific filename', Logger.filename)
+  .option('-o, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
   .option('-l, --logLevel <level>', 'Possible values are: verbose, info (default), error, nothing', /^(verbose|info|error|nothing)$/i, 'info')
   .action((originOrganization: string, destinationOrganization: string, originApiKey: string, destinationApiKey: string, options: any) => {
 
@@ -94,8 +95,8 @@ program
   .action(() => {
     let interactiveMode = new InteractiveMode();
     interactiveMode.start()
-      .then((answers: IAnswer) => {
-        let settingFilename = answers.settingFilename;
+      .then((answers: inquirer.Answers) => {
+        let settingFilename = answers[InteractiveMode.SETTING_FILENAME];
         let settings = SettingsController.genSettings(answers);
         // Saving settings into a file
         fs.writeJSON(settingFilename, settings, { spaces: 2 })

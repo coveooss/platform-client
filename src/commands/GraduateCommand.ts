@@ -44,10 +44,16 @@ export class GraduateCommand {
     }
     inquirer.prompt(questions)
       .then((res: inquirer.Answers) => {
-        if (res.confirm) {
-          fieldController.graduate();
-        } else {
-          Logger.info('No fields were graduated');
+        if (res.confirm || this.options.force) {
+          Logger.startSpinner('Graduating fields');
+          fieldController.graduate()
+            .then(() => {
+              Logger.info('Graduation Completed!');
+              Logger.stopSpinner();
+            });
+          } else {
+            Logger.info('No fields were graduated');
+            Logger.stopSpinner();
         }
       });
   }

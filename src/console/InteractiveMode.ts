@@ -8,37 +8,21 @@ import { FieldController } from '../controllers/FieldController';
 import { ExtensionController } from '../controllers/ExtensionController';
 import { SourceController } from '../controllers/SourceController';
 
-export interface IAnswer {
-  originOrganizationId: string;
-  originOrganizationKey: string;
-  destinationOrganizationId: string;
-  destinationOrganizationKey: string;
-  command: string;
-  graduateFieldsOperation: string[];
-  graduateSourceOperation: string[];
-  graduateExtensionsOperation: string[];
-  contentToGraduate: string[];
-  sourceContentToGraduate: string[];
-  settingFilename: string;
-  logFilename: string;
-  force: boolean;
-}
-
 export class InteractiveMode {
 
-  public ORIGIN_ORG_ID: string = 'originOrganizationId';
-  public ORIGIN_ORG_KEY: string = 'originOrganizationKey';
-  public DESTINATION_ORG_ID: string = 'destinationOrganizationId';
-  public DESTINATION_ORG_KEY: string = 'destinationOrganizationKey';
-  public COMMAND: string = 'command';
-  public GRADUATE_FIELDS_OPERATION: string = 'graduateFieldsOperation';
-  public GRADUATE_SOURCES_OPERATION: string = 'graduateSourceOperation';
-  public GRADUATE_EXTENSIONS_OPERATION: string = 'graduateExtensionsOperation';
-  public CONTENT_TO_GRADUATE: string = 'contentToGraduate';
-  public SOURCE_CONTENT_TO_GRADUATE: string = 'sourceContentToGraduate';
-  public SETTING_FILENAME: string = 'settingFilename';
-  public LOG_FILENAME: string = 'logFilename';
-  public FORCE_GRADUATION: string = 'force';
+  static ORIGIN_ORG_ID: string = 'originOrganizationId';
+  static ORIGIN_ORG_KEY: string = 'originOrganizationKey';
+  static DESTINATION_ORG_ID: string = 'destinationOrganizationId';
+  static DESTINATION_ORG_KEY: string = 'destinationOrganizationKey';
+  static COMMAND: string = 'command';
+  static GRADUATE_FIELDS_OPERATION: string = 'graduateFieldsOperation';
+  static GRADUATE_SOURCES_OPERATION: string = 'graduateSourceOperation';
+  static GRADUATE_EXTENSIONS_OPERATION: string = 'graduateExtensionsOperation';
+  static CONTENT_TO_GRADUATE: string = 'contentToGraduate';
+  static SOURCE_CONTENT_TO_GRADUATE: string = 'sourceContentToGraduate';
+  static SETTING_FILENAME: string = 'settingFilename';
+  static LOG_FILENAME: string = 'logFilename';
+  static FORCE_GRADUATION: string = 'force';
 
   public start(): Promise<Answers> {
     const prompt = inquirer.createPromptModule();
@@ -48,7 +32,7 @@ export class InteractiveMode {
   public getOriginOrganizationId(): Question {
     return {
       type: 'input',
-      name: this.ORIGIN_ORG_ID,
+      name: InteractiveMode.ORIGIN_ORG_ID,
       message: 'Origin Organization ID: ',
       validate: this.inputValidator('You need to provide the ID of the Organization')
     };
@@ -57,7 +41,7 @@ export class InteractiveMode {
   public getOriginOrganizationKey(): Question {
     return {
       type: 'input',
-      name: this.ORIGIN_ORG_KEY,
+      name: InteractiveMode.ORIGIN_ORG_KEY,
       message: 'Origin Organization API Key: ',
       validate: this.inputValidator('You need to provide the API Key of the Organization')
     };
@@ -66,7 +50,7 @@ export class InteractiveMode {
   public getDestinationOrganizationId(): Question {
     return {
       type: 'input',
-      name: this.DESTINATION_ORG_ID,
+      name: InteractiveMode.DESTINATION_ORG_ID,
       message: 'Destination Organization ID: ',
       validate: this.inputValidator('You need to provide the ID of the Organization')
     };
@@ -75,7 +59,7 @@ export class InteractiveMode {
   public getDestinationOrganizationKey(): Question {
     return {
       type: 'input',
-      name: this.DESTINATION_ORG_KEY,
+      name: InteractiveMode.DESTINATION_ORG_KEY,
       message: 'Destination Organization API Key: ',
       validate: this.inputValidator('You need to provide the API Key of the Organization')
     };
@@ -84,7 +68,7 @@ export class InteractiveMode {
   public getCommandList(): Question {
     return {
       type: 'list',
-      name: this.COMMAND,
+      name: InteractiveMode.COMMAND,
       message: 'Command to execute?',
       choices: [
         { name: GraduateCommand.COMMAND_NAME, checked: true },
@@ -96,30 +80,30 @@ export class InteractiveMode {
   public getContentsToGraduate(): Question {
     return {
       type: 'checkbox',
-      name: this.CONTENT_TO_GRADUATE,
+      name: InteractiveMode.CONTENT_TO_GRADUATE,
       message: 'Graduate Fields?',
       choices: [
         { name: FieldController.CONTROLLER_NAME },
         { name: ExtensionController.CONTROLLER_NAME, disabled: 'Not implemented yet' },
         { name: SourceController.CONTROLLER_NAME }
       ],
-      when: (answer: IAnswer) => answer.command.indexOf(GraduateCommand.COMMAND_NAME) !== -1,
+      when: (answer: Answers) => answer[InteractiveMode.COMMAND].indexOf(GraduateCommand.COMMAND_NAME) !== -1,
       validate: this.checkboxValidator('You need to select at least 1 content to graduate.')
     };
   }
 
   public getGraduateOperationForFields(): Question {
-    return this.getGraduateOperation(FieldController.CONTROLLER_NAME, this.GRADUATE_FIELDS_OPERATION);
+    return this.getGraduateOperation(FieldController.CONTROLLER_NAME, InteractiveMode.GRADUATE_FIELDS_OPERATION);
   }
 
   public getGraduateOperationForExtensions(): Question {
-    return this.getGraduateOperation(ExtensionController.CONTROLLER_NAME, this.GRADUATE_EXTENSIONS_OPERATION);
+    return this.getGraduateOperation(ExtensionController.CONTROLLER_NAME, InteractiveMode.GRADUATE_EXTENSIONS_OPERATION);
   }
 
   public getSourceElementToGraduate(): Question {
     return {
       type: 'checkbox',
-      name: this.SOURCE_CONTENT_TO_GRADUATE,
+      name: InteractiveMode.SOURCE_CONTENT_TO_GRADUATE,
       message: 'What parts of the source you want to graduate?',
       choices: [
         { name: 'Configuration', value: 'configuration' },
@@ -127,21 +111,21 @@ export class InteractiveMode {
         { name: 'Mappings', value: 'mappings' },
         { name: 'Extensions', value: 'extensions' }
       ],
-      when: (answer: IAnswer) => answer.contentToGraduate.indexOf(SourceController.CONTROLLER_NAME) !== -1,
+      when: (answer: Answers) => answer[InteractiveMode.SOURCE_CONTENT_TO_GRADUATE].indexOf(SourceController.CONTROLLER_NAME) !== -1,
       validate: this.checkboxValidator('You need to select at least 1 source content to graduate.')
     };
   }
 
   public getGraduateOperationForSources(): Question {
-    return this.getGraduateOperation(SourceController.CONTROLLER_NAME, this.GRADUATE_SOURCES_OPERATION);
+    return this.getGraduateOperation(SourceController.CONTROLLER_NAME, InteractiveMode.GRADUATE_SOURCES_OPERATION);
   }
 
   public getFileNameForSettings(): Question {
-    return this.getGenericFilename(this.SETTING_FILENAME, 'settings', 'Enter settings filename: ');
+    return this.getGenericFilename(InteractiveMode.SETTING_FILENAME, 'settings', 'Enter settings filename: ');
   }
 
   public getFileNameForLogs(): Question {
-    return this.getGenericFilename(this.LOG_FILENAME, 'logs', 'Enter log filename: ');
+    return this.getGenericFilename(InteractiveMode.LOG_FILENAME, 'logs', 'Enter log filename: ');
   }
 
   public confirmGraduationAction(mes: string = 'Are you sure you want to perform this action?', variable: string): Question {
@@ -185,8 +169,8 @@ export class InteractiveMode {
       message: `Select the allowed operations on the destination organization for the ${content} graduation:`,
       choices: ['POST', 'PUT', 'DELETE'],
       validate: this.checkboxValidator('You need to select at least 1 graduate operation.'),
-      when: (answer: IAnswer) => {
-        return answer.contentToGraduate.indexOf(content) !== -1;
+      when: (answer: Answers) => {
+        return answer[InteractiveMode.CONTENT_TO_GRADUATE].indexOf(content) !== -1;
       }
     };
   }
