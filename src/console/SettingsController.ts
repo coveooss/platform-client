@@ -1,10 +1,10 @@
-import { Answers } from "inquirer";
+import { Answers } from 'inquirer';
 import { InteractiveMode } from './InteractiveMode';
 
 export interface IGraduateSettingOptions {
-  POST: boolean;
-  PUT: boolean;
-  DELETE: boolean;
+  // POST: boolean;
+  // PUT: boolean;
+  // DELETE: boolean;
   force: boolean;
 }
 
@@ -66,9 +66,9 @@ export class SettingsController {
       if (answers[InteractiveMode.CONTENT_TO_GRADUATE].indexOf('fields') !== -1) {
         settings.graduate.fields = {
           options: {
-            POST: answers[InteractiveMode.GRADUATE_FIELDS_OPERATION].indexOf('POST') !== -1,
-            PUT: answers[InteractiveMode.GRADUATE_FIELDS_OPERATION].indexOf('PUT') !== -1,
-            DELETE: answers[InteractiveMode.GRADUATE_FIELDS_OPERATION].indexOf('DELETE') !== -1,
+            // POST: answers[InteractiveMode.GRADUATE_FIELDS_OPERATION].indexOf('POST') !== -1,
+            // PUT: answers[InteractiveMode.GRADUATE_FIELDS_OPERATION].indexOf('PUT') !== -1,
+            // DELETE: answers[InteractiveMode.GRADUATE_FIELDS_OPERATION].indexOf('DELETE') !== -1,
             force: answers[InteractiveMode.FORCE_GRADUATION]
           }
         };
@@ -77,9 +77,9 @@ export class SettingsController {
       if (answers[InteractiveMode.CONTENT_TO_GRADUATE].indexOf('extensions') !== -1) {
         settings.graduate.extensions = {
           options: {
-            POST: answers[InteractiveMode.GRADUATE_EXTENSIONS_OPERATION].indexOf('POST') !== -1,
-            PUT: answers[InteractiveMode.GRADUATE_EXTENSIONS_OPERATION].indexOf('PUT') !== -1,
-            DELETE: answers[InteractiveMode.GRADUATE_EXTENSIONS_OPERATION].indexOf('DELETE') !== -1,
+            // POST: answers[InteractiveMode.GRADUATE_EXTENSIONS_OPERATION].indexOf('POST') !== -1,
+            // PUT: answers[InteractiveMode.GRADUATE_EXTENSIONS_OPERATION].indexOf('PUT') !== -1,
+            // DELETE: answers[InteractiveMode.GRADUATE_EXTENSIONS_OPERATION].indexOf('DELETE') !== -1,
             force: answers[InteractiveMode.FORCE_GRADUATION]
           }
         };
@@ -88,9 +88,9 @@ export class SettingsController {
       if (answers[InteractiveMode.CONTENT_TO_GRADUATE].indexOf('sources') !== -1) {
         settings.graduate.sources = {
           options: {
-            POST: answers[InteractiveMode.GRADUATE_SOURCES_OPERATION].indexOf('POST') !== -1,
-            PUT: answers[InteractiveMode.GRADUATE_SOURCES_OPERATION].indexOf('PUT') !== -1,
-            DELETE: answers[InteractiveMode.GRADUATE_SOURCES_OPERATION].indexOf('DELETE') !== -1,
+            // POST: answers[InteractiveMode.GRADUATE_SOURCES_OPERATION].indexOf('POST') !== -1,
+            // PUT: answers[InteractiveMode.GRADUATE_SOURCES_OPERATION].indexOf('PUT') !== -1,
+            // DELETE: answers[InteractiveMode.GRADUATE_SOURCES_OPERATION].indexOf('DELETE') !== -1,
             force: answers[InteractiveMode.FORCE_GRADUATION]
           },
           content: {

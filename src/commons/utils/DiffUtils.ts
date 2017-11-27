@@ -34,7 +34,7 @@ export class DiffUtils {
     dict1Copy.keys().forEach((key: string) => {
       let value: T = dict1Copy.getItem(key);
       // Remove undesired fields from the diff result
-      JsonUtils.removeKeyValuePairsFromJson(value, options.fieldsToIgnore);
+      value = JsonUtils.removeKeyValuePairsFromJson(value, options.fieldsToIgnore);
 
       if (dict2Copy.containsKey(key)) {
         if (!_.isEqual(value, dict2Copy.getItem(key))) {

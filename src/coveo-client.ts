@@ -36,9 +36,9 @@ program
   .option('-f, --fields', 'Graduate fields')
   .option('-s, --sources', 'Graduate sources')
   .option('-e, --extensions', 'Graduate extensions')
-  .option('-P, --POST', 'Allow POST operations on the destination Organization')
-  .option('-p, --PUT', 'Allow PUT operations on the destination Organization')
-  .option('-d, --DELETE', 'Allow DELETE operations on the destination Organization')
+  // .option('-P, --POST', 'Allow POST operations on the destination Organization')
+  // .option('-p, --PUT', 'Allow PUT operations on the destination Organization')
+  // .option('-d, --DELETE', 'Allow DELETE operations on the destination Organization')
   .option('-F, --force', 'Force graduation without confirmation prompt')
   .option('-o, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
   .option('-l, --logLevel <level>', 'Possible values are: verbose, info (default), error, nothing', /^(verbose|info|error|nothing)$/i, 'info')
@@ -51,11 +51,14 @@ program
 
     // Set graduation options
     const graduateOptions: IGraduateSettingOptions = {
-      POST: !!options.POST,
-      PUT: !!options.PUT,
-      DELETE: !!options.DELETE,
+      // POST: !!options.POST,
+      // PUT: !!options.PUT,
+      // DELETE: !!options.DELETE,
       force: !!options.force
     };
+    console.log('*********************');
+    console.log(graduateOptions);
+    console.log('*********************');
 
     let command = new GraduateCommand(originOrganization, destinationOrganization, originApiKey, destinationApiKey, graduateOptions);
 
