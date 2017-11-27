@@ -1,6 +1,6 @@
 import { expect, should } from 'chai';
-import { DiffUtils } from '../../src/commons/utils/DiffUtils';
-import { DiffResultArray } from '../../src/coveoObjects/DiffResultArray';
+import { DiffUtils } from '../../../src/commons/utils/DiffUtils';
+import { DiffResultArray } from '../../../src/commons/collections/DiffResultArray';
 
 export const DiffResultArrayTest = () => {
   describe('DiffResultArray', () => {

@@ -3,7 +3,7 @@ import { IOrganization } from '../commons/interfaces/IOrganization';
 import { Extension } from '../coveoObjects/Extension';
 import { UrlService } from '../commons/rest/UrlService';
 import { IDiffResult } from '../commons/interfaces/IDiffResult';
-import { DiffResult } from '../coveoObjects/DiffResult';
+import { DiffResult } from '../commons/collections/DiffResult';
 import { Logger } from '../commons/logger';
 import { Dictionary } from '../commons/collections/Dictionary';
 import { StaticErrorMessage } from '../commons/errors';

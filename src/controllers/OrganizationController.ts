@@ -5,7 +5,7 @@ import { IOrganization } from '../commons/interfaces/IOrganization';
 import { UrlService } from '../commons/rest/UrlService';
 import { DiffUtils } from '../commons/utils/DiffUtils';
 import { RequestUtils } from '../commons/utils/RequestUtils';
-import { DiffResult } from '../coveoObjects/DiffResult';
+import { DiffResult } from '../commons/collections/DiffResult';
 import { IDiffResult } from '../commons/interfaces/IDiffResult';
 import { StaticErrorMessage } from '../commons/errors';
 import { Logger } from '../commons/logger';

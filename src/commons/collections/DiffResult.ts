@@ -1,5 +1,5 @@
-import { Dictionary } from '../commons/collections/Dictionary';
-import { IDiffResult } from '../commons/interfaces/IDiffResult';
+import { Dictionary } from './Dictionary';
+import { IDiffResult } from '../interfaces/IDiffResult';
 
 export class DiffResult<T> implements IDiffResult<T> {
   public NEW: Dictionary<T>;

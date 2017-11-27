@@ -1,7 +1,7 @@
 import { expect, should } from 'chai';
 import { DiffUtils, IDiffOptions } from '../../src/commons/utils/DiffUtils';
 import { Dictionary } from '../../src/commons/collections/Dictionary';
-import { DiffResultArray } from '../../src/coveoObjects/DiffResultArray';
+import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
 import { IStringMap } from '../../src/commons/interfaces/IStringMap';
 import { JsonUtils } from '../../src/commons/utils/JsonUtils';
 

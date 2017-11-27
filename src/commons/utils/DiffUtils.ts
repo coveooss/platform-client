@@ -2,7 +2,7 @@ import * as _ from 'underscore';
 import { flatten } from 'flat';
 import { Dictionary } from '../collections/Dictionary';
 import { JsonUtils } from './JsonUtils';
-import { DiffResultArray } from '../../coveoObjects/DiffResultArray';
+import { DiffResultArray } from '../collections/DiffResultArray';
 
 export interface IDiffOptions {
   fieldsToIgnore?: string[];

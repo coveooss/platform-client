@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import { FieldController } from '../controllers/FieldController';
 import { Organization } from '../coveoObjects/Organization';
 import { Logger } from '../commons/logger';
-import { DiffResultArray } from '../coveoObjects/DiffResultArray';
+import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { Field } from '../coveoObjects/Field';
 import { IDiffOptions } from '../commons/utils/DiffUtils';
 import * as _ from 'underscore';

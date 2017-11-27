@@ -13,7 +13,7 @@ import { IStringMap } from '../commons/interfaces/IStringMap';
 import { Organization } from '../coveoObjects/Organization';
 import { ArrayUtils } from '../commons/utils/ArrayUtils';
 import { Assert } from '../commons/misc/Assert';
-import { DiffResultArray } from '../coveoObjects/DiffResultArray';
+import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { FieldAPI } from '../commons/rest/FieldAPI';
 import { BaseController } from './BaseController';
 

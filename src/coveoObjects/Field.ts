@@ -2,10 +2,9 @@ import { IStringMap } from '../commons/interfaces/IStringMap';
 import { BaseCoveoObject } from './BaseCoveoObject';
 import { IField } from '../commons/interfaces/IField';
 
-// TODO: Add a test class
 export class Field extends BaseCoveoObject implements IField {
 
-  constructor(name: string, private fieldModel: IStringMap<string>) {
+  constructor(name: string, private fieldModel: IStringMap<any>) {
     super(name);
   }
 
@@ -21,9 +20,9 @@ export class Field extends BaseCoveoObject implements IField {
   /**
    * Returns the field model containing all the field's properties.
    *
-   * @returns {IStringMap<string>} field Model
+   * @returns {IStringMap<any>} field Model
    */
-  public getFieldModel(): IStringMap<string> {
+  public getFieldModel(): IStringMap<any> {
     return this.fieldModel;
   }
 }
