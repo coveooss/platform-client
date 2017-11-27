@@ -1,0 +1,82 @@
+[
+  {
+    "createdDate": 1511812769000,
+    "description": "This extension is used to parse urls to extract metadata like categories.",
+    "enabled": true,
+    "id": "ccli2wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu",
+    "lastModified": 1511812769000,
+    "name": "URL Parsing to extract metadata",
+    "requiredDataStreams": [],
+    "versionId": "hwnahJ9mql3cBB4PH6qG_9yXEwwFEhgX",
+    "status": {
+      "durationHealth": {
+        "healthIndicator": "UNKNOWN"
+      },
+      "dailyStatistics": {
+        "averageDurationInSeconds": 0,
+        "numberOfErrors": 0,
+        "numberOfExecutions": 0,
+        "numberOfSkips": 0,
+        "numberOfTimeouts": 0
+      },
+      "disabledStatus": {},
+      "timeoutHealth": {
+        "healthIndicator": "UNKNOWN"
+      }
+    }
+  },
+  {
+    "createdDate": 1511815783000,
+    "description": "This extension is used to extract images from PPTX documents and push them in an image bank source. The extension should be applied only to PPTX files",
+    "enabled": true,
+    "id": "ccli2wq3fmkys-sc75dqdwexx5zubswmdiw5keka",
+    "lastModified": 1511815783000,
+    "name": "PPTX Image Extractor",
+    "requiredDataStreams": [
+      "DOCUMENT_DATA"
+    ],
+    "versionId": "zFZOZSX9SxqC4nWauwcaObtlss1FTuem",
+    "status": {
+      "durationHealth": {
+        "healthIndicator": "UNKNOWN"
+      },
+      "dailyStatistics": {
+        "averageDurationInSeconds": 0,
+        "numberOfErrors": 0,
+        "numberOfExecutions": 0,
+        "numberOfSkips": 0,
+        "numberOfTimeouts": 0
+      },
+      "disabledStatus": {},
+      "timeoutHealth": {
+        "healthIndicator": "UNKNOWN"
+      }
+    }
+  },
+  {
+    "createdDate": 1511812764000,
+    "description": "This extension simply rejects a document. It gets triggered on certain file types in the source configuration",
+    "enabled": true,
+    "id": "ccli2wq3fmkys-tknepx33tdhmqibch2uzxhcc44",
+    "lastModified": 1511812764000,
+    "name": "Reject a document.",
+    "requiredDataStreams": [],
+    "versionId": "a6LyFxn91XW5IcgNMTKOabXcJWp05e7i",
+    "status": {
+      "durationHealth": {
+        "healthIndicator": "UNKNOWN"
+      },
+      "dailyStatistics": {
+        "averageDurationInSeconds": 0,
+        "numberOfErrors": 0,
+        "numberOfExecutions": 0,
+        "numberOfSkips": 0,
+        "numberOfTimeouts": 0
+      },
+      "disabledStatus": {},
+      "timeoutHealth": {
+        "healthIndicator": "UNKNOWN"
+      }
+    }
+  }
+]

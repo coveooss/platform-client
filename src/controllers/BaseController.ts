@@ -3,6 +3,9 @@ import { Logger } from '../commons/logger';
 import * as _ from 'underscore';
 import * as chalk from 'chalk';
 
+/**
+ * Every Controller ultimately inherits from this base controller class.
+ */
 export class BaseController {
 
   protected graduateSuccessHandler(responses: RequestResponse[], successMessage: string) {

@@ -1,0 +1,28 @@
+{
+  "content": "# Title: Reject a document.\n# Description: This extension simply rejects a document.\n# Description: It gets triggered on certain file types in the source configuration\n# Required data: \n\ndocument_api.v1.reject()\n",
+  "createdDate": 1511812764000,
+  "description": "This extension simply rejects a document. It gets triggered on certain file types in the source configuration",
+  "enabled": true,
+  "id": "ccli1wq3fmkys-tknepx33tdhmqibch2uzxhcc44",
+  "lastModified": 1511812764000,
+  "name": "Reject a document.",
+  "requiredDataStreams": [],
+  "versionId": "a6LyFxn91XW5IcgNMTKOabXcJWp05e7i",
+  "usedBy": [],
+  "status": {
+    "durationHealth": {
+      "healthIndicator": "UNKNOWN"
+    },
+    "dailyStatistics": {
+      "averageDurationInSeconds": 0,
+      "numberOfErrors": 0,
+      "numberOfExecutions": 0,
+      "numberOfSkips": 0,
+      "numberOfTimeouts": 0
+    },
+    "disabledStatus": {},
+    "timeoutHealth": {
+      "healthIndicator": "UNKNOWN"
+    }
+  }
+}

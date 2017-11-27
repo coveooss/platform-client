@@ -11,7 +11,7 @@ import { IStringMap } from '../interfaces/IStringMap';
 
 export class FieldAPI {
 
-  public static createFields(org: Organization, fieldModels: Array<IStringMap<string>>, fieldsPerBatch: number) {
+  public static createFields(org: Organization, fieldModels: Array<IStringMap<string>>, fieldsPerBatch: number): Promise<RequestResponse[]> {
     Assert.isLargerThan(0, fieldModels.length);
     let url = UrlService.createFields(org.getId());
     return Promise.all(_.map(ArrayUtils.chunkArray(fieldModels, fieldsPerBatch), (batch: Array<IStringMap<string>>) => {
@@ -19,7 +19,7 @@ export class FieldAPI {
     }));
   }
 
-  public static updateFields(org: Organization, fieldModels: Array<IStringMap<string>>, fieldsPerBatch: number) {
+  public static updateFields(org: Organization, fieldModels: Array<IStringMap<string>>, fieldsPerBatch: number): Promise<RequestResponse[]> {
     Assert.isLargerThan(0, fieldModels.length);
     let url = UrlService.updateFields(org.getId());
     return Promise.all(_.map(ArrayUtils.chunkArray(fieldModels, fieldsPerBatch), (batch: Array<IStringMap<string>>) => {
@@ -27,7 +27,7 @@ export class FieldAPI {
     }));
   }
 
-  public static deleteFields(org: Organization, fieldList: string[], fieldsPerBatch: number) {
+  public static deleteFields(org: Organization, fieldList: string[], fieldsPerBatch: number): Promise<RequestResponse[]> {
     Assert.isLargerThan(0, fieldList.length);
     return Promise.all(_.map(ArrayUtils.chunkArray(fieldList, fieldsPerBatch), (batch: string[]) => {
       let url = UrlService.deleteFields(org.getId(), batch);

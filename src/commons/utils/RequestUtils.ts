@@ -72,7 +72,7 @@ export class RequestUtils {
     });
   }
 
-  static delete(url: string, apiKey: string): any {
+  static delete(url: string, apiKey: string): Promise<request.RequestResponse>  {
     return new Promise((resolve: (value?: any | Thenable<{}>) => void, reject: (error: any) => void) => {
       request(
         url,

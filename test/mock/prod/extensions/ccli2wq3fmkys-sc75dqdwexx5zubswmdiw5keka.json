@@ -1,0 +1,30 @@
+{
+  "content": "import zipfile\nimport requests\nimport base64\nimport json\nimport os\n\n\n# Title: PPTX Image Extractor\n# Description: This extension is used to extract images from PPTX documents and push them in an image bank source.\n# Description: The extension should be applied only to PPTX files\n# Required data: Original file\n\n# Coveo API calls configuration\napi_key = \"GENERATE AN API KEY FROM THE ADMIN CONSOLE\"\norganization_id = \"YOUR ORGANIZATION ID\"\nsource_id = \"YOUR SOURCE ID for Test PPTX Image Extraction Image Bank\"\npush_api_url = \"https://push.cloud.coveo.com/v1/organizations/{organizationId}/sources/{sourceId}/documents\".format(\n    organizationId = organization_id,\n    sourceId = source_id\n)\nheaders = {\n    'Authorization': 'Bearer ' + api_key,\n    'content-type': 'application/json'\n}\n\n# filename: name of the file, with its extension\n# returns true if then image is in the list of supported extensions\ndef is_supported_image_format(filename):\n    return filename.lower().endswith((\".png\", \"jpg\", \"jpeg\"))\n\n\n# image: binary data containing an image\n# parent_uri: uri of the parent presentation\n# permissions: permissions of the parent presentation\n# returns: None\ndef push_image(image, filename, checksum, parent_uri, parenttitle, parent_concepts, permissions):\n    params = {\n        'documentId': \"#\".join([\"file://\" + parent_uri, filename])\n    }\n\n    encoded_data = base64.b64encode(image)\n\n    body = json.dumps({\n        \"FileExtension\": os.path.splitext(filename)[1],\n        \"foldfoldingfield\": checksum,\n        \"foldchildfield\": checksum,\n        \"parenturi\": parent_uri,\n        \"parenttitle\": parenttitle,\n        \"parentconcepts\": parent_concepts,\n        \"base64data\": encoded_data,\n        \"connectortype\": \"from_extension\",\n        \"title\": \"Extracted image\",\n        \"Permissions\": permissions\n    })\n\n    r = requests.put(push_api_url, headers=headers, params=params, data=body)\n\n    document_api.v1.log(\"#\".join([parent_uri, filename]) + \"::\" + str(r.status_code) + \"::\" + r.text, severity='normal')\n\n# get the document bytes, extract the images\n# once extracted, push them in the image bank\nwith document_api.v1.get_data_stream('documentdata') as f:\n    parent_concepts = document_api.v1.get_meta_data_value(\"concepts\")[0]\n    zipped_file = zipfile.ZipFile(f)\n    parent_uri = document_api.v1.get_meta_data_value(\"gdfilelink\")[0]\n    checksum = document_api.v1.get_meta_data_value(\"gdfilechecksum\")[0]\n    parenttitle = document_api.v1.get_meta_data_value(\"gdfileoriginalname\")[0]\n    map(\n        lambda image: push_image(zipped_file.read(image), image, checksum, parent_uri, parenttitle, parent_concepts, []),\n        list(filter(lambda filename: is_supported_image_format(filename), zipped_file.namelist()))\n    )\n",
+  "createdDate": 1511815783000,
+  "description": "This extension is used to extract images from PPTX documents and push them in an image bank source. The extension should be applied only to PPTX files",
+  "enabled": true,
+  "id": "ccli1wq3fmkys-sc75dqdwexx5zubswmdiw5keka",
+  "lastModified": 1511815783000,
+  "name": "PPTX Image Extractor",
+  "requiredDataStreams": [
+    "DOCUMENT_DATA"
+  ],
+  "versionId": "zFZOZSX9SxqC4nWauwcaObtlss1FTuem",
+  "usedBy": [],
+  "status": {
+    "durationHealth": {
+      "healthIndicator": "UNKNOWN"
+    },
+    "dailyStatistics": {
+      "averageDurationInSeconds": 0,
+      "numberOfErrors": 0,
+      "numberOfExecutions": 0,
+      "numberOfSkips": 0,
+      "numberOfTimeouts": 0
+    },
+    "disabledStatus": {},
+    "timeoutHealth": {
+      "healthIndicator": "UNKNOWN"
+    }
+  }
+}

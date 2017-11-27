@@ -19,6 +19,8 @@ export class ExtensionController extends BaseController {
   }
 
   static CONTROLLER_NAME: string = 'extensions';
+
+  // TODO: compare : enabled, requiredDataStreams
 /*
   public diff(organization1: IOrganization, organization2: IOrganization, fieldsToIgnore: string[]): Dictionary<IDiffResult<any>> {
     let diffResults: Dictionary<IDiffResult<any>> = new Dictionary<IDiffResult<any>>();

@@ -1,0 +1,80 @@
+[
+  {
+    "createdDate": 1511812769000,
+    "description": "This extension is used to parse urls to extract metadata like categories.",
+    "enabled": true,
+    "id": "ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu",
+    "lastModified": 1511812769000,
+    "name": "URL Parsing to extract metadata",
+    "requiredDataStreams": [],
+    "versionId": "hwnahJ9mql3cBB4PH6qG_9yXEwwFEhgX",
+    "status": {
+      "durationHealth": {
+        "healthIndicator": "UNKNOWN"
+      },
+      "dailyStatistics": {
+        "averageDurationInSeconds": 0,
+        "numberOfErrors": 0,
+        "numberOfExecutions": 0,
+        "numberOfSkips": 0,
+        "numberOfTimeouts": 0
+      },
+      "disabledStatus": {},
+      "timeoutHealth": {
+        "healthIndicator": "UNKNOWN"
+      }
+    }
+  },
+  {
+    "createdDate": 1511812764000,
+    "description": "This extension simply rejects a document. It gets triggered on certain file types in the source configuration",
+    "enabled": true,
+    "id": "ccli1wq3fmkys-tknepx33tdhmqibch2uzxhcc44",
+    "lastModified": 1511812764000,
+    "name": "Reject a document.",
+    "requiredDataStreams": [],
+    "versionId": "a6LyFxn91XW5IcgNMTKOabXcJWp05e7i",
+    "status": {
+      "durationHealth": {
+        "healthIndicator": "UNKNOWN"
+      },
+      "dailyStatistics": {
+        "averageDurationInSeconds": 0,
+        "numberOfErrors": 0,
+        "numberOfExecutions": 0,
+        "numberOfSkips": 0,
+        "numberOfTimeouts": 0
+      },
+      "disabledStatus": {},
+      "timeoutHealth": {
+        "healthIndicator": "UNKNOWN"
+      }
+    }
+  },
+  {
+    "createdDate": 1511812775000,
+    "description": "This extension demonstrate how you can call the GraphicsMagick library from the command line in an extension. You could use that on the document body, a thumbnail or a field containing binary  data in base64 format (like an avatar, when indexing users)",
+    "enabled": true,
+    "id": "ccli1wq3fmkys-u5cvc66monuvqrqqpgec6vsjtq",
+    "lastModified": 1511812775000,
+    "name": "Resize images to a smaller size",
+    "requiredDataStreams": [],
+    "versionId": "Eptlo7.JAmogWLEVEso4VIIO75BULI_s",
+    "status": {
+      "durationHealth": {
+        "healthIndicator": "UNKNOWN"
+      },
+      "dailyStatistics": {
+        "averageDurationInSeconds": 0,
+        "numberOfErrors": 0,
+        "numberOfExecutions": 0,
+        "numberOfSkips": 0,
+        "numberOfTimeouts": 0
+      },
+      "disabledStatus": {},
+      "timeoutHealth": {
+        "healthIndicator": "UNKNOWN"
+      }
+    }
+  }
+]
