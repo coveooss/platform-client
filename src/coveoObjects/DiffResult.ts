@@ -12,7 +12,7 @@ export class DiffResult<T> implements IDiffResult<T> {
     this.DELETED = new Dictionary<T>();
   }
 
-  public ContainsItems(): boolean {
+  public containsItems(): boolean {
     return (this.NEW.getCount() + this.UPDATED.getCount() + this.DELETED.getCount()) > 0;
   }
 }

@@ -77,7 +77,7 @@ export class SourceController extends BaseController {
           }
 
           // If the diff contains item, add it to the overall result
-          if (sourceDiff.ContainsItems()) {
+          if (sourceDiff.containsItems()) {
             diffResults.Add(key, sourceDiff);
           }
 
@@ -85,7 +85,7 @@ export class SourceController extends BaseController {
         });
 
         // Add the result if it still contains items
-        if (diffResultsExistence.ContainsItems()) {
+        if (diffResultsExistence.containsItems()) {
           diffResults.Add('ADD_DELETE', diffResultsExistence);
         }
       } catch (err) {

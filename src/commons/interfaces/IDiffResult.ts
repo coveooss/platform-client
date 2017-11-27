@@ -5,5 +5,5 @@ export interface IDiffResult<T> {
   UPDATED: Dictionary<T>;
   DELETED: Dictionary<T>;
 
-  ContainsItems(): boolean;
+  containsItems(): boolean;
 }
