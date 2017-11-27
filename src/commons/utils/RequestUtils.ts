@@ -1,35 +1,8 @@
-// External packages
-// TODO: use asyn request instead;
-let syncrequest = require('sync-request');
-// Internal packages
 import { Dictionary } from '../collections/Dictionary';
 import { StaticErrorMessage } from '../errors';
 import * as request from 'request';
 
 export class RequestUtils {
-  static getRequestAndReturnJson(url: string, apiKey: string): any {
-    let jsonResponse: any = null;
-
-    let response = syncrequest(
-      'GET',
-      url,
-      {
-        headers: {
-          authorization: 'Bearer ' + apiKey
-        }
-      }
-    );
-
-    if (response.statusCode === 200) {
-      jsonResponse = JSON.parse(response.getBody('utf-8'));
-    } else {
-      // TODO: need to make a better response in the console
-      throw new Error(`${StaticErrorMessage.UNABLE_TO_API_REQUEST}::${url}::${JSON.parse(response.getBody('utf-8'))}`);
-    }
-
-    return jsonResponse;
-  }
-
   static get(url: string, apiKey: string): Promise<request.RequestResponse> {
     return new Promise((resolve: (value?: any | Thenable<{}>) => void, reject: (error: any) => void) => {
       request(

@@ -8,26 +8,14 @@ export class JsonUtils {
     return flatten(jsonObject);
   }
 
-  // TODO: old-> remove
-  // static removeFieldsFromJsonOld(json: any, fieldsToIgnore: string[] = []): any {
-  //   Object.keys(json).forEach((key: string) => {
-  //     if (fieldsToIgnore.indexOf(key) > -1) {
-  //       delete json[key];
-  //     }
-  //   });
-
-  //   return json;
-  // }
-
   /**
    * Remove key value pairs from the JSON object.
    *
    * @static
    * @param {*} obj JSON
    * @param {string[]} [keysToRemove=[]]
-   * @returns {*}
+   * @returns {*} any
    */
-  // TODO: Test
   static removeKeyValuePairsFromJson(obj: any, keysToRemove: string[] = []): any {
     if (keysToRemove.length === 0) {
       // Do not waste time for nothing

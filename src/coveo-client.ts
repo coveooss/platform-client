@@ -17,8 +17,6 @@ import { Logger } from './commons/logger';
 const program = require('commander');
 const pkg: any = require('./../package.json');
 
-// TODO: init loader here
-
 program
   .option('--env [value]', 'Environment')
   .version(pkg.version);

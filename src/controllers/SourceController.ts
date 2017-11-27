@@ -89,7 +89,6 @@ export class SourceController extends BaseController {
           diffResults.Add('ADD_DELETE', diffResultsExistence);
         }
       } catch (err) {
-        // TODO: Move the loogers from all files to their base classes when possible
         Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err);
 
         throw err;

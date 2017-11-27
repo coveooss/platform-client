@@ -1,7 +1,5 @@
 const config = {};
 
-// TODO: classify those config
-config.workingDirectory ='./';
 config.color = 'green';
 config.env = 'development';
 

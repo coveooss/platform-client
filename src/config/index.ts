@@ -1,7 +1,6 @@
 import * as chalk from 'chalk';
 
 export interface IConfig {
-  workingDirectory: string;
   color: string;
   env: string;
   coveo: {

@@ -34,7 +34,7 @@ export class DiffUtils {
     dict1Copy.keys().forEach((key: string) => {
       let value: T = dict1Copy.getItem(key);
       // Remove undesired fields from the diff result
-      value = JsonUtils.removeKeyValuePairsFromJson(value, options.fieldsToIgnore);
+      JsonUtils.removeKeyValuePairsFromJson(value, options.fieldsToIgnore);
 
       if (dict2Copy.containsKey(key)) {
         if (!_.isEqual(value, dict2Copy.getItem(key))) {
@@ -53,11 +53,5 @@ export class DiffUtils {
     });
 
     return diffResult;
-  }
-
-  static removeFieldsToIgnoreAndStringify(array: any[], fieldsToIgnore: string[]): void {
-    for (let index = 0; index < array.length; index++) {
-      array[index] = JSON.stringify(JsonUtils.removeKeyValuePairsFromJson(array[index], fieldsToIgnore));
-    }
   }
 }

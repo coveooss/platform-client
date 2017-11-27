@@ -1,7 +1,5 @@
 const config = {};
 
-// TODO: classify those config
-config.workingDirectory = 'bin/';
 config.color = 'yellow';
 config.env = 'local-server';
 
