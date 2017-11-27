@@ -8,7 +8,7 @@ import { RequestUtils } from '../commons/utils/RequestUtils';
 import { Logger } from '../commons/logger';
 import { Dictionary } from '../commons/collections/Dictionary';
 import { StaticErrorMessage } from '../commons/errors';
-import { DiffUtils } from '../commons/utils/DiffUtils';
+import { DiffUtils, IDiffOptions } from '../commons/utils/DiffUtils';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { Organization } from '../coveoObjects/Organization';
 import { ArrayUtils } from '../commons/utils/ArrayUtils';
@@ -38,11 +38,11 @@ export class FieldController extends BaseController {
    * changed the "description" property of the field in the destination org and you don't want the diff to tell you that it has changed.
    * @returns {Promise<DiffResultArray<Field>>}
    */
-  public diff(fieldsToIgnore: string[]): Promise<DiffResultArray<Field>> {
+  public diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Field>> {
     Logger.verbose('performing diff on organizations.');
     return this.loadFieldForBothOrganizations(this.organization1, this.organization2)
       .then(() => {
-        return DiffUtils.getDiffResult(this.organization1.getFields(), this.organization2.getFields());
+        return DiffUtils.getDiffResult(this.organization1.getFields(), this.organization2.getFields(), diffOptions);
       });
   }
 
@@ -51,7 +51,7 @@ export class FieldController extends BaseController {
    */
   public graduate() {
 
-    return this.diff([])
+    return this.diff()
       .then((diffResultArray: DiffResultArray<Field>) => {
         if (diffResultArray.containsItems()) {
           Logger.info(`${diffResultArray.NEW.length} new fields found`);

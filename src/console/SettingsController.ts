@@ -1,12 +1,6 @@
 import { Answers } from 'inquirer';
 import { InteractiveMode } from './InteractiveMode';
-
-export interface IGraduateSettingOptions {
-  // POST: boolean;
-  // PUT: boolean;
-  // DELETE: boolean;
-  force: boolean;
-}
+import { IGraduateOptions } from '../commands/GraduateCommand';
 
 export interface ISourceContentSettingOptions {
   configuration: boolean;
@@ -28,14 +22,14 @@ export interface ISettings {
   };
   graduate: {
     sources?: {
-      options: IGraduateSettingOptions,
+      options: IGraduateOptions,
       content: ISourceContentSettingOptions
     },
     fields?: {
-      options: IGraduateSettingOptions
+      options: IGraduateOptions
     },
     extensions?: {
-      options: IGraduateSettingOptions
+      options: IGraduateOptions
     }
   };
 }

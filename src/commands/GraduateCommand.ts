@@ -3,22 +3,25 @@ import * as inquirer from 'inquirer';
 import { Organization } from '../coveoObjects/Organization';
 import { FieldController } from '../controllers/FieldController';
 import { UrlService } from '../commons/rest/UrlService';
-import { IGraduateSettingOptions } from '../console/SettingsController';
 import { InteractiveMode } from '../console/InteractiveMode';
 import { Logger } from '../commons/logger';
+
+export interface IGraduateOptions {
+  force: boolean;
+}
 
 export class GraduateCommand {
   private organization1: Organization;
   private organization2: Organization;
   private interactiveMode: InteractiveMode;
-  private options: IGraduateSettingOptions;
+  private options: IGraduateOptions;
 
   constructor(
     originOrganization: string,
     destinationOrganization: string,
     originApiKey: string,
     destinationApiKey: string,
-    options?: IGraduateSettingOptions
+    options?: IGraduateOptions
   ) {
     this.organization1 = new Organization(originOrganization, originApiKey);
     this.organization2 = new Organization(destinationOrganization, destinationApiKey);
@@ -26,12 +29,10 @@ export class GraduateCommand {
     this.options = _.extend(GraduateCommand.DEFAULT_OPTIONS, options);
   }
 
-  static DEFAULT_OPTIONS: IGraduateSettingOptions = {
-    // POST: true,
-    // PUT: true,
-    // DELETE: true,
+  static DEFAULT_OPTIONS: IGraduateOptions = {
     force: false
   };
+
   static COMMAND_NAME: string = 'graduate';
 
   public graduateFields() {

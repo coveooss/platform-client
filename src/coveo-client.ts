@@ -2,10 +2,10 @@ setEnvironmentIfNecessary();
 
 import * as inquirer from 'inquirer';
 import * as fs from 'fs-extra';
-import { GraduateCommand } from './commands/GraduateCommand';
+import { GraduateCommand, IGraduateOptions } from './commands/GraduateCommand';
 import { StringUtils } from './commons/utils/StringUtils';
 import { InteractiveMode } from './console/InteractiveMode';
-import { SettingsController, IGraduateSettingOptions } from './console/SettingsController';
+import { SettingsController } from './console/SettingsController';
 import { FieldController } from './controllers/FieldController';
 import { IDiffResult } from './commons/interfaces/IDiffResult';
 import { Dictionary } from './commons/collections/Dictionary';
@@ -36,9 +36,6 @@ program
   .option('-f, --fields', 'Graduate fields')
   .option('-s, --sources', 'Graduate sources')
   .option('-e, --extensions', 'Graduate extensions')
-  // .option('-P, --POST', 'Allow POST operations on the destination Organization')
-  // .option('-p, --PUT', 'Allow PUT operations on the destination Organization')
-  // .option('-d, --DELETE', 'Allow DELETE operations on the destination Organization')
   .option('-F, --force', 'Force graduation without confirmation prompt')
   .option('-o, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
   .option('-l, --logLevel <level>', 'Possible values are: verbose, info (default), error, nothing', /^(verbose|info|error|nothing)$/i, 'info')
@@ -50,15 +47,9 @@ program
     Logger.newAction(options.parent.rawArgs.splice(2).join(' '));
 
     // Set graduation options
-    const graduateOptions: IGraduateSettingOptions = {
-      // POST: !!options.POST,
-      // PUT: !!options.PUT,
-      // DELETE: !!options.DELETE,
+    const graduateOptions: IGraduateOptions = {
       force: !!options.force
     };
-    console.log('*********************');
-    console.log(graduateOptions);
-    console.log('*********************');
 
     let command = new GraduateCommand(originOrganization, destinationOrganization, originApiKey, destinationApiKey, graduateOptions);
 
@@ -84,6 +75,12 @@ program
   .option('-i, --ignoreFields', 'Fields to ignore', [])
   // .option('-o, --outputfile', 'Output file', `${config.workingDirectory}output/diff-${Date.now()}.html`)
   .action((originOrganization: string, destinationOrganization: string, originApiKey: string, destinationApiKey: string, options: any) => {
+
+    // Set diff options
+    const graduateOptions: IGraduateOptions = {
+      force: !!options.force
+    };
+
     let command = new DiffCommand(originOrganization, destinationOrganization, originApiKey, destinationApiKey);
     if (options.fields) {
       command.diffFields();
