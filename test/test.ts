@@ -8,6 +8,7 @@ import { ArrayUtilTest } from './utils/ArrayUtilsTest';
 import { JsonUtilsTest } from './utils/JsonUtilsTest';
 import { OrganizationTest } from './coveoObjects/OrganizationTest';
 import { FieldTest } from './coveoObjects/FieldTest';
+import { ExtensionTest } from './coveoObjects/ExtensionTest';
 
 Logger.info(`Environment: ${config.env}\n`);
 
@@ -19,3 +20,4 @@ UrlServiceTest();
 ArrayUtilTest();
 JsonUtilsTest();
 FieldTest();
+ExtensionTest();
