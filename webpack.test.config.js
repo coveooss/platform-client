@@ -3,8 +3,6 @@ const webpack = require('webpack');
 const minimize = process.argv.indexOf('--minimize') !== -1;
 const failPlugin = require('webpack-fail-plugin');
 const path = require('path');
-const fs = require('fs');
-const nodeModules = {};
 const nodeExternals = require('webpack-node-externals');
 
 if (minimize) {
