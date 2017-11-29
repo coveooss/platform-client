@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express()
 const fields = require('./routes/fields.js');
+const extensions = require('./routes/extensions.js');
 
 /*-----------------------------------*\
  Fields API
@@ -25,6 +26,17 @@ app.delete('/rest/organizations/:org/indexes/fields/batch/delete', (req, res) =>
  Extension API
 \*-----------------------------------*/
 
+app.get('/rest/organizations/:org/extensions', (req, res) => {
+  extensions.getAllExtension(req, res);
+});
+
+app.get('/rest/organizations/:org/extensions/:extensionId', (req, res) => {
+  extensions.getOneExtension(req, res);
+});
+
+/*-----------------------------------*\
+ Root
+\*-----------------------------------*/
 app.post('/', (req, res) => {
   res.send('Mock API')
 });

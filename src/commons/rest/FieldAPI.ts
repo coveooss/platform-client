@@ -49,6 +49,7 @@ export class FieldAPI {
 
       this.getFieldsPage(org, 0)
         .then((response: RequestResponse) => {
+          // TODO: add this function add this function as a callback since it doesn't make sense to put it in the API
           this.addLoadedFieldsToOrganization(org, response.body.items);
 
           Logger.verbose(`Successfully loaded first field page from from ${org.getId()}`);

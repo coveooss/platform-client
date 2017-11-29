@@ -31,7 +31,7 @@ exports.getOneExtension = function(req, res) {
   } else {
     try {
       let extension = require(`./../${orgId}/extensions/${extensionId}.json`);
-      res.status(204).send(extension);
+      res.status(200).send(extension);
     } catch (error) {
       res.status(404).send({
         'message': `The extension '${extensionId}' of organization 'ccli1wq3fmkys' does not exist.`,

@@ -29,6 +29,6 @@ export class BaseController {
       }
     };
 
-    Logger.error(errorMessage, `${chalk.red(tryToPrettyfy(err.replace(/\\n/g, '')))}`);
+    Logger.error(errorMessage, err ? `${chalk.red(tryToPrettyfy(err.replace(/\\n/g, '')))}` : '');
   }
 }

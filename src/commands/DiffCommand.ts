@@ -59,10 +59,12 @@ export class DiffCommand {
           }).catch((err: any) => {
             Logger.error('Unable to save setting file', err);
             Logger.stopSpinner();
+            process.exit();
           });
         }).catch((err: any) => {
           Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err);
           Logger.stopSpinner();
+          process.exit();
       });
   }
 
@@ -71,16 +73,25 @@ export class DiffCommand {
    */
   public diffExtensions() {
     let extensionController: ExtensionController = new ExtensionController(this.organization1, this.organization2);
+    Logger.startSpinner('Performing an extension diff');
     extensionController.diff(this.options)
       .then((diffResultArray: DiffResultArray<Extension>) => {
         fs.writeJSON('extensionDiff.json', diffResultArray, { spaces: 2 })
           .then(() => {
+            Logger.info('Diff operation completed');
             Logger.info('File saved as extensionDiff.json');
+            Logger.stopSpinner();
             opn('extensionDiff.json');
             process.exit();
           }).catch((err: any) => {
             Logger.error('Unable to save setting file', err);
+            Logger.stopSpinner();
+            process.exit();
           });
+      }).catch((err: any) => {
+        Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err);
+        Logger.stopSpinner();
+        process.exit();
       });
   }
 }

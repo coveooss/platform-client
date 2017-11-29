@@ -25,8 +25,8 @@ export class Assert {
     Assert.check(Utils.isUndefined(obj), 'Value should be undefined.');
   }
 
-  static isNotUndefined(obj: any) {
-    Assert.check(!Utils.isUndefined(obj), 'Value should not be undefined.');
+  static isNotUndefined(obj: any, message: string = 'Value should not be undefined.') {
+    Assert.check(!Utils.isUndefined(obj), message);
   }
 
   static isNull(obj: any) {

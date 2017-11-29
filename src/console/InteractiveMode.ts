@@ -71,8 +71,8 @@ export class InteractiveMode {
       name: InteractiveMode.COMMAND,
       message: 'Command to execute?',
       choices: [
-        { name: GraduateCommand.COMMAND_NAME, checked: true },
-        { name: DiffCommand.COMMAND_NAME, disabled: 'Not implemented yet' }
+        { name: GraduateCommand.COMMAND_NAME },
+        { name: DiffCommand.COMMAND_NAME }
       ]
     };
   }
@@ -84,8 +84,8 @@ export class InteractiveMode {
       message: 'Graduate Fields?',
       choices: [
         { name: FieldController.CONTROLLER_NAME },
-        { name: ExtensionController.CONTROLLER_NAME, disabled: 'Not implemented yet' },
-        { name: SourceController.CONTROLLER_NAME }
+        { name: ExtensionController.CONTROLLER_NAME },
+        { name: SourceController.CONTROLLER_NAME, disabled: 'Not implemented yet' }
       ],
       when: (answer: Answers) => answer[InteractiveMode.COMMAND].indexOf(GraduateCommand.COMMAND_NAME) !== -1,
       validate: this.checkboxValidator('You need to select at least 1 content to graduate.')
@@ -154,10 +154,10 @@ export class InteractiveMode {
       this.getDestinationOrganizationKey(),
       this.getCommandList(),
       this.getContentsToGraduate(),
-      this.getGraduateOperationForFields(),
-      this.getGraduateOperationForExtensions(),
-      this.getSourceElementToGraduate(),
-      this.getGraduateOperationForSources(),
+      // this.getGraduateOperationForFields(),
+      // this.getGraduateOperationForExtensions(),
+      // this.getSourceElementToGraduate(),
+      // this.getGraduateOperationForSources(),
       this.getFileNameForSettings()
     ];
   }

@@ -6,10 +6,10 @@ import { Assert } from '../commons/misc/Assert';
 export class Extension extends BaseCoveoObject implements ICoveoObject {
   constructor(id: string, private configuration: any) {
     super(id);
-    Assert.isNotUndefined(this.configuration['content']);
-    Assert.isNotUndefined(this.configuration['name']);
-    Assert.isNotUndefined(this.configuration['description']);
-    Assert.isNotUndefined(this.configuration['requiredDataStreams']);
+    Assert.isNotUndefined(this.configuration['content'], 'Extension content should not be undefined.');
+    Assert.isNotUndefined(this.configuration['name'], 'Extension name should not be undefined.');
+    Assert.isNotUndefined(this.configuration['description'], 'Extension description should not be undefined.');
+    Assert.isNotUndefined(this.configuration['requiredDataStreams'], 'Extension requiredDataStreams should not be undefined.');
   }
 
   public getContent(): string {
