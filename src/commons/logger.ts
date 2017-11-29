@@ -36,7 +36,7 @@ class LoggerSingleton {
       .then(() => {
       })
       .catch((err: any) => {
-        console.error('Unable to save log.');
+        console.error('Unable to save log');
       });
   }
 
@@ -48,42 +48,46 @@ class LoggerSingleton {
     this.spinner.stop();
   }
 
+  public loadingTask(message: string) {
+    this.spinner.text = message;
+  }
+
   public info(message: string, ...meta: any[]) {
     if (this.level <= LoggerSingleton.INFO) {
-      this.spinner.succeed(message);
-      this.log('INFO', 'green', message, meta);
+      let callback = this.spinner.succeed;
+      this.log('INFO', 'succeed', message, meta);
     }
     this.addToLogFile('INFO', message, meta);
   }
 
   public warn(message: string, ...meta: any[]) {
     if (this.level <= LoggerSingleton.INFO) {
-      this.spinner.warn(message);
-      this.log('WARN', 'yellow', message, meta);
+      let callback = this.spinner.warn;
+      this.log('WARN', 'warn', message, meta);
     }
     this.addToLogFile('WARN', message, meta);
   }
 
   public error(message: string, ...meta: any[]) {
     if (this.level <= LoggerSingleton.ERROR) {
-      this.spinner.fail(message);
-      this.log('ERROR', 'red', message, meta);
+      let callback = this.spinner.fail;
+      this.log('ERROR', 'fail', message, meta);
     }
     this.addToLogFile('ERROR', message, meta);
   }
 
   public verbose(message: string, ...meta: any[]) {
     if (this.level <= LoggerSingleton.VERBOSE) {
-      this.spinner.info(message);
-      this.log('VERBOSE', 'green', message, meta);
+      let callback = this.spinner.info;
+      this.log('VERBOSE', 'info', message, meta);
     }
     this.addToLogFile('VERBOSE', message, meta);
   }
 
   public insane(message: string, ...meta: any[]) {
     if (this.level <= LoggerSingleton.INSANE) {
-      this.spinner.succeed(message);
-      this.log('INSANE', 'green', message, meta);
+      let callback = this.spinner.succeed;
+      this.log('INSANE', 'succeed', message, meta);
     }
     this.addToLogFile('INSANE', message, meta);
   }
@@ -98,17 +102,18 @@ class LoggerSingleton {
     });
   }
 
-  public log(level: string, color: 'green' | 'yellow' | 'red', message: string, ...meta: any[]) {
-    this.startSpinner();
+  public log(level: string, logAction: 'succeed' | 'warn' | 'fail' | 'info', message: string, ...meta: any[]) {
     let fullMessage: string = '';
     _.each(meta, (m: any) => {
       if (!Utils.isEmptyString(m.toString())) {
-        fullMessage += `${m.toString()}`;
+        fullMessage += `\n${m.toString()}`;
       }
     });
 
-    this.spinner.color = color;
-    this.spinner.text = fullMessage;
+    this.spinner[logAction](message + fullMessage);
+
+    this.startSpinner();
+    // this.spinner.color = color;
   }
 
   public setLogLevel(level: string) {

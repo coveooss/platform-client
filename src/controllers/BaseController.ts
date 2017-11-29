@@ -15,7 +15,7 @@ export class BaseController {
         info.statusMessage = response.statusMessage;
       }
 
-      Logger.info(`${successMessage}\n${chalk.green(JSON.stringify(info, undefined, 2))}`);
+      Logger.info(successMessage, `${chalk.green(JSON.stringify(info, undefined, 2))}`);
     });
     Logger.insane(`${JSON.stringify(responses)} `);
   }
@@ -29,6 +29,6 @@ export class BaseController {
       }
     };
 
-    Logger.error(`${errorMessage}:\n${chalk.red(tryToPrettyfy(err))}`, err);
+    Logger.error(errorMessage, `${chalk.red(tryToPrettyfy(err.replace(/\\n/g, '')))}`);
   }
 }

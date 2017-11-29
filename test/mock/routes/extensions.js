@@ -12,7 +12,10 @@ exports.getAllExtension = function(req, res) {
       setTimeout((() => { res.send(prodExtensions) }), 1000);
       break;
     default:
-      res.status(404).send({ 'errorCode': 'ORGANIZATION_NOT_FOUND' });
+      res.status(404).send({
+        'message': `The organization '${orgId}' does not exist.`,
+        'errorCode': 'ORGANIZATION_NOT_FOUND'
+      });
       break;
   }
 };
@@ -20,7 +23,22 @@ exports.getAllExtension = function(req, res) {
 exports.getOneExtension = function(req, res) {
   let orgId = req.params.org;
   let extensionId = req.params.extensionId;
-  res.status(204).send();
+  if (orgId !== 'dev' && orgId != 'prod') {
+    res.status(404).send({
+      'message': `The organization '${orgId}' does not exist.`,
+      'errorCode': 'ORGANIZATION_NOT_FOUND'
+    });
+  } else {
+    try {
+      let extension = require(`./../${orgId}/extensions/${extensionId}.json`);
+      res.status(204).send(extension);
+    } catch (error) {
+      res.status(404).send({
+        'message': `The extension '${extensionId}' of organization 'ccli1wq3fmkys' does not exist.`,
+        'errorCode': 'EXTENSION_NOT_FOUND'
+      });
+    }
+  }
 };
 
 exports.createExtension = function(req, res) {

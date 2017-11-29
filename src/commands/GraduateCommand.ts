@@ -5,6 +5,7 @@ import { FieldController } from '../controllers/FieldController';
 import { UrlService } from '../commons/rest/UrlService';
 import { InteractiveMode } from '../console/InteractiveMode';
 import { Logger } from '../commons/logger';
+import { StaticErrorMessage } from '../commons/errors';
 
 export interface IGraduateOptions {
   force: boolean;
@@ -44,15 +45,18 @@ export class GraduateCommand {
     inquirer.prompt(questions)
       .then((res: inquirer.Answers) => {
         if (res.confirm || this.options.force) {
-          Logger.startSpinner('Graduating fields');
+          Logger.startSpinner('Performing Field Graduation');
           fieldController.graduate()
             .then(() => {
-              Logger.info('Graduation Completed!');
+              Logger.info('Graduation operation completed');
+              Logger.stopSpinner();
+            }).catch((err: any) => {
+              Logger.error(StaticErrorMessage.UNABLE_TO_GRADUATE, err);
               Logger.stopSpinner();
             });
-          } else {
-            Logger.info('No fields were graduated');
-            Logger.stopSpinner();
+        } else {
+          Logger.info('No fields were graduated');
+          Logger.stopSpinner();
         }
       });
   }

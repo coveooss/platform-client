@@ -1,5 +1,3 @@
-import * as chalk from 'chalk';
-
 export interface IConfig {
   color: string;
   env: string;

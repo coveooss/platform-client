@@ -36,7 +36,7 @@ export class FieldAPI {
   }
 
   public static getFieldsPage(organization: Organization, page: number): Promise<RequestResponse> {
-    Logger.verbose(`Fecthing field page ${page} from ${organization.getId()} `);
+    Logger.loadingTask(`Fecthing field page ${page} from ${organization.getId()} `);
     return RequestUtils.get(
       UrlService.getFieldsPageUrl(organization.getId(), page),
       organization.getApiKey()
@@ -51,6 +51,7 @@ export class FieldAPI {
         .then((response: RequestResponse) => {
           this.addLoadedFieldsToOrganization(org, response.body.items);
 
+          Logger.verbose(`Successfully loaded first field page from from ${org.getId()}`);
           if (response.body.totalPages > 1) {
             this.loadOtherPages(org, response.body.totalPages)
               .then(() => resolve())
@@ -68,12 +69,13 @@ export class FieldAPI {
   }
 
   public static loadOtherPages(org: Organization, totalPages: number): Promise<void> {
-    Logger.verbose(`Loading ${totalPages - 1} more pages of fields from ${org.getId()} `);
+    Logger.loadingTask(`Loading ${totalPages - 1} more pages of fields from ${org.getId()} `);
     let emptyArray: number[] = new Array(totalPages - 1);
     let pageArray = _.map(emptyArray, (v: number, idx: number) => idx + 1);
     return Promise
       .all(_.map(pageArray, (page: number) => this.getFieldsPage(org, page)))
       .then((otherPages: RequestResponse[]) => {
+        Logger.verbose(`Successfully loaded ${totalPages - 1} additional pages of fields from ${org.getId()} `);
         _.each(otherPages, (response: RequestResponse) => {
           this.addLoadedFieldsToOrganization(org, response.body.items);
         });

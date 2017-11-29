@@ -1,5 +1,6 @@
 export class StaticErrorMessage {
-  public static UNABLE_TO_DIFF: string = 'Unable to perform diff';
+  public static UNABLE_TO_DIFF: string = 'Diff operation failed';
+  public static UNABLE_TO_GRADUATE: string = 'Graduation opertaion failed';
   public static UNABLE_TO_API_REQUEST: string = 'Unable to perform API request';
   public static MISSING_FIELD_NAME: string = 'Missing field name';
   public static UNABLE_TO_LOAD_FIELDS: string = 'Unable to load fields';

@@ -41,10 +41,7 @@ program
   .option('-l, --logLevel <level>', 'Possible values are: verbose, info (default), error, nothing', /^(verbose|info|error|nothing)$/i, 'info')
   .action((originOrganization: string, destinationOrganization: string, originApiKey: string, destinationApiKey: string, options: any) => {
 
-    // Set Logger
-    Logger.setLogLevel(options.logLevel);
-    Logger.setFilename(options.output);
-    Logger.newAction(options.parent.rawArgs.splice(2).join(' '));
+    setLogger(options);
 
     // Set graduation options
     const graduateOptions: IGraduateOptions = {
@@ -73,9 +70,11 @@ program
   .option('-e, --extensions', 'Diff extensions')
   .option('-b, --openInBrowser', 'Open Diff in default Browser')
   .option('-i, --ignoreFields', 'Fields to ignore', [])
-  // .option('-o, --outputfile', 'Output file', `${config.workingDirectory}output/diff-${Date.now()}.html`)
+  .option('-l, --logLevel <level>', 'Possible values are: verbose, info (default), error, nothing', /^(verbose|info|error|nothing)$/i, 'info')
+  .option('-o, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
   .action((originOrganization: string, destinationOrganization: string, originApiKey: string, destinationApiKey: string, options: any) => {
 
+    setLogger(options);
     // Set diff options
     const graduateOptions: IGraduateOptions = {
       force: !!options.force
@@ -84,6 +83,9 @@ program
     let command = new DiffCommand(originOrganization, destinationOrganization, originApiKey, destinationApiKey);
     if (options.fields) {
       command.diffFields();
+    }
+    if (options.extensions) {
+      command.diffExtensions();
     }
   });
 
@@ -132,4 +134,10 @@ function setEnvironmentIfNecessary() {
     let env = process.argv[i + 1];
     process.env.NODE_ENV = env;
   }
+}
+
+function setLogger(options: any) {
+  Logger.setLogLevel(options.logLevel);
+  Logger.setFilename(options.output);
+  Logger.newAction(options.parent.rawArgs.splice(2).join(' '));
 }

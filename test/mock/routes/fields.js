@@ -23,10 +23,10 @@ exports.getFields = function(req, res) {
     }
 
     // Add latency to the response
-    setTimeout((() => { res.send(response) }), 1000);
+    setTimeout((() => { res.send(response) }), 4);
 
   } else if (orgId === 'prod') {
-    setTimeout((() => { res.send(prodField) }), 1000);
+    setTimeout((() => { res.send(prodField) }), 2);
   } else {
     res.status(404).send({ 'errorCode': 'ORGANIZATION_NOT_FOUND' });
   }
@@ -37,14 +37,14 @@ exports.createFields = function(req, res) {
 };
 
 exports.updateFields = function(req, res) {
-  setTimeout((() => { res.status(204).send({}) }), 1000);
+  setTimeout((() => { res.status(204).send({}) }), 4);
 };
 
 exports.deleteFields = function(req, res) {
-  res.status(404).send(
-    {
+  setTimeout(() => {
+    res.status(404).send({
       "message": "Full authentication is required to access this resource",
       "errorCode": "UNAUTHORIZED"
-    }
-  );
+    })
+  }, 4000);
 };

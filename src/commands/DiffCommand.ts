@@ -7,6 +7,9 @@ import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { Field } from '../coveoObjects/Field';
 import { IDiffOptions } from '../commons/utils/DiffUtils';
 import * as _ from 'underscore';
+import { ExtensionController } from '../controllers/ExtensionController';
+import { Extension } from '../coveoObjects/Extension';
+import { StaticErrorMessage } from '../commons/errors';
 
 export interface IDiffOptions {
   force: boolean;
@@ -43,12 +46,37 @@ export class DiffCommand {
    */
   public diffFields() {
     let fieldController: FieldController = new FieldController(this.organization1, this.organization2);
+    Logger.startSpinner('Performing a field diff');
     fieldController.diff(this.options)
       .then((diffResultArray: DiffResultArray<Field>) => {
         fs.writeJSON('fieldDiff.json', diffResultArray, { spaces: 2 })
           .then(() => {
+            Logger.info('Diff operation completed');
             Logger.info('File saved as fieldDiff.json');
+            Logger.stopSpinner();
             opn('fieldDiff.json');
+            process.exit();
+          }).catch((err: any) => {
+            Logger.error('Unable to save setting file', err);
+            Logger.stopSpinner();
+          });
+        }).catch((err: any) => {
+          Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err);
+          Logger.stopSpinner();
+      });
+  }
+
+  /**
+   * Perform a "diff" over the organization extensions
+   */
+  public diffExtensions() {
+    let extensionController: ExtensionController = new ExtensionController(this.organization1, this.organization2);
+    extensionController.diff(this.options)
+      .then((diffResultArray: DiffResultArray<Extension>) => {
+        fs.writeJSON('extensionDiff.json', diffResultArray, { spaces: 2 })
+          .then(() => {
+            Logger.info('File saved as extensionDiff.json');
+            opn('extensionDiff.json');
             process.exit();
           }).catch((err: any) => {
             Logger.error('Unable to save setting file', err);

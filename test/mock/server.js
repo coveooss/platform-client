@@ -21,6 +21,10 @@ app.delete('/rest/organizations/:org/indexes/fields/batch/delete', (req, res) =>
   fields.deleteFields(req, res);
 });
 
+/*-----------------------------------*\
+ Extension API
+\*-----------------------------------*/
+
 app.post('/', (req, res) => {
   res.send('Mock API')
 });

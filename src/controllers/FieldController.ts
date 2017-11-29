@@ -39,10 +39,12 @@ export class FieldController extends BaseController {
    * @returns {Promise<DiffResultArray<Field>>}
    */
   public diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Field>> {
-    Logger.verbose('performing diff on organizations.');
     return this.loadFieldForBothOrganizations(this.organization1, this.organization2)
       .then(() => {
         return DiffUtils.getDiffResult(this.organization1.getFields(), this.organization2.getFields(), diffOptions);
+      }).catch((err: any) => {
+        this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_FIELDS);
+        return Promise.reject(err);
       });
   }
 
@@ -54,22 +56,22 @@ export class FieldController extends BaseController {
     return this.diff()
       .then((diffResultArray: DiffResultArray<Field>) => {
         if (diffResultArray.containsItems()) {
-          Logger.info(`${diffResultArray.NEW.length} new fields found`);
-          Logger.info(`${diffResultArray.DELETED.length} deleted fields found`);
-          Logger.info(`${diffResultArray.UPDATED.length} updated fields found`);
+          Logger.info(`${diffResultArray.NEW.length} new field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
+          Logger.info(`${diffResultArray.DELETED.length} deleted field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
+          Logger.info(`${diffResultArray.UPDATED.length} updated field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
 
-          Logger.info('Graduating fields.');
+          Logger.loadingTask('Graduating fields');
           return Promise.all([
             this.graduateNew(diffResultArray),
             this.graduateUpdated(diffResultArray),
             this.graduateDeleted(diffResultArray)
           ]);
         } else {
-          Logger.warn('No Fields to graduate.');
+          Logger.warn('No Fields to graduate');
           return Promise.resolve([]);
         }
       }).catch((err: any) => {
-        this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_FIELDS);
+        return Promise.reject(err);
       });
   }
 
@@ -109,8 +111,8 @@ export class FieldController extends BaseController {
     }
   }
 
-  private loadFieldForBothOrganizations(organization1: Organization, organization2: Organization, ): Promise<Array<{}>> {
-    Logger.verbose('Loading files for both organizations.');
+  private loadFieldForBothOrganizations(organization1: Organization, organization2: Organization): Promise<Array<{}>> {
+    Logger.loadingTask('Loading fields for both organizations');
     return Promise.all([FieldAPI.loadFields(organization1), FieldAPI.loadFields(organization2)]);
   }
 

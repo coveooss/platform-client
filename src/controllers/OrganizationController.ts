@@ -1,5 +1,4 @@
 import * as _ from 'underscore';
-import * as chalk from 'chalk';
 import { RequestResponse } from 'request';
 import { IOrganization } from '../commons/interfaces/IOrganization';
 import { UrlService } from '../commons/rest/UrlService';
