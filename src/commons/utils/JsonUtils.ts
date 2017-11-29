@@ -16,8 +16,8 @@ export class JsonUtils {
    * @param {string[]} [keysToRemove=[]]
    * @returns {*} any
    */
-  static removeKeyValuePairsFromJson(obj: any, keysToRemove: string[] = []): any {
-    if (keysToRemove.length === 0) {
+  static removeKeyValuePairsFromJson(obj: any, keysToRemove: string[] = [], keysToOnlyInclude: string[] = []): any {
+    if (keysToRemove.length + keysToOnlyInclude.length === 0) {
       // Do not waste time for nothing
       return obj;
     }

@@ -6,11 +6,14 @@ import { DiffResultArray } from '../collections/DiffResultArray';
 
 export interface IDiffOptions {
   fieldsToIgnore?: string[];
+  // TODO: test this new parameter
+  includeOnly?: string[];
 }
 
 export class DiffUtils {
   static defaultOptions: IDiffOptions = {
-    fieldsToIgnore: []
+    fieldsToIgnore: [],
+    includeOnly: []
   };
 
   /**
@@ -34,7 +37,7 @@ export class DiffUtils {
     dict1Copy.keys().forEach((key: string) => {
       let value: T = dict1Copy.getItem(key);
       // Remove undesired fields from the diff result
-      value = JsonUtils.removeKeyValuePairsFromJson(value, options.fieldsToIgnore);
+      value = JsonUtils.removeKeyValuePairsFromJson(value, options.fieldsToIgnore, options.includeOnly);
 
       if (dict2Copy.containsKey(key)) {
         if (!_.isEqual(value, dict2Copy.getItem(key))) {

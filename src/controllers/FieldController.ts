@@ -39,6 +39,9 @@ export class FieldController extends BaseController {
    * @returns {Promise<DiffResultArray<Field>>}
    */
   public diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Field>> {
+    diffOptions = _.extend({}, diffOptions, {
+      includeOnly: ['content', 'name', 'description', 'requiredDataStreams']
+    } as IDiffOptions);
     return this.loadFieldForBothOrganizations(this.organization1, this.organization2)
       .then(() => {
         return DiffUtils.getDiffResult(this.organization1.getFields(), this.organization2.getFields(), diffOptions);

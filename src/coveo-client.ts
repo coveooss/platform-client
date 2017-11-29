@@ -13,6 +13,7 @@ import { Organization } from './coveoObjects/Organization';
 import { config } from './config/index';
 import { DiffCommand } from './commands/DiffCommand';
 import { Logger } from './commons/logger';
+import { IDiffOptions } from './commons/utils/DiffUtils';
 
 const program = require('commander');
 const pkg: any = require('./../package.json');
@@ -69,18 +70,22 @@ program
   .option('-s, --sources', 'Diff sources')
   .option('-e, --extensions', 'Diff extensions')
   .option('-b, --openInBrowser', 'Open Diff in default Browser')
-  .option('-i, --ignoreFields', 'Fields to ignore', [])
+  .option('-i, --ignoreFields []', 'Fields to ignore. String separated by ","', list)
   .option('-l, --logLevel <level>', 'Possible values are: verbose, info (default), error, nothing', /^(verbose|info|error|nothing)$/i, 'info')
   .option('-o, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
   .action((originOrganization: string, destinationOrganization: string, originApiKey: string, destinationApiKey: string, options: any) => {
 
     setLogger(options);
     // Set diff options
-    const graduateOptions: IGraduateOptions = {
-      force: !!options.force
+    const diffOptions: IDiffOptions = {
+      fieldsToIgnore: options.ignoreFields
     };
+    console.log('*********************');
+    console.log(diffOptions);
+    console.log('*********************');
 
-    let command = new DiffCommand(originOrganization, destinationOrganization, originApiKey, destinationApiKey);
+
+    let command = new DiffCommand(originOrganization, destinationOrganization, originApiKey, destinationApiKey, diffOptions);
     if (options.fields) {
       command.diffFields();
     }
@@ -128,6 +133,10 @@ program
 program.parse(process.argv);
 
 // Utils
+function list(val: string) {
+  return val.split(',');
+}
+
 function setEnvironmentIfNecessary() {
   let i = process.argv.indexOf('--env');
   if (i !== -1 && i + 1 < process.argv.length) {

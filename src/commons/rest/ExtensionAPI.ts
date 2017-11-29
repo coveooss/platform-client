@@ -33,12 +33,13 @@ export class ExtensionAPI {
       this.getAllExtensions(org)
         .then((response: RequestResponse) => {
           // Load each extension
-          Promise.all(_.map(response.body, (extension: any) => {
+          return Promise.all(_.map(response.body, (extension: any) => {
             Logger.verbose(`Loading "${extension['name']}" extension from ${org.getId()}`);
             this.getSingleExtension(org, extension['id'])
               .then((extensionBody: RequestResponse) => {
                 // TODO: add this function add this function as a callback since it doesn't make sense to put it in the API
                 this.addLoadedExtensionsToOrganization(org, extensionBody.body);
+                resolve();
               }).catch((err: any) => {
                 Logger.error(StaticErrorMessage.UNABLE_TO_LOAD_SINGLE_EXTENTION + ` "${extension['name']}"`, err);
                 reject(err);

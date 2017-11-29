@@ -11,10 +11,6 @@ import { ExtensionController } from '../controllers/ExtensionController';
 import { Extension } from '../coveoObjects/Extension';
 import { StaticErrorMessage } from '../commons/errors';
 
-export interface IDiffOptions {
-  force: boolean;
-}
-
 export class DiffCommand {
   private organization1: Organization;
   private organization2: Organization;
