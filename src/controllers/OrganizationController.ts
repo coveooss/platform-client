@@ -15,7 +15,7 @@ export class OrganizationController extends BaseController {
     super();
   }
 /*
-  public diff(organization1: IOrganization, organization2: IOrganization, fieldsToIgnore: string[]): IDiffResult<any> {
+  public diff(organization1: IOrganization, organization2: IOrganization, keysToIgnore: string[]): IDiffResult<any> {
     let diffResults: DiffResult<any> = new DiffResult<any>();
     let context: OrganizationController = this;
 
@@ -28,7 +28,7 @@ export class OrganizationController extends BaseController {
       });
 
       // Diff the origanizations
-      diffResults = DiffUtils.diff(organization1.Configuration, organization2.Configuration, fieldsToIgnore);
+      diffResults = DiffUtils.diff(organization1.Configuration, organization2.Configuration, keysToIgnore);
     } catch (err) {
       Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err);
       throw err;

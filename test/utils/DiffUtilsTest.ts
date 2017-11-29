@@ -104,7 +104,7 @@ export const DiffUtilsTest = () => {
 
     it('Adding fields to ignore should not alter initial object', () => {
       let options: IDiffOptions = {
-        fieldsToIgnore: ['random']
+        keysToIgnore: ['random']
       };
 
       let car1DictClone = car1Dict.clone();
@@ -117,7 +117,7 @@ export const DiffUtilsTest = () => {
 
     it('Should return the diff result without ignore fields', () => {
       let options: IDiffOptions = {
-        fieldsToIgnore: ['color']
+        keysToIgnore: ['color']
       };
 
       let diff: DiffResultArray<any> = DiffUtils.getDiffResult(car1Dict, car2Dict, options);
@@ -132,7 +132,7 @@ export const DiffUtilsTest = () => {
 
     it('Should not alter object when all fields are removed', () => {
       let options: IDiffOptions = {
-        fieldsToIgnore: ['color', 'brand']
+        keysToIgnore: ['color', 'brand']
       };
 
       let car1DictClone = car1Dict.clone();
@@ -145,7 +145,7 @@ export const DiffUtilsTest = () => {
 
     it('Should return the diff result without ignore fields 2', () => {
       let options: IDiffOptions = {
-        fieldsToIgnore: ['color', 'brand']
+        keysToIgnore: ['color', 'brand']
       };
 
       let diff: DiffResultArray<any> = DiffUtils.getDiffResult(car1Dict, car2Dict, options);
@@ -155,7 +155,7 @@ export const DiffUtilsTest = () => {
 
     it('Should return the diff result without ignore fields 3', () => {
       let options: IDiffOptions = {
-        fieldsToIgnore: ['rambo 3']
+        keysToIgnore: ['rambo 3']
       };
 
       let diff: DiffResultArray<any> = DiffUtils.getDiffResult(car1Dict, car2Dict, options);

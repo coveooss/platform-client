@@ -34,7 +34,7 @@ export class FieldController extends BaseController {
   /**
    * Performs a diff and return the result.
    *
-   * @param {string[]} fieldsToIgnore Fields to ignore in the diff. For instance, someone
+   * @param {string[]} keysToIgnore Fields to ignore in the diff. For instance, someone
    * changed the "description" property of the field in the destination org and you don't want the diff to tell you that it has changed.
    * @returns {Promise<DiffResultArray<Field>>}
    */

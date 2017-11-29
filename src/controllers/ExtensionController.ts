@@ -42,7 +42,7 @@ export class ExtensionController extends BaseController {
 
   }
 
-  // public diff(organization1: IOrganization, organization2: IOrganization, fieldsToIgnore: string[]): Dictionary<IDiffResult<any>> {
+  // public diff(organization1: IOrganization, organization2: IOrganization, keysToIgnore: string[]): Dictionary<IDiffResult<any>> {
   //   Logger.verbose('Performing a field diff.');
   //   return this.loadExtensionsForBothOrganizations(this.organization1, this.organization2)
   //     .then(() => {
@@ -73,7 +73,7 @@ export class ExtensionController extends BaseController {
   //       let requiredDataStreamsDiff = DiffUtils.diffArrays(
   //         organization1.Extensions.Item(key).Configuration['requiredDataStreams'],
   //         organization2.Extensions.Item(key).Configuration['requiredDataStreams'],
-  //         fieldsToIgnore
+  //         keysToIgnore
   //       );
 
   //       if (requiredDataStreamsDiff.NEW.Count() > 0) {

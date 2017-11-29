@@ -20,7 +20,7 @@ export class SourceController extends BaseController {
 
   static CONTROLLER_NAME: string = 'sources';
   /*
-    public diff(organization1: IOrganization, organization2: IOrganization, fieldsToIgnore: string[]): Dictionary<IDiffResult<any>> {
+    public diff(organization1: IOrganization, organization2: IOrganization, keysToIgnore: string[]): Dictionary<IDiffResult<any>> {
       let diffResults: Dictionary<IDiffResult<any>> = new Dictionary<IDiffResult<any>>();
       let diffResultsExistence: DiffResult<string> = new DiffResult<string>();
 
@@ -40,13 +40,13 @@ export class SourceController extends BaseController {
         diffResultsExistence.UPDATED.Keys().forEach((key: string) => {
           let sourceDiff: IDiffResult<any> = new DiffResult<any>();
 
-          let sourceConfigurationDiff: IDiffResult<any> = DiffUtils.diff(organization1.Sources.Item(key), organization2.Sources.Item(key), fieldsToIgnore);
+          let sourceConfigurationDiff: IDiffResult<any> = DiffUtils.diff(organization1.Sources.Item(key), organization2.Sources.Item(key), keysToIgnore);
           sourceDiff = DiffUtils.addToResultIfDiffContainsItems('SourceConfiguration', sourceDiff, sourceConfigurationDiff);
 
           let mappingDiff: IDiffResult<any> = DiffUtils.diffArrays(
             organization1.Sources.Item(key).Mappings,
             organization2.Sources.Item(key).Mappings,
-            fieldsToIgnore,
+            keysToIgnore,
             false
           );
           sourceDiff = DiffUtils.addToResultIfDiffContainsItems('Mappings', sourceDiff, sourceConfigurationDiff);
@@ -54,7 +54,7 @@ export class SourceController extends BaseController {
           let preConversionDiff: IDiffResult<any> = DiffUtils.diffArrays(
             organization1.Sources.Item(key).PreConversionExtensions,
             organization2.Sources.Item(key).PreConversionExtensions,
-            fieldsToIgnore,
+            keysToIgnore,
             false
           );
           sourceDiff = DiffUtils.addToResultIfDiffContainsItems('PreConversionExtensions', sourceDiff, preConversionDiff);
@@ -62,7 +62,7 @@ export class SourceController extends BaseController {
           let postConversionDiff: IDiffResult<any> = DiffUtils.diffArrays(
             organization1.Sources.Item(key).PostConversionExtensions,
             organization2.Sources.Item(key).PostConversionExtensions,
-            fieldsToIgnore,
+            keysToIgnore,
             false
           );
           sourceDiff = DiffUtils.addToResultIfDiffContainsItems('PreConversionExtensions', sourceDiff, postConversionDiff);

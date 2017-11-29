@@ -50,8 +50,8 @@ export class JsonUtils {
     return !noCommonElements;
   }
 
-  static convertJsonToDictionary(json: any, fieldsToIgnore?: string[]): Dictionary<any> {
-    let ignoreList = fieldsToIgnore || new Array<string>();
+  static convertJsonToDictionary(json: any, keysToIgnore?: string[]): Dictionary<any> {
+    let ignoreList = keysToIgnore || new Array<string>();
     let newDictionary: Dictionary<any> = new Dictionary<any>();
 
     Object.keys(json).forEach((key: string) => {

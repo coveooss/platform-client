@@ -70,7 +70,7 @@ program
   .option('-s, --sources', 'Diff sources')
   .option('-e, --extensions', 'Diff extensions')
   .option('-b, --openInBrowser', 'Open Diff in default Browser')
-  .option('-i, --ignoreFields []', 'Fields to ignore. String separated by ","', list)
+  .option('-i, --ignoreKeys []', 'Object keys to ignore. String separated by ","', list)
   .option('-l, --logLevel <level>', 'Possible values are: verbose, info (default), error, nothing', /^(verbose|info|error|nothing)$/i, 'info')
   .option('-o, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
   .action((originOrganization: string, destinationOrganization: string, originApiKey: string, destinationApiKey: string, options: any) => {
@@ -78,7 +78,7 @@ program
     setLogger(options);
     // Set diff options
     const diffOptions: IDiffOptions = {
-      fieldsToIgnore: options.ignoreFields
+      keysToIgnore: options.ignoreKeys
     };
     console.log('*********************');
     console.log(diffOptions);

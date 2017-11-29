@@ -29,7 +29,7 @@ export class DiffCommand {
   }
 
   static DEFAULT_OPTIONS: IDiffOptions = {
-    fieldsToIgnore: []
+    keysToIgnore: []
   };
 
   static COMMAND_NAME: string = 'diff';
