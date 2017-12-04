@@ -58,7 +58,8 @@ export class DiffUtils {
 
     // Add the keys that were not in the first json to the deleted list
     dict2Copy.keys().forEach((key: string) => {
-      diffResult.DELETED.push(dict2Copy.getItem(key));
+      let deletedValue: T = JsonUtils.removeKeyValuePairsFromJson(dict2Copy.getItem(key), options.keysToIgnore, options.includeOnly);
+      diffResult.DELETED.push(deletedValue);
     });
 
     return diffResult;

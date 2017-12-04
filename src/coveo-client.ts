@@ -79,8 +79,8 @@ program
     setLogger(options);
     // Set diff options
     const diffOptions: IDiffOptions = {
-      keysToIgnore: options.ignoreKeys,
-      includeOnly: options.onlyKeys
+      keysToIgnore: options.ignoreKeys || [],
+      includeOnly: options.onlyKeys || []
     };
 
     let command = new DiffCommand(originOrganization, destinationOrganization, originApiKey, destinationApiKey, diffOptions);
