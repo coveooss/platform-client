@@ -14,6 +14,7 @@ export class JsonUtils {
    * @static
    * @param {*} obj JSON
    * @param {string[]} [keysToRemove=[]]
+   * @param {string[]} [keysToOnlyInclude=[]]
    * @returns {*} any
    */
   static removeKeyValuePairsFromJson(obj: any, keysToRemove: string[] = [], keysToOnlyInclude: string[] = []): any {
@@ -26,7 +27,13 @@ export class JsonUtils {
 
     map = _.omit(map, (value: any, key: string) => {
       let keys = key.split('.');
-      return _.intersection(keys, keysToRemove).length > 0;
+      if (keysToOnlyInclude.length > 0) {
+        // Whitelist strategy
+        return _.intersection(keys, keysToOnlyInclude).length === 0;
+      } else {
+        // Blacklist strategy
+        return _.intersection(keys, keysToRemove).length > 0;
+      }
     });
 
     return unflatten(map);

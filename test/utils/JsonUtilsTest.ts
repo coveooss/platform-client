@@ -61,7 +61,41 @@ export const JsonUtilsTest = () => {
       });
     });
 
-    describe('RemoveFieldFromJson', () => {
+    describe('RemoveFieldFromJson - Whitelist Strategy', () => {
+      it('It should not alter the initial object', () => {
+        let obj = { one: 1, two: 2, three: 3 };
+        JsonUtils.removeKeyValuePairsFromJson(obj, ['two'], ['one']);
+        expect(obj).to.eql({ one: 1, two: 2, three: 3 });
+      });
+
+      it('Should return an empty object if all the fields to include do not exsit', () => {
+        let obj = { one: 1, two: 2, three: 3 };
+        expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, [], ['four', 'five'])).to.eql({});
+      });
+
+      it('Should only include the field that we specified', () => {
+        let obj = { one: 1, two: 2, three: 3 };
+        expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, [], ['two'])).to.eql({ two: 2 });
+      });
+
+      it('Should include all the fields if all specified', () => {
+        let obj = { one: 1, two: 2, three: 3 };
+        expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, [], ['one', 'two', 'three'])).to.eql({ one: 1, two: 2, three: 3 });
+      });
+
+      it('Should return the initial object', () => {
+        let obj = { one: 1, two: 2, three: 3 };
+        expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, [], [])).to.eql({ one: 1, two: 2, three: 3 });
+      });
+
+      it('Should override blacklist strategy', () => {
+        let obj = { one: 1, two: 2, three: 3 };
+        expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, ['one'], ['one', 'two'])).to.eql({ one: 1, two: 2 });
+      });
+
+    });
+
+    describe('RemoveFieldFromJson - Blacklist Strategy', () => {
       it('It should not alter the initial object', () => {
         let obj = { one: 1, two: 2, three: 3 };
         JsonUtils.removeKeyValuePairsFromJson(obj, ['two']);
