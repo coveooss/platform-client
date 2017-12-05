@@ -53,6 +53,6 @@ export class ExtensionAPI {
 
   public static addLoadedExtensionsToOrganization(org: Organization, rawExtension: IStringMap<any>) {
     let extension = new Extension(rawExtension['id'], rawExtension);
-    org.getExtensions().add(extension.getName(), extension);
+    org.addExtensions(extension.getName(), extension);
   }
 }

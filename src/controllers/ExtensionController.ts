@@ -46,7 +46,6 @@ export class ExtensionController extends BaseController {
   //   Logger.verbose('Performing a field diff.');
   //   return this.loadExtensionsForBothOrganizations(this.organization1, this.organization2)
   //     .then(() => {
-  //       return DiffUtils.getDiffResult(this.organization1.getFields(), this.organization2.getFields(), diffOptions);
   //     });
 
 
@@ -133,7 +132,7 @@ export class ExtensionController extends BaseController {
   //   let extensions: any = this.getExtensions(organization);
   //   let context = this;
   //   extensions.forEach((extension: any) => {
-  //     organization.getExtensions().add(
+  //     organization.addExtension(
   //       extension['name'],
   //       new Extension(
   //         extension['id'],

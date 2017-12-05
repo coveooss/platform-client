@@ -86,7 +86,7 @@ export class FieldAPI {
   public static addLoadedFieldsToOrganization(org: Organization, fields: Array<IStringMap<any>>) {
     fields.forEach((f: IStringMap<any>) => {
       let field = new Field(f['name'], f);
-      org.getFields().add(field.getName(), field);
+      org.addField(field.getName(), field);
     });
   }
 }

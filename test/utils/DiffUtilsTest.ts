@@ -2,6 +2,7 @@ import { expect, should } from 'chai';
 import { DiffUtils, IDiffOptions } from '../../src/commons/utils/DiffUtils';
 import { Dictionary } from '../../src/commons/collections/Dictionary';
 import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
+import { Extension } from '../../src/coveoObjects/Extension';
 
 export const DiffUtilsTest = () => {
   describe('Get Diff Result', () => {
@@ -58,6 +59,39 @@ export const DiffUtilsTest = () => {
       car1: { brand: 'Ford', color: 'white' },
       car2: { brand: 'Dodge', color: 'green' },
       car3: { brand: 'Ferrari', color: 'yellow' }
+    });
+
+    let extension1: Extension = new Extension('URL Parsing to extract metadata', {
+      content: 'random content',
+      createdDate: 1511812769000,
+      description: 'This extension is used to parse urls to extract metadata like categories.',
+      enabled: true,
+      id: 'ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu',
+      lastModified: 1511812770000,
+      name: 'URL Parsing to extract metadata',
+      requiredDataStreams: [],
+      versionId: 'hwnahJ9mql3cBB4PH6qG_9yXEwwFEhgX',
+      usedBy: [],
+      status: {
+        durationHealth: {
+          healthIndicator: 'UNKNOWN'
+        },
+        dailyStatistics: {
+          averageDurationInSeconds: 0,
+          numberOfErrors: 0,
+          numberOfExecutions: 0,
+          numberOfSkips: 0,
+          numberOfTimeouts: 0
+        },
+        disabledStatus: {},
+        timeoutHealth: {
+          healthIndicator: 'UNKNOWN'
+        }
+      }
+    });
+
+    let extensionDict: Dictionary<Extension> = new Dictionary({
+      'URL Parsing to extract metadata': extension1
     });
 
     it('Should not alter dictionnaries', () => {

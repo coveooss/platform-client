@@ -26,7 +26,7 @@ export class Organization extends BaseCoveoObject implements IOrganization {
      *
      * @returns {string} API Key
      */
-    getApiKey(): string {
+    public getApiKey(): string {
         return this.apiKey;
     }
 
@@ -35,19 +35,23 @@ export class Organization extends BaseCoveoObject implements IOrganization {
      *
      * @returns {Field[]} List of fields
      */
-    getFields(): Dictionary<Field> {
-        return this.fields;
+    public getFields(): Dictionary<Field> {
+        return this.fields.clone();
     }
 
-    addField(fieldName: string, field: Field) {
+    public addField(fieldName: string, field: Field) {
         this.fields.add(fieldName, field);
     }
 
-    getSources(): Dictionary<Source> {
-        return this.sources;
+    public getSources(): Dictionary<Source> {
+        return this.sources.clone();
     }
 
-    getExtensions(): Dictionary<Extension> {
-        return this.extensions;
+    public getExtensions(): Dictionary<Extension> {
+        return this.extensions.clone();
+    }
+
+    public addExtensions(extensionName: string, extension: Extension) {
+        this.extensions.add(extensionName, extension);
     }
 }
