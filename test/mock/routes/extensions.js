@@ -6,7 +6,7 @@ exports.getAllExtension = function(req, res) {
 
   switch (orgId) {
     case 'dev':
-      setTimeout((() => { res.send(devExtensions) }), 1000);
+      setTimeout((() => { res.send(devExtensions) }), 2000);
       break;
     case 'prod':
       setTimeout((() => { res.send(prodExtensions) }), 1000);

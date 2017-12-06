@@ -25,14 +25,17 @@ export class DiffCommand {
   ) {
     this.organization1 = new Organization(originOrganization, originApiKey);
     this.organization2 = new Organization(destinationOrganization, destinationApiKey);
-    this.options = _.extend(DiffCommand.DEFAULT_OPTIONS, options);
   }
 
-  static DEFAULT_OPTIONS: IDiffOptions = {
-    keysToIgnore: []
-  };
-
   static COMMAND_NAME: string = 'diff';
+
+  private getFieldDiffDefaultOptions(): IDiffOptions {
+    return { keysToIgnore: [] };
+  }
+
+  private getExtensionsDiffDefaultOptions(): IDiffOptions {
+    return { includeOnly: ['name', 'content', 'description', 'enabled', 'requiredDataStreams'] };
+  }
 
   public diff(): void {
   }
@@ -57,10 +60,10 @@ export class DiffCommand {
             Logger.stopSpinner();
             process.exit();
           });
-        }).catch((err: any) => {
-          Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err);
-          Logger.stopSpinner();
-          process.exit();
+      }).catch((err: any) => {
+        Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err);
+        Logger.stopSpinner();
+        process.exit();
       });
   }
 

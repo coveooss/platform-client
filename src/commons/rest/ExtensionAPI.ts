@@ -33,23 +33,34 @@ export class ExtensionAPI {
       this.getAllExtensions(org)
         .then((response: RequestResponse) => {
           // Load each extension
-          Logger.verbose(`${response.body.length} extensions found from ${org.getId()}`);
-          return Promise.all(_.map(response.body, (extension: any) => {
-            Logger.loadingTask(`Loading "${extension['name']}" extension from ${org.getId()}`);
-            this.getSingleExtension(org, extension['id'])
-              .then((extensionBody: RequestResponse) => {
-                // TODO: add this function add this function as a callback since it doesn't make sense to put it in the API
-                this.addLoadedExtensionsToOrganization(org, extensionBody.body);
-                resolve();
-              }).catch((err: any) => {
-                Logger.error(StaticErrorMessage.UNABLE_TO_LOAD_SINGLE_EXTENTION + ` "${extension['name']}"`, err);
-                reject(err);
-              });
-          }));
+          return ExtensionAPI.loadEachExtension(org, response)
+            .then(() => resolve())
+            .catch((err: any) => reject(err));
         }).catch((err: any) => {
           reject(err);
         });
     });
+  }
+
+  public static loadEachExtension(org: Organization, response: RequestResponse) {
+    Logger.verbose(`${response.body.length} extensions found from ${org.getId()}`);
+    return Promise.all(_.map(response.body, (extension: any) => {
+      Logger.loadingTask(`Loading "${extension['name']}" extension from ${org.getId()}`);
+      // tslint:disable-next-line:typedef
+      return new Promise((resolve, reject) => {
+        return this.getSingleExtension(org, extension['id'])
+          .then((extensionBody: RequestResponse) => {
+            Logger.verbose(`Loaded "${extension['name']}" extension from ${org.getId()}`);
+            // TODO: add this function add this function as a callback since it doesn't make sense to put it in the API
+            this.addLoadedExtensionsToOrganization(org, extensionBody.body);
+            // TODO: add the extensionBody.body in the resolve
+            resolve();
+          }).catch((err: any) => {
+            Logger.error(StaticErrorMessage.UNABLE_TO_LOAD_SINGLE_EXTENTION + ` "${extension['name']}"`, err);
+            reject(err);
+          });
+      });
+    }));
   }
 
   public static addLoadedExtensionsToOrganization(org: Organization, rawExtension: IStringMap<any>) {
