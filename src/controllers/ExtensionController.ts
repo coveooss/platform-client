@@ -34,7 +34,13 @@ export class ExtensionController extends BaseController {
   public diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Extension>> {
     return this.loadExtensionsForBothOrganizations(this.organization1, this.organization2)
       .then(() => {
-        return DiffUtils.getDiffResult(this.organization1.getExtensions(), this.organization2.getExtensions(), diffOptions);
+        let diffResultArray = DiffUtils.getDiffResult(this.organization1.getExtensions(), this.organization2.getExtensions(), diffOptions);
+        if (diffResultArray.containsItems()) {
+          Logger.verbose(`${diffResultArray.NEW.length} new extension${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
+          Logger.verbose(`${diffResultArray.DELETED.length} deleted extension${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
+          Logger.verbose(`${diffResultArray.UPDATED.length} updated extension${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
+        }
+        return diffResultArray;
       }).catch((err: any) => {
         this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_EXTENTIONS);
         return Promise.reject(err);

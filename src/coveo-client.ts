@@ -39,7 +39,7 @@ program
   .option('-e, --extensions', 'Graduate extensions')
   .option('-F, --force', 'Force graduation without confirmation prompt')
   .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
-  .option('-l, --logLevel <level>', 'Possible values are: verbose, info (default), error, nothing', /^(verbose|info|error|nothing)$/i, 'info')
+  .option('-l, --logLevel <level>', 'Possible values are: insane, verbose, info (default), error, nothing', /^(insane|verbose|info|error|nothing)$/i, 'info')
   .action((originOrganization: string, destinationOrganization: string, originApiKey: string, destinationApiKey: string, options: any) => {
 
     setLogger(options);
@@ -72,7 +72,7 @@ program
   .option('-b, --openInBrowser', 'Open Diff in default Browser')
   .option('-i, --ignoreKeys []', 'Object keys to ignore. String separated by ","', list)
   .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', list)
-  .option('-l, --logLevel <level>', 'Possible values are: verbose, info (default), error, nothing', /^(verbose|info|error|nothing)$/i, 'info')
+  .option('-l, --logLevel <level>', 'Possible values are: insane, verbose, info (default), error, nothing', /^(insane|verbose|info|error|nothing)$/i, 'info')
   .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
   .action((originOrganization: string, destinationOrganization: string, originApiKey: string, destinationApiKey: string, options: any) => {
 

@@ -52,6 +52,7 @@ export class FieldAPI {
           // TODO: add this function add this function as a callback since it doesn't make sense to put it in the API
           this.addLoadedFieldsToOrganization(org, response.body.items);
 
+          Logger.verbose(`${response.body.items.length} fields found from ${org.getId()}`);
           Logger.verbose(`Successfully loaded first field page from from ${org.getId()}`);
           if (response.body.totalPages > 1) {
             this.loadOtherPages(org, response.body.totalPages)

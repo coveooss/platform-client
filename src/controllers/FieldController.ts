@@ -41,7 +41,13 @@ export class FieldController extends BaseController {
   public diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Field>> {
     return this.loadFieldForBothOrganizations(this.organization1, this.organization2)
       .then(() => {
-        return DiffUtils.getDiffResult(this.organization1.getFields(), this.organization2.getFields(), diffOptions);
+        let diffResultArray = DiffUtils.getDiffResult(this.organization1.getFields(), this.organization2.getFields(), diffOptions);
+        if (diffResultArray.containsItems()) {
+          Logger.verbose(`${diffResultArray.NEW.length} new field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
+          Logger.verbose(`${diffResultArray.DELETED.length} deleted field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
+          Logger.verbose(`${diffResultArray.UPDATED.length} updated field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
+        }
+        return diffResultArray;
       }).catch((err: any) => {
         this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_FIELDS);
         return Promise.reject(err);
@@ -56,10 +62,6 @@ export class FieldController extends BaseController {
     return this.diff()
       .then((diffResultArray: DiffResultArray<Field>) => {
         if (diffResultArray.containsItems()) {
-          Logger.info(`${diffResultArray.NEW.length} new field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
-          Logger.info(`${diffResultArray.DELETED.length} deleted field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
-          Logger.info(`${diffResultArray.UPDATED.length} updated field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
-
           Logger.loadingTask('Graduating fields');
           return Promise.all([
             this.graduateNew(diffResultArray),

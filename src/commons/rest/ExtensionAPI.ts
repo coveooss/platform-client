@@ -33,8 +33,9 @@ export class ExtensionAPI {
       this.getAllExtensions(org)
         .then((response: RequestResponse) => {
           // Load each extension
+          Logger.verbose(`${response.body.length} extensions found from ${org.getId()}`);
           return Promise.all(_.map(response.body, (extension: any) => {
-            Logger.verbose(`Loading "${extension['name']}" extension from ${org.getId()}`);
+            Logger.loadingTask(`Loading "${extension['name']}" extension from ${org.getId()}`);
             this.getSingleExtension(org, extension['id'])
               .then((extensionBody: RequestResponse) => {
                 // TODO: add this function add this function as a callback since it doesn't make sense to put it in the API
