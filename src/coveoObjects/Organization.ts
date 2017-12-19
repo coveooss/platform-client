@@ -36,9 +36,8 @@ export class Organization extends BaseCoveoObject implements IOrganization {
    * @returns {Field[]} List of fields
    */
   public getFields(): Dictionary<Field> {
-    // TODO: instanciate new field before return because clone only copy the object as a json
+    // TODO: instantiate a new field before the return since the clone only copies the object as a json
     let newField = this.fields.clone();
-    console.log(newField.getItem('allmetadatavalues').getFieldModel);
     return newField;
   }
 

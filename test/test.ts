@@ -12,12 +12,12 @@ import { ExtensionTest } from './coveoObjects/ExtensionTest';
 
 Logger.info(`Environment: ${config.env}\n`);
 
-// OrganizationTest();
+OrganizationTest();
 DictionnaryTest();
-// DiffResultArrayTest();
+DiffResultArrayTest();
 // DiffUtilsTest();
-// UrlServiceTest();
-// ArrayUtilTest();
-// JsonUtilsTest();
-// FieldTest();
-// ExtensionTest();
+UrlServiceTest();
+ArrayUtilTest();
+JsonUtilsTest();
+FieldTest();
+ExtensionTest();
