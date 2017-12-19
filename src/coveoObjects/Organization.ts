@@ -12,46 +12,49 @@ import { Dictionary } from '../commons/collections/Dictionary';
  * The Controllers are responsible to load those
  */
 export class Organization extends BaseCoveoObject implements IOrganization {
-    private fields: Dictionary<Field> = new Dictionary<Field>();
-    private sources: Dictionary<Source> = new Dictionary<Source>();
-    private extensions: Dictionary<Extension> = new Dictionary<Extension>();
+  private fields: Dictionary<Field> = new Dictionary<Field>();
+  private sources: Dictionary<Source> = new Dictionary<Source>();
+  private extensions: Dictionary<Extension> = new Dictionary<Extension>();
 
-    constructor(id: string, private apiKey: string) {
-        super(id);
-        this.apiKey = apiKey;
-    }
+  constructor(id: string, private apiKey: string) {
+    super(id);
+    this.apiKey = apiKey;
+  }
 
-    /**
-     * Return the API key used for the manipulation on the Organization.
-     *
-     * @returns {string} API Key
-     */
-    public getApiKey(): string {
-        return this.apiKey;
-    }
+  /**
+   * Return the API key used for the manipulation on the Organization.
+   *
+   * @returns {string} API Key
+   */
+  public getApiKey(): string {
+    return this.apiKey;
+  }
 
-    /**
-     * Returns the all the fields available in the organization instance.
-     *
-     * @returns {Field[]} List of fields
-     */
-    public getFields(): Dictionary<Field> {
-        return this.fields.clone();
-    }
+  /**
+   * Returns the all the fields available in the organization instance.
+   *
+   * @returns {Field[]} List of fields
+   */
+  public getFields(): Dictionary<Field> {
+    // TODO: instanciate new field before return because clone only copy the object as a json
+    let newField = this.fields.clone();
+    console.log(newField.getItem('allmetadatavalues').getFieldModel);
+    return newField;
+  }
 
-    public addField(fieldName: string, field: Field) {
-        this.fields.add(fieldName, field);
-    }
+  public addField(fieldName: string, field: Field) {
+    this.fields.add(fieldName, field);
+  }
 
-    public getSources(): Dictionary<Source> {
-        return this.sources.clone();
-    }
+  public getSources(): Dictionary<Source> {
+    return this.sources.clone();
+  }
 
-    public getExtensions(): Dictionary<Extension> {
-        return this.extensions.clone();
-    }
+  public getExtensions(): Dictionary<Extension> {
+    return this.extensions.clone();
+  }
 
-    public addExtensions(extensionName: string, extension: Extension) {
-        this.extensions.add(extensionName, extension);
-    }
+  public addExtensions(extensionName: string, extension: Extension) {
+    this.extensions.add(extensionName, extension);
+  }
 }

@@ -31,6 +31,15 @@ export class FieldController extends BaseController {
 
   static CONTROLLER_NAME: string = 'fields';
 
+  public cleanDiffResultArray(diffResultArray: DiffResultArray<Field>) {
+    let cleanVersion = _.map(diffResultArray.NEW, (f: Field) => {
+      // console.log('*********************');
+      // console.log(f.getFieldModel);
+      // console.log('*********************');
+      
+    });
+  }
+
   /**
    * Performs a diff and return the result.
    *
@@ -38,6 +47,7 @@ export class FieldController extends BaseController {
    * changed the "description" property of the field in the destination org and you don't want the diff to tell you that it has changed.
    * @returns {Promise<DiffResultArray<Field>>}
    */
+  // FIXME: the type is not : Promise<DiffResultArray<Field>>. but a json obj
   public diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Field>> {
     return this.loadFieldForBothOrganizations(this.organization1, this.organization2)
       .then(() => {
@@ -46,6 +56,7 @@ export class FieldController extends BaseController {
           Logger.verbose(`${diffResultArray.NEW.length} new field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
           Logger.verbose(`${diffResultArray.DELETED.length} deleted field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
           Logger.verbose(`${diffResultArray.UPDATED.length} updated field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
+          this.cleanDiffResultArray(diffResultArray);
         }
         return diffResultArray;
       }).catch((err: any) => {

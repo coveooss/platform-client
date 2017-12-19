@@ -4,7 +4,7 @@ import { Assert } from '../commons/misc/Assert';
 /**
  * Every Coveo Object ultimately inherits from this base Model class.
  */
-export class BaseCoveoObject implements ICoveoObject {
+export abstract class BaseCoveoObject implements ICoveoObject {
     protected id: string;
 
     constructor(id: string) {
@@ -17,7 +17,11 @@ export class BaseCoveoObject implements ICoveoObject {
      *
      * @returns {string}
      */
-    getId(): string {
+    public getId(): string {
         return this.id;
     }
+
+    // public clone(): any {
+
+    // }
 }

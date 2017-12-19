@@ -1,9 +1,9 @@
-import { Dictionary } from '../collections/Dictionary';
+// import { Dictionary } from '../collections/Dictionary';
 
-export interface IDiffResult<T> {
-  NEW: Dictionary<T>;
-  UPDATED: Dictionary<T>;
-  DELETED: Dictionary<T>;
+// export interface IDiffResult<T> {
+//   NEW: Dictionary<T>;
+//   UPDATED: Dictionary<T>;
+//   DELETED: Dictionary<T>;
 
-  containsItems(): boolean;
-}
+//   containsItems(): boolean;
+// }

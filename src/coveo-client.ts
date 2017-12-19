@@ -7,7 +7,6 @@ import { StringUtils } from './commons/utils/StringUtils';
 import { InteractiveMode } from './console/InteractiveMode';
 import { SettingsController } from './console/SettingsController';
 import { FieldController } from './controllers/FieldController';
-import { IDiffResult } from './commons/interfaces/IDiffResult';
 import { Dictionary } from './commons/collections/Dictionary';
 import { Organization } from './coveoObjects/Organization';
 import { config } from './config/index';

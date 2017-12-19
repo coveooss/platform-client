@@ -3,10 +3,11 @@ import { Source } from '../../coveoObjects/Source';
 import { BaseCoveoObject } from '../../coveoObjects/BaseCoveoObject';
 import { Field } from '../../coveoObjects/Field';
 import { Dictionary } from '../collections/Dictionary';
+import { Extension } from '../../coveoObjects/Extension';
 
 export interface IOrganization extends ICoveoObject {
   getApiKey(): string;
   getFields(): Dictionary<Field>;
   getSources(): Dictionary<Source>;
-  getExtensions(): Dictionary<BaseCoveoObject>;
+  getExtensions(): Dictionary<Extension>;
 }

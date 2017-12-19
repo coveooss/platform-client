@@ -1,6 +1,7 @@
 import { ISource } from '../commons/interfaces/ISource';
 import { BaseCoveoObject } from './BaseCoveoObject';
 import { IStringMap } from '../commons/interfaces/IStringMap';
+import { JsonUtils } from '../commons/utils/JsonUtils';
 
 export class Source extends BaseCoveoObject implements ISource {
 
@@ -14,19 +15,29 @@ export class Source extends BaseCoveoObject implements ISource {
     super(id);
   }
 
-  getMappings(): Array<IStringMap<string>> {
+  public getMappings(): Array<IStringMap<string>> {
     return this.mappings;
   }
 
-  getPostConversionExtensions(): any[] {
+  public getPostConversionExtensions(): any[] {
     return this.postConversionExtensions;
   }
 
-  getPreConversionExtensions() {
+  public getPreConversionExtensions() {
     return this.postConversionExtensions;
   }
 
-  getConfiguration(): any {
+  public getConfiguration(): any {
     return this.configuration;
+  }
+
+  // TODO: Test
+  public clone(): Source {
+    return new Source(this.getId(),
+      JsonUtils.clone(this.getConfiguration()),
+      JsonUtils.clone(this.getMappings()),
+      JsonUtils.clone(this.getPostConversionExtensions()),
+      JsonUtils.clone(this.getPreConversionExtensions())
+    );
   }
 }

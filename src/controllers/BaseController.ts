@@ -23,12 +23,16 @@ export class BaseController {
   protected graduateErrorHandler(err: any, errorMessage: string) {
     let tryToPrettyfy = (e: any) => {
       try {
+        e = err.replace(/\\n/g, '');
         return JSON.stringify(JSON.parse(e), undefined, 2);
       } catch (error) {
         return e;
       }
     };
 
-    Logger.error(errorMessage, err ? `${chalk.red(tryToPrettyfy(err.replace(/\\n/g, '')))}` : '');
+    Logger.error(errorMessage, err ? `${chalk.red(tryToPrettyfy(err))}` : '');
+  }
+
+  public clone<T>() {
   }
 }

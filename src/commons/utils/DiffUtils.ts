@@ -1,6 +1,6 @@
 import * as _ from 'underscore';
 import { flatten } from 'flat';
-import { Dictionary } from '../collections/Dictionary';
+import { Dictionary, IClonable } from '../collections/Dictionary';
 import { JsonUtils } from './JsonUtils';
 import { DiffResultArray } from '../collections/DiffResultArray';
 
@@ -28,10 +28,11 @@ export class DiffUtils {
    * @template T
    * @param {Dictionary<T>} dict1 Initial dictionary
    * @param {Dictionary<T>} dict2Copy Final dictionary
+   * @param {IDiffOptions} [diffOptions]
    * @returns {IDiffResultArray<T>} Result between dictionnaries
    */
 
-  static getDiffResult<T>(dict1: Dictionary<T>, dict2: Dictionary<T>, diffOptions?: IDiffOptions): DiffResultArray<T> {
+  static getDiffResult<T extends IClonable<T>>(dict1: Dictionary<T>, dict2: Dictionary<T>, diffOptions?: IDiffOptions): DiffResultArray<T> {
     let options: IDiffOptions = _.extend({}, DiffUtils.defaultOptions, diffOptions);
 
     // Make sure we don't alter the initial Dictionaries

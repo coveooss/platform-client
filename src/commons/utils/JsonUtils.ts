@@ -2,6 +2,7 @@ import * as _ from 'underscore';
 import { IStringMap } from '../interfaces/IStringMap';
 import { flatten, unflatten } from 'flat';
 import { Dictionary } from '../collections/Dictionary';
+import { Logger } from '../logger';
 
 export class JsonUtils {
   static flatten(jsonObject: any): any {
@@ -57,16 +58,14 @@ export class JsonUtils {
     return !noCommonElements;
   }
 
-  static convertJsonToDictionary(json: any, keysToIgnore?: string[]): Dictionary<any> {
-    let ignoreList = keysToIgnore || new Array<string>();
-    let newDictionary: Dictionary<any> = new Dictionary<any>();
-
-    Object.keys(json).forEach((key: string) => {
-      if (ignoreList.indexOf(key) === -1) {
-        newDictionary.add(key, json[key]);
-      }
-    });
-
-    return newDictionary;
+  // TODO: unit test
+  static clone(obj: any): any {
+    try {
+      return JSON.parse(JSON.stringify(obj));
+    } catch (error) {
+      Logger.error('Unable to clone JSON object', error);
+      return null;
+    }
   }
+
 }

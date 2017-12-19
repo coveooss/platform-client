@@ -1,5 +1,5 @@
 import { DictionnaryTest } from './commons/collections/DictionnaryTest';
-import { DiffUtilsTest } from './utils/DiffUtilsTest';
+// import { DiffUtilsTest } from './utils/DiffUtilsTest';
 import { DiffResultArrayTest } from './commons/collections/DiffResultArrayTest';
 import { UrlServiceTest } from './commons/rest/UrlServiceTest';
 import { config } from '../src/config/index';
@@ -12,12 +12,12 @@ import { ExtensionTest } from './coveoObjects/ExtensionTest';
 
 Logger.info(`Environment: ${config.env}\n`);
 
-OrganizationTest();
+// OrganizationTest();
 DictionnaryTest();
-DiffResultArrayTest();
-DiffUtilsTest();
-UrlServiceTest();
-ArrayUtilTest();
-JsonUtilsTest();
-FieldTest();
-ExtensionTest();
+// DiffResultArrayTest();
+// DiffUtilsTest();
+// UrlServiceTest();
+// ArrayUtilTest();
+// JsonUtilsTest();
+// FieldTest();
+// ExtensionTest();

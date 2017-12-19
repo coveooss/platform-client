@@ -1,6 +1,7 @@
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { BaseCoveoObject } from './BaseCoveoObject';
 import { IField } from '../commons/interfaces/IField';
+import { JsonUtils } from '../commons/utils/JsonUtils';
 
 export class Field extends BaseCoveoObject implements IField {
 
@@ -24,5 +25,10 @@ export class Field extends BaseCoveoObject implements IField {
    */
   public getFieldModel(): IStringMap<any> {
     return this.fieldModel;
+  }
+
+  // TODO: Test
+  public clone(): Field {
+    return new Field(this.getName(), JsonUtils.clone(this.getFieldModel()));
   }
 }
