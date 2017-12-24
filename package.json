@@ -56,7 +56,7 @@
   },
   "scripts": {
     "start": "node bin/coveo-client.js",
-    "test": "./node_modules/mocha/bin/mocha bin/tests/test.js",
+    "test": "./node_modules/mocha/bin/mocha bin/tests/test.js --reporter dot",
     "build": "gulp",
     "minimize": "gulp --minimize"
   },

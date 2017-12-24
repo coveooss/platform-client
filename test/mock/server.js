@@ -7,10 +7,6 @@ const extensions = require('./routes/extensions.js');
  Fields API
 \*-----------------------------------*/
 app.get('/rest/organizations/:org/indexes/page/fields', (req, res) => {
-  console.log('*********************');
-  console.log('test');
-  console.log('*********************');
-  
   fields.getFields(req, res);
 });
 

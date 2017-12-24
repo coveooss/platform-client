@@ -19,7 +19,7 @@ export const OrganizationTest = () => {
         expect(organization.getFields().getCount()).to.equal(0);
       });
 
-      it('Should not alter the dictionnary from getter', () => {
+      it('Should not alter the dictionary from getter', () => {
         let organization: Organization = new Organization('rambo2', 'xxx-aaa-123');
         let field: Field = new Field('allmetadatavalues', {
           name: 'allmetadatavalues',
@@ -83,7 +83,7 @@ export const OrganizationTest = () => {
       expect(organization.getFields().getCount()).to.equal(0);
     });
 
-    it('Should not alter the dictionnary from getter', () => {
+    it('Should not alter the dictionary from getter', () => {
       let organization: Organization = new Organization('flower', 'xxx-aaa-123');
       let extension: Extension = new Extension('Reject a document.', {
         content: 'random content',

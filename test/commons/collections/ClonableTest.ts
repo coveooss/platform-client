@@ -8,7 +8,7 @@ export class ClonableTest {
   getConfiguration(): any {
     return this.configuation;
   }
-  clone(): any {
-    return JsonUtils.clone(this.configuation);
+  clone(): ClonableTest {
+    return new ClonableTest(this.id, JsonUtils.clone(this.configuation));
   }
 }
