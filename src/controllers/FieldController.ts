@@ -32,9 +32,24 @@ export class FieldController extends BaseController {
 
   static CONTROLLER_NAME: string = 'fields';
 
-  public cleanDiffResultArray(diffResultArray: DiffResultArray<Field>) {
-    let cleanVersion = _.map(diffResultArray.NEW, (f: Field) => {
-    });
+  // TODO: test this method
+  /**
+   * Return a simplified diff object.
+   * This function makes it easier to get a section of the diff result and use it in a API call.
+   *
+   * @param {DiffResultArray<Field>} diffResultArray
+   * @returns {IStringMap<any>}
+   */
+  public getCleanVersion(diffResultArray: DiffResultArray<Field>): IStringMap<any> {
+    let getFieldModel = (fields: Field[]) => _.map(fields, (f: Field) => f.getFieldModel());
+
+    let cleanVersion: IStringMap<any> = {
+      NEW: getFieldModel(diffResultArray.NEW),
+      UPDATED: getFieldModel(diffResultArray.UPDATED),
+      DELTED: getFieldModel(diffResultArray.DELETED),
+    };
+
+    return cleanVersion;
   }
 
   /**
@@ -53,7 +68,6 @@ export class FieldController extends BaseController {
           Logger.verbose(`${diffResultArray.NEW.length} new field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
           Logger.verbose(`${diffResultArray.DELETED.length} deleted field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
           Logger.verbose(`${diffResultArray.UPDATED.length} updated field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
-          this.cleanDiffResultArray(diffResultArray);
         }
         return diffResultArray;
       }).catch((err: any) => {
