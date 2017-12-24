@@ -16,6 +16,7 @@ import { Assert } from '../commons/misc/Assert';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { FieldAPI } from '../commons/rest/FieldAPI';
 import { BaseController } from './BaseController';
+import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
 
 export class FieldController extends BaseController {
 
@@ -33,10 +34,6 @@ export class FieldController extends BaseController {
 
   public cleanDiffResultArray(diffResultArray: DiffResultArray<Field>) {
     let cleanVersion = _.map(diffResultArray.NEW, (f: Field) => {
-      // console.log('*********************');
-      // console.log(f.getFieldModel);
-      // console.log('*********************');
-      
     });
   }
 
@@ -47,9 +44,9 @@ export class FieldController extends BaseController {
    * changed the "description" property of the field in the destination org and you don't want the diff to tell you that it has changed.
    * @returns {Promise<DiffResultArray<Field>>}
    */
-  // FIXME: the type is not : Promise<DiffResultArray<Field>>. but a json obj
   public diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Field>> {
     return this.loadFieldForBothOrganizations(this.organization1, this.organization2)
+
       .then(() => {
         let diffResultArray = DiffUtils.getDiffResult(this.organization1.getFields(), this.organization2.getFields(), diffOptions);
         if (diffResultArray.containsItems()) {
@@ -68,17 +65,17 @@ export class FieldController extends BaseController {
   /**
    * Performs a diff and graduate the result.
    */
-  public graduate() {
+  public graduate(options: IHTTPGraduateOptions) {
 
     return this.diff()
       .then((diffResultArray: DiffResultArray<Field>) => {
         if (diffResultArray.containsItems()) {
           Logger.loadingTask('Graduating fields');
-          return Promise.all([
-            this.graduateNew(diffResultArray),
-            this.graduateUpdated(diffResultArray),
-            this.graduateDeleted(diffResultArray)
-          ]);
+          return Promise.all(
+            _.map(this.getAuthorizedOperations(diffResultArray, options), (operation: (diffResult: DiffResultArray<Field>) => Promise<void>) => {
+              return operation.call(this, diffResultArray);
+            })
+          );
         } else {
           Logger.warn('No Fields to graduate');
           return Promise.resolve([]);
@@ -88,40 +85,58 @@ export class FieldController extends BaseController {
       });
   }
 
-  private graduateNew(diffResult: DiffResultArray<Field>): Promise<void> | undefined {
-    if (diffResult.NEW.length > 0) {
-      Logger.verbose(`Creating ${diffResult.NEW.length} new field${diffResult.NEW.length > 1 ? 's' : ''} in ${this.organization2.getId()} `);
-      return FieldAPI.createFields(this.organization2, this.extractFieldModel(diffResult.NEW), this.fieldsPerBatch)
-        .then((responses: RequestResponse[]) => {
-          this.graduateSuccessHandler(responses, 'POST operation successfully completed');
-        }).catch((err: any) => {
-          this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_CREATE_FIELDS);
-        });
+  private getAuthorizedOperations(diffResultArray: DiffResultArray<Field>, options: IHTTPGraduateOptions): Array<(diffResult: DiffResultArray<Field>) => Promise<void>> {
+    let authorizedOperations: Array<(diffResult: DiffResultArray<Field>) => Promise<void>> = [];
+    if (options.POST && diffResultArray.NEW.length > 0) {
+      authorizedOperations.push(this.graduateNew);
+    } else {
+      Logger.verbose('Skipping DELETE operation');
     }
+    if (options.PUT && diffResultArray.UPDATED.length > 0) {
+      authorizedOperations.push(this.graduateUpdated);
+    } else {
+      Logger.verbose('Skipping PUT operation');
+    }
+    if (options.DELETE && diffResultArray.DELETED.length > 0) {
+      authorizedOperations.push(this.graduateDeleted);
+    } else {
+      Logger.verbose('Skipping DELETE operation');
+    }
+    if (authorizedOperations.length === 0) {
+      Logger.verbose('No HTTP mothod was selected for the graduation');
+    }
+
+    return authorizedOperations;
   }
 
-  private graduateUpdated(diffResult: DiffResultArray<Field>): Promise<void> | undefined {
-    if (diffResult.UPDATED.length > 0) {
-      Logger.verbose(`Updating ${diffResult.UPDATED.length} existing field${diffResult.NEW.length > 1 ? 's' : ''} in ${this.organization2.getId()} `);
-      return FieldAPI.updateFields(this.organization2, this.extractFieldModel(diffResult.UPDATED), this.fieldsPerBatch)
-        .then((responses: RequestResponse[]) => {
-          this.graduateSuccessHandler(responses, 'PUT operation successfully completed');
-        }).catch((err: any) => {
-          this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_UPDATE_FIELDS);
-        });
-    }
+  private graduateNew(diffResult: DiffResultArray<Field>): Promise<void> {
+    Logger.verbose(`Creating ${diffResult.NEW.length} new field${diffResult.NEW.length > 1 ? 's' : ''} in ${this.organization2.getId()} `);
+    return FieldAPI.createFields(this.organization2, this.extractFieldModel(diffResult.NEW), this.fieldsPerBatch)
+      .then((responses: RequestResponse[]) => {
+        this.graduateSuccessHandler(responses, 'POST operation successfully completed');
+      }).catch((err: any) => {
+        this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_CREATE_FIELDS);
+      });
   }
 
-  private graduateDeleted(diffResult: DiffResultArray<Field>): Promise<void> | undefined {
-    if (diffResult.DELETED.length > 0) {
-      Logger.verbose(`Deleting ${diffResult.UPDATED.length} existing field${diffResult.NEW.length > 1 ? 's' : ''} from ${this.organization2.getId()} `);
-      return FieldAPI.deleteFields(this.organization2, _.pluck(diffResult.DELETED, 'name'), this.fieldsPerBatch)
-        .then((responses: RequestResponse[]) => {
-          this.graduateSuccessHandler(responses, 'DELETE operation successfully completed');
-        }).catch((err: any) => {
-          this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_DELETE_FIELDS);
-        });
-    }
+  private graduateUpdated(diffResult: DiffResultArray<Field>): Promise<void> {
+    Logger.verbose(`Updating ${diffResult.UPDATED.length} existing field${diffResult.NEW.length > 1 ? 's' : ''} in ${this.organization2.getId()} `);
+    return FieldAPI.updateFields(this.organization2, this.extractFieldModel(diffResult.UPDATED), this.fieldsPerBatch)
+      .then((responses: RequestResponse[]) => {
+        this.graduateSuccessHandler(responses, 'PUT operation successfully completed');
+      }).catch((err: any) => {
+        this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_UPDATE_FIELDS);
+      });
+  }
+
+  private graduateDeleted(diffResult: DiffResultArray<Field>): Promise<void> {
+    Logger.verbose(`Deleting ${diffResult.UPDATED.length} existing field${diffResult.NEW.length > 1 ? 's' : ''} from ${this.organization2.getId()} `);
+    return FieldAPI.deleteFields(this.organization2, _.pluck(diffResult.DELETED, 'name'), this.fieldsPerBatch)
+      .then((responses: RequestResponse[]) => {
+        this.graduateSuccessHandler(responses, 'DELETE operation successfully completed');
+      }).catch((err: any) => {
+        this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_DELETE_FIELDS);
+      });
   }
 
   private loadFieldForBothOrganizations(organization1: Organization, organization2: Organization): Promise<Array<{}>> {

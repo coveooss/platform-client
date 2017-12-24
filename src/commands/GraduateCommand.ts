@@ -7,7 +7,13 @@ import { InteractiveMode } from '../console/InteractiveMode';
 import { Logger } from '../commons/logger';
 import { StaticErrorMessage } from '../commons/errors';
 
-export interface IGraduateOptions {
+export interface IHTTPGraduateOptions {
+  POST: boolean;
+  PUT: boolean;
+  DELETE: boolean;
+}
+
+export interface IGraduateOptions extends IHTTPGraduateOptions {
   force: boolean;
 }
 
@@ -27,11 +33,14 @@ export class GraduateCommand {
     this.organization1 = new Organization(originOrganization, originApiKey);
     this.organization2 = new Organization(destinationOrganization, destinationApiKey);
     this.interactiveMode = new InteractiveMode();
-    this.options = _.extend(GraduateCommand.DEFAULT_OPTIONS, options);
+    this.options = _.extend(GraduateCommand.DEFAULT_OPTIONS, options) as IGraduateOptions;
   }
 
   static DEFAULT_OPTIONS: IGraduateOptions = {
-    force: false
+    force: false,
+    POST: true,
+    PUT: true,
+    DELETE: true
   };
 
   static COMMAND_NAME: string = 'graduate';
@@ -46,7 +55,7 @@ export class GraduateCommand {
       .then((res: inquirer.Answers) => {
         if (res.confirm || this.options.force) {
           Logger.startSpinner('Performing Field Graduation');
-          fieldController.graduate()
+          fieldController.graduate(this.options)
             .then(() => {
               Logger.info('Graduation operation completed');
               Logger.stopSpinner();

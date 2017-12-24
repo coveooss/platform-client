@@ -31,24 +31,28 @@ program.on('--help', () => {
 
 // Basic Graduation command
 program
-  .command('graduate <originOrganization> <destinationOrganization> <originApiKey> <destinationApiKey>')
+  .command('graduate <originOrg> <destinationOrg> <originApiKey> <destinationApiKey>')
   .description('Graduate one organisation to an other')
   .option('-f, --fields', 'Graduate fields')
   .option('-s, --sources', 'Graduate sources')
   .option('-e, --extensions', 'Graduate extensions')
   .option('-F, --force', 'Force graduation without confirmation prompt')
+  .option('-m, --methods []', 'HTTP method authorized by the Graduation. Default value is "POST,PUT,DELETE".', list, ['POST', 'PUT', 'DELETE'])
   .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
   .option('-l, --logLevel <level>', 'Possible values are: insane, verbose, info (default), error, nothing', /^(insane|verbose|info|error|nothing)$/i, 'info')
-  .action((originOrganization: string, destinationOrganization: string, originApiKey: string, destinationApiKey: string, options: any) => {
+  .action((originOrg: string, destinationOrg: string, originApiKey: string, destinationApiKey: string, options: any) => {
 
     setLogger(options);
 
     // Set graduation options
     const graduateOptions: IGraduateOptions = {
-      force: !!options.force
+      force: !!options.force,
+      POST: options.methods.indexOf('POST') > -1,
+      PUT: options.methods.indexOf('PUT') > -1,
+      DELETE: options.methods.indexOf('DELETE') > -1
     };
 
-    let command = new GraduateCommand(originOrganization, destinationOrganization, originApiKey, destinationApiKey, graduateOptions);
+    let command = new GraduateCommand(originOrg, destinationOrg, originApiKey, destinationApiKey, graduateOptions);
 
     if (options.fields) {
       command.graduateFields();
@@ -63,7 +67,7 @@ program
 
 // Basic Diff command
 program
-  .command('diff <originOrganization> <destinationOrganization> <originApiKey> <destinationApiKey>')
+  .command('diff <originOrg> <destinationOrg> <originApiKey> <destinationApiKey>')
   .description('Diff 2 Organizations')
   .option('-f, --fields', 'Diff fields')
   .option('-s, --sources', 'Diff sources')
@@ -73,7 +77,7 @@ program
   .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', list)
   .option('-l, --logLevel <level>', 'Possible values are: insane, verbose, info (default), error, nothing', /^(insane|verbose|info|error|nothing)$/i, 'info')
   .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
-  .action((originOrganization: string, destinationOrganization: string, originApiKey: string, destinationApiKey: string, options: any) => {
+  .action((originOrg: string, destinationOrg: string, originApiKey: string, destinationApiKey: string, options: any) => {
 
     setLogger(options);
     // Set diff options
@@ -82,7 +86,7 @@ program
       includeOnly: options.onlyKeys || []
     };
 
-    let command = new DiffCommand(originOrganization, destinationOrganization, originApiKey, destinationApiKey, diffOptions);
+    let command = new DiffCommand(originOrg, destinationOrg, originApiKey, destinationApiKey, diffOptions);
     if (options.fields) {
       command.diffFields();
     }
