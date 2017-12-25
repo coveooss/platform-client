@@ -18,6 +18,7 @@ export class JsonUtils {
    * @param {string[]} [keysToOnlyInclude=[]]
    * @returns {*} any
    */
+  // TODO: test
   static removeKeyValuePairsFromJson(obj: any, keysToRemove: string[] = [], keysToOnlyInclude: string[] = []): any {
     if (keysToRemove.length + keysToOnlyInclude.length === 0) {
       // Do not waste time for nothing
