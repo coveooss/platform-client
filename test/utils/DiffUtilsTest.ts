@@ -149,49 +149,43 @@ export const DiffUtilsTest = () => {
 
     describe('Extension Diff', () => {
 
-      //   it('Should return one updated extension', () => {
-      //     let obj1Clone = extension1Dict.clone();
-      //     let dict2Clone = extension2Dict.clone();
+      it('Should return one updated extension', () => {
+        let diff: DiffResultArray<Extension> = DiffUtils.getDiffResult(extension1Dict, extension2Dict);
+        expect(diff.UPDATED.length).to.equal(1);
+        expect(diff.NEW.length).to.equal(0);
+        expect(diff.DELETED.length).to.equal(0);
+      });
 
-      //     let diff: DiffResultArray<ClonableTest> = DiffUtils.getDiffResult(obj1Clone, dict2Clone);
-      //     expect(diff.UPDATED.length).to.equal(1);
-      //     expect(diff.NEW.length).to.equal(0);
-      //     expect(diff.DELETED.length).to.equal(0);
-      //   });
+      it('Should return no modification', () => {
+        let diff: DiffResultArray<Extension> = DiffUtils.getDiffResult(extension1Dict, extension1CopyDict);
+        expect(diff.UPDATED.length).to.equal(0);
+        expect(diff.NEW.length).to.equal(0);
+        expect(diff.DELETED.length).to.equal(0);
+      });
 
-      //   it('Should return no modification', () => {
-      //     let obj1Clone = extension1Dict.clone();
-      //     let dict2Clone = extension1CopyDict.clone();
+      it('Should return 2 new extensions', () => {
+        let dict: Dictionary<Extension> = new Dictionary();
+        let dict2Clone = new Dictionary<Extension>();
+        dict.add('first extension', extension1);
+        dict.add('second extension', extension2);
 
-      //     let diff: DiffResultArray<ClonableTest> = DiffUtils.getDiffResult(obj1Clone, dict2Clone);
-      //     expect(diff.UPDATED.length).to.equal(0);
-      //     expect(diff.NEW.length).to.equal(0);
-      //     expect(diff.DELETED.length).to.equal(0);
-      //   });
+        let diff: DiffResultArray<Extension> = DiffUtils.getDiffResult(dict, dict2Clone);
+        expect(diff.UPDATED.length).to.equal(0);
+        expect(diff.NEW.length).to.equal(2);
+        expect(diff.DELETED.length).to.equal(0);
+      });
 
-      //   it('Should return 2 new extensions', () => {
-      //     let dict: Dictionary<Extension> = new Dictionary();
-      //     let dict2Clone = new Dictionary<Extension>();
-      //     dict.add('first extension', extension1);
-      //     dict.add('second extension', extension2);
+      it('Should return 2 deleted extensions', () => {
+        let dict: Dictionary<Extension> = new Dictionary();
+        let dict2Clone = new Dictionary<Extension>();
+        dict.add('first extension', extension1);
+        dict.add('second extension', extension2);
 
-      //     let diff: DiffResultArray<ClonableTest> = DiffUtils.getDiffResult(dict, dict2Clone);
-      //     expect(diff.UPDATED.length).to.equal(0);
-      //     expect(diff.NEW.length).to.equal(2);
-      //     expect(diff.DELETED.length).to.equal(0);
-      //   });
-
-      //   it('Should return 2 deleted extensions', () => {
-      //     let dict: Dictionary<Extension> = new Dictionary();
-      //     let dict2Clone = new Dictionary<Extension>();
-      //     dict.add('first extension', extension1);
-      //     dict.add('second extension', extension2);
-
-      //     let diff: DiffResultArray<ClonableTest> = DiffUtils.getDiffResult(dict2Clone, dict);
-      //     expect(diff.UPDATED.length).to.equal(0);
-      //     expect(diff.NEW.length).to.equal(0);
-      //     expect(diff.DELETED.length).to.equal(2);
-      //   });
+        let diff: DiffResultArray<Extension> = DiffUtils.getDiffResult(dict2Clone, dict);
+        expect(diff.UPDATED.length).to.equal(0);
+        expect(diff.NEW.length).to.equal(0);
+        expect(diff.DELETED.length).to.equal(2);
+      });
 
     });
 
