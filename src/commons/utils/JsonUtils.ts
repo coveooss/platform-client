@@ -3,6 +3,7 @@ import { IStringMap } from '../interfaces/IStringMap';
 import { flatten, unflatten } from 'flat';
 import { Dictionary } from '../collections/Dictionary';
 import { Logger } from '../logger';
+import { Assert } from '../misc/Assert';
 
 export class JsonUtils {
   static flatten(jsonObject: any): any {
@@ -19,7 +20,8 @@ export class JsonUtils {
    * @returns {*} any
    */
   // TODO: test
-  static removeKeyValuePairsFromJson(obj: any, keysToRemove: string[] = [], keysToOnlyInclude: string[] = []): any {
+  static removeKeyValuePairsFromJson(obj: {}, keysToRemove: string[] = [], keysToOnlyInclude: string[] = []): {} {
+    Assert.isNotUndefined(obj, 'Cannot apply flatten method to undefined object');
     if (keysToRemove.length + keysToOnlyInclude.length === 0) {
       // Do not waste time for nothing
       return obj;

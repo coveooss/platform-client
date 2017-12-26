@@ -25,7 +25,13 @@ export class DiffCommand {
   ) {
     this.organization1 = new Organization(originOrganization, originApiKey);
     this.organization2 = new Organization(destinationOrganization, destinationApiKey);
+    this.options = _.extend(DiffCommand.DEFAULT_OPTIONS, options) as IDiffOptions;
   }
+
+  static DEFAULT_OPTIONS: IDiffOptions = {
+    keysToIgnore: [],
+    includeOnly: []
+  };
 
   static COMMAND_NAME: string = 'diff';
 
@@ -74,7 +80,7 @@ export class DiffCommand {
     let extensionController: ExtensionController = new ExtensionController(this.organization1, this.organization2);
     Logger.startSpinner('Performing an extension diff');
     extensionController.diff(this.options)
-    // TODO: add getCleanVersion in extension controller
+      // TODO: add getCleanVersion in extension controller
       .then((diffResultArray: DiffResultArray<Extension>) => {
         fs.writeJSON('extensionDiff.json', diffResultArray, { spaces: 2 })
           .then(() => {

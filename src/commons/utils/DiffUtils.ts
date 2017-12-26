@@ -4,6 +4,7 @@ import { Dictionary, IClonable } from '../collections/Dictionary';
 import { JsonUtils } from './JsonUtils';
 import { DiffResultArray } from '../collections/DiffResultArray';
 
+// TODO: is this the best place to store the interface?
 export interface IDiffOptions {
   /**
    * Specify which key to ignore during the Diff action. This is useful when a key always change from one Org to the other.
@@ -44,12 +45,12 @@ export class DiffUtils {
 
     dict1Copy.keys().forEach((key: string) => {
       let value: T = dict1Copy.getItem(key);
-      // Remove undesired fields from the diff result
+      // Removes the undesired fields from the diff result
       // FIXME: this method returns a json obj and not the initial object type.
       let dict1CopyCleanedItem = JsonUtils.removeKeyValuePairsFromJson(value, options.keysToIgnore, options.includeOnly);
-      let dict2CopyCleanedItem = JsonUtils.removeKeyValuePairsFromJson(dict2Copy.getItem(key), options.keysToIgnore, options.includeOnly);
 
       if (dict2Copy.containsKey(key)) {
+        let dict2CopyCleanedItem = JsonUtils.removeKeyValuePairsFromJson(dict2Copy.getItem(key), options.keysToIgnore, options.includeOnly);
         if (!_.isEqual(dict1CopyCleanedItem, dict2CopyCleanedItem)) {
           diffResult.UPDATED.push(value);
         }
@@ -62,8 +63,7 @@ export class DiffUtils {
 
     // Add the keys that were not in the first json to the deleted list
     dict2Copy.keys().forEach((key: string) => {
-      let deletedValue: T = JsonUtils.removeKeyValuePairsFromJson(dict2Copy.getItem(key), options.keysToIgnore, options.includeOnly);
-      diffResult.DELETED.push(deletedValue);
+      diffResult.DELETED.push(dict2Copy.getItem(key));
     });
 
     return diffResult;

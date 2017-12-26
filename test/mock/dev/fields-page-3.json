@@ -3,7 +3,7 @@
       "name": "bcc",
       "description": "The bcc email field",
       "type": "STRING",
-      "includeInQuery": true,
+      "includeInQuery": false,
       "includeInResults": true,
       "mergeWithLexicon": true,
       "smartDateFacet": false,
