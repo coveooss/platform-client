@@ -54,7 +54,6 @@ class LoggerSingleton {
 
   public info(message: string, ...meta: any[]) {
     if (this.level <= LoggerSingleton.INFO) {
-      let callback = this.spinner.succeed;
       this.log('INFO', 'succeed', message, meta);
     }
     this.addToLogFile('INFO', message, meta);
@@ -62,7 +61,6 @@ class LoggerSingleton {
 
   public warn(message: string, ...meta: any[]) {
     if (this.level <= LoggerSingleton.INFO) {
-      let callback = this.spinner.warn;
       this.log('WARN', 'warn', message, meta);
     }
     this.addToLogFile('WARN', message, meta);
@@ -70,7 +68,6 @@ class LoggerSingleton {
 
   public error(message: string, ...meta: any[]) {
     if (this.level <= LoggerSingleton.ERROR) {
-      let callback = this.spinner.fail;
       this.log('ERROR', 'fail', message, meta);
     }
     this.addToLogFile('ERROR', message, meta);
@@ -78,7 +75,6 @@ class LoggerSingleton {
 
   public verbose(message: string, ...meta: any[]) {
     if (this.level <= LoggerSingleton.VERBOSE) {
-      let callback = this.spinner.info;
       this.log('VERBOSE', 'info', message, meta);
     }
     this.addToLogFile('VERBOSE', message, meta);
@@ -86,7 +82,6 @@ class LoggerSingleton {
 
   public insane(message: string, ...meta: any[]) {
     if (this.level <= LoggerSingleton.INSANE) {
-      let callback = this.spinner.succeed;
       this.log('INSANE', 'succeed', message, meta);
     }
     this.addToLogFile('INSANE', message, meta);
