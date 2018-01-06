@@ -1,4 +1,5 @@
-# coveo-client
+# coveo-client [![Build Status](https://api.travis-ci.org/y-lakhdar/coveo-client.svg?branch=light-cli)](https://travis-ci.org/y-lakhdar/coveo-client) [![Coverage Status](https://codecov.io/gh/y-lakhdar/coveo-client/branch/light-cli/graph/badge.svg)](https://codecov.io/gh/y-lakhdar/coveo-client/branch/light-cli/graph/badge.svg) [![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/ellerbrock/typescript-badges/)
+
 A simple client to manage organizations in the Coveo Cloud Platform.
 
 ## Description
