@@ -40,14 +40,23 @@ export class FieldController extends BaseController {
    * @param {DiffResultArray<Field>} diffResultArray
    * @returns {IStringMap<any>}
    */
-  public getCleanVersion(diffResultArray: DiffResultArray<Field>): IStringMap<any> {
+  public getCleanVersion(diffResultArray: DiffResultArray<Field>, summary: boolean = true): IStringMap<any> {
     let getFieldModel = (fields: Field[]) => _.map(fields, (f: Field) => f.getFieldModel());
+    let cleanVersion: IStringMap<any> = {};
 
-    let cleanVersion: IStringMap<any> = {
+    if (summary) {
+      cleanVersion.summary = {
+        NEW: diffResultArray.NEW.length,
+        UPDATED: diffResultArray.UPDATED.length,
+        DELETED: diffResultArray.DELETED.length
+      };
+    }
+
+    _.extend(cleanVersion, {
       NEW: getFieldModel(diffResultArray.NEW),
       UPDATED: getFieldModel(diffResultArray.UPDATED),
-      DELTED: getFieldModel(diffResultArray.DELETED),
-    };
+      DELETED: getFieldModel(diffResultArray.DELETED),
+    });
 
     return cleanVersion;
   }
