@@ -1,4 +1,6 @@
 bin
+.nyc_output
+coverage
 node_modules
 output/
 npm-debug\.log\.*

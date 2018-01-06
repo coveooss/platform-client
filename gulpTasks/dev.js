@@ -2,9 +2,9 @@
 const nodemon = require('gulp-nodemon');
 const gulp = require('gulp');
 
-var webpack = require('webpack');
-var WebpackDevServer = require('webpack-dev-server');
-var webpackConfig = require('../webpack.config.js');
+// var webpack = require('webpack');
+// var WebpackDevServer = require('webpack-dev-server');
+// var webpackConfig = require('../webpack.config.js');
 
 
 gulp.task('setupDevEnv', (done) => {

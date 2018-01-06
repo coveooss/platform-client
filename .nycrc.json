@@ -1,0 +1,21 @@
+{
+  "include": [
+      "src/*.ts",
+      "src/**/*.ts"
+    ],
+  "exclude": [
+      "typings",
+      "node_modules"
+    ],
+  "extension": [
+      ".ts"
+    ],
+  "require": [
+      "ts-node/register"
+    ],
+  "reporter": [
+      "text",
+      "html"
+    ],
+  "cache": true
+}

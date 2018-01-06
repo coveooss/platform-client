@@ -18,9 +18,17 @@ class Config {
     return this.env;
   }
 
+  public isTestRunning(): boolean {
+    return this.env === 'test';
+  }
+
   public getConfiguration(): IConfig {
     try {
-      return require(`env/${this.env}.js`);
+      if (this.isTestRunning()) {
+        return require(`../../environments/test.js`);
+      } else {
+        return require(`env/${this.env}.js`);
+      }
     } catch (error) {
       throw new Error('Invalid environment');
     }

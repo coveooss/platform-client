@@ -26,7 +26,10 @@ gulp.task('watchTS', ['build'], () => {
 });
 
 gulp.task('watchTest', () => {
-  gulp.watch('test/**/*.ts', ['test']);
+  gulp.watch([
+    'test/**/*.ts',
+    'src/**/*.ts'
+], ['test']);
 });
 
 // Remove bin and all zip folders.
