@@ -60,7 +60,7 @@
   "scripts": {
     "start": "node bin/coveo-client.js",
     "test": "gulp test",
-    "posttest": "nyc report --reporter=json && codecov -f coverage/*.json -t d6f9e7c5-6e0d-4b79-aec0-c57964f3881b",
+    "posttest": "nyc report --reporter=json && codecov -f coverage/*.json",
     "build": "gulp",
     "minimize": "gulp --minimize"
   },
