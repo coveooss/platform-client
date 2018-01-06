@@ -11,7 +11,7 @@ gulp.task('setTestEnvironment', () => {
 });
 
 gulp.task('test',
-  shell.task(['NODE_ENV=test nyc mocha test/test.ts --recursive --require ts-node/register'])
+  shell.task(['NODE_ENV=test nyc mocha test/test.ts --recursive --require ts-node/register --reporter dot'])
 );
 
 gulp.task('copyTestEnv', function() {

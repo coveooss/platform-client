@@ -8,7 +8,7 @@
     "declaration": false,
     "experimentalDecorators": true,
     "outDir": "./bin",
-    "sourceMap": false,
+    "sourceMap": true,
     "forceConsistentCasingInFileNames": true,
     "typeRoots": [
       "lib",
