@@ -34,7 +34,7 @@ program
   .command('graduate <originOrg> <destinationOrg> <originApiKey> <destinationApiKey>')
   .description('Graduate one organisation to an other')
   .option('-f, --fields', 'Graduate fields')
-  .option('-s, --sources', 'Graduate sources')
+  // .option('-s, --sources', 'Graduate sources')
   .option('-e, --extensions', 'Graduate extensions')
   .option('-F, --force', 'Force graduation without confirmation prompt')
   .option('-m, --methods []', 'HTTP method authorized by the Graduation. Default value is "POST,PUT,DELETE".', list, ['POST', 'PUT', 'DELETE'])
@@ -70,9 +70,9 @@ program
   .command('diff <originOrg> <destinationOrg> <originApiKey> <destinationApiKey>')
   .description('Diff 2 Organizations')
   .option('-f, --fields', 'Diff fields')
-  .option('-s, --sources', 'Diff sources')
+  // .option('-s, --sources', 'Diff sources')
   .option('-e, --extensions', 'Diff extensions')
-  .option('-b, --openInBrowser', 'Open Diff in default Browser')
+  // .option('-b, --openInBrowser', 'Open Diff in default Browser')
   .option('-i, --ignoreKeys []', 'Object keys to ignore. String separated by ","', list)
   .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', list)
   .option('-l, --logLevel <level>', 'Possible values are: insane, verbose, info (default), error, nothing', /^(insane|verbose|info|error|nothing)$/i, 'info')
@@ -96,8 +96,8 @@ program
   });
 
 program
-  .command('init')
-  .description('Launch interactive setting')
+  .command('interactive')
+  .description('Launch the interactive client')
   .action(() => {
     let interactiveMode = new InteractiveMode();
     interactiveMode.start()
