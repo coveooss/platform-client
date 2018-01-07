@@ -2,13 +2,12 @@ export interface IConfig {
   color: string;
   env: string;
   coveo: {
-    platformUrl: string
+    platformUrl: string;
   };
 }
 
 class Config {
   private env: string;
-  private configuration: IConfig;
 
   constructor() {
     this.env = process.env.NODE_ENV || 'development';

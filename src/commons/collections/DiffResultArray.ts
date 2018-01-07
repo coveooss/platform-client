@@ -14,6 +14,6 @@ export class DiffResultArray<T> {
   }
 
   public containsItems(): boolean {
-    return (this.NEW.length + this.UPDATED.length + this.DELETED.length) > 0;
+    return this.NEW.length + this.UPDATED.length + this.DELETED.length > 0;
   }
 }

@@ -1,6 +1,5 @@
 import { Assert } from '../misc/Assert';
 export class ArrayUtils {
-
   /**
    * Returns an array with arrays of the given size.
    *
@@ -11,7 +10,7 @@ export class ArrayUtils {
   static chunkArray<T>(array: T[], chunk_size: number): T[][] {
     Assert.isLargerThan(0, chunk_size);
 
-    let results = [];
+    const results = [];
 
     while (array.length) {
       results.push(array.splice(0, chunk_size));

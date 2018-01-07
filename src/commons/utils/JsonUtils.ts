@@ -1,11 +1,15 @@
 import * as _ from 'underscore';
-import { IStringMap } from '../interfaces/IStringMap';
 import { flatten, unflatten } from 'flat';
-import { Dictionary } from '../collections/Dictionary';
 import { Logger } from '../logger';
 import { Assert } from '../misc/Assert';
 
 export class JsonUtils {
+  static SPACE: number = 2;
+
+  static stringify(obj: any): string {
+    return JSON.stringify(obj, undefined, JsonUtils.SPACE);
+  }
+
   static flatten(jsonObject: any): any {
     return flatten(jsonObject);
   }
@@ -30,7 +34,7 @@ export class JsonUtils {
     let map = flatten(obj);
 
     map = _.omit(map, (value: any, key: string) => {
-      let keys = key.split('.');
+      const keys = key.split('.');
       if (keysToOnlyInclude.length > 0) {
         // Whitelist strategy
         return _.intersection(keys, keysToOnlyInclude).length === 0;
@@ -53,8 +57,8 @@ export class JsonUtils {
    */
   static hasKey(obj: any, keysToFind: string[] = []): boolean {
     const map = flatten(obj);
-    let noCommonElements = Object.keys(map).every((key: string) => {
-      let keys = key.split('.');
+    const noCommonElements = Object.keys(map).every((key: string) => {
+      const keys = key.split('.');
       return _.intersection(keys, keysToFind).length === 0;
     });
 
@@ -70,5 +74,4 @@ export class JsonUtils {
       return null;
     }
   }
-
 }

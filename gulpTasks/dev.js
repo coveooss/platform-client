@@ -6,22 +6,20 @@ const gulp = require('gulp');
 // var WebpackDevServer = require('webpack-dev-server');
 // var webpackConfig = require('../webpack.config.js');
 
-
-gulp.task('setupDevEnv', (done) => {
-  gulp.src('environments/**/*.js')
-    .pipe(gulp.dest('./bin/config/env'))
+gulp.task('setupDevEnv', done => {
+  gulp.src('environments/**/*.js').pipe(gulp.dest('./bin/config/env'));
   done();
-})
+});
 
 gulp.task('dev', ['build'], () => {
   gulp.watch('src/**/*.ts', ['compileForDev']);
 });
 
-gulp.task('devTest', ['buildTest', 'watchTest'],() => {
+gulp.task('devTest', ['buildTest', 'watchTest'], () => {
   let stream = nodemon({
     exec: 'npm test',
     watch: 'test',
-    env: { 'NODE_ENV': process.env.NODE_ENV }
+    env: { NODE_ENV: process.env.NODE_ENV }
   });
   return stream;
 });

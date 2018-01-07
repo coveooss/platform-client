@@ -11,7 +11,6 @@ import * as Ora from 'ora';
  * @class LoggerSingleton
  */
 class LoggerSingleton {
-
   private static logger: LoggerSingleton = new LoggerSingleton();
 
   static INSANE: number = 1;
@@ -30,13 +29,12 @@ class LoggerSingleton {
   private filename: string = 'coveo-cli.log';
 
   public newAction(actionName: string) {
-    let actionTime = new Date();
-    let data = `\n\n#######################################\n${actionName}\n${actionTime}\n#######################################\n`;
+    const actionTime = new Date();
+    const data = `\n\n#######################################\n${actionName}\n${actionTime}\n#######################################\n`;
     FileUtils.appendToFile(this.filename, data)
-      .then(() => {
-      })
+      .then(() => {})
       .catch((err: any) => {
-        console.error('Unable to save log');
+        console.error('Unable to save log', err);
       });
   }
 
@@ -88,7 +86,7 @@ class LoggerSingleton {
   }
 
   public addToLogFile(level: string, message: string, ...meta: any[]) {
-    let today = (new Date()).toLocaleString();
+    const today = new Date().toLocaleString();
     FileUtils.appendToFile(this.filename, [today, level, message, '\n'].join(' | '));
     _.each(meta, (m: any) => {
       if (!Utils.isEmptyString(m.toString())) {

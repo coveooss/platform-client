@@ -1,68 +1,39 @@
 {
   "defaultSeverity": "error",
-  "extends": [
-    "tslint:recommended"
-  ],
+  "extends": ["tslint:recommended"],
   "rules": {
-    "typedef": [
-      true,
-      "parameter",
-      "arrow-parameter",
-      "member-variable-declaration"
-    ],
+    "arrow-parens": [true, "ban-single-arg-parens"],
+    "array-type": [true, "array"],
+    "typedef": [true, "parameter", "arrow-parameter", "member-variable-declaration"],
     "callable-types": true,
     "class-name": true,
-    "comment-format": [
-      true,
-      "check-space"
-    ],
+    "comment-format": [true, "check-space"],
     "curly": true,
     "trailing-comma": [false],
     "ordered-imports": false,
     "eofline": true,
     "forin": true,
-    "import-blacklist": [
-      true,
-      "rxjs"
-    ],
+    "import-blacklist": [true, "rxjs"],
     "import-spacing": true,
-    "indent": [
-      true,
-      "spaces"
-    ],
-    "indent-size": [
-      true,
-      2
-    ],
+    "indent": [true, "spaces"],
+    "indent-size": [true, 2],
     "interface-over-type-literal": true,
+    "linebreak-style": [true, "LF"],
     "label-position": true,
-    "max-line-length": [
-      true,
-      180
-    ],
+    "max-line-length": false,
     "member-access": false,
-    "member-ordering": [
-      false
-    ],
+    "member-ordering": [false],
     "no-arg": true,
     "no-bitwise": true,
-    "no-console": [
-      true,
-      "debug",
-      "info",
-      "time",
-      "timeEnd",
-      "trace"
-    ],
+    "no-console": [true, "debug", "info", "time", "timeEnd", "trace"],
     "no-construct": true,
+    "no-magic-numbers": true,
     "no-debugger": true,
     "no-duplicate-variable": true,
     "no-empty": false,
     "no-empty-interface": true,
     "no-eval": true,
-    "no-inferrable-types": [
-      false
-    ],
+    "no-inferrable-types": [false],
     "no-shadowed-variable": true,
     "no-string-literal": false,
     "no-unused-variable": true,
@@ -74,26 +45,12 @@
     "no-use-before-declare": true,
     "no-var-keyword": true,
     "object-literal-sort-keys": false,
-    "one-line": [
-      true,
-      "check-open-brace",
-      "check-catch",
-      "check-else",
-      "check-whitespace"
-    ],
-    "prefer-const": false,
-    "quotemark": [
-      true,
-      "single"
-    ],
+    "one-line": [true, "check-open-brace", "check-catch", "check-else", "check-whitespace"],
+    "prefer-const": true,
+    "quotemark": [true, "single"],
     "radix": true,
-    "semicolon": [
-      true
-    ],
-    "triple-equals": [
-      true,
-      "allow-null-check"
-    ],
+    "semicolon": [true, "always", "ignore-bound-class-methods"],
+    "triple-equals": [true, "allow-null-check"],
     "typedef-whitespace": [
       true,
       {
@@ -107,13 +64,6 @@
     "typeof-compare": true,
     "unified-signatures": true,
     "variable-name": false,
-    "whitespace": [
-      true,
-      "check-branch",
-      "check-decl",
-      "check-operator",
-      "check-separator",
-      "check-type"
-    ]
+    "whitespace": [true, "check-branch", "check-decl", "check-operator", "check-separator", "check-type"]
   }
 }

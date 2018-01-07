@@ -1,4 +1,4 @@
-# coveo-client [![Build Status](https://api.travis-ci.org/y-lakhdar/coveo-client.svg?branch=light-cli)](https://travis-ci.org/y-lakhdar/coveo-client) [![Coverage Status](https://codecov.io/gh/y-lakhdar/coveo-client/branch/light-cli/graph/badge.svg)](https://codecov.io/gh/y-lakhdar/coveo-client/branch/light-cli/graph/badge.svg) [![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/ellerbrock/typescript-badges/)
+# Coveo-Client [![Build Status](https://api.travis-ci.org/y-lakhdar/coveo-client.svg?branch=light-cli)](https://travis-ci.org/y-lakhdar/coveo-client) [![Coverage Status](https://codecov.io/gh/y-lakhdar/coveo-client/branch/light-cli/graph/badge.svg)](https://codecov.io/gh/y-lakhdar/coveo-client/branch/light-cli/graph/badge.svg) [![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/ellerbrock/typescript-badges/) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 A simple client to manage organizations in the Coveo Cloud Platform.
 
@@ -19,8 +19,6 @@ It's also built on nodejs/typescript.
 ## Important Gulp Tasks
 
 * `gulp default`: Builds the entire project
-<!-- * `gulp css`: Builds only the Sass code and generates its output in the `./bin` folder. -->
-<!-- * `gulp doc`: Generates the documentation website for the project. -->
 * `gulp dev`: Starts a nodemon dev server for the project.
 * `gulp devTest`: Starts a nodemon dev server for the tests.
 * `gulp test`: Builds and runs the unit tests.

@@ -3,23 +3,15 @@ setEnvironmentIfNecessary();
 import * as inquirer from 'inquirer';
 import * as fs from 'fs-extra';
 import { GraduateCommand, IGraduateOptions } from './commands/GraduateCommand';
-import { StringUtils } from './commons/utils/StringUtils';
 import { InteractiveMode } from './console/InteractiveMode';
 import { SettingsController } from './console/SettingsController';
-import { FieldController } from './controllers/FieldController';
-import { Dictionary } from './commons/collections/Dictionary';
-import { Organization } from './coveoObjects/Organization';
-import { config } from './config/index';
-import { DiffCommand } from './commands/DiffCommand';
+import { DiffCommand, IDiffOptions } from './commands/DiffCommand';
 import { Logger } from './commons/logger';
-import { IDiffOptions } from './commons/utils/DiffUtils';
 
 const program = require('commander');
 const pkg: any = require('./../package.json');
 
-program
-  .option('--env [value]', 'Environment')
-  .version(pkg.version);
+program.option('--env [value]', 'Environment').version(pkg.version);
 
 program.on('--help', () => {
   console.log('');
@@ -37,12 +29,20 @@ program
   // .option('-s, --sources', 'Graduate sources')
   .option('-e, --extensions', 'Graduate extensions')
   .option('-F, --force', 'Force graduation without confirmation prompt')
-  .option('-m, --methods []', 'HTTP method authorized by the Graduation. Default value is "POST,PUT,DELETE".', list, ['POST', 'PUT', 'DELETE'])
+  .option('-m, --methods []', 'HTTP method authorized by the Graduation. Default value is "POST,PUT,DELETE".', list, [
+    'POST',
+    'PUT',
+    'DELETE'
+  ])
   .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
-  .option('-l, --logLevel <level>', 'Possible values are: insane, verbose, info (default), error, nothing', /^(insane|verbose|info|error|nothing)$/i, 'info')
+  .option(
+    '-l, --logLevel <level>',
+    'Possible values are: insane, verbose, info (default), error, nothing',
+    /^(insane|verbose|info|error|nothing)$/i,
+    'info'
+  )
   .action((originOrg: string, destinationOrg: string, originApiKey: string, destinationApiKey: string, options: any) => {
-
-    setLogger(options);
+    setLogger(options, 'graduate');
 
     // Set graduation options
     const graduateOptions: IGraduateOptions = {
@@ -52,7 +52,7 @@ program
       DELETE: options.methods.indexOf('DELETE') > -1
     };
 
-    let command = new GraduateCommand(originOrg, destinationOrg, originApiKey, destinationApiKey, graduateOptions);
+    const command = new GraduateCommand(originOrg, destinationOrg, originApiKey, destinationApiKey, graduateOptions);
 
     if (options.fields) {
       command.graduateFields();
@@ -75,18 +75,23 @@ program
   // .option('-b, --openInBrowser', 'Open Diff in default Browser')
   .option('-i, --ignoreKeys []', 'Object keys to ignore. String separated by ","', list)
   .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', list)
-  .option('-l, --logLevel <level>', 'Possible values are: insane, verbose, info (default), error, nothing', /^(insane|verbose|info|error|nothing)$/i, 'info')
+  .option(
+    '-l, --logLevel <level>',
+    'Possible values are: insane, verbose, info (default), error, nothing',
+    /^(insane|verbose|info|error|nothing)$/i,
+    'info'
+  )
   .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
   .action((originOrg: string, destinationOrg: string, originApiKey: string, destinationApiKey: string, options: any) => {
+    setLogger(options, 'diff');
 
-    setLogger(options);
     // Set diff options
     const diffOptions: IDiffOptions = {
       keysToIgnore: options.ignoreKeys || [],
       includeOnly: options.onlyKeys || []
     };
 
-    let command = new DiffCommand(originOrg, destinationOrg, originApiKey, destinationApiKey, diffOptions);
+    const command = new DiffCommand(originOrg, destinationOrg, originApiKey, destinationApiKey, diffOptions);
     if (options.fields) {
       command.diffFields();
     }
@@ -99,16 +104,19 @@ program
   .command('interactive')
   .description('Launch the interactive client')
   .action(() => {
-    let interactiveMode = new InteractiveMode();
-    interactiveMode.start()
+    const interactiveMode = new InteractiveMode();
+    interactiveMode
+      .start()
       .then((answers: inquirer.Answers) => {
-        let settingFilename = answers[InteractiveMode.SETTING_FILENAME];
-        let settings = SettingsController.genSettings(answers);
+        const settingFilename = answers[InteractiveMode.SETTING_FILENAME];
+        const settings = SettingsController.genSettings(answers);
         // Saving settings into a file
-        fs.writeJSON(settingFilename, settings, { spaces: 2 })
+        fs
+          .writeJSON(settingFilename, settings, { spaces: 2 })
           .then(() => {
             Logger.info('File Saved');
-          }).catch((err: any) => {
+          })
+          .catch((err: any) => {
             Logger.error('Unable to save setting file', err);
           });
       })
@@ -122,7 +130,8 @@ program
   .command('loadSettings <filename>')
   .description('Execute commande from json file')
   .action((filename: string) => {
-    fs.readJson(filename)
+    fs
+      .readJson(filename)
       .then((settings: any) => {
         Logger.info('To complete');
       })
@@ -139,15 +148,15 @@ function list(val: string) {
 }
 
 function setEnvironmentIfNecessary() {
-  let i = process.argv.indexOf('--env');
+  const i = process.argv.indexOf('--env');
   if (i !== -1 && i + 1 < process.argv.length) {
-    let env = process.argv[i + 1];
+    const env = process.argv[i + 1];
     process.env.NODE_ENV = env;
   }
 }
 
-function setLogger(options: any) {
+function setLogger(options: any, command: string) {
   Logger.setLogLevel(options.logLevel);
   Logger.setFilename(options.output);
-  Logger.newAction(options.parent.rawArgs.splice(2).join(' '));
+  Logger.newAction(command);
 }

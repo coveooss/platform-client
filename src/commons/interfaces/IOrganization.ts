@@ -1,6 +1,5 @@
 import { ICoveoObject } from './ICoveoObject';
 import { Source } from '../../coveoObjects/Source';
-import { BaseCoveoObject } from '../../coveoObjects/BaseCoveoObject';
 import { Field } from '../../coveoObjects/Field';
 import { Dictionary } from '../collections/Dictionary';
 import { Extension } from '../../coveoObjects/Extension';

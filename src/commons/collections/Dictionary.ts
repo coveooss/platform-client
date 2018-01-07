@@ -2,8 +2,6 @@ import * as _ from 'underscore';
 import { IDictionary } from '../interfaces/IDictionary';
 import { IStringMap } from '../interfaces/IStringMap';
 import { Assert } from '../misc/Assert';
-import { BaseCoveoObject } from '../../coveoObjects/BaseCoveoObject';
-import { Logger } from '../logger';
 
 export interface IClonable<T> {
   clone: () => T;
@@ -53,9 +51,9 @@ export class Dictionary<T extends IClonable<T>> implements IDictionary<T> {
   }
 
   public keys(): string[] {
-    let keySet: string[] = [];
+    const keySet: string[] = [];
 
-    for (let prop in this.items) {
+    for (const prop in this.items) {
       if (this.items.hasOwnProperty(prop)) {
         keySet.push(prop);
       }
@@ -65,9 +63,9 @@ export class Dictionary<T extends IClonable<T>> implements IDictionary<T> {
   }
 
   public values(): T[] {
-    let values: T[] = [];
+    const values: T[] = [];
 
-    for (let prop in this.items) {
+    for (const prop in this.items) {
       if (this.items.hasOwnProperty(prop)) {
         values.push(this.items[prop]);
       }
@@ -77,11 +75,14 @@ export class Dictionary<T extends IClonable<T>> implements IDictionary<T> {
   }
 
   public clone(): Dictionary<T> {
-    let original = this;
-    let clone: Dictionary<T> = new Dictionary<T>();
+    const original = this;
+    const clone: Dictionary<T> = new Dictionary<T>();
 
     this.keys().forEach((key: string) => {
-      Assert.check(typeof original.getItem(key).clone === 'function', 'Unable to clone object. Make sure it implements the IClonable Interface');
+      Assert.check(
+        typeof original.getItem(key).clone === 'function',
+        'Unable to clone object. Make sure it implements the IClonable Interface'
+      );
       // clone.add(key, JSON.parse(JSON.stringify(original.getItem(key))));
       clone.add(key, original.getItem(key).clone());
     });

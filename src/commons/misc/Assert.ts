@@ -2,14 +2,13 @@ import * as _ from 'underscore';
 import { Utils } from '../utils/Utils';
 
 export class Assert {
-
   static failureHandler = (message?: string) => {
     if (message && Utils.isNonEmptyString(message)) {
       throw new Error(message);
     } else {
       throw new Error('Assertion Failed!');
     }
-  }
+  };
 
   static fail(message?: string) {
     Assert.failureHandler(message);
@@ -77,15 +76,5 @@ export class Assert {
 
   static isSmallerOrEqualsThan(expected: number, actual: number) {
     Assert.check(actual <= expected, 'Value ' + actual + ' should be smaller or equal than ' + expected);
-  }
-}
-
-export class PreconditionFailedException extends Error {
-  constructor(public message: string) {
-    super(message);
-  }
-
-  toString() {
-    return this.message;
   }
 }

@@ -1,9 +1,3 @@
-// Required to require untyped modules
-declare function require(path: string): any;
-// External packages
-
-// Internal packages
-import { Utils } from '../utils/Utils';
 import { config } from './../../config/index';
 import { Assert } from '../misc/Assert';
 
@@ -33,15 +27,15 @@ export class UrlService {
 
   /*** Search API ***/
   static getQueryPipelinesUrl(organizationId: string): string {
-    return `${config.coveo.platformUrl}/rest/search/admin/pipelines/?&organizationId=${organizationId}`
+    return `${config.coveo.platformUrl}/rest/search/admin/pipelines/?&organizationId=${organizationId}`;
   }
 
   static getSearchApiAuthenticationsUrl(organizationId: string): string {
-    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/authentication?&organizationId=${organizationId}`
+    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/authentication?&organizationId=${organizationId}`;
   }
 
   static getHostedSearchPagesUrl(organizationId: string): string {
-    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/pages/`
+    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/pages/`;
   }
 
   /*** Usage Analytics API ***/
@@ -81,6 +75,8 @@ export class UrlService {
 
   static deleteFields(organizationId: string, fieldList: string[], separator: string = '%2C'): string {
     Assert.isLargerThan(0, fieldList.length);
-    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/indexes/fields/batch/delete?fields=${fieldList.join(separator)}`;
+    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}/indexes/fields/batch/delete?fields=${fieldList.join(
+      separator
+    )}`;
   }
 }

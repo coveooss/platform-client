@@ -1,22 +1,14 @@
-import { RequestResponse } from 'request';
-import { IOrganization } from '../commons/interfaces/IOrganization';
+import { IDiffOptions } from './../commands/DiffCommand';
 import { Extension } from '../coveoObjects/Extension';
-import { UrlService } from '../commons/rest/UrlService';
-// import { IDiffResult } from '../commons/interfaces/IDiffResult';
-// import { DiffResult } from '../commons/collections/DiffResult';
 import { Logger } from '../commons/logger';
-import { Dictionary } from '../commons/collections/Dictionary';
 import { StaticErrorMessage } from '../commons/errors';
-import { JsonUtils } from '../commons/utils/JsonUtils';
-import { DiffUtils, IDiffOptions } from '../commons/utils/DiffUtils';
-import { RequestUtils } from '../commons/utils/RequestUtils';
+import { DiffUtils } from '../commons/utils/DiffUtils';
 import { BaseController } from './BaseController';
 import { Organization } from '../coveoObjects/Organization';
 import { ExtensionAPI } from '../commons/rest/ExtensionAPI';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 
 export class ExtensionController extends BaseController {
-
   constructor(private organization1: Organization, private organization2: Organization) {
     super();
   }
@@ -34,18 +26,22 @@ export class ExtensionController extends BaseController {
   public diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Extension>> {
     return this.loadExtensionsForBothOrganizations(this.organization1, this.organization2)
       .then(() => {
-        let diffResultArray = DiffUtils.getDiffResult(this.organization1.getExtensions(), this.organization2.getExtensions(), diffOptions);
+        const diffResultArray = DiffUtils.getDiffResult(
+          this.organization1.getExtensions(),
+          this.organization2.getExtensions(),
+          diffOptions
+        );
         if (diffResultArray.containsItems()) {
           Logger.verbose(`${diffResultArray.NEW.length} new extension${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
           Logger.verbose(`${diffResultArray.DELETED.length} deleted extension${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
           Logger.verbose(`${diffResultArray.UPDATED.length} updated extension${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
         }
         return diffResultArray;
-      }).catch((err: any) => {
+      })
+      .catch((err: any) => {
         this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_EXTENTIONS);
         return Promise.reject(err);
       });
-
   }
 
   // public diff(organization1: IOrganization, organization2: IOrganization, keysToIgnore: string[]): Dictionary<IDiffResult<any>> {
@@ -53,7 +49,6 @@ export class ExtensionController extends BaseController {
   //   return this.loadExtensionsForBothOrganizations(this.organization1, this.organization2)
   //     .then(() => {
   //     });
-
 
   //   let diffResults: Dictionary<IDiffResult<any>> = new Dictionary<IDiffResult<any>>();
   //   let diffResultsExistence: DiffResult<string> = new DiffResult<string>();
@@ -129,7 +124,7 @@ export class ExtensionController extends BaseController {
   //   );
   // }
 
-  private loadExtensionsForBothOrganizations(organization1: Organization, organization2: Organization): Promise<Array<{}>> {
+  private loadExtensionsForBothOrganizations(organization1: Organization, organization2: Organization): Promise<{}[]> {
     Logger.verbose('Loading extensions for both organizations.');
     return Promise.all([ExtensionAPI.loadExtensions(organization1), ExtensionAPI.loadExtensions(organization2)]);
   }

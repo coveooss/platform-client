@@ -1,19 +1,18 @@
-import { RequestResponse } from 'request';
-import { IOrganization } from '../commons/interfaces/IOrganization';
-import { Source } from '../coveoObjects/Source';
-import { UrlService } from '../commons/rest/UrlService';
+// import { RequestResponse } from 'request';
+// import { IOrganization } from '../commons/interfaces/IOrganization';
+// import { Source } from '../coveoObjects/Source';
+// import { UrlService } from '../commons/rest/UrlService';
 // import { IDiffResult } from '../commons/interfaces/IDiffResult';
 // import { DiffResult } from '../commons/collections/DiffResult';
-import { Logger } from '../commons/logger';
-import { Dictionary } from '../commons/collections/Dictionary';
-import { StaticErrorMessage } from '../commons/errors';
-import { JsonUtils } from '../commons/utils/JsonUtils';
-import { DiffUtils } from '../commons/utils/DiffUtils';
-import { RequestUtils } from '../commons/utils/RequestUtils';
+// import { Logger } from '../commons/logger';
+// import { Dictionary } from '../commons/collections/Dictionary';
+// import { StaticErrorMessage } from '../commons/errors';
+// import { JsonUtils } from '../commons/utils/JsonUtils';
+// import { DiffUtils } from '../commons/utils/DiffUtils';
+// import { RequestUtils } from '../commons/utils/RequestUtils';
 import { BaseController } from './BaseController';
 
 export class SourceController extends BaseController {
-
   constructor() {
     super();
   }

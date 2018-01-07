@@ -2,7 +2,6 @@ import * as _ from 'underscore';
 import * as inquirer from 'inquirer';
 import { Organization } from '../coveoObjects/Organization';
 import { FieldController } from '../controllers/FieldController';
-import { UrlService } from '../commons/rest/UrlService';
 import { InteractiveMode } from '../console/InteractiveMode';
 import { Logger } from '../commons/logger';
 import { StaticErrorMessage } from '../commons/errors';
@@ -46,36 +45,32 @@ export class GraduateCommand {
   static COMMAND_NAME: string = 'graduate';
 
   public graduateFields() {
-    let fieldController: FieldController = new FieldController(this.organization1, this.organization2);
-    let questions: inquirer.Questions = [];
+    const fieldController: FieldController = new FieldController(this.organization1, this.organization2);
+    const questions: inquirer.Questions = [];
     if (!this.options.force) {
       questions.push(this.interactiveMode.confirmGraduationAction(`Are you sure want to perform a field graduation?`, 'confirm'));
     }
-    inquirer.prompt(questions)
-      .then((res: inquirer.Answers) => {
-        if (res.confirm || this.options.force) {
-          Logger.startSpinner('Performing Field Graduation');
-          fieldController.graduate(this.options)
-            .then(() => {
-              Logger.info('Graduation operation completed');
-              Logger.stopSpinner();
-            }).catch((err: any) => {
-              Logger.error(StaticErrorMessage.UNABLE_TO_GRADUATE, err);
-              Logger.stopSpinner();
-            });
-        } else {
-          Logger.info('No fields were graduated');
-          Logger.stopSpinner();
-        }
-      });
+    inquirer.prompt(questions).then((res: inquirer.Answers) => {
+      if (res.confirm || this.options.force) {
+        Logger.startSpinner('Performing Field Graduation');
+        fieldController
+          .graduate(this.options)
+          .then(() => {
+            Logger.info('Graduation operation completed');
+            Logger.stopSpinner();
+          })
+          .catch((err: any) => {
+            Logger.error(StaticErrorMessage.UNABLE_TO_GRADUATE, err);
+            Logger.stopSpinner();
+          });
+      } else {
+        Logger.info('No fields were graduated');
+        Logger.stopSpinner();
+      }
+    });
   }
 
-  public graduateSources() {
+  public graduateSources() {}
 
-  }
-
-  public graduateExtensions() {
-
-  }
-
+  public graduateExtensions() {}
 }
