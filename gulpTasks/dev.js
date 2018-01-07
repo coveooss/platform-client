@@ -15,7 +15,7 @@ gulp.task('dev', ['build'], () => {
   gulp.watch('src/**/*.ts', ['compileForDev']);
 });
 
-gulp.task('devTest', ['buildTest', 'watchTest'], () => {
+gulp.task('devTest', ['watchTest'], () => {
   let stream = nodemon({
     exec: 'npm test',
     watch: 'test',

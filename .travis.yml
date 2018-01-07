@@ -13,7 +13,6 @@ script:
 - source read.version.sh
 - echo $PACKAGE_JSON_VERSION
 - npm run minimize
-- gulp buildTest
 - npm run test
 after_success:
 # - npm run doc
