@@ -1,21 +1,9 @@
 {
-  "include": [
-      "src/*.ts",
-      "src/**/*.ts"
-    ],
-  "exclude": [
-      "typings",
-      "node_modules"
-    ],
-  "extension": [
-      ".ts"
-    ],
-  "require": [
-      "ts-node/register"
-    ],
-  "reporter": [
-      "text",
-      "html"
-    ],
+  "include": ["src/**/*.ts"],
+  "exclude": ["**/*.d.ts", "**/*.js"],
+  "extension": [".ts"],
+  "require": ["ts-node/register"],
+  "reporter": ["text", "html"],
+  "all": true,
   "cache": true
 }
