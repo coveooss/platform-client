@@ -9,7 +9,6 @@ import { ExtensionController } from '../controllers/ExtensionController';
 import { SourceController } from '../controllers/SourceController';
 
 export class InteractiveMode {
-
   static ORIGIN_ORG_ID: string = 'originOrganizationId';
   static ORIGIN_ORG_KEY: string = 'originOrganizationKey';
   static DESTINATION_ORG_ID: string = 'destinationOrganizationId';
@@ -23,6 +22,7 @@ export class InteractiveMode {
   static SETTING_FILENAME: string = 'settingFilename';
   static LOG_FILENAME: string = 'logFilename';
   static FORCE_GRADUATION: string = 'force';
+  static LOG_LEVEL: string = 'logLevel';
 
   public start(): Promise<Answers> {
     const prompt = inquirer.createPromptModule();
@@ -70,10 +70,17 @@ export class InteractiveMode {
       type: 'list',
       name: InteractiveMode.COMMAND,
       message: 'Command to execute?',
-      choices: [
-        { name: GraduateCommand.COMMAND_NAME },
-        { name: DiffCommand.COMMAND_NAME }
-      ]
+      choices: [{ name: GraduateCommand.COMMAND_NAME }, { name: DiffCommand.COMMAND_NAME }]
+    };
+  }
+
+  public setLogLevel(): Question {
+    return {
+      type: 'list',
+      name: InteractiveMode.COMMAND,
+      message: 'Log Level',
+      default: 'info',
+      choices: [{ name: 'insane' }, { name: 'verbose' }, { name: 'info' }, { name: 'error' }, { name: 'nothing' }]
     };
   }
 
@@ -154,10 +161,11 @@ export class InteractiveMode {
       this.getDestinationOrganizationKey(),
       this.getCommandList(),
       this.getContentsToGraduate(),
-      // this.getGraduateOperationForFields(),
-      // this.getGraduateOperationForExtensions(),
+      this.getGraduateOperationForFields(),
+      this.getGraduateOperationForExtensions(),
       // this.getSourceElementToGraduate(),
       // this.getGraduateOperationForSources(),
+      this.setLogLevel(),
       this.getFileNameForSettings()
     ];
   }
@@ -170,7 +178,10 @@ export class InteractiveMode {
       choices: ['POST', 'PUT', 'DELETE'],
       validate: this.checkboxValidator('You need to select at least 1 graduate operation.'),
       when: (answer: Answers) => {
-        return answer[InteractiveMode.CONTENT_TO_GRADUATE].indexOf(content) !== -1;
+        return (
+          answer[InteractiveMode.COMMAND].indexOf(GraduateCommand.COMMAND_NAME) !== -1 &&
+          answer[InteractiveMode.CONTENT_TO_GRADUATE].indexOf(content) !== -1
+        );
       }
     };
   }
@@ -189,10 +200,9 @@ export class InteractiveMode {
   }
 
   private inputValidator(message: string): (input: string, answers?: Answers) => boolean | string {
-    return (input: string, answers?: Answers) => Utils.isEmptyString(input) ? message : true;
+    return (input: string) => (Utils.isEmptyString(input) ? message : true);
   }
   private checkboxValidator(message: string): (input: string, answers?: Answers) => boolean | string {
-    return (input: string, answers?: Answers) => Utils.isEmptyArray(input) ? message : true;
+    return (input: string) => (Utils.isEmptyArray(input) ? message : true);
   }
-
 }
