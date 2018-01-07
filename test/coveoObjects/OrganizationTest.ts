@@ -5,23 +5,21 @@ import { Extension } from '../../src/coveoObjects/Extension';
 
 export const OrganizationTest = () => {
   describe('Organization Model', () => {
-
     it('Should define organization Id and ApiKey', () => {
-      let organization: Organization = new Organization('org1', 'xxx-aaa-123');
+      const organization: Organization = new Organization('org1', 'xxx-aaa-123');
       expect(organization.getId()).to.equal('org1', 'Invalid organization Id');
       expect(organization.getApiKey()).to.equal('xxx-aaa-123', 'Invalid API Key');
     });
 
     describe('Fields Methods', () => {
-
       it('Should return the fields dictionary', () => {
-        let organization: Organization = new Organization('rambo1', 'xxx-aaa-123');
+        const organization: Organization = new Organization('rambo1', 'xxx-aaa-123');
         expect(organization.getFields().getCount()).to.equal(0);
       });
 
       it('Should not alter the dictionary from getter', () => {
-        let organization: Organization = new Organization('rambo2', 'xxx-aaa-123');
-        let field: Field = new Field('allmetadatavalues', {
+        const organization: Organization = new Organization('rambo2', 'xxx-aaa-123');
+        const field: Field = new Field('allmetadatavalues', {
           name: 'allmetadatavalues',
           description: 'Place to put content for metadata discovery.',
           type: 'STRING',
@@ -49,8 +47,8 @@ export const OrganizationTest = () => {
       });
 
       it('Should add a new field to the organization', () => {
-        let organization: Organization = new Organization('rambo3', 'xxx-aaa-123');
-        let field: Field = new Field('allmetadatavalues', {
+        const organization: Organization = new Organization('rambo3', 'xxx-aaa-123');
+        const field: Field = new Field('allmetadatavalues', {
           name: 'allmetadatavalues',
           description: 'Place to put content for metadata discovery.',
           type: 'STRING',
@@ -74,18 +72,17 @@ export const OrganizationTest = () => {
         organization.addField(field.getName(), field);
         expect(organization.getFields().getCount()).to.equal(1);
       });
-
     });
   });
   describe('Extensions Methods', () => {
     it('Should return the extensions dictionary', () => {
-      let organization: Organization = new Organization('rainbow', 'xxx-aaa-123');
+      const organization: Organization = new Organization('rainbow', 'xxx-aaa-123');
       expect(organization.getFields().getCount()).to.equal(0);
     });
 
     it('Should not alter the dictionary from getter', () => {
-      let organization: Organization = new Organization('flower', 'xxx-aaa-123');
-      let extension: Extension = new Extension('Reject a document.', {
+      const organization: Organization = new Organization('flower', 'xxx-aaa-123');
+      const extension: Extension = new Extension('Reject a document.', {
         content: 'random content',
         createdDate: 1511812764000,
         description: 'This extension simply rejects a document. It gets triggered on certain file types in the source configuration',
@@ -120,8 +117,8 @@ export const OrganizationTest = () => {
     });
 
     it('Should add a new extension to the organization', () => {
-      let organization: Organization = new Organization('flower', 'xxx-aaa-123');
-      let extension: Extension = new Extension('Reject a document.', {
+      const organization: Organization = new Organization('flower', 'xxx-aaa-123');
+      const extension: Extension = new Extension('Reject a document.', {
         content: 'random content',
         createdDate: 1511812764000,
         description: 'This extension simply rejects a document. It gets triggered on certain file types in the source configuration',

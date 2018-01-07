@@ -1,27 +1,27 @@
-import { expect, should } from 'chai';
-import { DiffUtils, IDiffOptions } from '../../src/commons/utils/DiffUtils';
-import { Dictionary } from '../../src/commons/collections/Dictionary';
-import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
-import { IStringMap } from '../../src/commons/interfaces/IStringMap';
-import { JsonUtils } from '../../src/commons/utils/JsonUtils';
+// tslint:disable:no-magic-numbers
+import { IDiffOptions } from './../../../src/commands/DiffCommand';
+import { expect } from 'chai';
+import { DiffUtils } from '../../../src/commons/utils/DiffUtils';
+import { Dictionary } from '../../../src/commons/collections/Dictionary';
+import { DiffResultArray } from '../../../src/commons/collections/DiffResultArray';
+import { IStringMap } from '../../../src/commons/interfaces/IStringMap';
+import { JsonUtils } from '../../../src/commons/utils/JsonUtils';
 
 export const JsonUtilsTest = () => {
   describe('Json Utils', () => {
-
-    let simpleArray = ['Lorem', 'ipsum', 'dolor', 'sit', 'amet'];
-    let simpleObject = { one: 1, two: 2, three: 3 };
-
-    let mixedJson = { id: 0, value: { permission: 0, identityType: [1, 2, 3] } };
+    const simpleArray = ['Lorem', 'ipsum', 'dolor', 'sit', 'amet'];
+    const simpleObject = { one: 1, two: 2, three: 3 };
+    const mixedJson = { id: 0, value: { permission: 0, identityType: [1, 2, 3] } };
 
     describe('HasKey Method', () => {
       it('It does not alter the initial array', () => {
-        let arr = ['test', 2, true];
+        const arr = ['test', 2, true];
         JsonUtils.hasKey(arr, ['ipsum']);
         expect(arr).to.eql(['test', 2, true]);
       });
 
       it('It does not alter the initial object', () => {
-        let obj = { a: 0, b: { c: 0, d: [1, 2, 3] } };
+        const obj = { a: 0, b: { c: 0, d: [1, 2, 3] } };
         JsonUtils.hasKey(obj, ['random']);
         expect(obj).to.eql({ a: 0, b: { c: 0, d: [1, 2, 3] } });
       });
@@ -47,7 +47,7 @@ export const JsonUtilsTest = () => {
       });
 
       it('Should return false if passed an empty array', () => {
-        let fields: string[] = ['not in json', 'keyboard cat'];
+        const fields: string[] = ['not in json', 'keyboard cat'];
 
         expect(JsonUtils.hasKey(mixedJson, [])).to.be.false;
         expect(JsonUtils.hasKey([], fields)).to.be.false;
@@ -55,7 +55,7 @@ export const JsonUtilsTest = () => {
       });
 
       it('Should return false if fields is NOT mixed JSON', () => {
-        let fields: string[] = ['not in json', 'keyboard cat'];
+        const fields: string[] = ['not in json', 'keyboard cat'];
 
         expect(JsonUtils.hasKey(mixedJson, fields)).to.be.false;
       });
@@ -63,57 +63,56 @@ export const JsonUtilsTest = () => {
 
     describe('RemoveFieldFromJson - Whitelist Strategy', () => {
       it('It should not alter the initial object', () => {
-        let obj = { one: 1, two: 2, three: 3 };
+        const obj = { one: 1, two: 2, three: 3 };
         JsonUtils.removeKeyValuePairsFromJson(obj, ['two'], ['one']);
         expect(obj).to.eql({ one: 1, two: 2, three: 3 });
       });
 
       it('Should return an empty object if all the fields to include do not exsit', () => {
-        let obj = { one: 1, two: 2, three: 3 };
+        const obj = { one: 1, two: 2, three: 3 };
         expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, [], ['four', 'five'])).to.eql({});
       });
 
       it('Should only include the field that we specified', () => {
-        let obj = { one: 1, two: 2, three: 3 };
+        const obj = { one: 1, two: 2, three: 3 };
         expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, [], ['two'])).to.eql({ two: 2 });
       });
 
       it('Should include all the fields if all specified', () => {
-        let obj = { one: 1, two: 2, three: 3 };
+        const obj = { one: 1, two: 2, three: 3 };
         expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, [], ['one', 'two', 'three'])).to.eql({ one: 1, two: 2, three: 3 });
       });
 
       it('Should return the initial object', () => {
-        let obj = { one: 1, two: 2, three: 3 };
+        const obj = { one: 1, two: 2, three: 3 };
         expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, [], [])).to.eql({ one: 1, two: 2, three: 3 });
       });
 
       it('Should override blacklist strategy', () => {
-        let obj = { one: 1, two: 2, three: 3 };
+        const obj = { one: 1, two: 2, three: 3 };
         expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, ['one'], ['one', 'two'])).to.eql({ one: 1, two: 2 });
       });
-
     });
 
     describe('RemoveFieldFromJson - Blacklist Strategy', () => {
       it('It should not alter the initial object', () => {
-        let obj = { one: 1, two: 2, three: 3 };
+        const obj = { one: 1, two: 2, three: 3 };
         JsonUtils.removeKeyValuePairsFromJson(obj, ['two']);
         expect(obj).to.eql({ one: 1, two: 2, three: 3 });
       });
 
       it('Should NOT remove specified fields from JSON object if not found', () => {
-        let obj = { one: 1, two: 2, three: 3 };
+        const obj = { one: 1, two: 2, three: 3 };
         expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, ['four'])).to.eql({ one: 1, two: 2, three: 3 });
       });
 
       it('Should remove specified fields from JSON object', () => {
-        let obj = { one: 1, two: 2, three: 3 };
+        const obj = { one: 1, two: 2, three: 3 };
         expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, ['two'])).to.eql({ one: 1, three: 3 });
       });
 
       it('Should remove specified fields from JSON object', () => {
-        let obj = {
+        const obj = {
           id: 0,
           value: {
             permission: 0,

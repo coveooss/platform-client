@@ -35,3 +35,6 @@ class Config {
 }
 
 export const config = new Config().getConfiguration();
+
+// Used for test only
+export const ConfigClass = Config;
