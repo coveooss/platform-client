@@ -10,6 +10,7 @@ import * as Ora from 'ora';
  * @export
  * @class LoggerSingleton
  */
+/* istanbul ignore next */
 export class LoggerSingleton {
   private static logger: LoggerSingleton = new LoggerSingleton();
 

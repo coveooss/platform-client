@@ -4,7 +4,6 @@ import { IField } from '../commons/interfaces/IField';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 
 export class Field extends BaseCoveoObject implements IField {
-
   constructor(name: string, private fieldModel: IStringMap<any>) {
     super(name);
   }
@@ -27,7 +26,6 @@ export class Field extends BaseCoveoObject implements IField {
     return this.fieldModel;
   }
 
-  // TODO: Test
   public clone(): Field {
     return new Field(this.getName(), JsonUtils.clone(this.getFieldModel()));
   }

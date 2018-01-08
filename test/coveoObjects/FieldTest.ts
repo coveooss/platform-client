@@ -4,7 +4,6 @@ import { IStringMap } from '../../src/commons/interfaces/IStringMap';
 
 export const FieldTest = () => {
   describe('Field Model', () => {
-
     const fieldModel: IStringMap<any> = {
       name: 'newfield',
       description: 'New field in prod only',
@@ -28,13 +27,33 @@ export const FieldTest = () => {
     };
 
     it('Should define field name (id) in the constructor', () => {
-      let field: Field = new Field('newfield', fieldModel);
+      const field: Field = new Field('newfield', fieldModel);
       expect(field.getId()).to.equal('newfield');
       expect(field.getName()).to.equal('newfield');
     });
 
+    it('Should create a clone of the field object', () => {
+      const simpleFieldModel = {
+        name: 'newfield',
+        description: 'New field in prod only',
+        type: 'STRING'
+      };
+
+      // Creating clone
+      const field: Field = new Field('newfield', simpleFieldModel);
+      const clone = field.clone();
+      // Messing around with the original object
+      simpleFieldModel.name = 'new name';
+
+      expect(clone.getFieldModel()).to.eql({
+        name: 'newfield',
+        description: 'New field in prod only',
+        type: 'STRING'
+      });
+    });
+
     it('Should define field model in the constructor', () => {
-      let field: Field = new Field('newfield', fieldModel);
+      const field: Field = new Field('newfield', fieldModel);
       expect(field.getFieldModel()).to.be.eql({
         name: 'newfield',
         description: 'New field in prod only',
@@ -57,6 +76,5 @@ export const FieldTest = () => {
         system: false
       });
     });
-
   });
 };
