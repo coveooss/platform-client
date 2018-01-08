@@ -73,13 +73,5 @@ export const LoggerTest = () => {
           .catch((err: any) => done(err));
       });
     });
-
-    describe('Spinner', () => {
-      it('Should Start the spinner', () => {
-        // Logger.startSpinner('Initial message');
-        // expect(Logger.getSpinnerText()).to.equal('Initial message');
-        // Logger.stopSpinner();
-      });
-    });
   });
 };

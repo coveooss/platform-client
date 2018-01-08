@@ -13,10 +13,6 @@ class Config {
     this.env = process.env.NODE_ENV || 'development';
   }
 
-  public getEnvironment(): string {
-    return this.env;
-  }
-
   public isTestRunning(): boolean {
     return this.env === 'test';
   }
