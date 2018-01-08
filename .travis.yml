@@ -13,7 +13,7 @@ script:
 - source read.version.sh
 - echo $PACKAGE_JSON_VERSION
 - npm run minimize
-- npm run test
+- npm start & npm test
 after_success:
 # - npm run doc
 # - if [ "x$TRAVIS_TAG" != "x" ]; then bash ./deploy.doc.sh ; fi

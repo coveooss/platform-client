@@ -33,40 +33,70 @@ export const FieldControllerTest = () => {
 
     // Controller
     const fieldController = new FieldController(org1, org2);
-
-    it('Should return the clean diff version', () => {
-      const diffResultArray: DiffResultArray<Field> = new DiffResultArray();
-      diffResultArray.NEW.push(field1);
-      diffResultArray.UPDATED.push(field2);
-      diffResultArray.UPDATED.push(field3);
-
-      const cleanVersion = fieldController.getCleanVersion(diffResultArray);
-      expect(cleanVersion).to.eql({
-        summary: { NEW: 1, UPDATED: 2, DELETED: 0 },
-        NEW: [
-          {
-            name: 'firstname',
-            description: 'The first name of a person',
-            type: 'STRING',
-            includeInQuery: true
-          }
-        ],
-        UPDATED: [
-          {
-            name: 'lastname',
-            description: 'The last name of a person',
-            type: 'STRING',
-            includeInQuery: true
-          },
-          {
-            name: 'birth',
-            description: 'Day of birth',
-            type: 'Date',
-            includeInQuery: false
-          }
-        ],
-        DELETED: []
+    describe('GetCleanVersion Method', () => {
+      it('Should return the clean diff version - empty', () => {
+        const diffResultArray: DiffResultArray<Field> = new DiffResultArray();
+        const cleanVersion = fieldController.getCleanVersion(diffResultArray);
+        expect(cleanVersion).to.eql({
+          summary: { NEW: 0, UPDATED: 0, DELETED: 0 },
+          NEW: [],
+          UPDATED: [],
+          DELETED: []
+        });
       });
+
+      it('Should return the clean diff version', () => {
+        const diffResultArray: DiffResultArray<Field> = new DiffResultArray();
+        diffResultArray.NEW.push(field1);
+        diffResultArray.UPDATED.push(field2);
+        diffResultArray.UPDATED.push(field3);
+
+        const cleanVersion = fieldController.getCleanVersion(diffResultArray);
+        expect(cleanVersion).to.eql({
+          summary: { NEW: 1, UPDATED: 2, DELETED: 0 },
+          NEW: [
+            {
+              name: 'firstname',
+              description: 'The first name of a person',
+              type: 'STRING',
+              includeInQuery: true
+            }
+          ],
+          UPDATED: [
+            {
+              name: 'lastname',
+              description: 'The last name of a person',
+              type: 'STRING',
+              includeInQuery: true
+            },
+            {
+              name: 'birth',
+              description: 'Day of birth',
+              type: 'Date',
+              includeInQuery: false
+            }
+          ],
+          DELETED: []
+        });
+      });
+    });
+
+    describe('Diff Method', () => {
+      it('Should return the diff result', (done: MochaDone) => {
+        // TODO: test with multiple options
+        fieldController
+          .diff()
+          .then((diffResultArray: DiffResultArray<Field>) => {
+            done();
+          })
+          .catch((err: any) => {
+            done(err);
+          });
+      });
+    });
+
+    describe('Graduate Method', () => {
+      // TODO:
     });
   });
 };

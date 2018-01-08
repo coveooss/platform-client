@@ -62,7 +62,7 @@
   },
   "scripts": {
     "precommit": "lint-staged",
-    "start": "node bin/coveo-client.js",
+    "start": "node test/mock/server.js",
     "test": "gulp test",
     "posttest": "nyc report --reporter=json && codecov -f coverage/*.json",
     "tslint-check": "tslint-config-prettier-check ./tslint.json",

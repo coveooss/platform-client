@@ -5,6 +5,6 @@ config.env = 'test';
 
 // Coveo Config
 config.coveo = {};
-config.coveo.platformUrl = 'https://platformdev.cloud.coveo.com';
+config.coveo.platformUrl = 'http://localhost:3000';
 
 module.exports = config;
