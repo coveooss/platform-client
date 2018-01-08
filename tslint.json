@@ -44,6 +44,7 @@
     "no-unused-expression": false,
     "no-use-before-declare": true,
     "no-var-keyword": true,
+    "object-literal-key-quotes": false,
     "object-literal-sort-keys": false,
     "one-line": [true, "check-open-brace", "check-catch", "check-else", "check-whitespace"],
     "prefer-const": true,

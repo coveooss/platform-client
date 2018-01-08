@@ -17,7 +17,7 @@ export class BaseController {
 
       Logger.info(successMessage, `${chalk.green(JsonUtils.stringify(info))}`);
     });
-    Logger.insane(`${JSON.stringify(responses)} `);
+    Logger.insane(`${JsonUtils.stringify(responses)} `);
   }
 
   protected graduateErrorHandler(err: any, errorMessage: string) {

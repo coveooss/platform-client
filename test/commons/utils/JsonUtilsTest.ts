@@ -11,7 +11,88 @@ export const JsonUtilsTest = () => {
   describe('Json Utils', () => {
     const simpleArray = ['Lorem', 'ipsum', 'dolor', 'sit', 'amet'];
     const simpleObject = { one: 1, two: 2, three: 3 };
-    const mixedJson = { id: 0, value: { permission: 0, identityType: [1, 2, 3] } };
+    const mixedJson = {
+      id: 0,
+      value: {
+        permission: 0,
+        identityType: [1, 2, 3]
+      }
+    };
+
+    describe('Stringify Method', () => {
+      it('Should stringify object with indentation', () => {
+        const content = JsonUtils.stringify(mixedJson);
+        const stringified =
+          '{\n\
+  "id": 0,\n\
+  "value": {\n\
+    "permission": 0,\n\
+    "identityType": [\n\
+      1,\n\
+      2,\n\
+      3\n\
+    ]\n\
+  }\n\
+}';
+
+        expect(content).to.equal(stringified);
+      });
+    });
+
+    describe('Flatten Method', () => {
+      const arr1 = [[1, [2, 3]], [1, [2, 3]], 0];
+
+      const obj1 = {
+        a: 1,
+        b: { c: 2, d: [3, 4] }
+      };
+
+      const obj2 = {
+        a: 1,
+        b: 2,
+        c: 3
+      };
+
+      it('Should flatten an object', () => {
+        expect(JsonUtils.flatten(obj1)).to.eql({ a: 1, 'b.c': 2, 'b.d.0': 3, 'b.d.1': 4 });
+        expect(JsonUtils.flatten(obj2)).to.eql({ a: 1, b: 2, c: 3 });
+        expect(JsonUtils.flatten(arr1)).to.eql({
+          '0.0': 1,
+          '0.1.0': 2,
+          '0.1.1': 3,
+          '1.0': 1,
+          '1.1.0': 2,
+          '1.1.1': 3,
+          '2': 0
+        });
+      });
+    });
+
+    describe('Clone Method', () => {
+      it('Should clone object', () => {
+        const obj1 = {
+          a: 1,
+          b: { c: 2, d: [3, 4] }
+        };
+        // Creating clone object
+        const clone = JsonUtils.clone(obj1);
+
+        // Manipulating initial object
+        obj1.b.c++;
+        obj1.b.d = undefined;
+        expect(clone).to.eql({
+          a: 1,
+          b: { c: 2, d: [3, 4] }
+        });
+      });
+
+      it('Should return null', () => {
+        expect(JsonUtils.clone(undefined)).to.be.null;
+        expect(JsonUtils.clone(null)).to.be.null;
+        expect(JsonUtils.clone(String)).to.be.null;
+        expect(JsonUtils.clone(() => {})).to.be.null;
+      });
+    });
 
     describe('HasKey Method', () => {
       it('It does not alter the initial array', () => {

@@ -1,4 +1,5 @@
 import * as request from 'request';
+import { JsonUtils } from './JsonUtils';
 
 export class RequestUtils {
   static OK: number = 200;
@@ -21,7 +22,7 @@ export class RequestUtils {
             if (response.statusCode === RequestUtils.OK) {
               resolve(response);
             } else {
-              reject(JSON.stringify(response.body));
+              reject(JsonUtils.stringify(response.body));
             }
           }
         }
@@ -46,7 +47,7 @@ export class RequestUtils {
             if (response.statusCode && response.statusCode >= RequestUtils.OK && response.statusCode < RequestUtils.REDIRECTION) {
               resolve(response);
             } else {
-              reject(JSON.stringify(response.body));
+              reject(JsonUtils.stringify(response.body));
             }
           }
         }
@@ -70,7 +71,7 @@ export class RequestUtils {
             if (response.statusCode === RequestUtils.CREATED || response.statusCode === RequestUtils.NO_CONTENT) {
               resolve(response);
             } else {
-              reject(JSON.stringify(response.body));
+              reject(JsonUtils.stringify(response.body));
             }
           }
         }
@@ -94,7 +95,7 @@ export class RequestUtils {
             if (response.statusCode === RequestUtils.CREATED || response.statusCode === RequestUtils.NO_CONTENT) {
               resolve(response);
             } else {
-              reject(JSON.stringify(response.body));
+              reject(JsonUtils.stringify(response.body));
             }
           }
         }

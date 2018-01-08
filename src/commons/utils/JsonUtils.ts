@@ -4,10 +4,8 @@ import { Logger } from '../logger';
 import { Assert } from '../misc/Assert';
 
 export class JsonUtils {
-  static SPACE: number = 2;
-
-  static stringify(obj: any): string {
-    return JSON.stringify(obj, undefined, JsonUtils.SPACE);
+  static stringify(obj: any, space: number = 2): string {
+    return JSON.stringify(obj, undefined, space);
   }
 
   static flatten(jsonObject: any): any {

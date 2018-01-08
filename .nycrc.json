@@ -3,7 +3,7 @@
   "exclude": ["**/*.d.ts", "**/*.js"],
   "extension": [".ts"],
   "require": ["ts-node/register"],
-  "reporter": ["text", "html"],
+  "reporter": ["html"],
   "all": true,
   "cache": true
 }
