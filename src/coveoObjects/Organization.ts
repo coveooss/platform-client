@@ -37,7 +37,7 @@ export class Organization extends BaseCoveoObject implements IOrganization {
    */
   public getFields(): Dictionary<Field> {
     // TODO: instantiate a new field before the return since the clone only copies the object as a json
-    let newField = this.fields.clone();
+    const newField = this.fields.clone();
     return newField;
   }
 

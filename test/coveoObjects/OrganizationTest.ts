@@ -17,6 +17,12 @@ export const OrganizationTest = () => {
         expect(organization.getFields().getCount()).to.equal(0);
       });
 
+      it('Should get the sources of the organisation', () => {
+        const organization: Organization = new Organization('rambo18', 'xxx-aaa-123');
+        const sources = organization.getSources();
+        expect(sources.values()).to.eql([]);
+      });
+
       it('Should not alter the dictionary from getter', () => {
         const organization: Organization = new Organization('rambo2', 'xxx-aaa-123');
         const field: Field = new Field('allmetadatavalues', {
