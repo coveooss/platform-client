@@ -14,18 +14,19 @@ import { DictionaryTest } from './commons/collections/DictionaryTest';
 import { DiffResultArrayTest } from './commons/collections/DiffResultArrayTest';
 import { UrlServiceTest } from './commons/rest/UrlServiceTest';
 import { config } from '../src/config/index';
-import { Logger } from '../src/commons/logger';
 import { OrganizationTest } from './coveoObjects/OrganizationTest';
 import { FieldTest } from './coveoObjects/FieldTest';
 import { ExtensionTest } from './coveoObjects/ExtensionTest';
 import { AssertTest } from './commons/misc/AssertTest';
 import { JsonUtilsTest } from './commons/utils/JsonUtilsTest';
-import { StringUtilsTest } from './commons/utils/StringUtilsTest';
 import { FileUtilsTest } from './commons/utils/FileUtilsTest';
 import { RequestUtilsTest } from './commons/utils/RequestUtilsTest';
 import { BaseCoveoObjectTest } from './coveoObjects/BaseCoveoObjectTest';
+import { Logger } from '../src/commons/logger';
 
-Logger.info(`Environment: ${config.env}\n`);
+console.log(`Environment: ${config.env}\n`);
+
+Logger.disableSpinner();
 
 OrganizationTest();
 DictionaryTest();
@@ -43,7 +44,6 @@ ExtensionTest();
 AssertTest();
 FieldAPITest();
 ExtensionAPITest();
-StringUtilsTest();
 FileUtilsTest();
 RequestUtilsTest();
 LoggerTest();

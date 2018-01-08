@@ -10,7 +10,7 @@ import * as Ora from 'ora';
  * @export
  * @class LoggerSingleton
  */
-class LoggerSingleton {
+export class LoggerSingleton {
   private static logger: LoggerSingleton = new LoggerSingleton();
 
   static INSANE: number = 1;
@@ -27,11 +27,16 @@ class LoggerSingleton {
   private spinner = Ora();
   private level: number = LoggerSingleton.INFO;
   private filename: string = 'coveo-cli.log';
+  private spinnerEnabled: boolean = true;
 
-  public newAction(actionName: string) {
+  private isSpinnerEnabled(): boolean {
+    return this.spinnerEnabled;
+  }
+
+  public newAction(actionName: string): Promise<void> {
     const actionTime = new Date();
     const data = `\n\n#######################################\n${actionName}\n${actionTime}\n#######################################\n`;
-    FileUtils.appendToFile(this.filename, data)
+    return FileUtils.appendToFile(this.filename, data)
       .then(() => {})
       .catch((err: any) => {
         console.error('Unable to save log', err);
@@ -39,15 +44,21 @@ class LoggerSingleton {
   }
 
   public startSpinner(initialMessage?: string) {
-    this.spinner.start(initialMessage || '');
+    if (this.isSpinnerEnabled()) {
+      this.spinner.start(initialMessage || '');
+    }
   }
 
   public stopSpinner() {
-    this.spinner.stop();
+    if (this.isSpinnerEnabled()) {
+      this.spinner.stop();
+    }
   }
 
   public loadingTask(message: string) {
-    this.spinner.text = message;
+    if (this.isSpinnerEnabled()) {
+      this.spinner.text = message;
+    }
   }
 
   public info(message: string, ...meta: any[]) {
@@ -103,10 +114,10 @@ class LoggerSingleton {
       }
     });
 
-    this.spinner[logAction](message + fullMessage);
-
-    this.startSpinner();
-    // this.spinner.color = color;
+    if (this.isSpinnerEnabled()) {
+      this.spinner[logAction](message + fullMessage);
+      this.startSpinner();
+    }
   }
 
   public setLogLevel(level: string) {
@@ -147,6 +158,18 @@ class LoggerSingleton {
 
   public disable() {
     this.level = LoggerSingleton.NOTHING;
+  }
+
+  public disableSpinner() {
+    this.spinnerEnabled = false;
+  }
+
+  public enableSpinner() {
+    this.spinnerEnabled = true;
+  }
+
+  public getLogLevel(): number {
+    return this.level;
   }
 }
 
