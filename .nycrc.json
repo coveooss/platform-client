@@ -1,6 +1,6 @@
 {
   "include": ["src/**/*.ts"],
-  "exclude": ["**/*.d.ts", "**/*.js"],
+  "exclude": ["**/*.d.ts", "**/*.js", "src/commons/interfaces/**/*.ts"],
   "extension": [".ts"],
   "require": ["ts-node/register"],
   "reporter": ["html"],
