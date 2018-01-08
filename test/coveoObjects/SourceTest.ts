@@ -1,4 +1,4 @@
-import { expect, should } from 'chai';
+import { expect } from 'chai';
 import { Source } from './../../src/coveoObjects/Source';
 
 export const SourceTest = () => {

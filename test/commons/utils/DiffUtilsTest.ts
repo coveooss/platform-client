@@ -1,6 +1,6 @@
 // tslint:disable:no-magic-numbers
 import { IDiffOptions } from './../../../src/commands/DiffCommand';
-import { expect, should } from 'chai';
+import { expect } from 'chai';
 import { DiffUtils } from '../../../src/commons/utils/DiffUtils';
 import { Dictionary } from '../../../src/commons/collections/Dictionary';
 import { DiffResultArray } from '../../../src/commons/collections/DiffResultArray';

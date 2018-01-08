@@ -1,4 +1,4 @@
-import { expect, should } from 'chai';
+import { expect } from 'chai';
 import { Field } from '../../src/coveoObjects/Field';
 import { IStringMap } from '../../src/commons/interfaces/IStringMap';
 

@@ -1,11 +1,11 @@
-import { expect, should } from 'chai';
+// tslint:disable:no-magic-numbers
+import { expect } from 'chai';
 import { Dictionary } from '../../../src/commons/collections/Dictionary';
 import { JsonUtils } from '../../../src/commons/utils/JsonUtils';
 import { ClonableTest } from './ClonableTest';
 
 export const DictionaryTest = () => {
   describe('Dictionary', () => {
-
     // Constant variables
     const banana = {
       color: 'yellow',
@@ -29,68 +29,53 @@ export const DictionaryTest = () => {
       classification: {
         category: {
           'Dry Fruits': {
-            'Dehiscent Fruits': [
-              'Loculicidal capsule',
-              'Septicidal capsule',
-              'Silique',
-              'Silicle',
-              'Pyxis',
-              'Poricidal capsule'
-            ],
-            'Indehiscent fruits': [
-              'Achene',
-              'Nut',
-              'Samara',
-              'Grain',
-              'Schizocarp']
+            'Dehiscent Fruits': ['Loculicidal capsule', 'Septicidal capsule', 'Silique', 'Silicle', 'Pyxis', 'Poricidal capsule'],
+            'Indehiscent fruits': ['Achene', 'Nut', 'Samara', 'Grain', 'Schizocarp']
           },
-          'Fleshy Fruits': [
-            'Drupe',
-            'Berry'
-          ]
+          'Fleshy Fruits': ['Drupe', 'Berry']
         }
       }
     };
 
     it('Should add an item to the dictionary', () => {
-      let dict: Dictionary<ClonableTest> = new Dictionary();
+      const dict: Dictionary<ClonableTest> = new Dictionary();
       expect(dict.containsKey('banana')).to.be.false;
-      let clone: ClonableTest = new ClonableTest('banana', banana);
+      const clone: ClonableTest = new ClonableTest('banana', banana);
       dict.add(clone.getId(), clone);
       expect(dict.containsKey('banana')).to.be.true;
     });
 
     it('Should not add an existing item to the dictionary', () => {
-      let dict: Dictionary<ClonableTest> = new Dictionary();
+      const dict: Dictionary<ClonableTest> = new Dictionary();
       expect(dict.getCount()).to.equal(0);
-      let clone: ClonableTest = new ClonableTest('banana', banana);
+      const clone: ClonableTest = new ClonableTest('banana', banana);
       dict.add(clone.getId(), clone);
       expect(dict.containsKey('banana')).to.be.true;
       expect(dict.getCount()).to.equal(1);
       // It should not add this object since there is already an object with the same key in the dictionary
-      let clone2: ClonableTest = new ClonableTest('banana', banana);
+      const clone2: ClonableTest = new ClonableTest('banana', banana);
       dict.add(clone.getId(), clone2);
       expect(dict.getCount()).to.equal(1);
     });
 
     it('Should return the correct item count', () => {
-      let dict: Dictionary<ClonableTest> = new Dictionary();
+      const dict: Dictionary<ClonableTest> = new Dictionary();
       expect(dict.getCount()).to.equal(0);
       // Adding a banana
-      let clone: ClonableTest = new ClonableTest('banana', banana);
+      const clone: ClonableTest = new ClonableTest('banana', banana);
       dict.add(clone.getId(), clone);
       expect(dict.containsKey('banana')).to.be.true;
       expect(dict.getCount()).to.equal(1);
       // Now Adding an apple
-      let clone2: ClonableTest = new ClonableTest('apple', banana);
+      const clone2: ClonableTest = new ClonableTest('apple', banana);
       dict.add(clone2.getId(), clone2);
       // We now have 2 fruits in the basket :D
       expect(dict.getCount()).to.equal(2);
     });
 
     it('Should remove an existing item from the dictionary', () => {
-      let dict: Dictionary<ClonableTest> = new Dictionary();
-      let clone: ClonableTest = new ClonableTest('complex', complex);
+      const dict: Dictionary<ClonableTest> = new Dictionary();
+      const clone: ClonableTest = new ClonableTest('complex', complex);
       // Adding a complex
       dict.add('complex', clone);
       expect(dict.getCount()).to.equal(1);
@@ -103,8 +88,8 @@ export const DictionaryTest = () => {
     });
 
     it('Should not be able remove an item that do not exist in the dictionary', () => {
-      let dict: Dictionary<ClonableTest> = new Dictionary();
-      let clone: ClonableTest = new ClonableTest('banana', banana);
+      const dict: Dictionary<ClonableTest> = new Dictionary();
+      const clone: ClonableTest = new ClonableTest('banana', banana);
       // Adding a banana
       dict.add('banana', clone);
       expect(dict.containsKey('banana')).to.be.true;
@@ -115,8 +100,8 @@ export const DictionaryTest = () => {
     });
 
     it('Should return an item of the dictionary', () => {
-      let dict: Dictionary<ClonableTest> = new Dictionary();
-      let clone: ClonableTest = new ClonableTest('banana', banana);
+      const dict: Dictionary<ClonableTest> = new Dictionary();
+      const clone: ClonableTest = new ClonableTest('banana', banana);
       // Adding a banana
       dict.add('banana', clone);
       expect(dict.getItem('banana')).to.be.eql(clone);
@@ -125,13 +110,13 @@ export const DictionaryTest = () => {
     });
 
     it('Should return undefined if an item do not exist in the dictionary', () => {
-      let dict: Dictionary<ClonableTest> = new Dictionary();
-      let clone: ClonableTest = new ClonableTest('banana', banana);
+      const dict: Dictionary<ClonableTest> = new Dictionary();
+      const clone: ClonableTest = new ClonableTest('banana', banana);
       expect(dict.getItem('notInTheDict')).to.be.undefined;
     });
 
     it('Should return all the keys of the dictionary', () => {
-      let dict: Dictionary<ClonableTest> = new Dictionary();
+      const dict: Dictionary<ClonableTest> = new Dictionary();
       // Adding a bunch of fruits
       dict.add('banana', new ClonableTest('banana', banana));
       dict.add('apple', new ClonableTest('apple', apple));
@@ -142,7 +127,7 @@ export const DictionaryTest = () => {
     });
 
     it('Should return all the values of the dictionary', () => {
-      let dict: Dictionary<ClonableTest> = new Dictionary();
+      const dict: Dictionary<ClonableTest> = new Dictionary();
 
       // Creating a bunch of fruit clones!
       const bananaClonable = new ClonableTest('banana', banana);
@@ -161,7 +146,7 @@ export const DictionaryTest = () => {
     });
 
     it('Should clears all the values of the dictionary', () => {
-      let dict: Dictionary<ClonableTest> = new Dictionary();
+      const dict: Dictionary<ClonableTest> = new Dictionary();
       // Adding a bunch of fruits
       dict.add('banana', new ClonableTest('banana', banana));
       dict.add('apple', new ClonableTest('apple', apple));
@@ -177,7 +162,7 @@ export const DictionaryTest = () => {
     });
 
     it('Should clones all the items of the dictionary', () => {
-      let dict: Dictionary<ClonableTest> = new Dictionary();
+      const dict: Dictionary<ClonableTest> = new Dictionary();
       let clone: Dictionary<ClonableTest> = new Dictionary();
 
       // Adding a bunch of fruits
@@ -202,9 +187,9 @@ export const DictionaryTest = () => {
     });
 
     it('Should clones all the items of the dictionary - complex object', () => {
-      let dict: Dictionary<ClonableTest> = new Dictionary();
+      const dict: Dictionary<ClonableTest> = new Dictionary();
       let clone: Dictionary<ClonableTest> = new Dictionary();
-      let complexClone = {
+      const complexClone = {
         color: 'blue',
         price: 10,
         classification: {
@@ -235,7 +220,7 @@ export const DictionaryTest = () => {
       const bananaClonable = new ClonableTest('banana', banana);
       const strawberryClonable = new ClonableTest('strawberry', strawberry);
 
-      let dict: Dictionary<ClonableTest> = new Dictionary({
+      const dict: Dictionary<ClonableTest> = new Dictionary({
         orange: orangeClonable,
         apple: appleClonable,
         banana: bananaClonable,
@@ -248,17 +233,16 @@ export const DictionaryTest = () => {
     });
 
     it('Should not initialize dictionary with an empty object', () => {
-      let dict: Dictionary<ClonableTest> = new Dictionary({});
-      let dict2: Dictionary<ClonableTest> = new Dictionary();
+      const dict: Dictionary<ClonableTest> = new Dictionary({});
+      const dict2: Dictionary<ClonableTest> = new Dictionary();
 
       expect(dict).to.eql(dict2);
     });
 
     it('Should not create a Dictionary with an object that does not implement the clone method', () => {
-      let dict: Dictionary<any> = new Dictionary();
+      const dict: Dictionary<any> = new Dictionary();
       dict.add('asd', ['cvb', 234]);
       expect(dict.clone).to.throw();
     });
-
   });
 };

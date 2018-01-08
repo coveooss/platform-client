@@ -25,7 +25,6 @@ export class FieldController extends BaseController {
     super();
   }
 
-  // TODO: test this method
   /**
    * Return a simplified diff object.
    * This function makes it easier to get a section of the diff result and use it in a API call.

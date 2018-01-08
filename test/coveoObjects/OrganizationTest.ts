@@ -1,4 +1,4 @@
-import { expect, should } from 'chai';
+import { expect } from 'chai';
 import { Organization } from '../../src/coveoObjects/Organization';
 import { Field } from '../../src/coveoObjects/Field';
 import { Extension } from '../../src/coveoObjects/Extension';

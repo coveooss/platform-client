@@ -1,5 +1,5 @@
 // tslint:disable:no-magic-numbers
-import { expect, should, assert } from 'chai';
+import { expect } from 'chai';
 import { ArrayUtils } from '../../../src/commons/utils/ArrayUtils';
 import { Logger } from '../../../src/commons/logger';
 
