@@ -12,6 +12,17 @@ import { BaseController } from './BaseController';
 import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
 import { IDiffOptions } from '../commands/DiffCommand';
 
+export interface IDiffResultArrayClean {
+  summary: {
+    NEW: number;
+    UPDATED: number;
+    DELETED: number;
+  };
+  NEW: IStringMap<string>;
+  UPDATED: IStringMap<string>;
+  DELETED: IStringMap<string>;
+}
+
 export class FieldController extends BaseController {
   /**
    * To prevent having too large fields batches that can't be processed.
@@ -32,7 +43,7 @@ export class FieldController extends BaseController {
    * @param {DiffResultArray<Field>} diffResultArray
    * @returns {IStringMap<any>}
    */
-  public getCleanVersion(diffResultArray: DiffResultArray<Field>, summary: boolean = true): IStringMap<any> {
+  public getCleanVersion(diffResultArray: DiffResultArray<Field>, summary: boolean = true): IDiffResultArrayClean {
     const getFieldModel = (fields: Field[]) => _.map(fields, (f: Field) => f.getFieldModel());
     const cleanVersion: IStringMap<any> = {};
 
@@ -50,7 +61,7 @@ export class FieldController extends BaseController {
       DELETED: getFieldModel(diffResultArray.DELETED)
     });
 
-    return cleanVersion;
+    return cleanVersion as IDiffResultArrayClean;
   }
 
   /**
@@ -66,9 +77,10 @@ export class FieldController extends BaseController {
       .then(() => {
         const diffResultArray = DiffUtils.getDiffResult(this.organization1.getFields(), this.organization2.getFields(), diffOptions);
         if (diffResultArray.containsItems()) {
-          Logger.verbose(`${diffResultArray.NEW.length} new field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
-          Logger.verbose(`${diffResultArray.DELETED.length} deleted field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
-          Logger.verbose(`${diffResultArray.UPDATED.length} updated field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
+          Logger.verbose('Diff Summary:');
+          Logger.verbose(`> ${diffResultArray.NEW.length} new field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
+          Logger.verbose(`> ${diffResultArray.DELETED.length} deleted field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
+          Logger.verbose(`> ${diffResultArray.UPDATED.length} updated field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
         }
         return diffResultArray;
       })
@@ -131,6 +143,7 @@ export class FieldController extends BaseController {
     return authorizedOperations;
   }
 
+  // TODO: to test
   private graduateNew(diffResult: DiffResultArray<Field>): Promise<void> {
     Logger.verbose(`Creating ${diffResult.NEW.length} new field${diffResult.NEW.length > 1 ? 's' : ''} in ${this.organization2.getId()} `);
     return FieldAPI.createFields(this.organization2, this.extractFieldModel(diffResult.NEW), this.fieldsPerBatch)
@@ -142,6 +155,7 @@ export class FieldController extends BaseController {
       });
   }
 
+  // TODO: to test
   private graduateUpdated(diffResult: DiffResultArray<Field>): Promise<void> {
     Logger.verbose(
       `Updating ${diffResult.UPDATED.length} existing field${diffResult.NEW.length > 1 ? 's' : ''} in ${this.organization2.getId()} `
@@ -155,11 +169,12 @@ export class FieldController extends BaseController {
       });
   }
 
+  // TODO: to test: make sure the query is well formed (with the list of fields to delete)
   private graduateDeleted(diffResult: DiffResultArray<Field>): Promise<void> {
     Logger.verbose(
       `Deleting ${diffResult.UPDATED.length} existing field${diffResult.NEW.length > 1 ? 's' : ''} from ${this.organization2.getId()} `
     );
-    return FieldAPI.deleteFields(this.organization2, _.pluck(diffResult.DELETED, 'name'), this.fieldsPerBatch)
+    return FieldAPI.deleteFields(this.organization2, _.map(diffResult.DELETED, (field: Field) => field.getName()), this.fieldsPerBatch)
       .then((responses: RequestResponse[]) => {
         this.graduateSuccessHandler(responses, 'DELETE operation successfully completed');
       })
