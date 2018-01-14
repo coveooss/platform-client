@@ -17,7 +17,7 @@ gulp.task('dev', ['build'], () => {
 
 gulp.task('devTest', ['watchTest'], () => {
   let stream = nodemon({
-    exec: 'npm test',
+    exec: 'gulp test-nyan',
     watch: 'test',
     env: { NODE_ENV: process.env.NODE_ENV }
   });
