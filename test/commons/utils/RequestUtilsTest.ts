@@ -8,6 +8,12 @@ import { TestExpectedRequestAndResponse } from '../../../src/commands/TestExpect
 
 export const RequestUtilsTest = () => {
   describe('Rest Utils', () => {
+    let scope: nock.Scope;
+
+    afterEach(() => {
+      expect(scope.pendingMocks(), scope.pendingMocks().toString()).to.be.empty;
+    });
+
     before(() => {
       // stub = sinon.stub(http, 'request');
     });
@@ -17,7 +23,7 @@ export const RequestUtilsTest = () => {
     });
 
     it('Should send an empty request', (done: MochaDone) => {
-      nock(UrlService.getDefaultUrl())
+      scope = nock(UrlService.getDefaultUrl())
         .get('/somewhere')
         .reply(RequestUtils.OK);
 

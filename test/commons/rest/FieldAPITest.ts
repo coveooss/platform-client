@@ -520,23 +520,43 @@ export const FieldAPITest = () => {
         });
     });
 
-    // it('Should load all fields from the organization (one page)', (done: MochaDone) => {
-    //   const organization: Organization = new Organization('asdfghjkl', 'xxx-xxx');
-    //   scope = nock(UrlService.getDefaultUrl())
-    //   .log(console.log)
-    //     .get('/rest/organizations/asdfghjkl/indexes/page/fields')
-    //     .query({ page: 0, perPage: 400, origin: 'USER' })
-    //     .reply(RequestUtils.OK);
+    it('Should load all fields from the organization (one page)', (done: MochaDone) => {
+      const organization: Organization = new Organization('hjkmnbfjhj3gfde45', 'xxx-xxx');
+      scope = nock(UrlService.getDefaultUrl())
+        // First expected request
+        .get('/rest/organizations/hjkmnbfjhj3gfde45/indexes/page/fields')
+        .query({ page: 0, perPage: 400, origin: 'USER' })
+        .reply(RequestUtils.OK, {
+          items: [
+            {
+              name: 'allmetadatavalues',
+              description: '',
+              type: 'STRING'
+            },
+            {
+              name: 'attachmentdepth',
+              description: 'The attachment depth.',
+              type: 'STRING'
+            },
+            {
+              name: 'attachmentparentid',
+              description: 'The identifier of the attachment"s immediate parent, for parent/child relationship.',
+              type: 'LONG'
+            }
+          ],
+          totalPages: 1,
+          totalEntries: 3
+        });
 
-    //   FieldAPI.loadFields(organization)
-    //     .then(() => {
-    //       // expect(organization.getFields().getCount()).to.eql(3);
-    //       done();
-    //     })
-    //     .catch((err: any) => {
-    //       done(err);
-    //     });
-    // });
+      FieldAPI.loadFields(organization)
+        .then(() => {
+          expect(organization.getFields().getCount()).to.eql(3);
+          done();
+        })
+        .catch((err: any) => {
+          done(err);
+        });
+    });
 
     it('Should load all fields from the organization', (done: MochaDone) => {
       const organization: Organization = new Organization('hello', 'xxx-xxx');
