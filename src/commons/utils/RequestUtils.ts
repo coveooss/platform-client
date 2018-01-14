@@ -8,6 +8,7 @@ export class RequestUtils {
   static CREATED: number = 201;
   static NO_CONTENT: number = 204;
   static REDIRECTION: number = 300;
+  static ACCESS_DENIED: number = 403;
 
   static get(uri: string, apiKey: string): Promise<request.RequestResponse> {
     return new Promise((resolve: (value?: any | Thenable<{}>) => void, reject: (error: any) => void) => {

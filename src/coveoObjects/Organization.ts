@@ -46,12 +46,16 @@ export class Organization extends BaseCoveoObject implements IOrganization {
     this.fields.add(fieldName, field);
   }
 
-  // TODO: test in organization class
   public addMultipleFields(fields: IStringMap<any>[]) {
     fields.forEach((f: IStringMap<any>) => {
       const field = new Field(f['name'], f);
       this.addField(field.getName(), field);
     });
+  }
+
+  // TODO: test
+  public clearFields() {
+    this.fields.clear();
   }
 
   public getSources(): Dictionary<Source> {

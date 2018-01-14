@@ -14,13 +14,13 @@ import { IDiffOptions } from '../commands/DiffCommand';
 
 export interface IDiffResultArrayClean {
   summary: {
-    NEW: number;
-    UPDATED: number;
-    DELETED: number;
+    TO_CREATE: number;
+    TO_UPDATE: number;
+    TO_DELETE: number;
   };
-  NEW: IStringMap<string>;
-  UPDATED: IStringMap<string>;
-  DELETED: IStringMap<string>;
+  TO_CREATE: IStringMap<string>;
+  TO_UPDATE: IStringMap<string>;
+  TO_DELETE: IStringMap<string>;
 }
 
 export class FieldController extends BaseController {
@@ -49,16 +49,16 @@ export class FieldController extends BaseController {
 
     if (summary) {
       cleanVersion.summary = {
-        NEW: diffResultArray.TO_CREATE.length,
-        UPDATED: diffResultArray.TO_UPDATE.length,
-        DELETED: diffResultArray.TO_DELETE.length
+        TO_CREATE: diffResultArray.TO_CREATE.length,
+        TO_UPDATE: diffResultArray.TO_UPDATE.length,
+        TO_DELETE: diffResultArray.TO_DELETE.length
       };
     }
 
     _.extend(cleanVersion, {
-      NEW: getFieldModel(diffResultArray.TO_CREATE),
-      UPDATED: getFieldModel(diffResultArray.TO_UPDATE),
-      DELETED: getFieldModel(diffResultArray.TO_DELETE)
+      TO_CREATE: getFieldModel(diffResultArray.TO_CREATE),
+      TO_UPDATE: getFieldModel(diffResultArray.TO_UPDATE),
+      TO_DELETE: getFieldModel(diffResultArray.TO_DELETE)
     });
 
     return cleanVersion as IDiffResultArrayClean;

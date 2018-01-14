@@ -59,4 +59,4 @@ SourceTest();
 
 BaseControllerTest();
 ExtensionControllerTest();
-// FieldControllerTest();
+FieldControllerTest();

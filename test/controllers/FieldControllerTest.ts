@@ -1,8 +1,14 @@
-import { expect } from 'chai';
+// tslint:disable:no-magic-numbers
+import * as nock from 'nock';
+import { expect, assert } from 'chai';
 import { Organization } from './../../src/coveoObjects/Organization';
 import { FieldController } from './../../src/controllers/FieldController';
 import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
 import { Field } from '../../src/coveoObjects/Field';
+import { UrlService } from '../../src/commons/rest/UrlService';
+import { RequestUtils } from '../../src/commons/utils/RequestUtils';
+import { Utils } from '../../src/commons/utils/Utils';
+import { StaticErrorMessage } from '../../src/commons/errors';
 
 export const FieldControllerTest = () => {
   describe('Field Controller', () => {
@@ -33,28 +39,41 @@ export const FieldControllerTest = () => {
 
     // Controller
     const fieldController = new FieldController(org1, org2);
+
+    let scope: nock.Scope;
+
+    afterEach(() => {
+      if (Utils.exists(scope)) {
+        expect(scope.pendingMocks(), scope.pendingMocks().toString()).to.be.empty;
+      }
+
+      // Reset Orgs
+      org1.clearFields();
+      org2.clearFields();
+    });
+
     describe('GetCleanVersion Method', () => {
       it('Should return the clean diff version - empty', () => {
         const diffResultArray: DiffResultArray<Field> = new DiffResultArray();
         const cleanVersion = fieldController.getCleanVersion(diffResultArray);
         expect(cleanVersion).to.eql({
-          summary: { NEW: 0, UPDATED: 0, DELETED: 0 },
-          NEW: [],
-          UPDATED: [],
-          DELETED: []
+          summary: { TO_CREATE: 0, TO_UPDATE: 0, TO_DELETE: 0 },
+          TO_CREATE: [],
+          TO_UPDATE: [],
+          TO_DELETE: []
         });
       });
 
       it('Should return the clean diff version', () => {
         const diffResultArray: DiffResultArray<Field> = new DiffResultArray();
-        diffResultArray.NEW.push(field1);
-        diffResultArray.UPDATED.push(field2);
-        diffResultArray.UPDATED.push(field3);
+        diffResultArray.TO_CREATE.push(field1);
+        diffResultArray.TO_UPDATE.push(field2);
+        diffResultArray.TO_UPDATE.push(field3);
 
         const cleanVersion = fieldController.getCleanVersion(diffResultArray);
         expect(cleanVersion).to.eql({
-          summary: { NEW: 1, UPDATED: 2, DELETED: 0 },
-          NEW: [
+          summary: { TO_CREATE: 1, TO_UPDATE: 2, TO_DELETE: 0 },
+          TO_CREATE: [
             {
               name: 'firstname',
               description: 'The first name of a person',
@@ -62,7 +81,7 @@ export const FieldControllerTest = () => {
               includeInQuery: true
             }
           ],
-          UPDATED: [
+          TO_UPDATE: [
             {
               name: 'lastname',
               description: 'The last name of a person',
@@ -76,17 +95,133 @@ export const FieldControllerTest = () => {
               includeInQuery: false
             }
           ],
-          DELETED: []
+          TO_DELETE: []
         });
       });
     });
 
     describe('Diff Method', () => {
-      it('Should return the diff result', (done: MochaDone) => {
-        // TODO: test with multiple options
+      it('Should return an empty diff result', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          // First expected request
+          .get('/rest/organizations/dev/indexes/page/fields')
+          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'allmetadatavalues',
+                description: 'new description',
+                type: 'STRING'
+              },
+              {
+                name: 'new field',
+                description: 'The attachment depth.',
+                type: 'STRING'
+              }
+            ]
+          })
+          .get('/rest/organizations/prod/indexes/page/fields')
+          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'allmetadatavalues',
+                description: 'new description',
+                type: 'STRING'
+              },
+              {
+                name: 'new field',
+                description: 'The attachment depth.',
+                type: 'STRING'
+              }
+            ]
+          });
+
         fieldController
           .diff()
-          .then((diffResultArray: DiffResultArray<Field>) => {
+          .then((diff: DiffResultArray<Field>) => {
+            expect(diff.containsItems()).to.be.false;
+            done();
+          })
+          .catch((err: any) => {
+            done(err);
+          });
+      });
+
+      it('Should not return the diff result', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          // First expected request
+          .get('/rest/organizations/dev/indexes/page/fields')
+          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .reply(RequestUtils.ACCESS_DENIED, { message: 'Access is denied.', errorCode: 'ACCESS_DENIED' })
+          .get('/rest/organizations/prod/indexes/page/fields')
+          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .reply(RequestUtils.ACCESS_DENIED, { message: 'Access is denied.', errorCode: 'ACCESS_DENIED' });
+
+        fieldController
+          .diff()
+          .then(() => {
+            done('This function should not resolve');
+          })
+          .catch((err: any) => {
+            assert.throws(() => {
+              throw Error(err);
+            }, '{\n  "message": "Access is denied.",\n  "errorCode": "ACCESS_DENIED"\n}');
+            done();
+          });
+      });
+
+      it('Should return the diff result', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          // First expected request
+          .get('/rest/organizations/dev/indexes/page/fields')
+          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'allmetadatavalues',
+                description: '',
+                type: 'STRING'
+              },
+              {
+                name: 'attachmentdepth',
+                description: 'The attachment depth.',
+                type: 'STRING'
+              },
+              {
+                name: 'attachmentparentid',
+                description: 'The identifier of the attachment"s immediate parent, for parent/child relationship.',
+                type: 'LONG'
+              }
+            ],
+            totalPages: 1,
+            totalEntries: 3
+          })
+          // Second expected request
+          .get('/rest/organizations/prod/indexes/page/fields')
+          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'allmetadatavalues',
+                description: 'new description',
+                type: 'STRING'
+              },
+              {
+                name: 'new field',
+                description: 'The attachment depth.',
+                type: 'STRING'
+              }
+            ],
+            totalPages: 1,
+            totalEntries: 2
+          });
+
+        fieldController
+          .diff()
+          .then(() => {
+            expect(org1.getFields().getCount()).to.be.eql(3);
+            expect(org2.getFields().getCount()).to.be.eql(2);
             done();
           })
           .catch((err: any) => {
