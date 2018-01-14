@@ -1,3 +1,4 @@
+import { EnvironmentUtils } from './commons/utils/EnvironmentUtils';
 setEnvironmentIfNecessary();
 
 import * as inquirer from 'inquirer';
@@ -7,7 +8,6 @@ import { InteractiveMode } from './console/InteractiveMode';
 import { SettingsController } from './console/SettingsController';
 import { DiffCommand, IDiffOptions } from './commands/DiffCommand';
 import { Logger } from './commons/logger';
-import { EnvironmentUtils } from './commons/utils/EnvironmentUtils';
 
 const program = require('commander');
 const pkg: any = require('./../package.json');
@@ -73,6 +73,7 @@ program
   // .option('-s, --sources', 'Diff sources')
   .option('-e, --extensions', 'Diff extensions')
   // .option('-b, --openInBrowser', 'Open Diff in default Browser')
+  .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
   .option('-i, --ignoreKeys []', 'Object keys to ignore. String separated by ","', list)
   .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', list)
   .option(
@@ -88,7 +89,8 @@ program
     // Set diff options
     const diffOptions: IDiffOptions = {
       keysToIgnore: options.ignoreKeys || [],
-      includeOnly: options.onlyKeys || []
+      includeOnly: options.onlyKeys || [],
+      silent: options.silent
     };
 
     const command = new DiffCommand(originOrg, destinationOrg, originApiKey, destinationApiKey, diffOptions);
@@ -152,7 +154,10 @@ function setEnvironmentIfNecessary() {
   if (i !== -1 && i + 1 < process.argv.length) {
     const env = process.argv[i + 1];
     EnvironmentUtils.setNodeEnvironment(env);
+  } else {
+    EnvironmentUtils.setDefaultNodeEnvironment();
   }
+  console.log(`Application running in ${EnvironmentUtils.getNodeEnvironment()}`);
 }
 
 function setLogger(options: any, command: string) {

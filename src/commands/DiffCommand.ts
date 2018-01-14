@@ -20,6 +20,10 @@ export interface IDiffOptions {
    * Specify which key to use for the Diff action. When defined, this option override the "keysToIgnore" option
    */
   includeOnly?: string[];
+  /**
+   * Prevent the diff result to be opened in a file once the operation has complete
+   */
+  silent?: boolean;
 }
 
 export class DiffCommand {
@@ -71,7 +75,9 @@ export class DiffCommand {
             Logger.info('Diff operation completed');
             Logger.info('File saved as fieldDiff.json');
             Logger.stopSpinner();
-            opn('fieldDiff.json');
+            if (!this.options.silent) {
+              opn('fieldDiff.json');
+            }
             process.exit();
           })
           .catch((err: any) => {

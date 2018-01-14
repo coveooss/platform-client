@@ -24,6 +24,7 @@ import { Logger } from '../src/commons/logger';
 import { ErrorTest } from './commons/errorTest';
 import { EnvironmentUtilsTest } from './commons/utils/EnvironmentUtils';
 import { UtilsTest } from './commons/utils/UtilsTest';
+import { ConsoleTest } from './consoleTest';
 
 console.log(`Environment: ${config.env}\n`);
 
@@ -60,3 +61,6 @@ SourceTest();
 BaseControllerTest();
 ExtensionControllerTest();
 FieldControllerTest();
+
+// Console
+ConsoleTest();
