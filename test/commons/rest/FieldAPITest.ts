@@ -364,7 +364,7 @@ export const FieldAPITest = () => {
             system: false
           }
         ])
-        .reply(RequestUtils.OK)
+        .reply(RequestUtils.NO_CONTENT)
         // Second expected request
         .put('/rest/organizations/myorg/indexes/fields/batch/update', [
           {
@@ -410,7 +410,7 @@ export const FieldAPITest = () => {
             system: false
           }
         ])
-        .reply(RequestUtils.OK);
+        .reply(RequestUtils.NO_CONTENT);
 
       FieldAPI.updateFields(organization, JsonUtils.clone(fieldList), 3)
         .then(() => done())

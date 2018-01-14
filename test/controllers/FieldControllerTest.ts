@@ -10,6 +10,7 @@ import { RequestUtils } from '../../src/commons/utils/RequestUtils';
 import { Utils } from '../../src/commons/utils/Utils';
 import { StaticErrorMessage } from '../../src/commons/errors';
 import { IGraduateOptions, IHTTPGraduateOptions } from '../../src/commands/GraduateCommand';
+import { BaseController } from '../../src/controllers/BaseController';
 
 export const FieldControllerTest = () => {
   describe('Field Controller', () => {
@@ -232,7 +233,7 @@ export const FieldControllerTest = () => {
     });
 
     describe('Graduate Method', () => {
-      it('Should graduate fields', (done: MochaDone) => {
+      it('Should graduate fields (POST, PUT, DELETE)', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/indexes/page/fields')
           .query({ page: 0, perPage: 400, origin: 'USER' })
@@ -300,7 +301,7 @@ export const FieldControllerTest = () => {
               type: 'STRING'
             }
           ])
-          .reply(RequestUtils.OK)
+          .reply(RequestUtils.NO_CONTENT)
           .delete('/rest/organizations/prod/indexes/fields/batch/delete')
           .query({ fields: 'attachmentparentid,authorloginname' })
           .reply(RequestUtils.NO_CONTENT);
@@ -311,6 +312,96 @@ export const FieldControllerTest = () => {
           DELETE: true
         };
 
+        fieldController
+          .graduate(graduateOptions)
+          .then(() => {
+            done();
+          })
+          .catch((err: any) => {
+            done(err);
+          });
+      });
+
+      it('Should not graduate fields: Graduation error', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          .get('/rest/organizations/dev/indexes/page/fields')
+          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'allmetadatavalues',
+                description: '',
+                type: 'STRING'
+              },
+              {
+                name: 'attachmentdepth',
+                description: 'The attachment depth.',
+                type: 'STRING'
+              },
+              {
+                name: 'newfield',
+                description: 'new description',
+                type: 'LONG'
+              }
+            ],
+            totalPages: 1,
+            totalEntries: 3
+          })
+          .get('/rest/organizations/prod/indexes/page/fields')
+          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'allmetadatavalues',
+                description: 'new description',
+                type: 'STRING'
+              },
+              {
+                name: 'attachmentdepth',
+                description: 'The attachment depth.',
+                type: 'STRING'
+              },
+              {
+                name: 'attachmentparentid',
+                description: 'The identifier of the attachment"s immediate parent, for parent/child relationship.',
+                type: 'LONG'
+              },
+              {
+                name: 'authorloginname',
+                description: 'Login Name of the item author',
+                type: 'STRING'
+              }
+            ],
+            totalPages: 1,
+            totalEntries: 2
+          })
+          .post('/rest/organizations/prod/indexes/fields/batch/create', [
+            {
+              name: 'newfield',
+              description: 'new description',
+              type: 'LONG'
+            }
+          ])
+          .reply(RequestUtils.ACCESS_DENIED, 'not today')
+          .put('/rest/organizations/prod/indexes/fields/batch/update', [
+            {
+              name: 'allmetadatavalues',
+              description: '',
+              type: 'STRING'
+            }
+          ])
+          .reply(RequestUtils.ACCESS_DENIED, 'very sorry')
+          .delete('/rest/organizations/prod/indexes/fields/batch/delete')
+          .query({ fields: 'attachmentparentid,authorloginname' })
+          .reply(RequestUtils.ACCESS_DENIED, 'stop that');
+
+        const graduateOptions: IHTTPGraduateOptions = {
+          POST: true,
+          PUT: true,
+          DELETE: true
+        };
+
+        // TODO: add a spy on graduateErrorHandler
         fieldController
           .graduate(graduateOptions)
           .then(() => {
@@ -387,7 +478,55 @@ export const FieldControllerTest = () => {
           });
       });
 
-      it('Should graduate fields', (done: MochaDone) => {
+      it('Should not graduate: failed diff', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          .get('/rest/organizations/dev/indexes/page/fields')
+          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .reply(RequestUtils.ACCESS_DENIED, 'some message')
+          .get('/rest/organizations/prod/indexes/page/fields')
+          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'allmetadatavalues',
+                description: '',
+                type: 'STRING'
+              },
+              {
+                name: 'attachmentdepth',
+                description: 'The attachment depth.',
+                type: 'STRING'
+              },
+              {
+                name: 'newfield',
+                description: 'new description',
+                type: 'LONG'
+              }
+            ],
+            totalPages: 1,
+            totalEntries: 3
+          });
+
+        const graduateOptions: IHTTPGraduateOptions = {
+          POST: true,
+          PUT: true,
+          DELETE: true
+        };
+
+        fieldController
+          .graduate(graduateOptions)
+          .then((resolved: any[]) => {
+            done('This function should not resolve');
+          })
+          .catch((err: any) => {
+            assert.throws(() => {
+              throw Error(err);
+            }, 'some message');
+            done();
+          });
+      });
+
+      it('Should have nothing to graduate: No HTTP verbe selected', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/indexes/page/fields')
           .query({ page: 0, perPage: 400, origin: 'USER' })
