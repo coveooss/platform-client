@@ -23,6 +23,7 @@ import { BaseCoveoObjectTest } from './coveoObjects/BaseCoveoObjectTest';
 import { Logger } from '../src/commons/logger';
 import { ErrorTest } from './commons/errorTest';
 import { EnvironmentUtilsTest } from './commons/utils/EnvironmentUtils';
+import { UtilsTest } from './commons/utils/UtilsTest';
 
 console.log(`Environment: ${config.env}\n`);
 
@@ -47,6 +48,7 @@ ExtensionAPITest();
 FileUtilsTest();
 RequestUtilsTest();
 EnvironmentUtilsTest();
+UtilsTest();
 LoggerTest();
 ErrorTest();
 

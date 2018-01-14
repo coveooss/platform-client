@@ -38,7 +38,7 @@ export class Utils {
   }
 
   static stringStartsWith(str: string, startWith: string): boolean {
-    return str.slice(0, startWith.length) === startWith;
+    return Utils.exists(str) ? str.slice(0, startWith.length) === startWith : false;
   }
 
   static isNonEmptyArray(obj: any): boolean {
