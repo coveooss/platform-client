@@ -2,13 +2,14 @@
 import * as sinon from 'sinon';
 import * as nock from 'nock';
 import { FieldAPI } from './../../../src/commons/rest/FieldAPI';
-import { expect } from 'chai';
+import { expect, assert } from 'chai';
 import { UrlService } from '../../../src/commons/rest/UrlService';
 import { RequestUtils } from '../../../src/commons/utils/RequestUtils';
 import { Organization } from '../../../src/coveoObjects/Organization';
 import { parse } from 'url';
 import { IStringMap } from '../../../src/commons/interfaces/IStringMap';
 import { JsonUtils } from '../../../src/commons/utils/JsonUtils';
+import { StaticErrorMessage } from '../../../src/commons/errors';
 
 export const FieldAPITest = () => {
   describe('Field API', () => {
@@ -499,6 +500,43 @@ export const FieldAPITest = () => {
       const organization: Organization = new Organization('theorg', 'xxx-xxx');
       expect(() => FieldAPI.loadOtherPages(organization, -1)).to.throw();
     });
+
+    it('Should throw an "Unexpected Response" error ', (done: MochaDone) => {
+      const organization: Organization = new Organization('67ujnbgh', 'xxx-xxx');
+      scope = nock(UrlService.getDefaultUrl())
+        .get('/rest/organizations/67ujnbgh/indexes/page/fields')
+        .query({ page: 0, perPage: 400, origin: 'USER' })
+        .reply(RequestUtils.OK, { invalidKey: 'radom value' });
+
+      FieldAPI.loadFields(organization)
+        .then(() => {
+          done('This function should not resolve');
+        })
+        .catch((err: any) => {
+          assert.throws(() => {
+            throw Error(err);
+          }, StaticErrorMessage.UNEXPECTED_RESPONSE);
+          done();
+        });
+    });
+
+    // it('Should load all fields from the organization (one page)', (done: MochaDone) => {
+    //   const organization: Organization = new Organization('asdfghjkl', 'xxx-xxx');
+    //   scope = nock(UrlService.getDefaultUrl())
+    //   .log(console.log)
+    //     .get('/rest/organizations/asdfghjkl/indexes/page/fields')
+    //     .query({ page: 0, perPage: 400, origin: 'USER' })
+    //     .reply(RequestUtils.OK);
+
+    //   FieldAPI.loadFields(organization)
+    //     .then(() => {
+    //       // expect(organization.getFields().getCount()).to.eql(3);
+    //       done();
+    //     })
+    //     .catch((err: any) => {
+    //       done(err);
+    //     });
+    // });
 
     it('Should load all fields from the organization', (done: MochaDone) => {
       const organization: Organization = new Organization('hello', 'xxx-xxx');

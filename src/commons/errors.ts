@@ -4,7 +4,10 @@ export class StaticErrorMessage {
 
   public static UNABLE_TO_DIFF: string = 'Diff operation failed';
   public static UNABLE_TO_GRADUATE: string = 'Graduation opertaion failed';
-  public static UNABLE_TO_API_REQUEST: string = 'Unable to perform API request';
+
+  // Rest
+  public static FAILED_API_REQUEST: string = 'Unable to perform API request';
+  public static UNEXPECTED_RESPONSE: string = 'Unexepected response from the server';
 
   // Fields
   public static MISSING_FIELD_NAME: string = 'Missing field name';

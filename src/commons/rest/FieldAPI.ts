@@ -8,6 +8,7 @@ import { ArrayUtils } from '../utils/ArrayUtils';
 import { Assert } from '../misc/Assert';
 import { IStringMap } from '../interfaces/IStringMap';
 import { JsonUtils } from '../utils/JsonUtils';
+import { StaticErrorMessage } from '../errors';
 
 export class FieldAPI {
   public static createFields(org: Organization, fieldModels: IStringMap<any>[], fieldsPerBatch: number): Promise<RequestResponse[]> {
@@ -51,6 +52,7 @@ export class FieldAPI {
     return new Promise((resolve, reject) => {
       this.getFieldsPage(org, 0)
         .then((response: RequestResponse) => {
+          Assert.exists(response.body && response.body.items, StaticErrorMessage.UNEXPECTED_RESPONSE);
           org.addMultipleFields(response.body.items);
 
           Logger.verbose(`${response.body.items.length} fields found in ${org.getId()}`);
@@ -79,6 +81,7 @@ export class FieldAPI {
     return Promise.all(_.map(pageArray, (page: number) => this.getFieldsPage(org, page))).then((otherPages: RequestResponse[]) => {
       Logger.verbose(`Successfully loaded ${totalPages - 1} additional pages of fields from ${org.getId()} `);
       _.each(otherPages, (response: RequestResponse) => {
+        Assert.exists(response.body && response.body.items, StaticErrorMessage.UNEXPECTED_RESPONSE);
         org.addMultipleFields(response.body.items);
       });
     });
