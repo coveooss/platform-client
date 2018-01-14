@@ -9,6 +9,7 @@ import { UrlService } from '../../src/commons/rest/UrlService';
 import { RequestUtils } from '../../src/commons/utils/RequestUtils';
 import { Utils } from '../../src/commons/utils/Utils';
 import { StaticErrorMessage } from '../../src/commons/errors';
+import { IGraduateOptions, IHTTPGraduateOptions } from '../../src/commands/GraduateCommand';
 
 export const FieldControllerTest = () => {
   describe('Field Controller', () => {
@@ -231,7 +232,230 @@ export const FieldControllerTest = () => {
     });
 
     describe('Graduate Method', () => {
-      // TODO:
+      it('Should graduate fields', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          .get('/rest/organizations/dev/indexes/page/fields')
+          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'allmetadatavalues',
+                description: '',
+                type: 'STRING'
+              },
+              {
+                name: 'attachmentdepth',
+                description: 'The attachment depth.',
+                type: 'STRING'
+              },
+              {
+                name: 'newfield',
+                description: 'new description',
+                type: 'LONG'
+              }
+            ],
+            totalPages: 1,
+            totalEntries: 3
+          })
+          .get('/rest/organizations/prod/indexes/page/fields')
+          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'allmetadatavalues',
+                description: 'new description',
+                type: 'STRING'
+              },
+              {
+                name: 'attachmentdepth',
+                description: 'The attachment depth.',
+                type: 'STRING'
+              },
+              {
+                name: 'attachmentparentid',
+                description: 'The identifier of the attachment"s immediate parent, for parent/child relationship.',
+                type: 'LONG'
+              },
+              {
+                name: 'authorloginname',
+                description: 'Login Name of the item author',
+                type: 'STRING'
+              }
+            ],
+            totalPages: 1,
+            totalEntries: 2
+          })
+          .post('/rest/organizations/prod/indexes/fields/batch/create', [
+            {
+              name: 'newfield',
+              description: 'new description',
+              type: 'LONG'
+            }
+          ])
+          .reply(RequestUtils.OK)
+          .put('/rest/organizations/prod/indexes/fields/batch/update', [
+            {
+              name: 'allmetadatavalues',
+              description: '',
+              type: 'STRING'
+            }
+          ])
+          .reply(RequestUtils.OK)
+          .delete('/rest/organizations/prod/indexes/fields/batch/delete')
+          .query({ fields: 'attachmentparentid,authorloginname' })
+          .reply(RequestUtils.NO_CONTENT);
+
+        const graduateOptions: IHTTPGraduateOptions = {
+          POST: true,
+          PUT: true,
+          DELETE: true
+        };
+
+        fieldController
+          .graduate(graduateOptions)
+          .then(() => {
+            done();
+          })
+          .catch((err: any) => {
+            done(err);
+          });
+      });
+
+      it('Should have nothing to graduate: Similar orgs', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          .get('/rest/organizations/dev/indexes/page/fields')
+          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'allmetadatavalues',
+                description: '',
+                type: 'STRING'
+              },
+              {
+                name: 'attachmentdepth',
+                description: 'The attachment depth.',
+                type: 'STRING'
+              },
+              {
+                name: 'newfield',
+                description: 'new description',
+                type: 'LONG'
+              }
+            ],
+            totalPages: 1,
+            totalEntries: 3
+          })
+          .get('/rest/organizations/prod/indexes/page/fields')
+          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'allmetadatavalues',
+                description: '',
+                type: 'STRING'
+              },
+              {
+                name: 'attachmentdepth',
+                description: 'The attachment depth.',
+                type: 'STRING'
+              },
+              {
+                name: 'newfield',
+                description: 'new description',
+                type: 'LONG'
+              }
+            ],
+            totalPages: 1,
+            totalEntries: 3
+          });
+
+        const graduateOptions: IHTTPGraduateOptions = {
+          POST: true,
+          PUT: true,
+          DELETE: true
+        };
+
+        fieldController
+          .graduate(graduateOptions)
+          .then((resolved: any[]) => {
+            expect(resolved).to.be.empty;
+            done();
+          })
+          .catch((err: any) => {
+            done(err);
+          });
+      });
+
+      it('Should graduate fields', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          .get('/rest/organizations/dev/indexes/page/fields')
+          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'allmetadatavalues',
+                description: '',
+                type: 'STRING'
+              },
+              {
+                name: 'attachmentdepth',
+                description: 'The attachment depth.',
+                type: 'STRING'
+              },
+              {
+                name: 'newfield',
+                description: 'new description',
+                type: 'LONG'
+              }
+            ],
+            totalPages: 1,
+            totalEntries: 3
+          })
+          .get('/rest/organizations/prod/indexes/page/fields')
+          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'allmetadatavalues',
+                description: 'new description',
+                type: 'STRING'
+              },
+              {
+                name: 'attachmentdepth',
+                description: 'The attachment depth.',
+                type: 'STRING'
+              },
+              {
+                name: 'attachmentparentid',
+                description: 'The identifier of the attachment"s immediate parent, for parent/child relationship.',
+                type: 'LONG'
+              },
+              {
+                name: 'authorloginname',
+                description: 'Login Name of the item author',
+                type: 'STRING'
+              }
+            ],
+            totalPages: 1,
+            totalEntries: 2
+          });
+
+        const graduateOptions: IHTTPGraduateOptions = {
+          POST: false,
+          PUT: false,
+          DELETE: false
+        };
+
+        fieldController
+          .graduate(graduateOptions)
+          .then(() => {
+            done();
+          })
+          .catch((err: any) => {
+            done(err);
+          });
+      });
     });
   });
 };
