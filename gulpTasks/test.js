@@ -8,7 +8,7 @@ gulp.task('setTestEnvironment', () => {
   process.env.NODE_ENV = 'local-server';
 });
 
-gulp.task('test', shell.task(['NODE_ENV=test nyc mocha test/test.ts --recursive --require ts-node/register --reporter nyan']));
+gulp.task('test', shell.task(['NODE_ENV=test nyc mocha test/test.ts --recursive --require ts-node/register']));
 
 gulp.task('copyTestEnv', function() {
   return gulp.src('environments/local-server.js').pipe(gulp.dest('./bin/src/environments'));
