@@ -32,9 +32,9 @@ export class ExtensionController extends BaseController {
           diffOptions
         );
         if (diffResultArray.containsItems()) {
-          Logger.verbose(`${diffResultArray.NEW.length} new extension${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
-          Logger.verbose(`${diffResultArray.DELETED.length} deleted extension${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
-          Logger.verbose(`${diffResultArray.UPDATED.length} updated extension${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
+          Logger.verbose(`${diffResultArray.TO_CREATE.length} new extension${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
+          Logger.verbose(`${diffResultArray.TO_DELETE.length} deleted extension${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
+          Logger.verbose(`${diffResultArray.TO_UPDATE.length} updated extension${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
         }
         return diffResultArray;
       })

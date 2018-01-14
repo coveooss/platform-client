@@ -151,16 +151,16 @@ export const DiffUtilsTest = () => {
     describe('Extension Diff', () => {
       it('Should return one updated extension', () => {
         const diff: DiffResultArray<Extension> = DiffUtils.getDiffResult(extension1Dict, extension2Dict);
-        expect(diff.UPDATED.length).to.equal(1);
-        expect(diff.NEW.length).to.equal(0);
-        expect(diff.DELETED.length).to.equal(0);
+        expect(diff.TO_UPDATE.length).to.equal(1);
+        expect(diff.TO_CREATE.length).to.equal(0);
+        expect(diff.TO_DELETE.length).to.equal(0);
       });
 
       it('Should return no modification', () => {
         const diff: DiffResultArray<Extension> = DiffUtils.getDiffResult(extension1Dict, extension1CopyDict);
-        expect(diff.UPDATED.length).to.equal(0);
-        expect(diff.NEW.length).to.equal(0);
-        expect(diff.DELETED.length).to.equal(0);
+        expect(diff.TO_UPDATE.length).to.equal(0);
+        expect(diff.TO_CREATE.length).to.equal(0);
+        expect(diff.TO_DELETE.length).to.equal(0);
       });
 
       it('Should return 2 new extensions', () => {
@@ -170,9 +170,9 @@ export const DiffUtilsTest = () => {
         dict.add('second extension', extension2);
 
         const diff: DiffResultArray<Extension> = DiffUtils.getDiffResult(dict, dict2Clone);
-        expect(diff.UPDATED.length).to.equal(0);
-        expect(diff.NEW.length).to.equal(2);
-        expect(diff.DELETED.length).to.equal(0);
+        expect(diff.TO_UPDATE.length).to.equal(0);
+        expect(diff.TO_CREATE.length).to.equal(2);
+        expect(diff.TO_DELETE.length).to.equal(0);
       });
 
       it('Should return 2 deleted extensions', () => {
@@ -182,9 +182,9 @@ export const DiffUtilsTest = () => {
         dict.add('second extension', extension2);
 
         const diff: DiffResultArray<Extension> = DiffUtils.getDiffResult(dict2Clone, dict);
-        expect(diff.UPDATED.length).to.equal(0);
-        expect(diff.NEW.length).to.equal(0);
-        expect(diff.DELETED.length).to.equal(2);
+        expect(diff.TO_UPDATE.length).to.equal(0);
+        expect(diff.TO_CREATE.length).to.equal(0);
+        expect(diff.TO_DELETE.length).to.equal(2);
       });
     });
 
@@ -207,28 +207,28 @@ export const DiffUtilsTest = () => {
       it('Should return the new items', () => {
         const diff: DiffResultArray<ClonableTest> = DiffUtils.getDiffResult(dict1, dictDeleted);
         expect(diff.containsItems()).to.be.true;
-        expect(_.map(diff.NEW, getConfiguration)).to.eql([[1, 'a'], [3, 'c']]);
+        expect(_.map(diff.TO_CREATE, getConfiguration)).to.eql([[1, 'a'], [3, 'c']]);
       });
 
       it('Should return the updated items', () => {
         const diff: DiffResultArray<ClonableTest> = DiffUtils.getDiffResult(dict1, dictUpdated);
         expect(diff.containsItems()).to.be.true;
-        expect(_.map(diff.UPDATED, getConfiguration)).to.eql([[1, 'a'], [2, 'b'], [4, 'd']]);
+        expect(_.map(diff.TO_UPDATE, getConfiguration)).to.eql([[1, 'a'], [2, 'b'], [4, 'd']]);
       });
 
       it('Should return the deleted items', () => {
         const diff: DiffResultArray<ClonableTest> = DiffUtils.getDiffResult(dict1, dictCreated);
         expect(diff.containsItems()).to.be.true;
-        expect(_.map(diff.DELETED, getConfiguration)).to.eql([[5, 'e'], [6, 'f']]);
+        expect(_.map(diff.TO_DELETE, getConfiguration)).to.eql([[5, 'e'], [6, 'f']]);
       });
 
       it('Should return all modifications', () => {
         const diff: DiffResultArray<ClonableTest> = DiffUtils.getDiffResult(dict1, dictAll);
         expect(diff.containsItems()).to.be.true;
 
-        expect(_.map(diff.NEW, getConfiguration)).to.eql([[3, 'c']]);
-        expect(_.map(diff.UPDATED, getConfiguration)).to.eql([[1, 'a']]);
-        expect(_.map(diff.DELETED, getConfiguration)).to.eql([[6, 'fire'], [27, 'ground']]);
+        expect(_.map(diff.TO_CREATE, getConfiguration)).to.eql([[3, 'c']]);
+        expect(_.map(diff.TO_UPDATE, getConfiguration)).to.eql([[1, 'a']]);
+        expect(_.map(diff.TO_DELETE, getConfiguration)).to.eql([[6, 'fire'], [27, 'ground']]);
       });
 
       it('Adding fields to ignore should not alter initial object', () => {
@@ -247,7 +247,7 @@ export const DiffUtilsTest = () => {
       it('Should return the diff result', () => {
         const diff: DiffResultArray<ClonableTest> = DiffUtils.getDiffResult(car1Dict, car2Dict);
         expect(diff.containsItems()).to.be.true;
-        expect(_.map(diff.UPDATED, getConfiguration)).to.eql([
+        expect(_.map(diff.TO_UPDATE, getConfiguration)).to.eql([
           {
             brand: 'Tesla',
             color: 'red'
@@ -270,7 +270,7 @@ export const DiffUtilsTest = () => {
 
         const diff: DiffResultArray<ClonableTest> = DiffUtils.getDiffResult(car1Dict, car2Dict, options);
         expect(diff.containsItems()).to.be.false;
-        expect(_.map(diff.UPDATED, getConfiguration)).to.eql([]);
+        expect(_.map(diff.TO_UPDATE, getConfiguration)).to.eql([]);
       });
 
       it('Should not alter object when all fields are removed', () => {
@@ -293,7 +293,7 @@ export const DiffUtilsTest = () => {
 
         const diff: DiffResultArray<ClonableTest> = DiffUtils.getDiffResult(car1Dict, car2Dict, options);
         expect(diff.containsItems()).to.be.false;
-        expect(diff.UPDATED).to.eql([]);
+        expect(diff.TO_UPDATE).to.eql([]);
       });
 
       it('Should return the diff result without ignore fields 3', () => {
@@ -303,7 +303,7 @@ export const DiffUtilsTest = () => {
 
         const diff: DiffResultArray<ClonableTest> = DiffUtils.getDiffResult(car1Dict, car2Dict, options);
         expect(diff.containsItems()).to.be.true;
-        expect(_.map(diff.UPDATED, getConfiguration)).to.eql([
+        expect(_.map(diff.TO_UPDATE, getConfiguration)).to.eql([
           { brand: 'Tesla', color: 'red' },
           { brand: 'Audi', color: 'black' },
           { brand: 'bmw', color: 'blue' }

@@ -49,16 +49,16 @@ export class FieldController extends BaseController {
 
     if (summary) {
       cleanVersion.summary = {
-        NEW: diffResultArray.NEW.length,
-        UPDATED: diffResultArray.UPDATED.length,
-        DELETED: diffResultArray.DELETED.length
+        NEW: diffResultArray.TO_CREATE.length,
+        UPDATED: diffResultArray.TO_UPDATE.length,
+        DELETED: diffResultArray.TO_DELETE.length
       };
     }
 
     _.extend(cleanVersion, {
-      NEW: getFieldModel(diffResultArray.NEW),
-      UPDATED: getFieldModel(diffResultArray.UPDATED),
-      DELETED: getFieldModel(diffResultArray.DELETED)
+      NEW: getFieldModel(diffResultArray.TO_CREATE),
+      UPDATED: getFieldModel(diffResultArray.TO_UPDATE),
+      DELETED: getFieldModel(diffResultArray.TO_DELETE)
     });
 
     return cleanVersion as IDiffResultArrayClean;
@@ -78,9 +78,9 @@ export class FieldController extends BaseController {
         const diffResultArray = DiffUtils.getDiffResult(this.organization1.getFields(), this.organization2.getFields(), diffOptions);
         if (diffResultArray.containsItems()) {
           Logger.verbose('Diff Summary:');
-          Logger.verbose(`> ${diffResultArray.NEW.length} new field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
-          Logger.verbose(`> ${diffResultArray.DELETED.length} deleted field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
-          Logger.verbose(`> ${diffResultArray.UPDATED.length} updated field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
+          Logger.verbose(`> ${diffResultArray.TO_CREATE.length} new field${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
+          Logger.verbose(`> ${diffResultArray.TO_DELETE.length} deleted field${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
+          Logger.verbose(`> ${diffResultArray.TO_UPDATE.length} updated field${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
         } else {
           Logger.info('They field pages are identical in both organizations');
         }
@@ -123,17 +123,17 @@ export class FieldController extends BaseController {
     options: IHTTPGraduateOptions
   ): ((diffResult: DiffResultArray<Field>) => Promise<void>)[] {
     const authorizedOperations: ((diffResult: DiffResultArray<Field>) => Promise<void>)[] = [];
-    if (options.POST && diffResultArray.NEW.length > 0) {
+    if (options.POST && diffResultArray.TO_CREATE.length > 0) {
       authorizedOperations.push(this.graduateNew);
     } else {
       Logger.verbose('Skipping DELETE operation');
     }
-    if (options.PUT && diffResultArray.UPDATED.length > 0) {
+    if (options.PUT && diffResultArray.TO_UPDATE.length > 0) {
       authorizedOperations.push(this.graduateUpdated);
     } else {
       Logger.verbose('Skipping PUT operation');
     }
-    if (options.DELETE && diffResultArray.DELETED.length > 0) {
+    if (options.DELETE && diffResultArray.TO_DELETE.length > 0) {
       authorizedOperations.push(this.graduateDeleted);
     } else {
       Logger.verbose('Skipping DELETE operation');
@@ -147,8 +147,10 @@ export class FieldController extends BaseController {
 
   // TODO: to test
   private graduateNew(diffResult: DiffResultArray<Field>): Promise<void> {
-    Logger.verbose(`Creating ${diffResult.NEW.length} new field${diffResult.NEW.length > 1 ? 's' : ''} in ${this.organization2.getId()} `);
-    return FieldAPI.createFields(this.organization2, this.extractFieldModel(diffResult.NEW), this.fieldsPerBatch)
+    Logger.verbose(
+      `Creating ${diffResult.TO_CREATE.length} new field${diffResult.TO_CREATE.length > 1 ? 's' : ''} in ${this.organization2.getId()} `
+    );
+    return FieldAPI.createFields(this.organization2, this.extractFieldModel(diffResult.TO_CREATE), this.fieldsPerBatch)
       .then((responses: RequestResponse[]) => {
         this.graduateSuccessHandler(responses, 'POST operation successfully completed');
       })
@@ -160,9 +162,11 @@ export class FieldController extends BaseController {
   // TODO: to test
   private graduateUpdated(diffResult: DiffResultArray<Field>): Promise<void> {
     Logger.verbose(
-      `Updating ${diffResult.UPDATED.length} existing field${diffResult.NEW.length > 1 ? 's' : ''} in ${this.organization2.getId()} `
+      `Updating ${diffResult.TO_UPDATE.length} existing field${
+        diffResult.TO_CREATE.length > 1 ? 's' : ''
+      } in ${this.organization2.getId()} `
     );
-    return FieldAPI.updateFields(this.organization2, this.extractFieldModel(diffResult.UPDATED), this.fieldsPerBatch)
+    return FieldAPI.updateFields(this.organization2, this.extractFieldModel(diffResult.TO_UPDATE), this.fieldsPerBatch)
       .then((responses: RequestResponse[]) => {
         this.graduateSuccessHandler(responses, 'PUT operation successfully completed');
       })
@@ -174,9 +178,11 @@ export class FieldController extends BaseController {
   // TODO: to test: make sure the query is well formed (with the list of fields to delete)
   private graduateDeleted(diffResult: DiffResultArray<Field>): Promise<void> {
     Logger.verbose(
-      `Deleting ${diffResult.UPDATED.length} existing field${diffResult.NEW.length > 1 ? 's' : ''} from ${this.organization2.getId()} `
+      `Deleting ${diffResult.TO_UPDATE.length} existing field${
+        diffResult.TO_CREATE.length > 1 ? 's' : ''
+      } from ${this.organization2.getId()} `
     );
-    return FieldAPI.deleteFields(this.organization2, _.map(diffResult.DELETED, (field: Field) => field.getName()), this.fieldsPerBatch)
+    return FieldAPI.deleteFields(this.organization2, _.map(diffResult.TO_DELETE, (field: Field) => field.getName()), this.fieldsPerBatch)
       .then((responses: RequestResponse[]) => {
         this.graduateSuccessHandler(responses, 'DELETE operation successfully completed');
       })
@@ -191,7 +197,7 @@ export class FieldController extends BaseController {
   }
 
   // Utils
-  private extractFieldModel(fields: Field[]): IStringMap<string>[] {
+  private extractFieldModel(fields: Field[]): IStringMap<any>[] {
     return _.pluck(fields, 'fieldModel');
   }
 }

@@ -43,10 +43,10 @@ export class DiffUtils {
           options.includeOnly
         );
         if (!_.isEqual(dict1CopyCleanedItem, dict2CopyCleanedItem)) {
-          diffResult.UPDATED.push(value);
+          diffResult.TO_UPDATE.push(value);
         }
       } else {
-        diffResult.NEW.push(value);
+        diffResult.TO_CREATE.push(value);
       }
 
       dict2Copy.remove(key);
@@ -54,7 +54,7 @@ export class DiffUtils {
 
     // Add the keys that were not in the first json to the deleted list
     dict2Copy.keys().forEach((key: string) => {
-      diffResult.DELETED.push(dict2Copy.getItem(key));
+      diffResult.TO_DELETE.push(dict2Copy.getItem(key));
     });
 
     return diffResult;

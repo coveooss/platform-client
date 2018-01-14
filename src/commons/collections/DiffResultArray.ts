@@ -1,19 +1,19 @@
 export class DiffResultArray<T> {
-  public NEW: T[];
-  public UPDATED: T[];
-  public DELETED: T[];
+  public TO_CREATE: T[];
+  public TO_UPDATE: T[];
+  public TO_DELETE: T[];
 
   constructor() {
-    this.NEW = [];
-    this.UPDATED = [];
-    this.DELETED = [];
+    this.TO_CREATE = [];
+    this.TO_UPDATE = [];
+    this.TO_DELETE = [];
   }
 
   public getCount(): number {
-    return this.NEW.length + this.UPDATED.length + this.DELETED.length;
+    return this.TO_CREATE.length + this.TO_UPDATE.length + this.TO_DELETE.length;
   }
 
   public containsItems(): boolean {
-    return this.NEW.length + this.UPDATED.length + this.DELETED.length > 0;
+    return this.TO_CREATE.length + this.TO_UPDATE.length + this.TO_DELETE.length > 0;
   }
 }

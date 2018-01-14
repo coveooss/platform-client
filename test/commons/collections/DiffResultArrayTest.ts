@@ -13,18 +13,18 @@ export const DiffResultArrayTest = () => {
 
     it('Should add items to the DiffResult Object', () => {
       const diffResult: DiffResultArray<string> = new DiffResultArray();
-      diffResult.NEW.push('deleted value');
-      diffResult.UPDATED.push('updated value');
+      diffResult.TO_CREATE.push('deleted value');
+      diffResult.TO_UPDATE.push('updated value');
       expect(diffResult.containsItems()).to.be.true;
       expect(diffResult.getCount()).to.equal(2);
     });
 
     it('Should add and remove items to the DiffResult Object', () => {
       const diffResult: DiffResultArray<string> = new DiffResultArray();
-      diffResult.UPDATED.push('updated value');
+      diffResult.TO_UPDATE.push('updated value');
       expect(diffResult.containsItems()).to.be.true;
       expect(diffResult.getCount()).to.equal(1);
-      diffResult.UPDATED.pop();
+      diffResult.TO_UPDATE.pop();
       expect(diffResult.containsItems()).to.be.false;
       expect(diffResult.getCount()).to.equal(0);
     });

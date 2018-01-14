@@ -8,13 +8,14 @@ import { Field } from '../../coveoObjects/Field';
 import { ArrayUtils } from '../utils/ArrayUtils';
 import { Assert } from '../misc/Assert';
 import { IStringMap } from '../interfaces/IStringMap';
+import { JsonUtils } from '../utils/JsonUtils';
 
 export class FieldAPI {
-  public static createFields(org: Organization, fieldModels: IStringMap<string>[], fieldsPerBatch: number): Promise<RequestResponse[]> {
+  public static createFields(org: Organization, fieldModels: IStringMap<any>[], fieldsPerBatch: number): Promise<RequestResponse[]> {
     Assert.isLargerThan(0, fieldModels.length);
     const url = UrlService.createFields(org.getId());
     return Promise.all(
-      _.map(ArrayUtils.chunkArray(fieldModels, fieldsPerBatch), (batch: IStringMap<string>[]) => {
+      _.map(ArrayUtils.chunkArray(JsonUtils.clone(fieldModels) as IStringMap<any>[], fieldsPerBatch), (batch: IStringMap<any>[]) => {
         return RequestUtils.post(url, org.getApiKey(), batch);
       })
     );
