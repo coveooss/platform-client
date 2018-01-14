@@ -1,7 +1,9 @@
-import { expect } from 'chai';
+// tslint:disable:no-magic-numbers
+import { expect, assert } from 'chai';
 import { Organization } from '../../src/coveoObjects/Organization';
 import { Field } from '../../src/coveoObjects/Field';
 import { Extension } from '../../src/coveoObjects/Extension';
+import { StaticErrorMessage } from '../../src/commons/errors';
 
 export const OrganizationTest = () => {
   describe('Organization Model', () => {
@@ -77,6 +79,53 @@ export const OrganizationTest = () => {
         });
         organization.addField(field.getName(), field);
         expect(organization.getFields().getCount()).to.equal(1);
+      });
+
+      it('Should add multiple fields in the Organization', () => {
+        const organization: Organization = new Organization('theorg', 'xxx-xxx');
+
+        expect(organization.getFields().getCount()).to.be.eql(0);
+        organization.addMultipleFields([
+          {
+            name: 'field1',
+            description: 'Place to put content for metadata discovery.',
+            type: 'STRING'
+          },
+          {
+            name: 'field2',
+            description: 'Place to put content for metadata discovery.',
+            type: 'STRING'
+          },
+          {
+            name: 'field3',
+            description: 'Place to put content for metadata discovery.',
+            type: 'STRING'
+          }
+        ]);
+        expect(organization.getFields().getCount()).to.be.eql(3);
+      });
+
+      it('Should throw an error when adding invalid fields to the Organization', () => {
+        const organization: Organization = new Organization('theorg', 'xxx-xxx');
+
+        expect(organization.getFields().getCount()).to.be.eql(0);
+
+        assert.throws(
+          () =>
+            organization.addMultipleFields([
+              {
+                invalidkey: 'invalidfield1',
+                description: 'Place to put content for metadata discovery.',
+                type: 'STRING'
+              },
+              {
+                invalidkey: 'invalidfield2',
+                description: 'Place to put content for metadata discovery.',
+                type: 'STRING'
+              }
+            ]),
+          StaticErrorMessage.INVALID_ID
+        );
       });
     });
   });

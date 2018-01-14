@@ -4,6 +4,7 @@ import { Extension } from './Extension';
 import { Source } from './Source';
 import { Field } from './Field';
 import { Dictionary } from '../commons/collections/Dictionary';
+import { IStringMap } from '../commons/interfaces/IStringMap';
 
 // TODO: Add a test class
 /**
@@ -43,6 +44,14 @@ export class Organization extends BaseCoveoObject implements IOrganization {
 
   public addField(fieldName: string, field: Field) {
     this.fields.add(fieldName, field);
+  }
+
+  // TODO: test in organization class
+  public addMultipleFields(fields: IStringMap<any>[]) {
+    fields.forEach((f: IStringMap<any>) => {
+      const field = new Field(f['name'], f);
+      this.addField(field.getName(), field);
+    });
   }
 
   public getSources(): Dictionary<Source> {

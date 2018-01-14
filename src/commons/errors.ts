@@ -1,7 +1,11 @@
 export class StaticErrorMessage {
+  // Base Coveo Object
+  public static INVALID_ID: string = 'Id should not be undefined';
+
   public static UNABLE_TO_DIFF: string = 'Diff operation failed';
   public static UNABLE_TO_GRADUATE: string = 'Graduation opertaion failed';
   public static UNABLE_TO_API_REQUEST: string = 'Unable to perform API request';
+
   // Fields
   public static MISSING_FIELD_NAME: string = 'Missing field name';
   public static UNABLE_TO_LOAD_FIELDS: string = 'Unable to load fields';

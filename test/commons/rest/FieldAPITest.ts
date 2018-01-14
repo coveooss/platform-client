@@ -489,6 +489,7 @@ export const FieldAPITest = () => {
 
       FieldAPI.loadOtherPages(organization, 3)
         .then(() => {
+          expect(organization.getFields().getCount()).to.be.eql(3);
           done();
         })
         .catch((err: any) => done(err));
@@ -499,16 +500,9 @@ export const FieldAPITest = () => {
       expect(() => FieldAPI.loadOtherPages(organization, -1)).to.throw();
     });
 
-    // it('Should prepare the request to load all fields', (done: MochaDone) => {
-    //   const organization: Organization = new Organization('theorg', 'xxx-xxx');
-    // });
-
-    it('Should add fields to the organization', () => {
+    it('Should prepare the request to load all fields', (done: MochaDone) => {
       const organization: Organization = new Organization('theorg', 'xxx-xxx');
-
-      expect(organization.getFields().getCount()).to.be.eql(0);
-      FieldAPI.addLoadedFieldsToOrganization(organization, fieldList);
-      expect(organization.getFields().getCount()).to.be.above(0);
+      done();
     });
   });
 };
