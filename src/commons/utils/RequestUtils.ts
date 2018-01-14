@@ -1,9 +1,7 @@
 import * as request from 'request';
 import { JsonUtils } from './JsonUtils';
-import { TestExpectedRequestAndResponse } from '../../commands/TestExpectedRequestAndResponse';
 
 export class RequestUtils {
-  static nextCalloutRequest: TestExpectedRequestAndResponse[] = [];
   static OK: number = 200;
   static CREATED: number = 201;
   static NO_CONTENT: number = 204;
@@ -105,9 +103,5 @@ export class RequestUtils {
         }
       );
     });
-  }
-
-  static registerCalloutRequest(req: TestExpectedRequestAndResponse) {
-    RequestUtils.nextCalloutRequest.push(req);
   }
 }

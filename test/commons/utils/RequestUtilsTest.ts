@@ -4,7 +4,6 @@ import * as request from 'request';
 import { UrlService } from '../../../src/commons/rest/UrlService';
 import { expect } from 'chai';
 import { RequestUtils } from './../../../src/commons/utils/RequestUtils';
-import { TestExpectedRequestAndResponse } from '../../../src/commands/TestExpectedRequestAndResponse';
 
 export const RequestUtilsTest = () => {
   describe('Rest Utils', () => {
