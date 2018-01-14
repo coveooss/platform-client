@@ -21,11 +21,11 @@ export class FieldAPI {
     );
   }
 
-  public static updateFields(org: Organization, fieldModels: IStringMap<string>[], fieldsPerBatch: number): Promise<RequestResponse[]> {
+  public static updateFields(org: Organization, fieldModels: IStringMap<any>[], fieldsPerBatch: number): Promise<RequestResponse[]> {
     Assert.isLargerThan(0, fieldModels.length);
     const url = UrlService.updateFields(org.getId());
     return Promise.all(
-      _.map(ArrayUtils.chunkArray(fieldModels, fieldsPerBatch), (batch: IStringMap<string>[]) => {
+      _.map(ArrayUtils.chunkArray(fieldModels, fieldsPerBatch), (batch: IStringMap<any>[]) => {
         return RequestUtils.put(url, org.getApiKey(), batch);
       })
     );
@@ -42,6 +42,7 @@ export class FieldAPI {
   }
 
   public static getFieldsPage(organization: Organization, page: number): Promise<RequestResponse> {
+    Assert.isLargerOrEqualsThan(0, page, 'Parameter "page" cannot be a negative value.');
     Logger.loadingTask(`Fecthing field page ${page} from ${organization.getId()} `);
     return RequestUtils.get(UrlService.getFieldsPageUrl(organization.getId(), page), organization.getApiKey());
   }
@@ -73,6 +74,7 @@ export class FieldAPI {
   }
 
   public static loadOtherPages(org: Organization, totalPages: number): Promise<void> {
+    Assert.isLargerOrEqualsThan(0, totalPages, 'Parameter "totalPages" cannot be a negative value.');
     Logger.loadingTask(`Loading ${totalPages - 1} more pages of fields from ${org.getId()} `);
     const emptyArray: number[] = new Array(totalPages - 1);
     const pageArray = _.map(emptyArray, (v: number, idx: number) => idx + 1);

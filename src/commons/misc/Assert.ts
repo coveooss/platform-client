@@ -67,15 +67,18 @@ export class Assert {
     Assert.check(actual > expected, 'Value ' + actual + ' should be larger than ' + expected);
   }
 
-  static isLargerOrEqualsThan(expected: number, actual: number) {
-    Assert.check(actual >= expected, 'Value ' + actual + ' should be larger or equal than ' + expected);
+  static isLargerOrEqualsThan(expected: number, actual: number, message?: string) {
+    message ? message : 'Value ' + actual + ' should be larger or equal than ' + expected;
+    Assert.check(actual >= expected, message);
   }
 
-  static isSmallerThan(expected: number, actual: number) {
-    Assert.check(actual < expected, 'Value ' + actual + ' should be smaller than ' + expected);
+  static isSmallerThan(expected: number, actual: number, message?: string) {
+    message ? message : 'Value ' + actual + ' should be smaller than ' + expected;
+    Assert.check(actual < expected, message);
   }
 
-  static isSmallerOrEqualsThan(expected: number, actual: number) {
-    Assert.check(actual <= expected, 'Value ' + actual + ' should be smaller or equal than ' + expected);
+  static isSmallerOrEqualsThan(expected: number, actual: number, message?: string) {
+    message ? message : 'Value ' + actual + ' should be smaller or equal than ' + expected;
+    Assert.check(actual <= expected, message);
   }
 }
