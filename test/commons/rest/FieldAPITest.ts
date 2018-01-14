@@ -500,6 +500,87 @@ export const FieldAPITest = () => {
       expect(() => FieldAPI.loadOtherPages(organization, -1)).to.throw();
     });
 
+    it('Should load all fields from the organization', (done: MochaDone) => {
+      const organization: Organization = new Organization('hello', 'xxx-xxx');
+      scope = nock(UrlService.getDefaultUrl())
+        // First expected request
+        .get('/rest/organizations/hello/indexes/page/fields')
+        .query({ page: 0, perPage: 400, origin: 'USER' })
+        .reply(RequestUtils.OK, {
+          items: [
+            {
+              name: 'allmetadatavalues',
+              description: '',
+              type: 'STRING'
+            },
+            {
+              name: 'attachmentdepth',
+              description: 'The attachment depth.',
+              type: 'STRING'
+            },
+            {
+              name: 'attachmentparentid',
+              description: 'The identifier of the attachment"s immediate parent, for parent/child relationship.',
+              type: 'LONG'
+            }
+          ],
+          totalPages: 3,
+          totalEntries: 8
+        })
+        // Second expected request
+        .get('/rest/organizations/hello/indexes/page/fields')
+        .query({ page: 1, perPage: 400, origin: 'USER' })
+        .reply(RequestUtils.OK, {
+          items: [
+            {
+              name: 'author',
+              description: 'The author of the document',
+              type: 'STRING'
+            },
+            {
+              name: 'authorloginname',
+              description: 'Login Name of the item author',
+              type: 'STRING'
+            },
+            {
+              name: 'bcc',
+              description: 'The bcc email field',
+              type: 'STRING'
+            }
+          ],
+          totalPages: 3,
+          totalEntries: 8
+        })
+        // Third expected request
+        .get('/rest/organizations/hello/indexes/page/fields')
+        .query({ page: 2, perPage: 400, origin: 'USER' })
+        .reply(RequestUtils.OK, {
+          items: [
+            {
+              name: 'cc',
+              description: 'The cc email field',
+              type: 'STRING'
+            },
+            {
+              name: 'clickableuri',
+              description: 'The clickable URI of the document',
+              type: 'STRING'
+            }
+          ],
+          totalPages: 3,
+          totalEntries: 8
+        });
+
+      FieldAPI.loadFields(organization)
+        .then(() => {
+          expect(organization.getFields().getCount()).to.eql(8);
+          done();
+        })
+        .catch((err: any) => {
+          done(err);
+        });
+    });
+
     it('Should prepare the request to load all fields', (done: MochaDone) => {
       const organization: Organization = new Organization('theorg', 'xxx-xxx');
       done();
