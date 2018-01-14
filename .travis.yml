@@ -14,11 +14,6 @@ script:
 - echo $PACKAGE_JSON_VERSION
 - npm run minimize
 - npm start & npm test
-after_success:
-# - npm run doc
-# - if [ "x$TRAVIS_TAG" != "x" ]; then bash ./deploy.doc.sh ; fi
-# - npm run docsitemap
-# - npm run zipForGitReleases
 branches:
   only:
-  - light-cli
+  - master
