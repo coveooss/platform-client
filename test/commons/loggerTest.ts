@@ -6,7 +6,7 @@ import * as _ from 'underscore';
 
 export const LoggerTest = () => {
   describe('Logger', () => {
-    const TEST_FILE = 'testfile.txt';
+    const TEST_FILE = 'testfile.log';
 
     beforeEach(() => {
       fs.removeSync(TEST_FILE);

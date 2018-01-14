@@ -1,16 +1,18 @@
 import * as request from 'request';
 import { JsonUtils } from './JsonUtils';
+import { TestExpectedRequestAndResponse } from '../../commands/TestExpectedRequestAndResponse';
 
 export class RequestUtils {
+  static nextCalloutRequest: TestExpectedRequestAndResponse[] = [];
   static OK: number = 200;
   static CREATED: number = 201;
   static NO_CONTENT: number = 204;
   static REDIRECTION: number = 300;
 
-  static get(url: string, apiKey: string): Promise<request.RequestResponse> {
+  static get(uri: string, apiKey: string): Promise<request.RequestResponse> {
     return new Promise((resolve: (value?: any | Thenable<{}>) => void, reject: (error: any) => void) => {
       request(
-        url,
+        uri,
         {
           auth: { bearer: apiKey },
           json: true
@@ -30,10 +32,10 @@ export class RequestUtils {
     });
   }
 
-  static post(url: string, apiKey: string, data: any): Promise<request.RequestResponse> {
+  static post(uri: string, apiKey: string, data: any): Promise<request.RequestResponse> {
     return new Promise((resolve: (value?: any | Thenable<{}>) => void, reject: (error: any) => void) => {
       request(
-        url,
+        uri,
         {
           method: 'POST',
           body: data,
@@ -54,10 +56,11 @@ export class RequestUtils {
       );
     });
   }
-  static put(url: string, apiKey: string, data: any): Promise<request.RequestResponse> {
+
+  static put(uri: string, apiKey: string, data: any): Promise<request.RequestResponse> {
     return new Promise((resolve: (value?: any | Thenable<{}>) => void, reject: (error: any) => void) => {
       request(
-        url,
+        uri,
         {
           method: 'PUT',
           body: data,
@@ -79,10 +82,10 @@ export class RequestUtils {
     });
   }
 
-  static delete(url: string, apiKey: string): Promise<request.RequestResponse> {
+  static delete(uri: string, apiKey: string): Promise<request.RequestResponse> {
     return new Promise((resolve: (value?: any | Thenable<{}>) => void, reject: (error: any) => void) => {
       request(
-        url,
+        uri,
         {
           method: 'DELETE',
           auth: { bearer: apiKey },
@@ -101,5 +104,9 @@ export class RequestUtils {
         }
       );
     });
+  }
+
+  static registerCalloutRequest(req: TestExpectedRequestAndResponse) {
+    RequestUtils.nextCalloutRequest.push(req);
   }
 }

@@ -1,3 +1,5 @@
+import { EnvironmentUtils } from '../commons/utils/EnvironmentUtils';
+
 export interface IConfig {
   color: string;
   env: string;
@@ -10,16 +12,12 @@ class Config {
   private env: string;
 
   constructor() {
-    this.env = process.env.NODE_ENV || 'development';
-  }
-
-  public isTestRunning(): boolean {
-    return this.env === 'test';
+    this.env = EnvironmentUtils.getNodeEnvironment() || 'development';
   }
 
   public getConfiguration(): IConfig {
     try {
-      if (this.isTestRunning()) {
+      if (EnvironmentUtils.isTestRunning()) {
         return require(`../../environments/test.js`);
       } else {
         return require(`env/${this.env}.js`);

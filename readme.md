@@ -21,7 +21,11 @@ It's also built on nodejs/typescript.
 * `gulp default`: Builds the entire project
 * `gulp dev`: Starts a nodemon dev server for the project.
 * `gulp devTest`: Starts a nodemon dev server for the tests.
-* `gulp test`: Builds and runs the unit tests.
+* `gulp test`: Builds and runs the unit tests and saves the coverage.
+
+> Note:
+> Tests require the mock server to be running.
+> To start the mock server, run `npm start`
 
 ## Contributing
 - Branch

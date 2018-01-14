@@ -47,9 +47,18 @@ export class GraduateCommand {
   public graduateFields() {
     const fieldController: FieldController = new FieldController(this.organization1, this.organization2);
     const questions: inquirer.Questions = [];
+    const allowedMethods: string[] = _.compact([
+      this.options.POST ? 'POST' : '',
+      this.options.PUT ? 'PUT' : '',
+      this.options.DELETE ? 'DELETE' : ''
+    ]);
+
     if (!this.options.force) {
-      questions.push(this.interactiveMode.confirmGraduationAction(`Are you sure want to perform a field graduation?`, 'confirm'));
+      questions.push(
+        this.interactiveMode.confirmGraduationAction(`Are you sure want to perform a field graduation (${allowedMethods})?`, 'confirm')
+      );
     }
+    // Make sure the user selects at least one HTTP method
     inquirer.prompt(questions).then((res: inquirer.Answers) => {
       if (res.confirm || this.options.force) {
         Logger.startSpinner('Performing Field Graduation');

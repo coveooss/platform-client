@@ -1,5 +1,3 @@
-import { SourceControllerTest } from './controllers/SourceControllerTest';
-import { OrganizationControllerTest } from './controllers/OrganizationControllerTest';
 import { FieldControllerTest } from './controllers/FieldControllerTest';
 import { ExtensionControllerTest } from './controllers/ExtensionControllerTest';
 import { BaseControllerTest } from './controllers/BaseControllerTest';
@@ -55,6 +53,4 @@ SourceTest();
 
 BaseControllerTest();
 ExtensionControllerTest();
-FieldControllerTest();
-OrganizationControllerTest();
-SourceControllerTest();
+// FieldControllerTest();

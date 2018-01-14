@@ -2,6 +2,10 @@ import { config } from './../../config/index';
 import { Assert } from '../misc/Assert';
 
 export class UrlService {
+  static getDefaultUrl(path: string = ''): string {
+    return `${config.coveo.platformUrl}${path}`;
+  }
+
   /*** Organization API ***/
   static getOrganizationUrl(organizationId: string): string {
     return `${config.coveo.platformUrl}/rest/organizations/${organizationId}`;

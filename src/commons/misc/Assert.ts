@@ -1,6 +1,7 @@
 import * as _ from 'underscore';
 import { Utils } from '../utils/Utils';
 
+/* istanbul ignore next */
 export class Assert {
   static failureHandler = (message?: string) => {
     if (message && Utils.isNonEmptyString(message)) {
@@ -20,31 +21,31 @@ export class Assert {
     }
   }
 
-  static isUndefined(obj: any) {
-    Assert.check(Utils.isUndefined(obj), 'Value should be undefined.');
+  static isUndefined(obj: any, message: string = 'Value should be undefined.') {
+    Assert.check(Utils.isUndefined(obj), message);
   }
 
   static isNotUndefined(obj: any, message: string = 'Value should not be undefined.') {
     Assert.check(!Utils.isUndefined(obj), message);
   }
 
-  static isNull(obj: any) {
-    Assert.check(Utils.isNull(obj), 'Value should be null.');
+  static isNull(obj: any, message: string = 'Value should be null.') {
+    Assert.check(Utils.isNull(obj), message);
   }
 
-  static isNotNull(obj: any) {
-    Assert.check(!Utils.isNull(obj), 'Value should not be null.');
+  static isNotNull(obj: any, message: string = 'Value should not be null.') {
+    Assert.check(!Utils.isNull(obj), message);
   }
 
-  static exists(obj: any) {
-    Assert.check(!Utils.isNullOrUndefined(obj), 'Value should not be null or undefined');
+  static exists(obj: any, message: string = 'Value should not be null or undefined') {
+    Assert.check(!Utils.isNullOrUndefined(obj), message);
   }
 
-  static doesNotExists(obj: any) {
-    Assert.check(Utils.isNullOrUndefined(obj), 'Value should be null or undefined');
+  static doesNotExists(obj: any, message: string = 'Value should be null or undefined') {
+    Assert.check(Utils.isNullOrUndefined(obj), message);
   }
 
-  static isString(obj: any) {
+  static isString(obj: any, message: string = 'Value should be a string.') {
     Assert.check(_.isString(obj), 'Value should be a string.');
   }
 
@@ -54,12 +55,12 @@ export class Assert {
     Assert.check(str.indexOf(start) === 0, 'Value should start with ' + start);
   }
 
-  static isNonEmptyString(str: string) {
-    Assert.check(Utils.isNonEmptyString(str), 'Value should be a non-empty string.');
+  static isNonEmptyString(str: string, message: string = 'Value should be a non-empty string.') {
+    Assert.check(Utils.isNonEmptyString(str), message);
   }
 
-  static isNumber(obj: any) {
-    Assert.check(_.isNumber(obj), 'Value should be a number.');
+  static isNumber(obj: any, message: string = 'Value should be a number.') {
+    Assert.check(_.isNumber(obj), message);
   }
 
   static isLargerThan(expected: number, actual: number) {

@@ -81,6 +81,8 @@ export class FieldController extends BaseController {
           Logger.verbose(`> ${diffResultArray.NEW.length} new field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
           Logger.verbose(`> ${diffResultArray.DELETED.length} deleted field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
           Logger.verbose(`> ${diffResultArray.UPDATED.length} updated field${diffResultArray.NEW.length > 1 ? 's' : ''} found`);
+        } else {
+          Logger.info('They field pages are identical in both organizations');
         }
         return diffResultArray;
       })

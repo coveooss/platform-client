@@ -7,6 +7,7 @@ import { InteractiveMode } from './console/InteractiveMode';
 import { SettingsController } from './console/SettingsController';
 import { DiffCommand, IDiffOptions } from './commands/DiffCommand';
 import { Logger } from './commons/logger';
+import { EnvironmentUtils } from './commons/utils/EnvironmentUtils';
 
 const program = require('commander');
 const pkg: any = require('./../package.json');
@@ -23,17 +24,19 @@ program.on('--help', () => {
 
 // Basic Graduation command
 program
+  // TODO: add the fiel field or extension in the command line and not in the options
+  // TODO: add a validation function with a meaningful error message if a parameter is missing
   .command('graduate <originOrg> <destinationOrg> <originApiKey> <destinationApiKey>')
   .description('Graduate one organisation to an other')
-  .option('-f, --fields', 'Graduate fields')
-  // .option('-s, --sources', 'Graduate sources')
-  .option('-e, --extensions', 'Graduate extensions')
+  .option('-f, --fields', 'Graduate fields') // TODO: put in the command line
+  .option('-e, --extensions', 'Graduate extensions') // TODO: put in the command line
   .option('-F, --force', 'Force graduation without confirmation prompt')
-  .option('-m, --methods []', 'HTTP method authorized by the Graduation. Default value is "POST,PUT,DELETE".', list, [
-    'POST',
-    'PUT',
-    'DELETE'
-  ])
+  .option(
+    '-m, --methods []',
+    'HTTP method authorized by the Graduation. Should be a comma separated list (no spaces). Default value is "POST,PUT,DELETE".',
+    list,
+    ['POST', 'PUT', 'DELETE']
+  )
   .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
   .option(
     '-l, --logLevel <level>',
@@ -56,9 +59,6 @@ program
 
     if (options.fields) {
       command.graduateFields();
-    }
-    if (options.sources) {
-      command.graduateSources();
     }
     if (options.extensions) {
       command.graduateExtensions();
@@ -151,7 +151,7 @@ function setEnvironmentIfNecessary() {
   const i = process.argv.indexOf('--env');
   if (i !== -1 && i + 1 < process.argv.length) {
     const env = process.argv[i + 1];
-    process.env.NODE_ENV = env;
+    EnvironmentUtils.setNodeEnvironment(env);
   }
 }
 

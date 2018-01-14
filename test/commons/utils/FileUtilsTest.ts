@@ -4,7 +4,7 @@ import * as fs from 'fs-extra';
 
 export const FileUtilsTest = () => {
   describe('File Utils', () => {
-    const TEST_FILE = 'testfile.txt';
+    const TEST_FILE = 'testfile.log';
 
     beforeEach(() => {
       fs.removeSync(TEST_FILE);

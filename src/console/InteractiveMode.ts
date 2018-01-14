@@ -6,7 +6,6 @@ import { GraduateCommand } from '../commands/GraduateCommand';
 import { DiffCommand } from '../commands/DiffCommand';
 import { FieldController } from '../controllers/FieldController';
 import { ExtensionController } from '../controllers/ExtensionController';
-import { SourceController } from '../controllers/SourceController';
 
 export class InteractiveMode {
   static ORIGIN_ORG_ID: string = 'originOrganizationId';
@@ -89,11 +88,7 @@ export class InteractiveMode {
       type: 'checkbox',
       name: InteractiveMode.CONTENT_TO_GRADUATE,
       message: 'Graduate Fields?',
-      choices: [
-        { name: FieldController.CONTROLLER_NAME },
-        { name: ExtensionController.CONTROLLER_NAME },
-        { name: SourceController.CONTROLLER_NAME, disabled: 'Not implemented yet' }
-      ],
+      choices: [{ name: FieldController.CONTROLLER_NAME }, { name: ExtensionController.CONTROLLER_NAME }],
       when: (answer: Answers) => answer[InteractiveMode.COMMAND].indexOf(GraduateCommand.COMMAND_NAME) !== -1,
       validate: this.checkboxValidator('You need to select at least 1 content to graduate.')
     };
@@ -107,25 +102,21 @@ export class InteractiveMode {
     return this.getGraduateOperation(ExtensionController.CONTROLLER_NAME, InteractiveMode.GRADUATE_EXTENSIONS_OPERATION);
   }
 
-  public getSourceElementToGraduate(): Question {
-    return {
-      type: 'checkbox',
-      name: InteractiveMode.SOURCE_CONTENT_TO_GRADUATE,
-      message: 'What parts of the source you want to graduate?',
-      choices: [
-        { name: 'Configuration', value: 'configuration' },
-        { name: 'Objects (Salesforce only)', value: 'objects' },
-        { name: 'Mappings', value: 'mappings' },
-        { name: 'Extensions', value: 'extensions' }
-      ],
-      when: (answer: Answers) => answer[InteractiveMode.SOURCE_CONTENT_TO_GRADUATE].indexOf(SourceController.CONTROLLER_NAME) !== -1,
-      validate: this.checkboxValidator('You need to select at least 1 source content to graduate.')
-    };
-  }
-
-  public getGraduateOperationForSources(): Question {
-    return this.getGraduateOperation(SourceController.CONTROLLER_NAME, InteractiveMode.GRADUATE_SOURCES_OPERATION);
-  }
+  // public getSourceElementToGraduate(): Question {
+  //   return {
+  //     type: 'checkbox',
+  //     name: InteractiveMode.SOURCE_CONTENT_TO_GRADUATE,
+  //     message: 'What parts of the source you want to graduate?',
+  //     choices: [
+  //       { name: 'Configuration', value: 'configuration' },
+  //       { name: 'Objects (Salesforce only)', value: 'objects' },
+  //       { name: 'Mappings', value: 'mappings' },
+  //       { name: 'Extensions', value: 'extensions' }
+  //     ],
+  //     when: (answer: Answers) => answer[InteractiveMode.SOURCE_CONTENT_TO_GRADUATE].indexOf(SourceController.CONTROLLER_NAME) !== -1,
+  //     validate: this.checkboxValidator('You need to select at least 1 source content to graduate.')
+  //   };
+  // }
 
   public getFileNameForSettings(): Question {
     return this.getGenericFilename(InteractiveMode.SETTING_FILENAME, 'settings', 'Enter settings filename: ');
