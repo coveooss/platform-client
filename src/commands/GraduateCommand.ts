@@ -5,6 +5,8 @@ import { FieldController } from '../controllers/FieldController';
 import { InteractiveMode } from '../console/InteractiveMode';
 import { Logger } from '../commons/logger';
 import { StaticErrorMessage } from '../commons/errors';
+import { DiffResultArray } from '../commons/collections/DiffResultArray';
+import { Field } from '../coveoObjects/Field';
 
 export interface IHTTPGraduateOptions {
   POST: boolean;
@@ -61,15 +63,25 @@ export class GraduateCommand {
     // Make sure the user selects at least one HTTP method
     inquirer.prompt(questions).then((res: inquirer.Answers) => {
       if (res.confirm || this.options.force) {
+        // TODO: Ask the user if he wants to perform the graduation manually HERE!!!
+
         Logger.startSpinner('Performing Field Graduation');
         fieldController
-          .graduate(this.options)
-          .then(() => {
-            Logger.info('Graduation operation completed');
-            Logger.stopSpinner();
+          .diff()
+          .then((diffResultArray: DiffResultArray<Field>) => {
+            fieldController
+              .graduate(diffResultArray, this.options)
+              .then(() => {
+                Logger.info('Graduation operation completed');
+                Logger.stopSpinner();
+              })
+              .catch((err: any) => {
+                Logger.error(StaticErrorMessage.UNABLE_TO_GRADUATE, err);
+                Logger.stopSpinner();
+              });
           })
           .catch((err: any) => {
-            Logger.error(StaticErrorMessage.UNABLE_TO_GRADUATE, err);
+            Logger.error('Error in graduation operation', err);
             Logger.stopSpinner();
           });
       } else {

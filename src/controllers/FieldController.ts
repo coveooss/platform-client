@@ -95,27 +95,21 @@ export class FieldController extends BaseController {
   /**
    * Performs a diff and graduate the result.
    */
-  public graduate(options: IHTTPGraduateOptions) {
-    return this.diff()
-      .then((diffResultArray: DiffResultArray<Field>) => {
-        if (diffResultArray.containsItems()) {
-          Logger.loadingTask('Graduating fields');
-          return Promise.all(
-            _.map(
-              this.getAuthorizedOperations(diffResultArray, options),
-              (operation: (diffResult: DiffResultArray<Field>) => Promise<void>) => {
-                return operation.call(this, diffResultArray);
-              }
-            )
-          );
-        } else {
-          Logger.warn('No Fields to graduate');
-          return Promise.resolve([]);
-        }
-      })
-      .catch((err: any) => {
-        return Promise.reject(err);
-      });
+  public graduate(diffResultArray: DiffResultArray<Field>, options: IHTTPGraduateOptions) {
+    if (diffResultArray.containsItems()) {
+      Logger.loadingTask('Graduating fields');
+      return Promise.all(
+        _.map(
+          this.getAuthorizedOperations(diffResultArray, options),
+          (operation: (diffResult: DiffResultArray<Field>) => Promise<void>) => {
+            return operation.call(this, diffResultArray);
+          }
+        )
+      );
+    } else {
+      Logger.warn('No Fields to graduate');
+      return Promise.resolve([]);
+    }
   }
 
   private getAuthorizedOperations(

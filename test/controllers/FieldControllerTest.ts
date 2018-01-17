@@ -313,9 +313,16 @@ export const FieldControllerTest = () => {
         };
 
         fieldController
-          .graduate(graduateOptions)
-          .then(() => {
-            done();
+          .diff()
+          .then((diffResultArray: DiffResultArray<Field>) => {
+            fieldController
+              .graduate(diffResultArray, graduateOptions)
+              .then(() => {
+                done();
+              })
+              .catch((err: any) => {
+                done(err);
+              });
           })
           .catch((err: any) => {
             done(err);
@@ -403,9 +410,13 @@ export const FieldControllerTest = () => {
 
         // TODO: add a spy on graduateErrorHandler
         fieldController
-          .graduate(graduateOptions)
-          .then(() => {
+          .diff()
+          .then((diffResultArray: DiffResultArray<Field>) => {
+            fieldController.graduate(diffResultArray, graduateOptions);
             done();
+          })
+          .catch((err: any) => {
+            done(err);
           })
           .catch((err: any) => {
             done(err);
@@ -467,15 +478,20 @@ export const FieldControllerTest = () => {
           DELETE: true
         };
 
-        fieldController
-          .graduate(graduateOptions)
-          .then((resolved: any[]) => {
-            expect(resolved).to.be.empty;
-            done();
-          })
-          .catch((err: any) => {
-            done(err);
-          });
+        fieldController.diff().then((diffResultArray: DiffResultArray<Field>) => {
+          fieldController
+            .graduate(diffResultArray, graduateOptions)
+            .then((resolved: any[]) => {
+              expect(resolved).to.be.empty;
+              done();
+            })
+            .catch((err: any) => {
+              done(err);
+            })
+            .catch((err: any) => {
+              done(err);
+            });
+        });
       });
 
       it('Should not graduate: failed diff', (done: MochaDone) => {
@@ -514,9 +530,16 @@ export const FieldControllerTest = () => {
         };
 
         fieldController
-          .graduate(graduateOptions)
-          .then((resolved: any[]) => {
-            done('This function should not resolve');
+          .diff()
+          .then((diffResultArray: DiffResultArray<Field>) => {
+            fieldController
+              .graduate(diffResultArray, graduateOptions)
+              .then((resolved: any[]) => {
+                done('This function should not resolve');
+              })
+              .catch((err: any) => {
+                done(err);
+              });
           })
           .catch((err: any) => {
             assert.throws(() => {
@@ -586,14 +609,19 @@ export const FieldControllerTest = () => {
           DELETE: false
         };
 
-        fieldController
-          .graduate(graduateOptions)
-          .then(() => {
-            done();
-          })
-          .catch((err: any) => {
-            done(err);
-          });
+        fieldController.diff().then((diffResultArray: DiffResultArray<Field>) => {
+          fieldController
+            .graduate(diffResultArray, graduateOptions)
+            .then(() => {
+              done();
+            })
+            .catch((err: any) => {
+              done(err);
+            })
+            .catch((err: any) => {
+              done(err);
+            });
+        });
       });
     });
   });
