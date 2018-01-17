@@ -26,7 +26,7 @@ program.on('--help', () => {
 program
   // TODO: add the fiel field or extension in the command line and not in the options
   // TODO: add a validation function with a meaningful error message if a parameter is missing
-  .command('graduate <originOrg> <destinationOrg> <originApiKey> <destinationApiKey>')
+  .command('graduate <operation> <org1> <org2> <apiKey1> <apiKey2>')
   .description('Graduate one organisation to an other')
   .option('-f, --fields', 'Graduate fields') // TODO: put in the command line
   .option('-e, --extensions', 'Graduate extensions') // TODO: put in the command line
@@ -44,7 +44,7 @@ program
     /^(insane|verbose|info|error|nothing)$/i,
     'info'
   )
-  .action((originOrg: string, destinationOrg: string, originApiKey: string, destinationApiKey: string, options: any) => {
+  .action((operation: string, org1: string, org2: string, apiKey1: string, apiKey2: string, options: any) => {
     setLogger(options, 'graduate');
 
     // Set graduation options
@@ -55,24 +55,25 @@ program
       DELETE: options.methods.indexOf('DELETE') > -1
     };
 
-    const command = new GraduateCommand(originOrg, destinationOrg, originApiKey, destinationApiKey, graduateOptions);
+    const command = new GraduateCommand(org1, org2, apiKey1, apiKey2, graduateOptions);
 
-    if (options.fields) {
-      command.graduateFields();
-    }
-    if (options.extensions) {
-      command.graduateExtensions();
+    switch (operation) {
+      case 'field':
+        command.graduateFields();
+        break;
+      case 'extension':
+        command.graduateExtensions();
+        break;
+      default:
+        console.log('\n  error: Invalid Graduate operation. Here are the available Graduate operations: field, extension.\n');
+        break;
     }
   });
 
 // Basic Diff command
 program
-  .command('diff <originOrg> <destinationOrg> <originApiKey> <destinationApiKey>')
-  .description('Diff 2 Organizations')
-  .option('-f, --fields', 'Diff fields')
-  // .option('-s, --sources', 'Diff sources')
-  .option('-e, --extensions', 'Diff extensions')
-  // .option('-b, --openInBrowser', 'Open Diff in default Browser')
+  .command('diff <operation> <org1> <org2> <apiKey1> <apiKey2>')
+  .description(['Diff 2 Organizations.'])
   .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
   .option('-i, --ignoreKeys []', 'Object keys to ignore. String separated by ","', list)
   .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', list)
@@ -83,7 +84,7 @@ program
     'info'
   )
   .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
-  .action((originOrg: string, destinationOrg: string, originApiKey: string, destinationApiKey: string, options: any) => {
+  .action((operation: string, org1: string, org2: string, apiKey1: string, apiKey2: string, options: any) => {
     setLogger(options, 'diff');
 
     // Set diff options
@@ -93,12 +94,17 @@ program
       silent: options.silent
     };
 
-    const command = new DiffCommand(originOrg, destinationOrg, originApiKey, destinationApiKey, diffOptions);
-    if (options.fields) {
-      command.diffFields();
-    }
-    if (options.extensions) {
-      command.diffExtensions();
+    const command = new DiffCommand(org1, org2, apiKey1, apiKey2, diffOptions);
+    switch (operation) {
+      case 'field':
+        command.diffFields();
+        break;
+      case 'extension':
+        command.diffExtensions();
+        break;
+      default:
+        console.log('\n  error: Invalid Diff operation. Here are the available Diff operations: field, extension.\n');
+        break;
     }
   });
 
@@ -127,21 +133,7 @@ program
       });
   });
 
-program
-  // Currently loads the file from current directory
-  .command('loadSettings <filename>')
-  .description('Execute commande from json file')
-  .action((filename: string) => {
-    fs
-      .readJson(filename)
-      .then((settings: any) => {
-        Logger.info('To complete');
-      })
-      .catch((err: any) => {
-        Logger.error(err);
-      });
-  });
-
+// Parsing the arguments
 program.parse(process.argv);
 
 // Utils

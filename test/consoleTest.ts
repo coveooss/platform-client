@@ -8,7 +8,7 @@ export const ConsoleTest = () => {
     // TODO: should test multiple command to make sure nothing breaks
     it('Should not throw any error', () => {
       Logger.enable();
-      exec('node coveo-client.js diff dev prod xxx yyy -f -s', { cwd: './bin' }, (err: Error, stdout: string, stderr: string) => {
+      exec('node coveo-client.js diff field dev prod xxx yyy -s', { cwd: './bin' }, (err: Error, stdout: string, stderr: string) => {
         if (err) {
           console.error(err);
           return;
