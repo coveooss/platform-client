@@ -7,7 +7,7 @@ export class StaticErrorMessage {
 
   // Rest
   public static FAILED_API_REQUEST: string = 'Unable to perform API request';
-  public static UNEXPECTED_RESPONSE: string = 'Unexepected response from the server';
+  public static UNEXPECTED_RESPONSE: string = 'Unexpected response from the server';
 
   // Fields
   public static MISSING_FIELD_NAME: string = 'Missing field name';
