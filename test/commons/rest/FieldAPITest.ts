@@ -1,5 +1,4 @@
 // tslint:disable:no-magic-numbers
-import * as sinon from 'sinon';
 import * as nock from 'nock';
 import { FieldAPI } from './../../../src/commons/rest/FieldAPI';
 import { expect, assert } from 'chai';
