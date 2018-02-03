@@ -8,7 +8,7 @@ import { ArrayUtils } from '../utils/ArrayUtils';
 import { Assert } from '../misc/Assert';
 import { IStringMap } from '../interfaces/IStringMap';
 import { JsonUtils } from '../utils/JsonUtils';
-import { StaticErrorMessage } from '../errors';
+import { StaticErrorMessage, IGenericError } from '../errors';
 
 export class FieldAPI {
   public static createFields(org: Organization, fieldModels: IStringMap<any>[], fieldsPerBatch: number): Promise<RequestResponse[]> {
@@ -61,14 +61,14 @@ export class FieldAPI {
             this.loadOtherPages(org, response.body.totalPages)
               .then(() => resolve())
               .catch((err: any) => {
-                reject(err);
+                reject({ orgId: org.getId(), message: err } as IGenericError);
               });
           } else {
             resolve();
           }
         })
         .catch((err: any) => {
-          reject(err);
+          reject({ orgId: org.getId(), message: err } as IGenericError);
         });
     });
   }

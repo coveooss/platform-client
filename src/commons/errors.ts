@@ -1,3 +1,8 @@
+export interface IGenericError {
+  orgId: string;
+  message: string;
+}
+
 export class StaticErrorMessage {
   // Base Coveo Object
   public static INVALID_ID: string = 'Id should not be undefined';

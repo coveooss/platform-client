@@ -8,7 +8,7 @@ import { Field } from '../../src/coveoObjects/Field';
 import { UrlService } from '../../src/commons/rest/UrlService';
 import { RequestUtils } from '../../src/commons/utils/RequestUtils';
 import { Utils } from '../../src/commons/utils/Utils';
-import { StaticErrorMessage } from '../../src/commons/errors';
+import { StaticErrorMessage, IGenericError } from '../../src/commons/errors';
 import { IGraduateOptions, IHTTPGraduateOptions } from '../../src/commands/GraduateCommand';
 import { BaseController } from '../../src/controllers/BaseController';
 
@@ -165,9 +165,9 @@ export const FieldControllerTest = () => {
           .then(() => {
             done('This function should not resolve');
           })
-          .catch((err: any) => {
+          .catch((err: IGenericError) => {
             assert.throws(() => {
-              throw Error(err);
+              throw Error(err.message);
             }, '{\n  "message": "Access is denied.",\n  "errorCode": "ACCESS_DENIED"\n}');
             done();
           });
@@ -541,9 +541,9 @@ export const FieldControllerTest = () => {
                 done(err);
               });
           })
-          .catch((err: any) => {
+          .catch((err: IGenericError) => {
             assert.throws(() => {
-              throw Error(err);
+              throw Error(err.message);
             }, 'some message');
             done();
           });

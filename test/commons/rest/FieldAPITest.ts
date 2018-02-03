@@ -9,7 +9,7 @@ import { Organization } from '../../../src/coveoObjects/Organization';
 import { parse } from 'url';
 import { IStringMap } from '../../../src/commons/interfaces/IStringMap';
 import { JsonUtils } from '../../../src/commons/utils/JsonUtils';
-import { StaticErrorMessage } from '../../../src/commons/errors';
+import { StaticErrorMessage, IGenericError } from '../../../src/commons/errors';
 
 export const FieldAPITest = () => {
   describe('Field API', () => {
@@ -512,9 +512,9 @@ export const FieldAPITest = () => {
         .then(() => {
           done('This function should not resolve');
         })
-        .catch((err: any) => {
+        .catch((err: IGenericError) => {
           assert.throws(() => {
-            throw Error(err);
+            throw Error(err.message);
           }, StaticErrorMessage.UNEXPECTED_RESPONSE);
           done();
         });
