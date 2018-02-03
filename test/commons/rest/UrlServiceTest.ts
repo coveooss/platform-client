@@ -27,5 +27,15 @@ export const UrlServiceTest = () => {
         `${config.coveo.platformUrl}/rest/organizations/myOrgId/indexes/fields/batch/delete?fields=rambo%2Cunicorne`
       );
     });
+
+    it('Should generate the url to get all extensions', () => {
+      const createFields = UrlService.getExtensionsUrl('myOrgId');
+      expect(createFields).to.equal(`${config.coveo.platformUrl}/rest/organizations/myOrgId/extensions`);
+    });
+
+    it('Should generate the url to get a specific extensions', () => {
+      const createFields = UrlService.getSingleExtensionUrl('myOrgId', 'myExtension');
+      expect(createFields).to.equal(`${config.coveo.platformUrl}/rest/organizations/myOrgId/extensions/myExtension`);
+    });
   });
 };

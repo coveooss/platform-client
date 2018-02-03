@@ -59,20 +59,19 @@ program
 
     if (options.fields) {
       command.graduateFields();
-    }
-    if (options.extensions) {
+    } else if (options.extensions) {
       command.graduateExtensions();
+    } else {
+      Logger.warn('Nothing to Graduate.\nSpecify something to graduate. For example: --fields or --extensions');
     }
   });
 
 // Basic Diff command
 program
   .command('diff <originOrg> <destinationOrg> <originApiKey> <destinationApiKey>')
-  .description('Diff 2 Organizations')
+  .description(['Diff 2 Organizations.'])
   .option('-f, --fields', 'Diff fields')
-  // .option('-s, --sources', 'Diff sources')
   .option('-e, --extensions', 'Diff extensions')
-  // .option('-b, --openInBrowser', 'Open Diff in default Browser')
   .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
   .option('-i, --ignoreKeys []', 'Object keys to ignore. String separated by ","', list)
   .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', list)
@@ -96,9 +95,10 @@ program
     const command = new DiffCommand(originOrg, destinationOrg, originApiKey, destinationApiKey, diffOptions);
     if (options.fields) {
       command.diffFields();
-    }
-    if (options.extensions) {
+    } else if (options.extensions) {
       command.diffExtensions();
+    } else {
+      Logger.warn('Nothing to diff.\nSpecify something to diff. For example: --fields or --extensions');
     }
   });
 
@@ -127,21 +127,7 @@ program
       });
   });
 
-program
-  // Currently loads the file from current directory
-  .command('loadSettings <filename>')
-  .description('Execute commande from json file')
-  .action((filename: string) => {
-    fs
-      .readJson(filename)
-      .then((settings: any) => {
-        Logger.info('To complete');
-      })
-      .catch((err: any) => {
-        Logger.error(err);
-      });
-  });
-
+// Parsing the arguments
 program.parse(process.argv);
 
 // Utils

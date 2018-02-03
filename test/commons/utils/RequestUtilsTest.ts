@@ -1,8 +1,7 @@
-import * as sinon from 'sinon';
 import * as nock from 'nock';
 import * as request from 'request';
 import { UrlService } from '../../../src/commons/rest/UrlService';
-import { expect } from 'chai';
+import { assert, expect } from 'chai';
 import { RequestUtils } from './../../../src/commons/utils/RequestUtils';
 
 export const RequestUtilsTest = () => {
@@ -13,20 +12,10 @@ export const RequestUtilsTest = () => {
       expect(scope.pendingMocks(), scope.pendingMocks().toString()).to.be.empty;
     });
 
-    before(() => {
-      // stub = sinon.stub(http, 'request');
-    });
-
-    after(() => {
-      // stub.restore();
-    });
-
     it('Should send an empty request', (done: MochaDone) => {
       scope = nock(UrlService.getDefaultUrl())
         .get('/somewhere')
         .reply(RequestUtils.OK);
-
-      const get = sinon.spy(RequestUtils, 'get');
 
       RequestUtils.get(UrlService.getDefaultUrl('/somewhere'), 'xxx')
         .then(() => {
@@ -35,13 +24,74 @@ export const RequestUtilsTest = () => {
         .catch((err: any) => {
           done(err);
         });
+    });
 
-      const args = get.getCall(0).args;
-      expect(get.calledOnce).to.be.true;
-      expect(args[0]).to.eql(UrlService.getDefaultUrl('/somewhere'));
-      expect(args[1]).to.eql('xxx');
+    it('Should handle an error on GET method', (done: MochaDone) => {
+      scope = nock(UrlService.getDefaultUrl())
+        .get('/somewhere_bad')
+        .replyWithError({ message: 'something awful happened', code: 'AWFUL_ERROR' });
 
-      get.restore();
+      RequestUtils.get(UrlService.getDefaultUrl('/somewhere_bad'), 'xxx')
+        .then(() => {
+          done('This function should not resolve');
+        })
+        .catch((err: {}) => {
+          assert.throws(() => {
+            throw Error(err['message']);
+          }, 'something awful happened');
+          done();
+        });
+    });
+
+    it('Should handle an error on PUT method', (done: MochaDone) => {
+      scope = nock(UrlService.getDefaultUrl())
+        .put('/cat/poems')
+        .replyWithError({ message: 'something awful happened', code: 'AWFUL_ERROR' });
+
+      RequestUtils.put(UrlService.getDefaultUrl('/cat/poems'), 'xxx', { something: ['very', 'cool'] })
+        .then(() => {
+          done('This function should not resolve');
+        })
+        .catch((err: {}) => {
+          assert.throws(() => {
+            throw Error(err['message']);
+          }, 'something awful happened');
+          done();
+        });
+    });
+
+    it('Should handle an error on POST method', (done: MochaDone) => {
+      scope = nock(UrlService.getDefaultUrl())
+        .post('/the/super/org')
+        .replyWithError({ message: 'something awful happened', code: 'AWFUL_ERROR' });
+
+      RequestUtils.post(UrlService.getDefaultUrl('/the/super/org'), 'the_super_api_key', { the: 'super content' })
+        .then(() => {
+          done('This function should not resolve');
+        })
+        .catch((err: {}) => {
+          assert.throws(() => {
+            throw Error(err['message']);
+          }, 'something awful happened');
+          done();
+        });
+    });
+
+    it('Should handle an error on Get method', (done: MochaDone) => {
+      scope = nock(UrlService.getDefaultUrl())
+        .delete('/somthing/to/delete')
+        .replyWithError({ message: 'something awful happened', code: 'AWFUL_ERROR' });
+
+      RequestUtils.delete(UrlService.getDefaultUrl('/somthing/to/delete'), 'xxx')
+        .then(() => {
+          done('This function should not resolve');
+        })
+        .catch((err: {}) => {
+          assert.throws(() => {
+            throw Error(err['message']);
+          }, 'something awful happened');
+          done();
+        });
     });
   });
 };

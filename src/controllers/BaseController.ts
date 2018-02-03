@@ -3,6 +3,7 @@ import { Logger } from '../commons/logger';
 import * as _ from 'underscore';
 import * as chalk from 'chalk';
 import { JsonUtils } from '../commons/utils/JsonUtils';
+import { IGenericError } from '../commons/errors';
 
 /**
  * Every Controller ultimately inherits from this base controller class.
@@ -20,16 +21,16 @@ export class BaseController {
     Logger.insane(`${JsonUtils.stringify(responses)} `);
   }
 
-  protected graduateErrorHandler(err: any, errorMessage: string) {
+  protected graduateErrorHandler(error: IGenericError, errorMessage: string) {
     const tryToPrettyfy = (e: any) => {
       try {
-        e = err.replace(/\\n/g, '');
-        return JsonUtils.stringify(JSON.parse(e));
+        e = error.message.replace(/\\n/g, '');
+        return JsonUtils.stringify(JSON.parse(e), 0);
       } catch (error) {
         return e;
       }
     };
 
-    Logger.error(errorMessage, err ? `${chalk.red(tryToPrettyfy(err))}` : '');
+    Logger.error(errorMessage, chalk.red('Organization ID: ' + error.orgId), error.message ? chalk.red(tryToPrettyfy(error.message)) : '');
   }
 }

@@ -3,15 +3,18 @@ import { EnvironmentUtils } from '../../../src/commons/utils/EnvironmentUtils';
 
 export const EnvironmentUtilsTest = () => {
   describe('Config', () => {
-    it('Should set the current environment', () => {
-      // Get current environment
-      const env = EnvironmentUtils.getNodeEnvironment();
+    afterEach(() => {
+      EnvironmentUtils.setNodeEnvironment('test');
+    });
 
+    it('Should set the current environment', () => {
       EnvironmentUtils.setNodeEnvironment('superTest');
       expect(process.env.NODE_ENV).to.eql('superTest');
+    });
 
-      // Restore previous environment
-      EnvironmentUtils.setNodeEnvironment(env);
+    it('Should set the current environment to development', () => {
+      EnvironmentUtils.setDefaultNodeEnvironment();
+      expect(process.env.NODE_ENV).to.eql('development');
     });
   });
 };

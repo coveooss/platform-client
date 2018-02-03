@@ -83,13 +83,13 @@ export class DiffCommand {
           .catch((err: any) => {
             Logger.error('Unable to save setting file', err);
             Logger.stopSpinner();
-            // process.exit(); // TODO: remove if not necessary
+            process.exit();
           });
       })
       .catch((err: any) => {
         Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err);
         Logger.stopSpinner();
-        // process.exit(); // TODO: remove if not necessary
+        process.exit();
       });
   }
 
