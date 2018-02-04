@@ -11,7 +11,7 @@ import { JsonUtils } from '../utils/JsonUtils';
 import { StaticErrorMessage, IGenericError } from '../errors';
 
 export class FieldAPI {
-  public static getFieldModel(): Promise<RequestResponse> {
+  public static getFieldDefinitions(): Promise<RequestResponse> {
     const url = UrlService.getFieldDocs();
     return RequestUtils.get(url, '');
   }
