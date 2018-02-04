@@ -42,13 +42,17 @@ export class InteractiveMode {
   public loadFieldModel() {
     // tslint:disable-next-line:typedef
     return new Promise((resolve, reject) => {
-      FieldAPI.getFieldModel().then((resp: RequestResponse) => {
-        if (resp.body.definitions && resp.body.definitions.FieldModel && resp.body.definitions.FieldModel.properties) {
-          resolve(_.keys(resp.body.definitions.FieldModel.properties));
-        } else {
+      FieldAPI.getFieldModel()
+        .then((resp: RequestResponse) => {
+          if (resp.body.definitions && resp.body.definitions.FieldModel && resp.body.definitions.FieldModel.properties) {
+            resolve(_.keys(resp.body.definitions.FieldModel.properties));
+          } else {
+            reject('Unexpected response when trying to load field model');
+          }
+        })
+        .catch((err: any) => {
           reject('Unable to fetch field model');
-        }
-      });
+        });
     });
   }
 
