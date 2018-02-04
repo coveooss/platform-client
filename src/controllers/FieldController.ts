@@ -139,7 +139,6 @@ export class FieldController extends BaseController {
     return authorizedOperations;
   }
 
-  // TODO: to test
   private graduateNew(diffResult: DiffResultArray<Field>): Promise<void> {
     Logger.verbose(
       `Creating ${diffResult.TO_CREATE.length} new field${diffResult.TO_CREATE.length > 1 ? 's' : ''} in ${this.organization2.getId()} `
@@ -153,7 +152,6 @@ export class FieldController extends BaseController {
       });
   }
 
-  // TODO: to test
   private graduateUpdated(diffResult: DiffResultArray<Field>): Promise<void> {
     Logger.verbose(
       `Updating ${diffResult.TO_UPDATE.length} existing field${
@@ -169,7 +167,6 @@ export class FieldController extends BaseController {
       });
   }
 
-  // TODO: to test: make sure the query is well formed (with the list of fields to delete)
   private graduateDeleted(diffResult: DiffResultArray<Field>): Promise<void> {
     Logger.verbose(
       `Deleting ${diffResult.TO_UPDATE.length} existing field${

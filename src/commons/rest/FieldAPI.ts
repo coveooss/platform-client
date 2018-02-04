@@ -11,6 +11,11 @@ import { JsonUtils } from '../utils/JsonUtils';
 import { StaticErrorMessage, IGenericError } from '../errors';
 
 export class FieldAPI {
+  public static getFieldModel(): Promise<RequestResponse> {
+    const url = UrlService.getFieldDocs();
+    return RequestUtils.get(url, '');
+  }
+
   public static createFields(org: Organization, fieldModels: IStringMap<any>[], fieldsPerBatch: number): Promise<RequestResponse[]> {
     Assert.isLargerThan(0, fieldModels.length);
     const url = UrlService.createFields(org.getId());

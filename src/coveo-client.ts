@@ -31,6 +31,8 @@ program
   .option('-f, --fields', 'Graduate fields') // TODO: put in the command line
   .option('-e, --extensions', 'Graduate extensions') // TODO: put in the command line
   .option('-F, --force', 'Force graduation without confirmation prompt')
+  .option('-i, --ignoreKeys []', 'Object keys to ignore. String separated by ","', list)
+  .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', list)
   .option(
     '-m, --methods []',
     'HTTP method authorized by the Graduation. Should be a comma separated list (no spaces). Default value is "POST,PUT,DELETE".',
@@ -49,6 +51,10 @@ program
 
     // Set graduation options
     const graduateOptions: IGraduateOptions = {
+      diffOptions: {
+        keysToIgnore: options.ignoreKeys || [],
+        includeOnly: options.onlyKeys || []
+      },
       force: !!options.force,
       POST: options.methods.indexOf('POST') > -1,
       PUT: options.methods.indexOf('PUT') > -1,
@@ -111,7 +117,7 @@ program
       .start()
       .then((answers: inquirer.Answers) => {
         const settingFilename = answers[InteractiveMode.SETTING_FILENAME];
-        const settings = SettingsController.genSettings(answers);
+        const settings = SettingsController.generateCommand(answers);
         // Saving settings into a file
         fs
           .writeJSON(settingFilename, settings, { spaces: 2 })

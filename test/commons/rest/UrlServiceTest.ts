@@ -37,5 +37,10 @@ export const UrlServiceTest = () => {
       const createFields = UrlService.getSingleExtensionUrl('myOrgId', 'myExtension');
       expect(createFields).to.equal(`${config.coveo.platformUrl}/rest/organizations/myOrgId/extensions/myExtension`);
     });
+
+    it('Should generate the url to get the Field documentation', () => {
+      const fieldDoc = UrlService.getFieldDocs();
+      expect(fieldDoc).to.equal(`${config.coveo.platformUrl}/api-docs/Field?group=public`);
+    });
   });
 };

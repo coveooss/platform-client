@@ -7,6 +7,7 @@ import { Logger } from '../commons/logger';
 import { StaticErrorMessage } from '../commons/errors';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { Field } from '../coveoObjects/Field';
+import { IDiffOptions, DiffCommand } from './DiffCommand';
 
 export interface IHTTPGraduateOptions {
   POST: boolean;
@@ -16,6 +17,7 @@ export interface IHTTPGraduateOptions {
 
 export interface IGraduateOptions extends IHTTPGraduateOptions {
   force: boolean;
+  diffOptions: IDiffOptions;
 }
 
 export class GraduateCommand {
@@ -38,6 +40,7 @@ export class GraduateCommand {
   }
 
   static DEFAULT_OPTIONS: IGraduateOptions = {
+    diffOptions: DiffCommand.DEFAULT_OPTIONS,
     force: false,
     POST: true,
     PUT: true,
@@ -67,7 +70,7 @@ export class GraduateCommand {
 
         Logger.startSpinner('Performing Field Graduation');
         fieldController
-          .diff()
+          .diff(this.options.diffOptions)
           .then((diffResultArray: DiffResultArray<Field>) => {
             fieldController
               .graduate(diffResultArray, this.options)

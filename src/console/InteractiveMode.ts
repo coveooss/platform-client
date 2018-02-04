@@ -1,4 +1,6 @@
+import * as _ from 'underscore';
 import * as inquirer from 'inquirer';
+import { RequestResponse } from 'request';
 import { Question } from 'inquirer';
 import { Answers } from 'inquirer';
 import { Utils } from '../commons/utils/Utils';
@@ -6,6 +8,7 @@ import { GraduateCommand } from '../commands/GraduateCommand';
 import { DiffCommand } from '../commands/DiffCommand';
 import { FieldController } from '../controllers/FieldController';
 import { ExtensionController } from '../controllers/ExtensionController';
+import { FieldAPI } from '../commons/rest/FieldAPI';
 
 export class InteractiveMode {
   static ORIGIN_ORG_ID: string = 'originOrganizationId';
@@ -22,10 +25,31 @@ export class InteractiveMode {
   static LOG_FILENAME: string = 'logFilename';
   static FORCE_GRADUATION: string = 'force';
   static LOG_LEVEL: string = 'logLevel';
+  static KEY_TO_IGNORE: string = 'keyToIgnore';
 
   public start(): Promise<Answers> {
     const prompt = inquirer.createPromptModule();
-    return prompt(this.getQuestions());
+    return this.loadFieldModel()
+      .then((model: {}) => {
+        return prompt(this.getQuestions({ fieldModel: model }));
+      })
+      .catch((err: any) => {
+        console.error('Unable to load Field model.');
+        return prompt(this.getQuestions({}));
+      });
+  }
+
+  public loadFieldModel() {
+    // tslint:disable-next-line:typedef
+    return new Promise((resolve, reject) => {
+      FieldAPI.getFieldModel().then((resp: RequestResponse) => {
+        if (resp.body.definitions && resp.body.definitions.FieldModel && resp.body.definitions.FieldModel.properties) {
+          resolve(_.keys(resp.body.definitions.FieldModel.properties));
+        } else {
+          reject('Unable to fetch field model');
+        }
+      });
+    });
   }
 
   public getOriginOrganizationId(): Question {
@@ -102,6 +126,17 @@ export class InteractiveMode {
     return this.getGraduateOperation(ExtensionController.CONTROLLER_NAME, InteractiveMode.GRADUATE_EXTENSIONS_OPERATION);
   }
 
+  public setFieldsToIgnore(fieldModel: string[]): Question {
+    return {
+      type: 'checkbox',
+      name: InteractiveMode.KEY_TO_IGNORE,
+      message: `Select the keys that will no be taken in consideration for the diff`,
+      choices: fieldModel,
+      when: (answer: Answers) => fieldModel.length > 0
+      // validate: this.checkboxValidator('You need to select at least 1 graduate operation.'),
+    };
+  }
+
   // public getSourceElementToGraduate(): Question {
   //   return {
   //     type: 'checkbox',
@@ -144,20 +179,21 @@ export class InteractiveMode {
     };
   }
 
-  public getQuestions(): Question[] {
+  public getQuestions(data: any): Question[] {
     return [
-      this.getOriginOrganizationId(),
-      this.getOriginOrganizationKey(),
-      this.getDestinationOrganizationId(),
-      this.getDestinationOrganizationKey(),
-      this.getCommandList(),
-      this.getContentsToGraduate(),
-      this.getGraduateOperationForFields(),
-      this.getGraduateOperationForExtensions(),
-      // this.getSourceElementToGraduate(),
-      // this.getGraduateOperationForSources(),
-      this.setLogLevel(),
-      this.getFileNameForSettings()
+      this.setFieldsToIgnore(data['fieldModel'] || [])
+      //   this.getOriginOrganizationId(),
+      //   this.getOriginOrganizationKey(),
+      //   this.getDestinationOrganizationId(),
+      //   this.getDestinationOrganizationKey(),
+      //   this.getCommandList(),
+      //   this.getContentsToGraduate(),
+      //   this.getGraduateOperationForFields(),
+      //   this.getGraduateOperationForExtensions(),
+      //   // this.getSourceElementToGraduate(),
+      //   // this.getGraduateOperationForSources(),
+      //   this.setLogLevel(),
+      //   this.getFileNameForSettings()
     ];
   }
 
