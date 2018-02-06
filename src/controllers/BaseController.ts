@@ -21,6 +21,19 @@ export class BaseController {
     Logger.insane(`${JsonUtils.stringify(responses)} `);
   }
 
+  protected diffErrorHandler(error: any, errorMessage: string) {
+    const tryToPrettyfy = (e: any) => {
+      try {
+        e = error.replace(/\\n/g, '');
+        return JsonUtils.stringify(JSON.parse(e), 0);
+      } catch (error) {
+        return e;
+      }
+    };
+
+    Logger.error(errorMessage, error ? chalk.red(tryToPrettyfy(error)) : '');
+  }
+
   protected graduateErrorHandler(error: IGenericError, errorMessage: string) {
     const tryToPrettyfy = (e: any) => {
       try {

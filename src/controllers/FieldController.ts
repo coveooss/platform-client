@@ -87,7 +87,7 @@ export class FieldController extends BaseController {
         return diffResultArray;
       })
       .catch((err: any) => {
-        this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_FIELDS);
+        this.diffErrorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_FIELDS);
         return Promise.reject(err);
       });
   }
@@ -149,7 +149,7 @@ export class FieldController extends BaseController {
         this.graduateSuccessHandler(responses, 'POST operation successfully completed');
       })
       .catch((err: any) => {
-        this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_CREATE_FIELDS);
+        this.graduateErrorHandler({ orgId: this.organization2.getId(), message: err }, StaticErrorMessage.UNABLE_TO_CREATE_FIELDS);
       });
   }
 
@@ -165,7 +165,7 @@ export class FieldController extends BaseController {
         this.graduateSuccessHandler(responses, 'PUT operation successfully completed');
       })
       .catch((err: any) => {
-        this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_UPDATE_FIELDS);
+        this.graduateErrorHandler({ orgId: this.organization2.getId(), message: err }, StaticErrorMessage.UNABLE_TO_UPDATE_FIELDS);
       });
   }
 
@@ -181,7 +181,7 @@ export class FieldController extends BaseController {
         this.graduateSuccessHandler(responses, 'DELETE operation successfully completed');
       })
       .catch((err: any) => {
-        this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_DELETE_FIELDS);
+        this.graduateErrorHandler({ orgId: this.organization2.getId(), message: err }, StaticErrorMessage.UNABLE_TO_DELETE_FIELDS);
       });
   }
 
