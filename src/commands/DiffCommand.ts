@@ -8,7 +8,7 @@ import { Field } from '../coveoObjects/Field';
 import * as _ from 'underscore';
 import { ExtensionController } from '../controllers/ExtensionController';
 import { Extension } from '../coveoObjects/Extension';
-import { StaticErrorMessage } from '../commons/errors';
+import { StaticErrorMessage, IGenericError } from '../commons/errors';
 
 export interface IDiffOptions {
   /**
@@ -86,8 +86,8 @@ export class DiffCommand {
             process.exit();
           });
       })
-      .catch((err: any) => {
-        Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err);
+      .catch((err: IGenericError) => {
+        Logger.error(StaticErrorMessage.UNABLE_TO_DIFF);
         Logger.stopSpinner();
         process.exit();
       });
@@ -118,8 +118,8 @@ export class DiffCommand {
             // process.exit();
           });
       })
-      .catch((err: any) => {
-        Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err);
+      .catch((err: IGenericError) => {
+        Logger.error(StaticErrorMessage.UNABLE_TO_DIFF);
         Logger.stopSpinner();
         // process.exit();
       });

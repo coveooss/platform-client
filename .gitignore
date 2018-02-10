@@ -6,3 +6,4 @@ output/
 npm-debug\.log\.*
 .vscode/
 *.log
+demo/

@@ -157,6 +157,17 @@ export const FieldAPITest = () => {
         .catch((err: any) => done(err));
     });
 
+    it('Should prepare the 1 request to get field definition', (done: MochaDone) => {
+      // First expected request
+      scope = nock(UrlService.getDefaultUrl())
+        .get('/api-docs/Field?group=public')
+        .reply(RequestUtils.OK);
+
+      FieldAPI.getFieldDefinitions()
+        .then(() => done())
+        .catch((err: any) => done(err));
+    });
+
     it('Should prepare the 1 request to create fields', (done: MochaDone) => {
       const organization: Organization = new Organization('qwerty456', 'secret');
 
@@ -505,7 +516,7 @@ export const FieldAPITest = () => {
       scope = nock(UrlService.getDefaultUrl())
         .get('/rest/organizations/67ujnbgh/indexes/page/fields')
         .query({ page: 0, perPage: 400, origin: 'USER' })
-        .reply(RequestUtils.OK, { invalidKey: 'radom value' });
+        .reply(RequestUtils.OK, { invalidKey: 'random value' });
 
       FieldAPI.loadFields(organization)
         .then(() => {

@@ -12,7 +12,7 @@ class Config {
   private env: string;
 
   constructor() {
-    this.env = EnvironmentUtils.getNodeEnvironment() || 'development';
+    this.env = EnvironmentUtils.getNodeEnvironment() || 'production';
   }
 
   public getConfiguration(): IConfig {

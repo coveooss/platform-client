@@ -11,6 +11,11 @@ export const UrlServiceTest = () => {
       );
     });
 
+    it('Should generate the url to get field definition', () => {
+      const fieldDefinition = UrlService.getFieldDocs();
+      expect(fieldDefinition).to.equal(`${config.coveo.platformUrl}/api-docs/Field?group=public`);
+    });
+
     it('Should generate the url to update fields', () => {
       const updateFields = UrlService.updateFields('myOrgId');
       expect(updateFields).to.equal(`${config.coveo.platformUrl}/rest/organizations/myOrgId/indexes/fields/batch/update`);

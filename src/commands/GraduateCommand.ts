@@ -2,9 +2,9 @@ import * as _ from 'underscore';
 import * as inquirer from 'inquirer';
 import { Organization } from '../coveoObjects/Organization';
 import { FieldController } from '../controllers/FieldController';
-import { InteractiveMode } from '../console/InteractiveMode';
+import { InteractiveQuestion } from '../console/InteractiveQuestion';
 import { Logger } from '../commons/logger';
-import { StaticErrorMessage } from '../commons/errors';
+import { StaticErrorMessage, IGenericError } from '../commons/errors';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { Field } from '../coveoObjects/Field';
 import { IDiffOptions, DiffCommand } from './DiffCommand';
@@ -23,7 +23,7 @@ export interface IGraduateOptions extends IHTTPGraduateOptions {
 export class GraduateCommand {
   private organization1: Organization;
   private organization2: Organization;
-  private interactiveMode: InteractiveMode;
+  private InteractiveQuestion: InteractiveQuestion;
   private options: IGraduateOptions;
 
   constructor(
@@ -35,7 +35,7 @@ export class GraduateCommand {
   ) {
     this.organization1 = new Organization(originOrganization, originApiKey);
     this.organization2 = new Organization(destinationOrganization, destinationApiKey);
-    this.interactiveMode = new InteractiveMode();
+    this.InteractiveQuestion = new InteractiveQuestion();
     this.options = _.extend(GraduateCommand.DEFAULT_OPTIONS, options) as IGraduateOptions;
   }
 
@@ -60,7 +60,7 @@ export class GraduateCommand {
 
     if (!this.options.force) {
       questions.push(
-        this.interactiveMode.confirmGraduationAction(`Are you sure want to perform a field graduation (${allowedMethods})?`, 'confirm')
+        this.InteractiveQuestion.confirmGraduationAction(`Are you sure want to perform a field graduation (${allowedMethods})?`, 'confirm')
       );
     }
     // Make sure the user selects at least one HTTP method
@@ -83,8 +83,8 @@ export class GraduateCommand {
                 Logger.stopSpinner();
               });
           })
-          .catch((err: any) => {
-            Logger.error('Error in graduation operation', err);
+          .catch((err: IGenericError) => {
+            Logger.error('Error in graduation operation', err.message);
             Logger.stopSpinner();
           });
       } else {
