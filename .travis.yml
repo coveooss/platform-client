@@ -13,7 +13,7 @@ script:
 - source read.version.sh
 - echo $PACKAGE_JSON_VERSION
 - npm run minimize
-- npm start & npm test
+- npm test
 branches:
   only:
   - master
