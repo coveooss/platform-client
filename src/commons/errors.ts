@@ -1,6 +1,6 @@
 export interface IGenericError {
   orgId: string;
-  message: string;
+  message: any;
 }
 
 export class StaticErrorMessage {
