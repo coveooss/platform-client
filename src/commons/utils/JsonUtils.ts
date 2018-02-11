@@ -13,17 +13,18 @@ export class JsonUtils {
   }
 
   /**
-   * Remove key value pairs from the JSON object.
+   * Remove key value pairs from the JSON object. Noth that the parameter 'exclusiveKeys' take precedence over the parameter 'keysToRemove'.
+   * This means that if you specify both parameters, only the 'exclusiveKeys' will be taken in consideration
    *
    * @static
    * @param {*} obj JSON
    * @param {string[]} [keysToRemove=[]]
-   * @param {string[]} [keysToOnlyInclude=[]]
+   * @param {string[]} [exclusiveKeys=[]]
    * @returns {*} any
    */
-  static removeKeyValuePairsFromJson(obj: {}, keysToRemove: string[] = [], keysToOnlyInclude: string[] = []): {} {
+  static removeKeyValuePairsFromJson(obj: {}, keysToRemove: string[] = [], exclusiveKeys: string[] = []): {} {
     Assert.isNotUndefined(obj, 'Cannot apply flatten method to undefined object');
-    if (keysToRemove.length + keysToOnlyInclude.length === 0) {
+    if (keysToRemove.length + exclusiveKeys.length === 0) {
       // Do not waste time for nothing
       return obj;
     }
@@ -32,9 +33,9 @@ export class JsonUtils {
 
     map = _.omit(map, (value: any, key: string) => {
       const keys = key.split('.');
-      if (keysToOnlyInclude.length > 0) {
+      if (exclusiveKeys.length > 0) {
         // Whitelist strategy
-        return _.intersection(keys, keysToOnlyInclude).length === 0;
+        return _.intersection(keys, exclusiveKeys).length === 0;
       } else {
         // Blacklist strategy
         return _.intersection(keys, keysToRemove).length > 0;
