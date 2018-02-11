@@ -1,6 +1,6 @@
 {
   "name": "coveo-client",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A simple client to manage organizations in the Coveo Cloud Platform",
   "main": "coveo-client.ts",
   "dependencies": {
