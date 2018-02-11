@@ -2,17 +2,15 @@ import { EnvironmentUtils } from './commons/utils/EnvironmentUtils';
 setEnvironmentIfNecessary();
 
 import * as inquirer from 'inquirer';
-import * as fs from 'fs-extra';
 import { GraduateCommand, IGraduateOptions } from './commands/GraduateCommand';
-import { InteractiveMode } from './console/InteractiveMode';
-import { SettingsController } from './console/SettingsController';
+import { InteractionController } from './console/InteractionController';
 import { DiffCommand, IDiffOptions } from './commands/DiffCommand';
 import { Logger } from './commons/logger';
 
 const program = require('commander');
 const pkg: any = require('./../package.json');
 
-program.option('--env [value]', 'Environment').version(pkg.version);
+program.option('--env [value]', 'Environment (Production by default)').version(pkg.version);
 
 program.on('--help', () => {
   console.log('');
@@ -24,13 +22,14 @@ program.on('--help', () => {
 
 // Basic Graduation command
 program
-  // TODO: add the fiel field or extension in the command line and not in the options
   // TODO: add a validation function with a meaningful error message if a parameter is missing
   .command('graduate <originOrg> <destinationOrg> <originApiKey> <destinationApiKey>')
   .description('Graduate one organisation to an other')
-  .option('-f, --fields', 'Graduate fields') // TODO: put in the command line
-  .option('-e, --extensions', 'Graduate extensions') // TODO: put in the command line
+  .option('-f, --fields', 'Graduate fields')
+  .option('-e, --extensions', 'Graduate extensions')
   .option('-F, --force', 'Force graduation without confirmation prompt')
+  .option('-i, --ignoreKeys []', 'Object keys to ignore. String separated by ","', list)
+  .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', list)
   .option(
     '-m, --methods []',
     'HTTP method authorized by the Graduation. Should be a comma separated list (no spaces). Default value is "POST,PUT,DELETE".',
@@ -49,6 +48,10 @@ program
 
     // Set graduation options
     const graduateOptions: IGraduateOptions = {
+      diffOptions: {
+        keysToIgnore: options.ignoreKeys || [],
+        includeOnly: options.onlyKeys || []
+      },
       force: !!options.force,
       POST: options.methods.indexOf('POST') > -1,
       PUT: options.methods.indexOf('PUT') > -1,
@@ -104,27 +107,10 @@ program
 
 program
   .command('interactive')
-  .description('Launch the interactive client')
+  .description('Launch the application in interactive mode')
   .action(() => {
-    const interactiveMode = new InteractiveMode();
-    interactiveMode
-      .start()
-      .then((answers: inquirer.Answers) => {
-        const settingFilename = answers[InteractiveMode.SETTING_FILENAME];
-        const settings = SettingsController.genSettings(answers);
-        // Saving settings into a file
-        fs
-          .writeJSON(settingFilename, settings, { spaces: 2 })
-          .then(() => {
-            Logger.info('File Saved');
-          })
-          .catch((err: any) => {
-            Logger.error('Unable to save setting file', err);
-          });
-      })
-      .catch((err: any) => {
-        Logger.error('Error in interactive mode', err);
-      });
+    const questions = new InteractionController();
+    questions.start();
   });
 
 // Parsing the arguments

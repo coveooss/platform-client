@@ -39,7 +39,7 @@ export class ExtensionController extends BaseController {
         return diffResultArray;
       })
       .catch((err: any) => {
-        this.graduateErrorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_EXTENTIONS);
+        this.errorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_EXTENTIONS);
         return Promise.reject(err);
       });
   }

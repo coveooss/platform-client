@@ -2,7 +2,7 @@ import * as _ from 'underscore';
 import { RequestResponse } from 'request';
 import { Field } from '../coveoObjects/Field';
 import { Logger } from '../commons/logger';
-import { StaticErrorMessage } from '../commons/errors';
+import { StaticErrorMessage, IGenericError } from '../commons/errors';
 import { DiffUtils } from '../commons/utils/DiffUtils';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { Organization } from '../coveoObjects/Organization';
@@ -86,8 +86,8 @@ export class FieldController extends BaseController {
         }
         return diffResultArray;
       })
-      .catch((err: any) => {
-        this.diffErrorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_FIELDS);
+      .catch((err: IGenericError) => {
+        this.errorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_FIELDS);
         return Promise.reject(err);
       });
   }
@@ -139,21 +139,19 @@ export class FieldController extends BaseController {
     return authorizedOperations;
   }
 
-  // TODO: to test
   private graduateNew(diffResult: DiffResultArray<Field>): Promise<void> {
     Logger.verbose(
       `Creating ${diffResult.TO_CREATE.length} new field${diffResult.TO_CREATE.length > 1 ? 's' : ''} in ${this.organization2.getId()} `
     );
     return FieldAPI.createFields(this.organization2, this.extractFieldModel(diffResult.TO_CREATE), this.fieldsPerBatch)
       .then((responses: RequestResponse[]) => {
-        this.graduateSuccessHandler(responses, 'POST operation successfully completed');
+        this.successHandler(responses, 'POST operation successfully completed');
       })
       .catch((err: any) => {
-        this.graduateErrorHandler({ orgId: this.organization2.getId(), message: err }, StaticErrorMessage.UNABLE_TO_CREATE_FIELDS);
+        this.errorHandler(err, StaticErrorMessage.UNABLE_TO_CREATE_FIELDS);
       });
   }
 
-  // TODO: to test
   private graduateUpdated(diffResult: DiffResultArray<Field>): Promise<void> {
     Logger.verbose(
       `Updating ${diffResult.TO_UPDATE.length} existing field${
@@ -162,14 +160,13 @@ export class FieldController extends BaseController {
     );
     return FieldAPI.updateFields(this.organization2, this.extractFieldModel(diffResult.TO_UPDATE), this.fieldsPerBatch)
       .then((responses: RequestResponse[]) => {
-        this.graduateSuccessHandler(responses, 'PUT operation successfully completed');
+        this.successHandler(responses, 'PUT operation successfully completed');
       })
       .catch((err: any) => {
-        this.graduateErrorHandler({ orgId: this.organization2.getId(), message: err }, StaticErrorMessage.UNABLE_TO_UPDATE_FIELDS);
+        this.errorHandler(err, StaticErrorMessage.UNABLE_TO_UPDATE_FIELDS);
       });
   }
 
-  // TODO: to test: make sure the query is well formed (with the list of fields to delete)
   private graduateDeleted(diffResult: DiffResultArray<Field>): Promise<void> {
     Logger.verbose(
       `Deleting ${diffResult.TO_UPDATE.length} existing field${
@@ -178,10 +175,10 @@ export class FieldController extends BaseController {
     );
     return FieldAPI.deleteFields(this.organization2, _.map(diffResult.TO_DELETE, (field: Field) => field.getName()), this.fieldsPerBatch)
       .then((responses: RequestResponse[]) => {
-        this.graduateSuccessHandler(responses, 'DELETE operation successfully completed');
+        this.successHandler(responses, 'DELETE operation successfully completed');
       })
       .catch((err: any) => {
-        this.graduateErrorHandler({ orgId: this.organization2.getId(), message: err }, StaticErrorMessage.UNABLE_TO_DELETE_FIELDS);
+        this.errorHandler(err, StaticErrorMessage.UNABLE_TO_DELETE_FIELDS);
       });
   }
 

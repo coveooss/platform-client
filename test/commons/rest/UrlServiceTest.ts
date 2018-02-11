@@ -11,6 +11,11 @@ export const UrlServiceTest = () => {
       );
     });
 
+    it('Should generate the url to get field definition', () => {
+      const fieldDefinition = UrlService.getFieldDocs();
+      expect(fieldDefinition).to.equal(`${config.coveo.platformUrl}/api-docs/Field?group=public`);
+    });
+
     it('Should generate the url to update fields', () => {
       const updateFields = UrlService.updateFields('myOrgId');
       expect(updateFields).to.equal(`${config.coveo.platformUrl}/rest/organizations/myOrgId/indexes/fields/batch/update`);
@@ -36,6 +41,11 @@ export const UrlServiceTest = () => {
     it('Should generate the url to get a specific extensions', () => {
       const createFields = UrlService.getSingleExtensionUrl('myOrgId', 'myExtension');
       expect(createFields).to.equal(`${config.coveo.platformUrl}/rest/organizations/myOrgId/extensions/myExtension`);
+    });
+
+    it('Should generate the url to get the Field documentation', () => {
+      const fieldDoc = UrlService.getFieldDocs();
+      expect(fieldDoc).to.equal(`${config.coveo.platformUrl}/api-docs/Field?group=public`);
     });
   });
 };

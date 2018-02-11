@@ -9,10 +9,12 @@ import { IGenericError } from '../commons/errors';
  * Every Controller ultimately inherits from this base controller class.
  */
 export class BaseController {
-  protected graduateSuccessHandler(responses: RequestResponse[], successMessage: string) {
+  protected successHandler(responses: RequestResponse[], successMessage: string) {
     _.each(responses, (response: RequestResponse) => {
       const info: any = { statusCode: response.statusCode };
       if (response.statusMessage) {
+        // Not able to test status message with nock
+        // https://github.com/node-nock/nock/issues/469
         info.statusMessage = response.statusMessage;
       }
 
@@ -21,29 +23,7 @@ export class BaseController {
     Logger.insane(`${JsonUtils.stringify(responses)} `);
   }
 
-  protected diffErrorHandler(error: any, errorMessage: string) {
-    const tryToPrettyfy = (e: any) => {
-      try {
-        e = error.replace(/\\n/g, '');
-        return JsonUtils.stringify(JSON.parse(e), 0);
-      } catch (error) {
-        return e;
-      }
-    };
-
-    Logger.error(errorMessage, error ? chalk.red(tryToPrettyfy(error)) : '');
-  }
-
-  protected graduateErrorHandler(error: IGenericError, errorMessage: string) {
-    const tryToPrettyfy = (e: any) => {
-      try {
-        e = error.message.replace(/\\n/g, '');
-        return JsonUtils.stringify(JSON.parse(e), 0);
-      } catch (error) {
-        return e;
-      }
-    };
-
-    Logger.error(errorMessage, chalk.red('Organization ID: ' + error.orgId), error.message ? chalk.red(tryToPrettyfy(error.message)) : '');
+  protected errorHandler(error: IGenericError, errorMessage: string) {
+    Logger.error(`Error occurred for ${chalk.bold(error.orgId)}: ${errorMessage}`, error.message ? chalk.red(error.message) : '');
   }
 }
