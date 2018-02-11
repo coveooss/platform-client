@@ -28,7 +28,7 @@ program
   .option('-f, --fields', 'Graduate fields')
   .option('-e, --extensions', 'Graduate extensions')
   .option('-F, --force', 'Force graduation without confirmation prompt')
-  .option('-i, --ignoreKeys []', 'Object keys to ignore. String separated by ","', list)
+  .option('-i, --ignoreKeys []', 'Keys to ignore. String separated by ",". This option has no effect when diffing extensions', list)
   .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', list)
   .option(
     '-m, --methods []',
@@ -76,7 +76,7 @@ program
   .option('-f, --fields', 'Diff fields')
   .option('-e, --extensions', 'Diff extensions')
   .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
-  .option('-i, --ignoreKeys []', 'Object keys to ignore. String separated by ","', list)
+  .option('-i, --ignoreKeys []', 'Keys to ignore. String separated by ",". This option has no effect when diffing extensions', list)
   .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', list)
   .option(
     '-l, --logLevel <level>',
@@ -99,7 +99,9 @@ program
     if (options.fields) {
       command.diffFields(diffOptions);
     } else if (options.extensions) {
-      diffOptions.includeOnly = (diffOptions.includeOnly || []).concat(['requiredDataStreams', 'content', 'description', 'name']);
+      diffOptions.includeOnly = diffOptions.includeOnly
+        ? diffOptions.includeOnly
+        : ['requiredDataStreams', 'content', 'description', 'name'];
       command.diffExtensions(diffOptions);
     } else {
       Logger.warn('Nothing to diff.\nSpecify something to diff. For example: --fields or --extensions');

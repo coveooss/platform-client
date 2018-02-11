@@ -15,14 +15,6 @@ export class ExtensionController extends BaseController {
 
   static CONTROLLER_NAME: string = 'extensions';
 
-  // TODO: compare : enabled, requiredDataStreams, content, description, name
-  // TODO: give the possibility to choose which extension to graduate (interactive checboxes)
-  /**
-   * 3 extensions found
-   * check(NEW) all metadata Values
-   * (DELETED) another extension
-   */
-
   public diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Extension>> {
     return this.loadExtensionsForBothOrganizations(this.organization1, this.organization2)
       .then(() => {

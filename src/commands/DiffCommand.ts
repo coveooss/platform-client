@@ -83,13 +83,12 @@ export class DiffCommand {
 
     Logger.startSpinner('Performing a field diff');
 
-    // Give some info
-    options.keysToIgnore
-      ? Logger.verbose(`Diff will not be applied to the following keys: ${JSON.stringify(options.keysToIgnore)}`)
-      : void 0;
+    // Give some useful information
     options.includeOnly
       ? Logger.verbose(`Diff will be applied exclusively to the following keys: ${JSON.stringify(options.includeOnly)}`)
-      : void 0;
+      : options.keysToIgnore
+        ? Logger.verbose(`Diff will not be applied to the following keys: ${JSON.stringify(options.keysToIgnore)}`)
+        : void 0;
 
     controller
       .diff(options)
