@@ -129,7 +129,6 @@ function setEnvironmentIfNecessary() {
   } else {
     EnvironmentUtils.setDefaultNodeEnvironment();
   }
-  console.log(`Application running in ${EnvironmentUtils.getNodeEnvironment()}`);
 }
 
 function setLogger(options: any, command: string) {
