@@ -90,16 +90,19 @@ program
 
     // Set diff options
     const diffOptions: IDiffOptions = {
-      keysToIgnore: options.ignoreKeys || [],
-      includeOnly: options.onlyKeys || [],
+      keysToIgnore: options.ignoreKeys,
+      includeOnly: options.onlyKeys,
       silent: options.silent
     };
 
-    const command = new DiffCommand(originOrg, destinationOrg, originApiKey, destinationApiKey, diffOptions);
+    const command = new DiffCommand(originOrg, destinationOrg, originApiKey, destinationApiKey);
     if (options.fields) {
-      command.diffFields();
+      command.diffFields(diffOptions);
     } else if (options.extensions) {
-      command.diffExtensions();
+      Logger.info('Performing a diff over the folling keys: requiredDataStreams, content, description, name');
+      diffOptions.includeOnly = diffOptions.includeOnly || [];
+      diffOptions.includeOnly.concat(['requiredDataStreams', 'content', 'description', 'name']);
+      command.diffExtensions(diffOptions);
     } else {
       Logger.warn('Nothing to diff.\nSpecify something to diff. For example: --fields or --extensions');
     }

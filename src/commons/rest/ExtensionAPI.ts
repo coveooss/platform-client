@@ -1,3 +1,4 @@
+import * as _ from 'underscore';
 import { RequestResponse } from 'request';
 import { RequestUtils } from '../utils/RequestUtils';
 import { UrlService } from './UrlService';
@@ -6,8 +7,8 @@ import { Extension } from '../../coveoObjects/Extension';
 import { IStringMap } from '../interfaces/IStringMap';
 import { Assert } from '../misc/Assert';
 import { Logger } from '../logger';
-import * as _ from 'underscore';
 import { StaticErrorMessage } from '../errors';
+import { Colors } from '../colors';
 
 export class ExtensionAPI {
   public static getAllExtensions(organization: Organization): Promise<RequestResponse> {
@@ -37,15 +38,15 @@ export class ExtensionAPI {
   }
 
   public static loadEachExtension(org: Organization, response: RequestResponse) {
-    Logger.verbose(`${response.body.length} extensions found from ${org.getId()}`);
+    Logger.verbose(`${response.body.length} extensions found from ${Colors.organization(org.getId())}`);
     return Promise.all(
       _.map(response.body, (extension: any) => {
-        Logger.loadingTask(`Loading "${extension['name']}" extension from ${org.getId()}`);
+        Logger.loadingTask(`Loading "${extension['name']}" extension from ${Colors.organization(org.getId())}`);
         // tslint:disable-next-line:typedef
         return new Promise((resolve, reject) => {
           return this.getSingleExtension(org, extension['id'])
             .then((extensionBody: RequestResponse) => {
-              Logger.verbose(`Loaded "${extension['name']}" extension from ${org.getId()}`);
+              Logger.verbose(`Loaded "${extension['name']}" extension from ${Colors.organization(org.getId())}`);
               // TODO: add this function as a callback since it doesn't make sense to put it here
               this.addLoadedExtensionsToOrganization(org, extensionBody.body);
               // TODO: add the extensionBody.body in the resolve

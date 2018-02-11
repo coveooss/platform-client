@@ -31,23 +31,16 @@ export interface IDiffOptions {
 export class DiffCommand {
   private organization1: Organization;
   private organization2: Organization;
-  private options: IDiffOptions;
 
-  constructor(
-    originOrganization: string,
-    destinationOrganization: string,
-    originApiKey: string,
-    destinationApiKey: string,
-    options?: IDiffOptions
-  ) {
+  constructor(originOrganization: string, destinationOrganization: string, originApiKey: string, destinationApiKey: string) {
     this.organization1 = new Organization(originOrganization, originApiKey);
     this.organization2 = new Organization(destinationOrganization, destinationApiKey);
-    this.options = _.extend(DiffCommand.DEFAULT_OPTIONS, options) as IDiffOptions;
   }
 
   static DEFAULT_OPTIONS: IDiffOptions = {
     keysToIgnore: [],
-    includeOnly: []
+    includeOnly: [],
+    silent: false
   };
 
   static COMMAND_NAME: string = 'diff';
@@ -56,23 +49,22 @@ export class DiffCommand {
    * Diff the fields of both organizations passed in parameter
    *
    */
-  public diffFields() {
+  public diffFields(options?: IDiffOptions) {
     const fieldController: FieldController = new FieldController(this.organization1, this.organization2);
-    this.diff(fieldController, 'Field', (fields: Field[]) => _.map(fields, (f: Field) => f.getFieldModel()), this.options);
+    this.diff(fieldController, 'Field', (fields: Field[]) => _.map(fields, (f: Field) => f.getFieldModel()), options);
   }
 
   /**
    * Diff the extensions of both organizations passed in parameter
    *
    */
-  public diffExtensions() {
+  public diffExtensions(options?: IDiffOptions) {
     const extensionController: ExtensionController = new ExtensionController(this.organization1, this.organization2);
-    // TODO: ignore unnecessary keys from extension model
     this.diff(
       extensionController,
       'Extension',
       (extensions: Extension[]) => _.map(extensions, (e: Extension) => e.getExtensionModel()),
-      this.options
+      options
     );
   }
 
@@ -86,8 +78,19 @@ export class DiffCommand {
    * @param {(object: any[]) => any[]} extractionMethod
    * @param {IDiffOptions} options
    */
-  private diff(controller: BaseController, objectName: string, extractionMethod: (object: any[]) => any[], options: IDiffOptions) {
+  private diff(controller: BaseController, objectName: string, extractionMethod: (object: any[]) => any[], opt?: IDiffOptions) {
+    const options = _.extend(DiffCommand.DEFAULT_OPTIONS, opt) as IDiffOptions;
+
     Logger.startSpinner('Performing a field diff');
+
+    // Give some info
+    options.keysToIgnore
+      ? Logger.verbose(`Diff will not be applied to the following keys: ${JSON.stringify(options.keysToIgnore)}`)
+      : void 0;
+    options.includeOnly
+      ? Logger.verbose(`Diff will be applied exclusively to the following keys: ${JSON.stringify(options.includeOnly)}`)
+      : void 0;
+
     controller
       .diff(options)
       .then((diffResultArray: DiffResultArray<BaseCoveoObject>) => {

@@ -8,6 +8,7 @@ import { IStringMap } from '../commons/interfaces/IStringMap';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { IDiffOptions } from '../commands/DiffCommand';
 import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
+import { Colors } from '../commons/colors';
 
 export interface IDiffResultArrayClean {
   summary: {
@@ -35,13 +36,16 @@ export abstract class BaseController {
         info.statusMessage = response.statusMessage;
       }
 
-      Logger.info(successMessage, `${chalk.green(JsonUtils.stringify(info))}`);
+      Logger.info(successMessage, `${Colors.success(JsonUtils.stringify(info))}`);
     });
     Logger.insane(`${JsonUtils.stringify(responses)} `);
   }
 
   protected errorHandler(error: IGenericError, errorMessage: string) {
-    Logger.error(`Error occurred for ${chalk.bold(error.orgId)}: ${errorMessage}`, error.message ? chalk.red(error.message) : '');
+    Logger.error(
+      `Error occurred for ${Colors.organization(error.orgId)}: ${errorMessage}`,
+      error.message ? Colors.error(error.message) : ''
+    );
   }
 
   /**

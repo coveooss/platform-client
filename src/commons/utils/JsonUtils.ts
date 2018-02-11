@@ -50,7 +50,7 @@ export class JsonUtils {
    *
    * @static
    * @param {*} obj
-   * @param {string[]} [fields=[]]
+   * @param {string[]} [keysToFind=[]]
    * @returns {boolean} Contains or not the specified key
    */
   static hasKey(obj: any, keysToFind: string[] = []): boolean {
