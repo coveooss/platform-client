@@ -20,8 +20,8 @@ branches:
   only:
   - master
 deploy:
-  - provider: script
-      skip_cleanup: true
-      script: git push --tags
-      on:
-        branch: master
+- provider: script
+  skip_cleanup: true
+  script: git push --tags
+  on:
+    branch: master
