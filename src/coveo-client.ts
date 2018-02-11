@@ -99,9 +99,7 @@ program
     if (options.fields) {
       command.diffFields(diffOptions);
     } else if (options.extensions) {
-      Logger.info('Performing a diff over the folling keys: requiredDataStreams, content, description, name');
-      diffOptions.includeOnly = diffOptions.includeOnly || [];
-      diffOptions.includeOnly.concat(['requiredDataStreams', 'content', 'description', 'name']);
+      diffOptions.includeOnly = (diffOptions.includeOnly || []).concat(['requiredDataStreams', 'content', 'description', 'name']);
       command.diffExtensions(diffOptions);
     } else {
       Logger.warn('Nothing to diff.\nSpecify something to diff. For example: --fields or --extensions');
