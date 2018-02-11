@@ -1,14 +1,16 @@
 import * as opn from 'opn';
 import * as fs from 'fs-extra';
+import * as _ from 'underscore';
+import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
 import { FieldController } from '../controllers/FieldController';
 import { Organization } from '../coveoObjects/Organization';
 import { Logger } from '../commons/logger';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { Field } from '../coveoObjects/Field';
-import * as _ from 'underscore';
 import { ExtensionController } from '../controllers/ExtensionController';
 import { Extension } from '../coveoObjects/Extension';
 import { StaticErrorMessage, IGenericError } from '../commons/errors';
+import { BaseController } from '../controllers/BaseController';
 
 export interface IDiffOptions {
   /**
@@ -50,33 +52,53 @@ export class DiffCommand {
 
   static COMMAND_NAME: string = 'diff';
 
-  // private getFieldDiffDefaultOptions(): IDiffOptions {
-  //   return { keysToIgnore: [] };
-  // }
-
-  // private getExtensionsDiffDefaultOptions(): IDiffOptions {
-  //   return { includeOnly: ['name', 'content', 'description', 'enabled', 'requiredDataStreams'] };
-  // }
-
-  public diff(): void {}
-  // FIXME: Enable command to diff to objects without exiting the application first
   /**
-   * Perform a "diff" over the organization fields
+   * Diff the fields of both organizations passed in parameter
+   *
    */
   public diffFields() {
     const fieldController: FieldController = new FieldController(this.organization1, this.organization2);
+    this.diff(fieldController, 'Field', (fields: Field[]) => _.map(fields, (f: Field) => f.getFieldModel()), this.options);
+  }
+
+  /**
+   * Diff the extensions of both organizations passed in parameter
+   *
+   */
+  public diffExtensions() {
+    const extensionController: ExtensionController = new ExtensionController(this.organization1, this.organization2);
+    // TODO: ignore unnecessary keys from extension model
+    this.diff(
+      extensionController,
+      'Extension',
+      (extensions: Extension[]) => _.map(extensions, (e: Extension) => e.getExtensionModel()),
+      this.options
+    );
+  }
+
+  // FIXME: Enable command to diff to objects without exiting the application first
+  /**
+   * This is the generic 'diff' method
+   *
+   * @private
+   * @param {BaseController} controller
+   * @param {string} objectName
+   * @param {(object: any[]) => any[]} extractionMethod
+   * @param {IDiffOptions} options
+   */
+  private diff(controller: BaseController, objectName: string, extractionMethod: (object: any[]) => any[], options: IDiffOptions) {
     Logger.startSpinner('Performing a field diff');
-    fieldController
-      .diff(this.options)
-      .then((diffResultArray: DiffResultArray<Field>) => {
+    controller
+      .diff(options)
+      .then((diffResultArray: DiffResultArray<BaseCoveoObject>) => {
         fs
-          .writeJSON('fieldDiff.json', fieldController.getCleanVersion(diffResultArray), { spaces: 2 })
+          .writeJSON(`${objectName}Diff.json`, controller.getCleanVersion(diffResultArray, extractionMethod), { spaces: 2 })
           .then(() => {
             Logger.info('Diff operation completed');
-            Logger.info('File saved as fieldDiff.json');
+            Logger.info(`File saved as ${objectName}Diff.json`);
             Logger.stopSpinner();
-            if (!this.options.silent) {
-              opn('fieldDiff.json');
+            if (!options.silent) {
+              opn(`${objectName}Diff.json`);
             }
             process.exit();
           })
@@ -90,38 +112,6 @@ export class DiffCommand {
         Logger.error(StaticErrorMessage.UNABLE_TO_DIFF);
         Logger.stopSpinner();
         process.exit();
-      });
-  }
-
-  /**
-   * Perform a "diff" over the organization extensions
-   */
-  public diffExtensions() {
-    const extensionController: ExtensionController = new ExtensionController(this.organization1, this.organization2);
-    Logger.startSpinner('Performing an extension diff');
-    extensionController
-      .diff(this.options)
-      // TODO: add getCleanVersion in extension controller
-      .then((diffResultArray: DiffResultArray<Extension>) => {
-        fs
-          .writeJSON('extensionDiff.json', diffResultArray, { spaces: 2 })
-          .then(() => {
-            Logger.info('Diff operation completed');
-            Logger.info('File saved as extensionDiff.json');
-            Logger.stopSpinner();
-            opn('extensionDiff.json');
-            process.exit();
-          })
-          .catch((err: any) => {
-            Logger.error('Unable to save setting file', err);
-            Logger.stopSpinner();
-            // process.exit();
-          });
-      })
-      .catch((err: IGenericError) => {
-        Logger.error(StaticErrorMessage.UNABLE_TO_DIFF);
-        Logger.stopSpinner();
-        // process.exit();
       });
   }
 }

@@ -6,11 +6,8 @@ import { StaticErrorMessage } from '../commons/errors';
  * Every Coveo Object ultimately inherits from this base Model class.
  */
 export abstract class BaseCoveoObject implements ICoveoObject {
-  protected id: string;
-
-  constructor(id: string) {
+  constructor(private id: string) {
     Assert.isNotUndefined(id, StaticErrorMessage.INVALID_ID);
-    this.id = id;
   }
 
   /**
@@ -22,7 +19,5 @@ export abstract class BaseCoveoObject implements ICoveoObject {
     return this.id;
   }
 
-  // public clone(): any {
-
-  // }
+  public abstract clone(): BaseCoveoObject;
 }

@@ -12,17 +12,6 @@ import { BaseController } from './BaseController';
 import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
 import { IDiffOptions } from '../commands/DiffCommand';
 
-export interface IDiffResultArrayClean {
-  summary: {
-    TO_CREATE: number;
-    TO_UPDATE: number;
-    TO_DELETE: number;
-  };
-  TO_CREATE: IStringMap<string>;
-  TO_UPDATE: IStringMap<string>;
-  TO_DELETE: IStringMap<string>;
-}
-
 export class FieldController extends BaseController {
   /**
    * To prevent having too large fields batches that can't be processed.
@@ -34,34 +23,6 @@ export class FieldController extends BaseController {
 
   constructor(private organization1: Organization, private organization2: Organization) {
     super();
-  }
-
-  /**
-   * Return a simplified diff object.
-   * This function makes it easier to get a section of the diff result and use it in a API call.
-   *
-   * @param {DiffResultArray<Field>} diffResultArray
-   * @returns {IStringMap<any>}
-   */
-  public getCleanVersion(diffResultArray: DiffResultArray<Field>, summary: boolean = true): IDiffResultArrayClean {
-    const getFieldModel = (fields: Field[]) => _.map(fields, (f: Field) => f.getFieldModel());
-    const cleanVersion: IStringMap<any> = {};
-
-    if (summary) {
-      cleanVersion.summary = {
-        TO_CREATE: diffResultArray.TO_CREATE.length,
-        TO_UPDATE: diffResultArray.TO_UPDATE.length,
-        TO_DELETE: diffResultArray.TO_DELETE.length
-      };
-    }
-
-    _.extend(cleanVersion, {
-      TO_CREATE: getFieldModel(diffResultArray.TO_CREATE),
-      TO_UPDATE: getFieldModel(diffResultArray.TO_UPDATE),
-      TO_DELETE: getFieldModel(diffResultArray.TO_DELETE)
-    });
-
-    return cleanVersion as IDiffResultArrayClean;
   }
 
   /**
@@ -78,9 +39,9 @@ export class FieldController extends BaseController {
         const diffResultArray = DiffUtils.getDiffResult(this.organization1.getFields(), this.organization2.getFields(), diffOptions);
         if (diffResultArray.containsItems()) {
           Logger.verbose('Diff Summary:');
-          Logger.verbose(`> ${diffResultArray.TO_CREATE.length} new field${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
-          Logger.verbose(`> ${diffResultArray.TO_DELETE.length} deleted field${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
-          Logger.verbose(`> ${diffResultArray.TO_UPDATE.length} updated field${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
+          Logger.verbose(`${diffResultArray.TO_CREATE.length} new field${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
+          Logger.verbose(`${diffResultArray.TO_DELETE.length} deleted field${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
+          Logger.verbose(`${diffResultArray.TO_UPDATE.length} updated field${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
         } else {
           Logger.info('They field pages are identical in both organizations');
         }

@@ -1,3 +1,4 @@
+import * as _ from 'underscore';
 import { IOrganization } from '../commons/interfaces/IOrganization';
 import { BaseCoveoObject } from './BaseCoveoObject';
 import { Extension } from './Extension';
@@ -63,7 +64,14 @@ export class Organization extends BaseCoveoObject implements IOrganization {
     return this.extensions.clone();
   }
 
+  // TODO: add extension array in parameter
   public addExtensions(extensionName: string, extension: Extension) {
     this.extensions.add(extensionName, extension);
+  }
+
+  public clone() {
+    const newOrg = new Organization(this.getId(), this.getApiKey());
+    // TODO: add extensions, mappings and fields
+    return newOrg;
   }
 }

@@ -20,7 +20,7 @@ export class ExtensionController extends BaseController {
   /**
    * 3 extensions found
    * check(NEW) all metadata Values
-   * (DELETED) another exention
+   * (DELETED) another extension
    */
 
   public diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Extension>> {
