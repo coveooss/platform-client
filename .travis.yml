@@ -17,8 +17,8 @@ script:
 - npm run minimize
 - npm test
 branches:
-  only:
-  - master
+  except:
+  - /^v?\d+\.\d+\.\d+$/
 deploy:
 - provider: script
   skip_cleanup: true
