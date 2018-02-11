@@ -6,7 +6,6 @@ import { Field } from './Field';
 import { Dictionary } from '../commons/collections/Dictionary';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 
-// TODO: Add a test class
 /**
  * Organization Class. By default, the organization instance do not contain any field, sources nor extension.
  * This is a way to prevent unecessary HTTP calls to the platform.
@@ -37,7 +36,6 @@ export class Organization extends BaseCoveoObject implements IOrganization {
    * @returns {Field[]} List of fields
    */
   public getFields(): Dictionary<Field> {
-    // TODO: instantiate a new field before the return since the clone only copies the object as a json
     const newField = this.fields.clone();
     return newField;
   }
@@ -53,7 +51,6 @@ export class Organization extends BaseCoveoObject implements IOrganization {
     });
   }
 
-  // TODO: test
   public clearFields() {
     this.fields.clear();
   }

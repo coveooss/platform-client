@@ -21,7 +21,6 @@ export class JsonUtils {
    * @param {string[]} [keysToOnlyInclude=[]]
    * @returns {*} any
    */
-  // TODO: test
   static removeKeyValuePairsFromJson(obj: {}, keysToRemove: string[] = [], keysToOnlyInclude: string[] = []): {} {
     Assert.isNotUndefined(obj, 'Cannot apply flatten method to undefined object');
     if (keysToRemove.length + keysToOnlyInclude.length === 0) {
@@ -63,7 +62,6 @@ export class JsonUtils {
     return !noCommonElements;
   }
 
-  // TODO: unit test
   static clone(obj: any): any {
     try {
       return JSON.parse(JSON.stringify(obj));

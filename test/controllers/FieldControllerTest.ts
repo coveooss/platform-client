@@ -408,7 +408,6 @@ export const FieldControllerTest = () => {
           DELETE: true
         };
 
-        // TODO: add a spy on graduateErrorHandler
         fieldController
           .diff()
           .then((diffResultArray: DiffResultArray<Field>) => {

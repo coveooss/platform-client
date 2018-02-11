@@ -10,20 +10,13 @@ import * as _ from 'underscore';
 import { StaticErrorMessage } from '../errors';
 
 export class ExtensionAPI {
-
   public static getAllExtensions(organization: Organization): Promise<RequestResponse> {
-    return RequestUtils.get(
-      UrlService.getExtensionsUrl(organization.getId()),
-      organization.getApiKey()
-    );
+    return RequestUtils.get(UrlService.getExtensionsUrl(organization.getId()), organization.getApiKey());
   }
 
   public static getSingleExtension(organization: Organization, extensionId: string) {
     Assert.isNotUndefined(extensionId, 'Cannot load undefined extension');
-    return RequestUtils.get(
-      UrlService.getSingleExtensionUrl(organization.getId(), extensionId),
-      organization.getApiKey()
-    );
+    return RequestUtils.get(UrlService.getSingleExtensionUrl(organization.getId(), extensionId), organization.getApiKey());
   }
 
   public static loadExtensions(org: Organization): Promise<{}> {
@@ -36,7 +29,8 @@ export class ExtensionAPI {
           return ExtensionAPI.loadEachExtension(org, response)
             .then(() => resolve())
             .catch((err: any) => reject(err));
-        }).catch((err: any) => {
+        })
+        .catch((err: any) => {
           reject(err);
         });
     });
@@ -44,27 +38,30 @@ export class ExtensionAPI {
 
   public static loadEachExtension(org: Organization, response: RequestResponse) {
     Logger.verbose(`${response.body.length} extensions found from ${org.getId()}`);
-    return Promise.all(_.map(response.body, (extension: any) => {
-      Logger.loadingTask(`Loading "${extension['name']}" extension from ${org.getId()}`);
-      // tslint:disable-next-line:typedef
-      return new Promise((resolve, reject) => {
-        return this.getSingleExtension(org, extension['id'])
-          .then((extensionBody: RequestResponse) => {
-            Logger.verbose(`Loaded "${extension['name']}" extension from ${org.getId()}`);
-            // TODO: add this function add this function as a callback since it doesn't make sense to put it in the API
-            this.addLoadedExtensionsToOrganization(org, extensionBody.body);
-            // TODO: add the extensionBody.body in the resolve
-            resolve();
-          }).catch((err: any) => {
-            Logger.error(StaticErrorMessage.UNABLE_TO_LOAD_SINGLE_EXTENTION + ` "${extension['name']}"`, err);
-            reject(err);
-          });
-      });
-    }));
+    return Promise.all(
+      _.map(response.body, (extension: any) => {
+        Logger.loadingTask(`Loading "${extension['name']}" extension from ${org.getId()}`);
+        // tslint:disable-next-line:typedef
+        return new Promise((resolve, reject) => {
+          return this.getSingleExtension(org, extension['id'])
+            .then((extensionBody: RequestResponse) => {
+              Logger.verbose(`Loaded "${extension['name']}" extension from ${org.getId()}`);
+              // TODO: add this function as a callback since it doesn't make sense to put it here
+              this.addLoadedExtensionsToOrganization(org, extensionBody.body);
+              // TODO: add the extensionBody.body in the resolve
+              resolve();
+            })
+            .catch((err: any) => {
+              Logger.error(StaticErrorMessage.UNABLE_TO_LOAD_SINGLE_EXTENTION + ` "${extension['name']}"`, err);
+              reject(err);
+            });
+        });
+      })
+    );
   }
 
   public static addLoadedExtensionsToOrganization(org: Organization, rawExtension: IStringMap<any>) {
-    let extension = new Extension(rawExtension['id'], rawExtension);
+    const extension = new Extension(rawExtension['id'], rawExtension);
     org.addExtensions(extension.getName(), extension);
   }
 }

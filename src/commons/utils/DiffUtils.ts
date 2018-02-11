@@ -20,7 +20,6 @@ export class DiffUtils {
    * @returns {IDiffResultArray<T>} Result between dictionnaries
    */
 
-  //  TODO: test. make sure it always return the initial
   static getDiffResult<T extends IClonable<T>>(dict1: Dictionary<T>, dict2: Dictionary<T>, diffOptions?: IDiffOptions): DiffResultArray<T> {
     const options: IDiffOptions = _.extend({}, DiffUtils.defaultOptions, diffOptions);
 
@@ -32,8 +31,6 @@ export class DiffUtils {
 
     dict1Copy.keys().forEach((key: string) => {
       const value: T = dict1Copy.getItem(key);
-      // Removes the undesired fields from the diff result
-      // FIXME: this method returns a json obj and not the initial object type.
       const dict1CopyCleanedItem = JsonUtils.removeKeyValuePairsFromJson(value, options.keysToIgnore, options.includeOnly);
 
       if (dict2Copy.containsKey(key)) {

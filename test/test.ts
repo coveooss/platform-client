@@ -40,7 +40,6 @@ JsonUtilsTest();
 FieldTest();
 ExtensionTest();
 
-// TODO:
 // TODO: setting controller
 
 AssertTest();

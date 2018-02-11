@@ -30,7 +30,6 @@ export class Source extends BaseCoveoObject implements ISource {
     return this.configuration;
   }
 
-  // TODO: Test
   public clone(): Source {
     return new Source(
       this.getId(),

@@ -3,7 +3,6 @@ import { BaseCoveoObject } from './BaseCoveoObject';
 import { Assert } from '../commons/misc/Assert';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 
-// TODO: Add a test class
 export class Extension extends BaseCoveoObject implements ICoveoObject {
   constructor(id: string, private configuration: any) {
     super(id);
@@ -29,7 +28,6 @@ export class Extension extends BaseCoveoObject implements ICoveoObject {
     return this.configuration['requiredDataStreams'];
   }
 
-  // TODO: Test
   public clone(): Extension {
     return new Extension(this.getId(), JsonUtils.clone(this.configuration));
   }
