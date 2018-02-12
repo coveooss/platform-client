@@ -8,6 +8,9 @@ import { StaticErrorMessage, IGenericError } from '../commons/errors';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { Field } from '../coveoObjects/Field';
 import { IDiffOptions, DiffCommand } from './DiffCommand';
+import { BaseController } from '../controllers/BaseController';
+import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
+import { ExtensionController } from '../controllers/ExtensionController';
 
 export interface IHTTPGraduateOptions {
   POST: boolean;
@@ -24,19 +27,11 @@ export class GraduateCommand {
   private organization1: Organization;
   private organization2: Organization;
   private InteractiveQuestion: InteractiveQuestion;
-  private options: IGraduateOptions;
 
-  constructor(
-    originOrganization: string,
-    destinationOrganization: string,
-    originApiKey: string,
-    destinationApiKey: string,
-    options?: IGraduateOptions
-  ) {
+  constructor(originOrganization: string, destinationOrganization: string, originApiKey: string, destinationApiKey: string) {
     this.organization1 = new Organization(originOrganization, originApiKey);
     this.organization2 = new Organization(destinationOrganization, destinationApiKey);
     this.InteractiveQuestion = new InteractiveQuestion();
-    this.options = _.extend(GraduateCommand.DEFAULT_OPTIONS, options) as IGraduateOptions;
   }
 
   static DEFAULT_OPTIONS: IGraduateOptions = {
@@ -49,31 +44,41 @@ export class GraduateCommand {
 
   static COMMAND_NAME: string = 'graduate';
 
-  public graduateFields() {
+  public graduateFields(options?: IGraduateOptions) {
     const fieldController: FieldController = new FieldController(this.organization1, this.organization2);
-    const questions: inquirer.Questions = [];
-    const allowedMethods: string[] = _.compact([
-      this.options.POST ? 'POST' : '',
-      this.options.PUT ? 'PUT' : '',
-      this.options.DELETE ? 'DELETE' : ''
-    ]);
+    this.graduate(fieldController, 'Field', options);
+  }
 
-    if (!this.options.force) {
+  public graduateExtensions(options?: IGraduateOptions) {
+    const extensionController: ExtensionController = new ExtensionController(this.organization1, this.organization2);
+    this.graduate(extensionController, 'Extension', options);
+  }
+
+  private graduate(controller: BaseController, objectName: string, opts?: IGraduateOptions) {
+    const options = _.extend(GraduateCommand.DEFAULT_OPTIONS, opts) as IGraduateOptions;
+
+    const questions: inquirer.Questions = [];
+    const allowedMethods: string[] = _.compact([options.POST ? 'POST' : '', options.PUT ? 'PUT' : '', options.DELETE ? 'DELETE' : '']);
+
+    if (!options.force) {
       questions.push(
-        this.InteractiveQuestion.confirmGraduationAction(`Are you sure want to perform a field graduation (${allowedMethods})?`, 'confirm')
+        this.InteractiveQuestion.confirmGraduationAction(
+          `Are you sure want to perform a ${objectName} graduation (${allowedMethods})?`,
+          'confirm'
+        )
       );
     }
     // Make sure the user selects at least one HTTP method
     inquirer.prompt(questions).then((res: inquirer.Answers) => {
-      if (res.confirm || this.options.force) {
+      if (res.confirm || options.force) {
         // TODO: Ask the user if he wants to perform the graduation manually HERE!!!
 
-        Logger.startSpinner('Performing Field Graduation');
-        fieldController
-          .diff(this.options.diffOptions)
-          .then((diffResultArray: DiffResultArray<Field>) => {
-            fieldController
-              .graduate(diffResultArray, this.options)
+        Logger.startSpinner(`Performing ${objectName} Graduation`);
+        controller
+          .diff(options.diffOptions)
+          .then((diffResultArray: DiffResultArray<BaseCoveoObject>) => {
+            controller
+              .graduate(diffResultArray, options)
               .then(() => {
                 Logger.info('Graduation operation completed');
                 Logger.stopSpinner();
@@ -88,13 +93,11 @@ export class GraduateCommand {
             Logger.stopSpinner();
           });
       } else {
-        Logger.info('No fields were graduated');
+        Logger.info(`No ${objectName}  were graduated`);
         Logger.stopSpinner();
       }
     });
   }
 
   public graduateSources() {}
-
-  public graduateExtensions() {}
 }

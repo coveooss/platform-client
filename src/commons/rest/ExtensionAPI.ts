@@ -9,8 +9,25 @@ import { Assert } from '../misc/Assert';
 import { Logger } from '../logger';
 import { StaticErrorMessage } from '../errors';
 import { Colors } from '../colors';
+import { ArrayUtils } from '../utils/ArrayUtils';
+import { JsonUtils } from '../utils/JsonUtils';
 
 export class ExtensionAPI {
+  public static createExtension(org: Organization, extensionModel: IStringMap<any>): Promise<RequestResponse> {
+    const url = UrlService.getExtensionsUrl(org.getId());
+    return RequestUtils.post(url, org.getApiKey(), extensionModel);
+  }
+
+  public static updateExtension(org: Organization, extensionId: string, extensionModel: IStringMap<any>): Promise<RequestResponse> {
+    const url = UrlService.getSingleExtensionUrl(org.getId(), extensionId);
+    return RequestUtils.put(url, org.getApiKey(), extensionModel);
+  }
+
+  public static deleteExtension(org: Organization, extensionId: string): Promise<RequestResponse> {
+    const url = UrlService.getSingleExtensionUrl(org.getId(), extensionId);
+    return RequestUtils.delete(url, org.getApiKey());
+  }
+
   public static getAllExtensions(organization: Organization): Promise<RequestResponse> {
     return RequestUtils.get(UrlService.getExtensionsUrl(organization.getId()), organization.getApiKey());
   }

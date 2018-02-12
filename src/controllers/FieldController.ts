@@ -54,14 +54,18 @@ export class FieldController extends BaseController {
   }
 
   /**
-   * Performs a diff and graduate the result.
+   * Graduates the fields from origin Organization to the destination Organization.
+   *
+   * @param {DiffResultArray<Field>} diffResultArray
+   * @param {IHTTPGraduateOptions} options
+   * @returns {Promise<any[]>}
    */
-  public graduate(diffResultArray: DiffResultArray<Field>, options: IHTTPGraduateOptions) {
+  public graduate(diffResultArray: DiffResultArray<Field>, options: IHTTPGraduateOptions): Promise<any[]> {
     if (diffResultArray.containsItems()) {
       Logger.loadingTask('Graduating fields');
       return Promise.all(
         _.map(
-          this.getAuthorizedOperations(diffResultArray, options),
+          this.getAuthorizedOperations(diffResultArray, this.graduateNew, this.graduateUpdated, this.graduateDeleted, options),
           (operation: (diffResult: DiffResultArray<Field>) => Promise<void>) => {
             return operation.call(this, diffResultArray);
           }
@@ -71,33 +75,6 @@ export class FieldController extends BaseController {
       Logger.warn('No Fields to graduate');
       return Promise.resolve([]);
     }
-  }
-
-  private getAuthorizedOperations(
-    diffResultArray: DiffResultArray<Field>,
-    options: IHTTPGraduateOptions
-  ): ((diffResult: DiffResultArray<Field>) => Promise<void>)[] {
-    const authorizedOperations: ((diffResult: DiffResultArray<Field>) => Promise<void>)[] = [];
-    if (options.POST && diffResultArray.TO_CREATE.length > 0) {
-      authorizedOperations.push(this.graduateNew);
-    } else {
-      Logger.verbose('Skipping DELETE operation');
-    }
-    if (options.PUT && diffResultArray.TO_UPDATE.length > 0) {
-      authorizedOperations.push(this.graduateUpdated);
-    } else {
-      Logger.verbose('Skipping PUT operation');
-    }
-    if (options.DELETE && diffResultArray.TO_DELETE.length > 0) {
-      authorizedOperations.push(this.graduateDeleted);
-    } else {
-      Logger.verbose('Skipping DELETE operation');
-    }
-    if (authorizedOperations.length === 0) {
-      Logger.verbose('No HTTP mothod was selected for the graduation');
-    }
-
-    return authorizedOperations;
   }
 
   private graduateNew(diffResult: DiffResultArray<Field>): Promise<void> {
@@ -148,8 +125,7 @@ export class FieldController extends BaseController {
     return Promise.all([FieldAPI.loadFields(organization1), FieldAPI.loadFields(organization2)]);
   }
 
-  // Utils
   private extractFieldModel(fields: Field[]): IStringMap<any>[] {
-    return _.pluck(fields, 'fieldModel');
+    return _.map(fields, (field: Field) => field.getFieldModel());
   }
 }

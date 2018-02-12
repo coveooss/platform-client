@@ -123,7 +123,7 @@ export class InteractiveQuestion {
       type: 'list',
       name: InteractiveQuestion.CONTENT_TO_DIFF,
       message: 'What would you like to diff?',
-      choices: [{ name: FieldController.CONTROLLER_NAME }, { name: ExtensionController.CONTROLLER_NAME, disabled: 'Coming soon' }],
+      choices: [{ name: FieldController.CONTROLLER_NAME }, { name: ExtensionController.CONTROLLER_NAME }],
       when: (answer: Answers) => answer[InteractiveQuestion.COMMAND].indexOf(DiffCommand.COMMAND_NAME) !== -1
     };
   }
@@ -133,7 +133,7 @@ export class InteractiveQuestion {
       type: 'list',
       name: InteractiveQuestion.CONTENT_TO_GRADUATE,
       message: 'What would you like to graduate?',
-      choices: [{ name: FieldController.CONTROLLER_NAME }, { name: ExtensionController.CONTROLLER_NAME, disabled: 'Coming soon' }],
+      choices: [{ name: FieldController.CONTROLLER_NAME }, { name: ExtensionController.CONTROLLER_NAME }],
       when: (answer: Answers) => answer[InteractiveQuestion.COMMAND].indexOf(GraduateCommand.COMMAND_NAME) !== -1
     };
   }
