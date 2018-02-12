@@ -35,12 +35,12 @@ export const ExtensionTest = () => {
     };
 
     it('Should define the extension Id', () => {
-      const extension: Extension = new Extension('ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu', extensionConfig);
+      const extension: Extension = new Extension(extensionConfig);
       expect(extension.getId()).to.equal('ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu', 'Invalid extension Id');
     });
 
     it('Should return the extension content', () => {
-      const extension: Extension = new Extension('ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu', extensionConfig);
+      const extension: Extension = new Extension(extensionConfig);
       // tslint:disable-next-line:max-line-length
       expect(extension.getContent()).to.equal(
         'import urlparse\n\n# Title: NEW TITLE\n# Description: This extension is used to parse urls to extract metadata like categories.\n# Required data:\n\n# captures the Web Path\npath = urlparse.urlparse(document.uri).path\n\ncategories = {}\n\nfor i, p in enumerate(path.split("/")):\n    # path will start with /, so the first p (i=0) is usually empty\n    if p:\n        # Add categories as meta1, meta2, meta3.\n        # You can use an array if you want specific names for the categories.\n        categories[\'meta\'+str(i)] = p\n\nif len(categories):\n    # Set the categories\n    document.add_meta_data(categories)\n',
@@ -49,7 +49,7 @@ export const ExtensionTest = () => {
     });
 
     it('Should return the extension description', () => {
-      const extension: Extension = new Extension('ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu', extensionConfig);
+      const extension: Extension = new Extension(extensionConfig);
       expect(extension.getDescription()).to.equal(
         'This extension is used to parse urls to extract metadata like categories.',
         'Invalid description'
@@ -57,19 +57,41 @@ export const ExtensionTest = () => {
     });
 
     it('Should return the extension name', () => {
-      const extension: Extension = new Extension('ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu', extensionConfig);
+      const extension: Extension = new Extension(extensionConfig);
       expect(extension.getName()).to.equal('URL Parsing to extract metadata', 'Invalid name');
     });
 
     it('Should return the extension required Data Streams', () => {
-      const extension: Extension = new Extension('ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu', extensionConfig);
+      const extension: Extension = new Extension(extensionConfig);
       expect(extension.getRequiredDataStreams()).to.be.eql(['DOCUMENT_DATA'], 'Invalid data streams');
+    });
+
+    it('Should return the extension model', () => {
+      const extension: Extension = new Extension(extensionConfig);
+      expect(extension.getExtensionModel()).to.be.eql(
+        {
+          content:
+            'import urlparse\n\n# Title: NEW TITLE\n# Description: This extension is used to parse urls to extract metadata like categories.\n# Required data:\n\n# captures the Web Path\npath = urlparse.urlparse(document.uri).path\n\ncategories = {}\n\nfor i, p in enumerate(path.split("/")):\n    # path will start with /, so the first p (i=0) is usually empty\n    if p:\n        # Add categories as meta1, meta2, meta3.\n        # You can use an array if you want specific names for the categories.\n        categories[\'meta\'+str(i)] = p\n\nif len(categories):\n    # Set the categories\n    document.add_meta_data(categories)\n',
+          name: 'URL Parsing to extract metadata',
+          description: 'This extension is used to parse urls to extract metadata like categories.',
+          requiredDataStreams: ['DOCUMENT_DATA']
+        },
+        'Invalid extension model'
+      );
+    });
+
+    it('Should throw an error if extension ID missing', () => {
+      expect(() => new Extension({ random: 'extension' })).to.throw();
+    });
+
+    it('Should throw an error if undefined extension', () => {
+      expect(() => new Extension(undefined)).to.throw();
     });
 
     it('Should not allow the creation of an extension instance without a valid configuration', () => {
       expect(
         () =>
-          new Extension('extension-random-id', {
+          new Extension({
             description: 'This extension is used to parse urls to extract metadata like categories.',
             id: 'ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu',
             name: 'URL Parsing to extract metadata',
@@ -78,7 +100,7 @@ export const ExtensionTest = () => {
       ).to.throw();
       expect(
         () =>
-          new Extension('extension-random-id', {
+          new Extension({
             // tslint:disable-next-line:max-line-length
             content:
               'import urlparse\n\n# Title: NEW TITLE\n# Description: This extension is used to parse urls to extract metadata like categories.\n# Required data:\n\n# captures the Web Path\npath = urlparse.urlparse(document.uri).path\n\ncategories = {}\n\nfor i, p in enumerate(path.split("/")):\n    # path will start with /, so the first p (i=0) is usually empty\n    if p:\n        # Add categories as meta1, meta2, meta3.\n        # You can use an array if you want specific names for the categories.\n        categories[\'meta\'+str(i)] = p\n\nif len(categories):\n    # Set the categories\n    document.add_meta_data(categories)\n',
@@ -89,7 +111,7 @@ export const ExtensionTest = () => {
       ).to.throw();
       expect(
         () =>
-          new Extension('extension-random-id', {
+          new Extension({
             // tslint:disable-next-line:max-line-length
             content:
               'import urlparse\n\n# Title: NEW TITLE\n# Description: This extension is used to parse urls to extract metadata like categories.\n# Required data:\n\n# captures the Web Path\npath = urlparse.urlparse(document.uri).path\n\ncategories = {}\n\nfor i, p in enumerate(path.split("/")):\n    # path will start with /, so the first p (i=0) is usually empty\n    if p:\n        # Add categories as meta1, meta2, meta3.\n        # You can use an array if you want specific names for the categories.\n        categories[\'meta\'+str(i)] = p\n\nif len(categories):\n    # Set the categories\n    document.add_meta_data(categories)\n',
@@ -100,7 +122,7 @@ export const ExtensionTest = () => {
       ).to.throw();
       expect(
         () =>
-          new Extension('extension-random-id', {
+          new Extension({
             // tslint:disable-next-line:max-line-length
             content:
               'import urlparse\n\n# Title: NEW TITLE\n# Description: This extension is used to parse urls to extract metadata like categories.\n# Required data:\n\n# captures the Web Path\npath = urlparse.urlparse(document.uri).path\n\ncategories = {}\n\nfor i, p in enumerate(path.split("/")):\n    # path will start with /, so the first p (i=0) is usually empty\n    if p:\n        # Add categories as meta1, meta2, meta3.\n        # You can use an array if you want specific names for the categories.\n        categories[\'meta\'+str(i)] = p\n\nif len(categories):\n    # Set the categories\n    document.add_meta_data(categories)\n',

@@ -28,7 +28,7 @@ program
   .option('-f, --fields', 'Graduate fields')
   .option('-e, --extensions', 'Graduate extensions')
   .option('-F, --force', 'Force graduation without confirmation prompt')
-  .option('-i, --ignoreKeys []', 'Object keys to ignore. String separated by ","', list)
+  .option('-i, --ignoreKeys []', 'Keys to ignore. String separated by ",". This option has no effect when diffing extensions', list)
   .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', list)
   .option(
     '-m, --methods []',
@@ -49,21 +49,21 @@ program
     // Set graduation options
     const graduateOptions: IGraduateOptions = {
       diffOptions: {
-        keysToIgnore: options.ignoreKeys || [],
-        includeOnly: options.onlyKeys || []
+        keysToIgnore: options.ignoreKeys,
+        includeOnly: options.onlyKeys
       },
-      force: !!options.force,
+      force: options.force,
       POST: options.methods.indexOf('POST') > -1,
       PUT: options.methods.indexOf('PUT') > -1,
       DELETE: options.methods.indexOf('DELETE') > -1
     };
 
-    const command = new GraduateCommand(originOrg, destinationOrg, originApiKey, destinationApiKey, graduateOptions);
+    const command = new GraduateCommand(originOrg, destinationOrg, originApiKey, destinationApiKey);
 
     if (options.fields) {
-      command.graduateFields();
+      command.graduateFields(graduateOptions);
     } else if (options.extensions) {
-      command.graduateExtensions();
+      command.graduateExtensions(graduateOptions);
     } else {
       Logger.warn('Nothing to Graduate.\nSpecify something to graduate. For example: --fields or --extensions');
     }
@@ -76,7 +76,7 @@ program
   .option('-f, --fields', 'Diff fields')
   .option('-e, --extensions', 'Diff extensions')
   .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
-  .option('-i, --ignoreKeys []', 'Object keys to ignore. String separated by ","', list)
+  .option('-i, --ignoreKeys []', 'Keys to ignore. String separated by ",". This option has no effect when diffing extensions', list)
   .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', list)
   .option(
     '-l, --logLevel <level>',
@@ -90,16 +90,19 @@ program
 
     // Set diff options
     const diffOptions: IDiffOptions = {
-      keysToIgnore: options.ignoreKeys || [],
-      includeOnly: options.onlyKeys || [],
+      keysToIgnore: options.ignoreKeys,
+      includeOnly: options.onlyKeys,
       silent: options.silent
     };
 
-    const command = new DiffCommand(originOrg, destinationOrg, originApiKey, destinationApiKey, diffOptions);
+    const command = new DiffCommand(originOrg, destinationOrg, originApiKey, destinationApiKey);
     if (options.fields) {
-      command.diffFields();
+      command.diffFields(diffOptions);
     } else if (options.extensions) {
-      command.diffExtensions();
+      diffOptions.includeOnly = diffOptions.includeOnly
+        ? diffOptions.includeOnly
+        : ['requiredDataStreams', 'content', 'description', 'name'];
+      command.diffExtensions(diffOptions);
     } else {
       Logger.warn('Nothing to diff.\nSpecify something to diff. For example: --fields or --extensions');
     }

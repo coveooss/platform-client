@@ -2,10 +2,11 @@ import { ICoveoObject } from '../commons/interfaces/ICoveoObject';
 import { BaseCoveoObject } from './BaseCoveoObject';
 import { Assert } from '../commons/misc/Assert';
 import { JsonUtils } from '../commons/utils/JsonUtils';
+import { IStringMap } from '../commons/interfaces/IStringMap';
 
 export class Extension extends BaseCoveoObject implements ICoveoObject {
-  constructor(id: string, private configuration: any) {
-    super(id);
+  constructor(private configuration: any) {
+    super(configuration['id']);
     Assert.isNotUndefined(this.configuration['content'], 'Extension content should not be undefined.');
     Assert.isNotUndefined(this.configuration['name'], 'Extension name should not be undefined.');
     Assert.isNotUndefined(this.configuration['description'], 'Extension description should not be undefined.');
@@ -28,7 +29,21 @@ export class Extension extends BaseCoveoObject implements ICoveoObject {
     return this.configuration['requiredDataStreams'];
   }
 
+  /**
+   * Returns the extension model containing all necessary properties to create it.
+   *
+   * @returns {IStringMap<any>}
+   */
+  public getExtensionModel(): IStringMap<any> {
+    return {
+      content: this.getContent(),
+      description: this.getDescription(),
+      name: this.getName(),
+      requiredDataStreams: this.getRequiredDataStreams()
+    };
+  }
+
   public clone(): Extension {
-    return new Extension(this.getId(), JsonUtils.clone(this.configuration));
+    return new Extension(JsonUtils.clone(this.configuration));
   }
 }

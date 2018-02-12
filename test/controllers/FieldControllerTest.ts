@@ -1,4 +1,5 @@
 // tslint:disable:no-magic-numbers
+import * as _ from 'underscore';
 import * as nock from 'nock';
 import { expect, assert } from 'chai';
 import { Organization } from './../../src/coveoObjects/Organization';
@@ -20,19 +21,19 @@ export const FieldControllerTest = () => {
 
     // Fields
 
-    const field1: Field = new Field('field1', {
+    const field1: Field = new Field({
       name: 'firstname',
       description: 'The first name of a person',
       type: 'STRING',
       includeInQuery: true
     });
-    const field2: Field = new Field('field2', {
+    const field2: Field = new Field({
       name: 'lastname',
       description: 'The last name of a person',
       type: 'STRING',
       includeInQuery: true
     });
-    const field3: Field = new Field('field3', {
+    const field3: Field = new Field({
       name: 'birth',
       description: 'Day of birth',
       type: 'Date',
@@ -57,7 +58,9 @@ export const FieldControllerTest = () => {
     describe('GetCleanVersion Method', () => {
       it('Should return the clean diff version - empty', () => {
         const diffResultArray: DiffResultArray<Field> = new DiffResultArray();
-        const cleanVersion = fieldController.getCleanVersion(diffResultArray);
+        const cleanVersion = fieldController.getCleanVersion(diffResultArray, (fields: Field[]) =>
+          _.map(fields, (f: Field) => f.getFieldModel())
+        );
         expect(cleanVersion).to.eql({
           summary: { TO_CREATE: 0, TO_UPDATE: 0, TO_DELETE: 0 },
           TO_CREATE: [],
@@ -72,7 +75,9 @@ export const FieldControllerTest = () => {
         diffResultArray.TO_UPDATE.push(field2);
         diffResultArray.TO_UPDATE.push(field3);
 
-        const cleanVersion = fieldController.getCleanVersion(diffResultArray);
+        const cleanVersion = fieldController.getCleanVersion(diffResultArray, (fields: Field[]) =>
+          _.map(fields, (f: Field) => f.getFieldModel())
+        );
         expect(cleanVersion).to.eql({
           summary: { TO_CREATE: 1, TO_UPDATE: 2, TO_DELETE: 0 },
           TO_CREATE: [
@@ -544,6 +549,7 @@ export const FieldControllerTest = () => {
             assert.throws(() => {
               throw Error(err.message);
             }, 'some message');
+            nock.cleanAll();
             done();
           });
       });
@@ -613,9 +619,6 @@ export const FieldControllerTest = () => {
             .graduate(diffResultArray, graduateOptions)
             .then(() => {
               done();
-            })
-            .catch((err: any) => {
-              done(err);
             })
             .catch((err: any) => {
               done(err);
