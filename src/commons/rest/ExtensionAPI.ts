@@ -44,7 +44,7 @@ export class ExtensionAPI {
       this.getAllExtensions(org)
         .then((response: RequestResponse) => {
           // Load each extension
-          return ExtensionAPI.loadEachExtension(org, response)
+          ExtensionAPI.loadEachExtension(org, response)
             .then(() => resolve())
             .catch((err: any) => {
               reject({ orgId: org.getId(), message: err } as IGenericError);

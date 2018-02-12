@@ -9,6 +9,8 @@ import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
 import { Extension } from '../../src/coveoObjects/Extension';
 import { RequestUtils } from '../../src/commons/utils/RequestUtils';
 import { UrlService } from '../../src/commons/rest/UrlService';
+import { IGenericError } from '../../src/commons/errors';
+import { IHTTPGraduateOptions } from '../../src/commands/GraduateCommand';
 
 export const ExtensionControllerTest = () => {
   describe('Field Controller', () => {
@@ -256,6 +258,34 @@ export const ExtensionControllerTest = () => {
     });
 
     describe('Diff Method', () => {
+      it('Should not diff: ACCESS_DENIED', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          // Fecthing all dev extensions (will return an error)
+          .get('/rest/organizations/dev/extensions')
+          .reply(RequestUtils.ACCESS_DENIED, 'some message')
+          // Fecthing all prod extensions
+          .get('/rest/organizations/prod/extensions')
+          .reply(RequestUtils.OK, prodOrganizationExtension)
+          // Fetching prod extensions one by one
+          .get('/rest/organizations/prod/extensions/prodmuo9dsuop8fuihmfdjshjd')
+          .reply(RequestUtils.OK, prodmuo9dsuop8fuihmfdjshjd);
+
+        controller
+          .diff()
+          .then((diffResultArray: DiffResultArray<Extension>) => {
+            done('This function should not resolve');
+          })
+          .catch((err: IGenericError) => {
+            expect(err.orgId).to.equal('dev');
+            assert.throws(() => {
+              throw Error(err.message);
+            }, 'some message');
+            // removing pending mocks since since
+            nock.cleanAll();
+            done();
+          });
+      });
+
       it('Should not return an empty diff result', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           // Fecthing all dev extensions

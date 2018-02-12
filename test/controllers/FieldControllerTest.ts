@@ -549,6 +549,7 @@ export const FieldControllerTest = () => {
             assert.throws(() => {
               throw Error(err.message);
             }, 'some message');
+            nock.cleanAll();
             done();
           });
       });
