@@ -30,36 +30,45 @@ console.log(`Environment: ${config.env}\n`);
 
 Logger.disableSpinner();
 
-OrganizationTest();
-DictionaryTest();
-DiffResultArrayTest();
-DiffUtilsTest();
-UrlServiceTest();
-ArrayUtilTest();
-JsonUtilsTest();
+// Coveo Objects
 FieldTest();
 ExtensionTest();
+BaseCoveoObjectTest();
+OrganizationTest();
+SourceTest();
 
-// TODO: setting controller
+// Controllers
+BaseControllerTest();
+FieldControllerTest();
+ExtensionControllerTest();
 
-AssertTest();
-FieldAPITest();
-ExtensionAPITest();
-FileUtilsTest();
-RequestUtilsTest();
-EnvironmentUtilsTest();
-UtilsTest();
+// Common / Collection
+DictionaryTest();
+DiffResultArrayTest();
+
+// Common
 LoggerTest();
 ErrorTest();
 
+// Common / Misc
+AssertTest();
+
+// Common / Rest
+FieldAPITest();
+ExtensionAPITest();
+UrlServiceTest();
+
+// Utils
+ArrayUtilTest();
+DiffUtilsTest();
+EnvironmentUtilsTest();
+FileUtilsTest();
+JsonUtilsTest();
+RequestUtilsTest();
+UtilsTest();
+
+// Config
 configTest();
-
-BaseCoveoObjectTest();
-SourceTest();
-
-BaseControllerTest();
-ExtensionControllerTest();
-FieldControllerTest();
 
 // Console
 ConsoleTest();

@@ -32,23 +32,32 @@ export class Organization extends BaseCoveoObject implements IOrganization {
   }
 
   /**
-   * Returns the all the fields available in the organization instance.
+   * Return a copy of the Organizatio fields
    *
-   * @returns {Field[]} List of fields
+   * @returns {Dictionary<Field>}
    */
   public getFields(): Dictionary<Field> {
-    const newField = this.fields.clone();
-    return newField;
+    return this.fields.clone();
   }
 
-  public addField(fieldName: string, field: Field) {
-    this.fields.add(fieldName, field);
+  /**
+   * Add a new field to the Organzation
+   *
+   * @param {Field} field Field to be added
+   */
+  public addField(field: Field) {
+    this.fields.add(field.getName(), field);
   }
 
-  public addMultipleFields(fields: IStringMap<any>[]) {
+  /**
+   * Takes a field list and, for each item of the list, create a field that will be added to the Organization
+   *
+   * @param {IStringMap<any>[]} fields field list
+   */
+  public addFieldList(fields: IStringMap<any>[]) {
     fields.forEach((f: IStringMap<any>) => {
-      const field = new Field(f['name'], f);
-      this.addField(field.getName(), field);
+      const field = new Field(f);
+      this.addField(field);
     });
   }
 
@@ -64,9 +73,29 @@ export class Organization extends BaseCoveoObject implements IOrganization {
     return this.extensions.clone();
   }
 
-  // TODO: add extension array in parameter
-  public addExtensions(extensionName: string, extension: Extension) {
-    this.extensions.add(extensionName, extension);
+  /**
+   * Add an extension to the Organization
+   *
+   * @param {Extension} extension Extension to be added
+   */
+  public addExtension(extension: Extension) {
+    this.extensions.add(extension.getId(), extension);
+  }
+
+  /**
+   * Takes an extension list and, for each item of the list, create an extention that will be added to the Organization
+   *
+   * @param {IStringMap<any>[]} extensions
+   */
+  public addMultipleExtensions(extensions: IStringMap<any>[]) {
+    extensions.forEach((e: IStringMap<any>) => {
+      const extension = new Extension(e);
+      this.addExtension(extension);
+    });
+  }
+
+  public clearExtensions() {
+    this.extensions.clear();
   }
 
   public clone() {

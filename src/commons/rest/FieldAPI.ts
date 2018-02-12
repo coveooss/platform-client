@@ -60,7 +60,7 @@ export class FieldAPI {
       this.getFieldsPage(org, 0)
         .then((response: RequestResponse) => {
           Assert.exists(response.body && response.body.items, StaticErrorMessage.UNEXPECTED_RESPONSE);
-          org.addMultipleFields(response.body.items);
+          org.addFieldList(response.body.items);
 
           Logger.verbose(`${response.body.items.length} fields found in ${Colors.organization(org.getId())}`);
           Logger.verbose(`Successfully loaded first field page from ${Colors.organization(org.getId())}`);
@@ -89,7 +89,7 @@ export class FieldAPI {
       Logger.verbose(`Successfully loaded ${totalPages - 1} additional pages of fields from ${Colors.organization(org.getId())} `);
       _.each(otherPages, (response: RequestResponse) => {
         Assert.exists(response.body && response.body.items, StaticErrorMessage.UNEXPECTED_RESPONSE);
-        org.addMultipleFields(response.body.items);
+        org.addFieldList(response.body.items);
       });
     });
   }

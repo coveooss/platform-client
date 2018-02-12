@@ -78,7 +78,7 @@ export const DiffUtilsTest = () => {
       car3: new ClonableTest(car6.brand, car6)
     });
 
-    const extension1: Extension = new Extension('URL Parsing to extract metadata', {
+    const extension1: Extension = new Extension({
       content: 'random content',
       createdDate: 1511812769000,
       description: 'This extension is used to parse urls to extract metadata like categories.',
@@ -107,7 +107,7 @@ export const DiffUtilsTest = () => {
       }
     });
 
-    const extension2: Extension = new Extension('URL Parsing to extract metadata', {
+    const extension2: Extension = new Extension({
       content: '# Title: Reject a document.\n# Description: This extension simply rejects a document.\n',
       createdDate: 1511812764000,
       description: 'This extension simply rejects a document. It gets triggered on certain file types in the source configuration',

@@ -7,7 +7,7 @@ import { StaticErrorMessage } from '../commons/errors';
  */
 export abstract class BaseCoveoObject implements ICoveoObject {
   constructor(private id: string) {
-    Assert.isNotUndefined(id, StaticErrorMessage.INVALID_ID);
+    Assert.exists(id, StaticErrorMessage.INVALID_ID);
   }
 
   /**

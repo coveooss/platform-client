@@ -83,7 +83,7 @@ export class ExtensionAPI {
   }
 
   public static addLoadedExtensionsToOrganization(org: Organization, rawExtension: IStringMap<any>) {
-    const extension = new Extension(rawExtension['id'], rawExtension);
-    org.addExtensions(extension.getName(), extension);
+    const extension = new Extension(rawExtension);
+    org.addExtension(extension);
   }
 }

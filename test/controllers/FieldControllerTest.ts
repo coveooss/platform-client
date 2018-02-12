@@ -21,19 +21,19 @@ export const FieldControllerTest = () => {
 
     // Fields
 
-    const field1: Field = new Field('field1', {
+    const field1: Field = new Field({
       name: 'firstname',
       description: 'The first name of a person',
       type: 'STRING',
       includeInQuery: true
     });
-    const field2: Field = new Field('field2', {
+    const field2: Field = new Field({
       name: 'lastname',
       description: 'The last name of a person',
       type: 'STRING',
       includeInQuery: true
     });
-    const field3: Field = new Field('field3', {
+    const field3: Field = new Field({
       name: 'birth',
       description: 'Day of birth',
       type: 'Date',
