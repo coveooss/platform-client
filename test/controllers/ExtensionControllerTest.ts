@@ -13,7 +13,7 @@ import { IGenericError } from '../../src/commons/errors';
 import { IHTTPGraduateOptions } from '../../src/commands/GraduateCommand';
 
 export const ExtensionControllerTest = () => {
-  describe('Field Controller', () => {
+  describe('Extension Controller', () => {
     // Organizations
     const org1: Organization = new Organization('dev', 'xxx');
     const org2: Organization = new Organization('prod', 'yyy');
@@ -203,6 +203,10 @@ export const ExtensionControllerTest = () => {
       org2.clearExtensions();
     });
 
+    after(() => {
+      nock.cleanAll();
+    });
+
     describe('GetCleanVersion Method', () => {
       it('Should return the clean diff version - empty', () => {
         const diffResultArray: DiffResultArray<Extension> = new DiffResultArray();
@@ -312,6 +316,165 @@ export const ExtensionControllerTest = () => {
             expect(diff.TO_CREATE.length).to.equal(2, 'Should have 2 new extensions');
             expect(diff.TO_UPDATE.length).to.equal(1, 'Should have 1 updated extension');
             expect(diff.TO_DELETE.length).to.equal(0, 'Should have no deleted extension');
+            done();
+          })
+          .catch((err: any) => {
+            done(err);
+          });
+      });
+
+      it('Should diff', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          // Fecthing all dev extensions
+          .get('/rest/organizations/dev/extensions')
+          .reply(RequestUtils.OK, devOrganizationExtension)
+          // Fetching dev extensions one by one
+          .get('/rest/organizations/dev/extensions/yidmuo9dsuop8fuihmfdjshjd')
+          .reply(RequestUtils.OK, yidmuo9dsuop8fuihmfdjshjd)
+          .get('/rest/organizations/dev/extensions/sa2fjv3lwf67va2pbiztb22fsu')
+          .reply(RequestUtils.OK, sa2fjv3lwf67va2pbiztb22fsu)
+          .get('/rest/organizations/dev/extensions/tknepx33tdhmqibch2uzxhcc44')
+          .reply(RequestUtils.OK, tknepx33tdhmqibch2uzxhcc44)
+          // Fecthing all prod extensions
+          .get('/rest/organizations/prod/extensions')
+          .reply(RequestUtils.OK, prodOrganizationExtension)
+          // Fetching prod extensions one by one
+          .get('/rest/organizations/prod/extensions/prodmuo9dsuop8fuihmfdjshjd')
+          .reply(RequestUtils.OK, prodmuo9dsuop8fuihmfdjshjd);
+
+        const graduateOptions: IHTTPGraduateOptions = {
+          POST: true,
+          PUT: true,
+          DELETE: true
+        };
+
+        controller
+          .diff()
+          .then((diffResultArray: DiffResultArray<Extension>) => {
+            done();
+          })
+          .catch((err: any) => {
+            done(err);
+          });
+      });
+    });
+
+    describe('Graduate Method', () => {
+      it('Should have nothing to graduate: Similar orgs', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          .get('/rest/organizations/dev/extensions')
+          .reply(RequestUtils.OK, prodOrganizationExtension)
+          .get('/rest/organizations/dev/extensions/prodmuo9dsuop8fuihmfdjshjd')
+          .reply(RequestUtils.OK, prodmuo9dsuop8fuihmfdjshjd)
+          .get('/rest/organizations/prod/extensions')
+          .reply(RequestUtils.OK, prodOrganizationExtension)
+          .get('/rest/organizations/prod/extensions/prodmuo9dsuop8fuihmfdjshjd')
+          .reply(RequestUtils.OK, prodmuo9dsuop8fuihmfdjshjd);
+
+        const graduateOptions: IHTTPGraduateOptions = {
+          POST: true,
+          PUT: true,
+          DELETE: true
+        };
+
+        controller.diff().then((diffResultArray: DiffResultArray<Extension>) => {
+          controller
+            .graduate(diffResultArray, graduateOptions)
+            .then((resolved: any[]) => {
+              expect(resolved).to.be.empty;
+              done();
+            })
+            .catch((err: any) => {
+              done(err);
+            });
+        });
+      });
+
+      it('Should graduate', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          .post('/rest/organizations/prod/extensions', {
+            content: 'print "all metadata"',
+            description: 'This extension is showing all available metadata',
+            name: 'All metadata value',
+            requiredDataStreams: []
+          })
+          .reply(RequestUtils.OK)
+          // Creating secon extention in prod
+          .post('/rest/organizations/prod/extensions', {
+            content:
+              'import subprocess\nimport shutil\nimport uuid\nimport os\nimport base64\nfrom io import BytesIO\n\n\n# Title: Resize images to a smaller size\n# Description: This extension demonstrate how you can call the GraphicsMagick library from the command\n# Description: line in an extension. You could use that on the document body, a thumbnail or a field containing binary \n# Description: data in base64 format (like an avatar, when indexing users)\n# Required data: \n\n# Command line command and arguments\nCOMPRESS_CMDLINE = \'gm convert {} -resample 150 -compress JPEG -quality 50 {}\'\n\n# decode to bytes\nbyte_data = BytesIO(base64.b64decode(document.get_meta_data_value("base64data")[0]))\n\ndocument_api.v1.log("Original size: " + str(len(document.get_meta_data_value("base64data")[0])), severity="normal")\n\n# Define original and compressed filenames\n# original_file = os.path.join(document_api.working_path, str(uuid.uuid4()))\noriginal_file = os.path.join(os.getcwd(), str(uuid.uuid4()))\ncompressed_file = original_file + ".jpg"\n\ndocument_api.v1.log("Paths:" + original_file + "::" + compressed_file, severity="normal")\n\n# Write the image to disk\nwith open(original_file, \'wb\') as f:\n    shutil.copyfileobj(byte_data, f)\n\ndocument_api.v1.log("Image written to disk", severity="normal")\n\nconvert = subprocess.Popen(COMPRESS_CMDLINE.format(original_file, compressed_file), shell=True, stdout=subprocess.PIPE,\n                           stderr=subprocess.PIPE)\nout, err = convert.communicate()\n\ndocument_api.v1.log("Errors (if any): " + out + "::" + err, severity="normal")\n\ndocument_api.v1.log("Image compressed", severity="normal")\n\nwith open(compressed_file, \'rb\') as f:\n    base64data = base64.b64encode(f.read())\n    document_api.v1.log("New size: " + str(len(base64data)), severity="normal")\n    \ndocument_api.v1.add_meta_data({"base64data": base64data})\n',
+            description:
+              'This extension demonstrate how you can call the GraphicsMagick library from the command line in an extension. You could use that on the document body, a thumbnail or a field containing binary  data in base64 format (like an avatar, when indexing users)',
+            name: 'Resize images to a smaller size',
+            requiredDataStreams: []
+          })
+          .reply(RequestUtils.OK)
+          // Updating one extension in prod
+          .put('/rest/organizations/prod/extensions/extension-to-update', {
+            content:
+              'import urlparse\n\n# Title: URL Parsing to extract metadata\n# Description: This extension is used to parse urls to extract metadata like categories.\n# Required data:\n\n# captures the Web Path\npath = urlparse.urlparse(document.uri).path\n\ncategories = {}\n\nfor i, p in enumerate(path.split("/")):\n    # path will start with /, so the first p (i=0) is usually empty\n    if p:\n        # Add categories as meta1, meta2, meta3.\n        # You can use an array if you want specific names for the categories.\n        categories[\'meta\'+str(i)] = p\n\nif len(categories):\n    # Set the categories\n    document.add_meta_data(categories)\n',
+            description: 'This extension is used to parse urls to extract metadata like categories.',
+            name: 'URL Parsing to extract metadata',
+            requiredDataStreams: []
+          })
+          .reply(RequestUtils.NO_CONTENT)
+          // Deleting one extension in prod
+          .delete('/rest/organizations/prod/extensions/extension-to-delete')
+          .reply(RequestUtils.NO_CONTENT);
+
+        const extensionDiff: DiffResultArray<Extension> = new DiffResultArray();
+
+        extensionDiff.TO_CREATE = [
+          new Extension({
+            id: 'random-id',
+            content: 'print "all metadata"',
+            description: 'This extension is showing all available metadata',
+            name: 'All metadata value',
+            requiredDataStreams: []
+          }),
+          new Extension({
+            id: 'random-id-2',
+            content:
+              'import subprocess\nimport shutil\nimport uuid\nimport os\nimport base64\nfrom io import BytesIO\n\n\n# Title: Resize images to a smaller size\n# Description: This extension demonstrate how you can call the GraphicsMagick library from the command\n# Description: line in an extension. You could use that on the document body, a thumbnail or a field containing binary \n# Description: data in base64 format (like an avatar, when indexing users)\n# Required data: \n\n# Command line command and arguments\nCOMPRESS_CMDLINE = \'gm convert {} -resample 150 -compress JPEG -quality 50 {}\'\n\n# decode to bytes\nbyte_data = BytesIO(base64.b64decode(document.get_meta_data_value("base64data")[0]))\n\ndocument_api.v1.log("Original size: " + str(len(document.get_meta_data_value("base64data")[0])), severity="normal")\n\n# Define original and compressed filenames\n# original_file = os.path.join(document_api.working_path, str(uuid.uuid4()))\noriginal_file = os.path.join(os.getcwd(), str(uuid.uuid4()))\ncompressed_file = original_file + ".jpg"\n\ndocument_api.v1.log("Paths:" + original_file + "::" + compressed_file, severity="normal")\n\n# Write the image to disk\nwith open(original_file, \'wb\') as f:\n    shutil.copyfileobj(byte_data, f)\n\ndocument_api.v1.log("Image written to disk", severity="normal")\n\nconvert = subprocess.Popen(COMPRESS_CMDLINE.format(original_file, compressed_file), shell=True, stdout=subprocess.PIPE,\n                           stderr=subprocess.PIPE)\nout, err = convert.communicate()\n\ndocument_api.v1.log("Errors (if any): " + out + "::" + err, severity="normal")\n\ndocument_api.v1.log("Image compressed", severity="normal")\n\nwith open(compressed_file, \'rb\') as f:\n    base64data = base64.b64encode(f.read())\n    document_api.v1.log("New size: " + str(len(base64data)), severity="normal")\n    \ndocument_api.v1.add_meta_data({"base64data": base64data})\n',
+            description:
+              'This extension demonstrate how you can call the GraphicsMagick library from the command line in an extension. You could use that on the document body, a thumbnail or a field containing binary  data in base64 format (like an avatar, when indexing users)',
+            name: 'Resize images to a smaller size',
+            requiredDataStreams: []
+          })
+        ];
+
+        extensionDiff.TO_UPDATE = [
+          new Extension({
+            id: 'extension-to-update',
+            content:
+              'import urlparse\n\n# Title: URL Parsing to extract metadata\n# Description: This extension is used to parse urls to extract metadata like categories.\n# Required data:\n\n# captures the Web Path\npath = urlparse.urlparse(document.uri).path\n\ncategories = {}\n\nfor i, p in enumerate(path.split("/")):\n    # path will start with /, so the first p (i=0) is usually empty\n    if p:\n        # Add categories as meta1, meta2, meta3.\n        # You can use an array if you want specific names for the categories.\n        categories[\'meta\'+str(i)] = p\n\nif len(categories):\n    # Set the categories\n    document.add_meta_data(categories)\n',
+            description: 'This extension is used to parse urls to extract metadata like categories.',
+            name: 'URL Parsing to extract metadata',
+            requiredDataStreams: []
+          })
+        ];
+
+        extensionDiff.TO_DELETE = [
+          new Extension({
+            id: 'extension-to-delete',
+            content:
+              'import urlparse\n\n# Title: URL Parsing to extract metadata\n# Description: This extension is used to parse urls to extract metadata like categories.\n# Required data:\n\n# captures the Web Path\npath = urlparse.urlparse(document.uri).path\n\ncategories = {}\n\nfor i, p in enumerate(path.split("/")):\n    # path will start with /, so the first p (i=0) is usually empty\n    if p:\n        # Add categories as meta1, meta2, meta3.\n        # You can use an array if you want specific names for the categories.\n        categories[\'meta\'+str(i)] = p\n\nif len(categories):\n    # Set the categories\n    document.add_meta_data(categories)\n',
+            description: 'This extension is used to parse urls to extract metadata like categories.',
+            name: 'URL Parsing to extract metadata',
+            requiredDataStreams: []
+          })
+        ];
+
+        const graduateOptions: IHTTPGraduateOptions = {
+          POST: true,
+          PUT: true,
+          DELETE: true
+        };
+
+        controller
+          .graduate(extensionDiff, graduateOptions)
+          .then((resolved: any[]) => {
+            // expect(resolved).to.be.empty;
             done();
           })
           .catch((err: any) => {

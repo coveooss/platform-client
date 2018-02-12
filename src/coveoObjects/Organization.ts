@@ -82,7 +82,10 @@ export class Organization extends BaseCoveoObject implements IOrganization {
    */
   public addExtension(extension: Extension) {
     // Using the extension name as the key since the extension ID is not the same from on org to another
-    Assert.isUndefined(this.extensions.getItem(extension.getName()), StaticErrorMessage.DUPLICATE_EXTENSION);
+    Assert.isUndefined(
+      this.extensions.getItem(extension.getName()),
+      `At least 2 extensions are having the same name: ${extension.getName()}`
+    );
     this.extensions.add(extension.getName(), extension);
   }
 

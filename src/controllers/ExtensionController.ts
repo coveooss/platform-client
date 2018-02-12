@@ -2,7 +2,7 @@ import * as _ from 'underscore';
 import { IDiffOptions } from './../commands/DiffCommand';
 import { Extension } from '../coveoObjects/Extension';
 import { Logger } from '../commons/logger';
-import { StaticErrorMessage } from '../commons/errors';
+import { StaticErrorMessage, IGenericError } from '../commons/errors';
 import { DiffUtils } from '../commons/utils/DiffUtils';
 import { BaseController } from './BaseController';
 import { Organization } from '../coveoObjects/Organization';
@@ -34,7 +34,7 @@ export class ExtensionController extends BaseController {
         }
         return diffResultArray;
       })
-      .catch((err: any) => {
+      .catch((err: IGenericError) => {
         this.errorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_EXTENTIONS);
         return Promise.reject(err);
       });

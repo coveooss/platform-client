@@ -622,9 +622,6 @@ export const FieldControllerTest = () => {
             })
             .catch((err: any) => {
               done(err);
-            })
-            .catch((err: any) => {
-              done(err);
             });
         });
       });

@@ -75,7 +75,7 @@ export class ExtensionAPI {
               resolve();
             })
             .catch((err: any) => {
-              reject({ orgId: org.getId(), message: err } as IGenericError);
+              reject(err);
             });
         });
       })
