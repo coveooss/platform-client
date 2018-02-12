@@ -12,17 +12,6 @@ import { BaseController } from './BaseController';
 import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
 import { IDiffOptions } from '../commands/DiffCommand';
 
-export interface IDiffResultArrayClean {
-  summary: {
-    TO_CREATE: number;
-    TO_UPDATE: number;
-    TO_DELETE: number;
-  };
-  TO_CREATE: IStringMap<string>;
-  TO_UPDATE: IStringMap<string>;
-  TO_DELETE: IStringMap<string>;
-}
-
 export class FieldController extends BaseController {
   /**
    * To prevent having too large fields batches that can't be processed.
@@ -34,34 +23,6 @@ export class FieldController extends BaseController {
 
   constructor(private organization1: Organization, private organization2: Organization) {
     super();
-  }
-
-  /**
-   * Return a simplified diff object.
-   * This function makes it easier to get a section of the diff result and use it in a API call.
-   *
-   * @param {DiffResultArray<Field>} diffResultArray
-   * @returns {IStringMap<any>}
-   */
-  public getCleanVersion(diffResultArray: DiffResultArray<Field>, summary: boolean = true): IDiffResultArrayClean {
-    const getFieldModel = (fields: Field[]) => _.map(fields, (f: Field) => f.getFieldModel());
-    const cleanVersion: IStringMap<any> = {};
-
-    if (summary) {
-      cleanVersion.summary = {
-        TO_CREATE: diffResultArray.TO_CREATE.length,
-        TO_UPDATE: diffResultArray.TO_UPDATE.length,
-        TO_DELETE: diffResultArray.TO_DELETE.length
-      };
-    }
-
-    _.extend(cleanVersion, {
-      TO_CREATE: getFieldModel(diffResultArray.TO_CREATE),
-      TO_UPDATE: getFieldModel(diffResultArray.TO_UPDATE),
-      TO_DELETE: getFieldModel(diffResultArray.TO_DELETE)
-    });
-
-    return cleanVersion as IDiffResultArrayClean;
   }
 
   /**
@@ -78,9 +39,9 @@ export class FieldController extends BaseController {
         const diffResultArray = DiffUtils.getDiffResult(this.organization1.getFields(), this.organization2.getFields(), diffOptions);
         if (diffResultArray.containsItems()) {
           Logger.verbose('Diff Summary:');
-          Logger.verbose(`> ${diffResultArray.TO_CREATE.length} new field${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
-          Logger.verbose(`> ${diffResultArray.TO_DELETE.length} deleted field${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
-          Logger.verbose(`> ${diffResultArray.TO_UPDATE.length} updated field${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
+          Logger.verbose(`${diffResultArray.TO_CREATE.length} new field${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
+          Logger.verbose(`${diffResultArray.TO_DELETE.length} deleted field${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
+          Logger.verbose(`${diffResultArray.TO_UPDATE.length} updated field${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
         } else {
           Logger.info('They field pages are identical in both organizations');
         }
@@ -93,14 +54,18 @@ export class FieldController extends BaseController {
   }
 
   /**
-   * Performs a diff and graduate the result.
+   * Graduates the fields from origin Organization to the destination Organization.
+   *
+   * @param {DiffResultArray<Field>} diffResultArray
+   * @param {IHTTPGraduateOptions} options
+   * @returns {Promise<any[]>}
    */
-  public graduate(diffResultArray: DiffResultArray<Field>, options: IHTTPGraduateOptions) {
+  public graduate(diffResultArray: DiffResultArray<Field>, options: IHTTPGraduateOptions): Promise<any[]> {
     if (diffResultArray.containsItems()) {
       Logger.loadingTask('Graduating fields');
       return Promise.all(
         _.map(
-          this.getAuthorizedOperations(diffResultArray, options),
+          this.getAuthorizedOperations(diffResultArray, this.graduateNew, this.graduateUpdated, this.graduateDeleted, options),
           (operation: (diffResult: DiffResultArray<Field>) => Promise<void>) => {
             return operation.call(this, diffResultArray);
           }
@@ -110,33 +75,6 @@ export class FieldController extends BaseController {
       Logger.warn('No Fields to graduate');
       return Promise.resolve([]);
     }
-  }
-
-  private getAuthorizedOperations(
-    diffResultArray: DiffResultArray<Field>,
-    options: IHTTPGraduateOptions
-  ): ((diffResult: DiffResultArray<Field>) => Promise<void>)[] {
-    const authorizedOperations: ((diffResult: DiffResultArray<Field>) => Promise<void>)[] = [];
-    if (options.POST && diffResultArray.TO_CREATE.length > 0) {
-      authorizedOperations.push(this.graduateNew);
-    } else {
-      Logger.verbose('Skipping DELETE operation');
-    }
-    if (options.PUT && diffResultArray.TO_UPDATE.length > 0) {
-      authorizedOperations.push(this.graduateUpdated);
-    } else {
-      Logger.verbose('Skipping PUT operation');
-    }
-    if (options.DELETE && diffResultArray.TO_DELETE.length > 0) {
-      authorizedOperations.push(this.graduateDeleted);
-    } else {
-      Logger.verbose('Skipping DELETE operation');
-    }
-    if (authorizedOperations.length === 0) {
-      Logger.verbose('No HTTP mothod was selected for the graduation');
-    }
-
-    return authorizedOperations;
   }
 
   private graduateNew(diffResult: DiffResultArray<Field>): Promise<void> {
@@ -187,8 +125,7 @@ export class FieldController extends BaseController {
     return Promise.all([FieldAPI.loadFields(organization1), FieldAPI.loadFields(organization2)]);
   }
 
-  // Utils
   private extractFieldModel(fields: Field[]): IStringMap<any>[] {
-    return _.pluck(fields, 'fieldModel');
+    return _.map(fields, (field: Field) => field.getFieldModel());
   }
 }

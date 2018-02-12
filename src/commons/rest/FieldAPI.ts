@@ -1,3 +1,4 @@
+import * as chalk from 'chalk';
 import * as _ from 'underscore';
 import { RequestResponse } from 'request';
 import { Organization } from '../../coveoObjects/Organization';
@@ -9,6 +10,7 @@ import { Assert } from '../misc/Assert';
 import { IStringMap } from '../interfaces/IStringMap';
 import { JsonUtils } from '../utils/JsonUtils';
 import { StaticErrorMessage, IGenericError } from '../errors';
+import { Colors } from '../colors';
 
 export class FieldAPI {
   public static getFieldDefinitions(): Promise<RequestResponse> {
@@ -58,10 +60,10 @@ export class FieldAPI {
       this.getFieldsPage(org, 0)
         .then((response: RequestResponse) => {
           Assert.exists(response.body && response.body.items, StaticErrorMessage.UNEXPECTED_RESPONSE);
-          org.addMultipleFields(response.body.items);
+          org.addFieldList(response.body.items);
 
-          Logger.verbose(`${response.body.items.length} fields found in ${org.getId()}`);
-          Logger.verbose(`Successfully loaded first field page from from ${org.getId()}`);
+          Logger.verbose(`${response.body.items.length} fields found in ${Colors.organization(org.getId())}`);
+          Logger.verbose(`Successfully loaded first field page from ${Colors.organization(org.getId())}`);
           if (response.body.totalPages > 1) {
             this.loadOtherPages(org, response.body.totalPages)
               .then(() => resolve())
@@ -80,14 +82,14 @@ export class FieldAPI {
 
   public static loadOtherPages(org: Organization, totalPages: number): Promise<void> {
     Assert.isLargerOrEqualsThan(0, totalPages, 'Parameter "totalPages" cannot be a negative value.');
-    Logger.loadingTask(`Loading ${totalPages - 1} more pages of fields from ${org.getId()} `);
+    Logger.loadingTask(`Loading ${totalPages - 1} more pages of fields from ${Colors.organization(org.getId())} `);
     const emptyArray: number[] = new Array(totalPages - 1);
     const pageArray = _.map(emptyArray, (v: number, idx: number) => idx + 1);
     return Promise.all(_.map(pageArray, (page: number) => this.getFieldsPage(org, page))).then((otherPages: RequestResponse[]) => {
-      Logger.verbose(`Successfully loaded ${totalPages - 1} additional pages of fields from ${org.getId()} `);
+      Logger.verbose(`Successfully loaded ${totalPages - 1} additional pages of fields from ${Colors.organization(org.getId())} `);
       _.each(otherPages, (response: RequestResponse) => {
         Assert.exists(response.body && response.body.items, StaticErrorMessage.UNEXPECTED_RESPONSE);
-        org.addMultipleFields(response.body.items);
+        org.addFieldList(response.body.items);
       });
     });
   }

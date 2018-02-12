@@ -1,8 +1,8 @@
 import * as _ from 'underscore';
+import * as Ora from 'ora';
 import { Utils } from './utils/Utils';
 import { Assert } from './misc/Assert';
 import { FileUtils } from './utils/FileUtils';
-import * as Ora from 'ora';
 
 /**
  * The LoggerSingleton which is a Singleton class.

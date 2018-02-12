@@ -27,9 +27,17 @@ export const FieldTest = () => {
     };
 
     it('Should define field name (id) in the constructor', () => {
-      const field: Field = new Field('newfield', fieldModel);
+      const field: Field = new Field(fieldModel);
       expect(field.getId()).to.equal('newfield');
       expect(field.getName()).to.equal('newfield');
+    });
+
+    it('Should throw an error if field name (id) does not exists', () => {
+      expect(() => new Field({ random: 'field' })).to.throw();
+    });
+
+    it('Should throw an error if invalid field body', () => {
+      expect(() => new Field(undefined)).to.throw();
     });
 
     it('Should create a clone of the field object', () => {
@@ -40,7 +48,7 @@ export const FieldTest = () => {
       };
 
       // Creating clone
-      const field: Field = new Field('newfield', simpleFieldModel);
+      const field: Field = new Field(simpleFieldModel);
       const clone = field.clone();
       // Messing around with the original object
       simpleFieldModel.name = 'new name';
@@ -53,7 +61,7 @@ export const FieldTest = () => {
     });
 
     it('Should define field model in the constructor', () => {
-      const field: Field = new Field('newfield', fieldModel);
+      const field: Field = new Field(fieldModel);
       expect(field.getFieldModel()).to.be.eql({
         name: 'newfield',
         description: 'New field in prod only',

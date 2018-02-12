@@ -25,4 +25,8 @@ export class StaticErrorMessage {
   // Extensions
   public static UNABLE_TO_LOAD_EXTENTIONS: string = 'Unable to load extensions';
   public static UNABLE_TO_LOAD_SINGLE_EXTENTION: string = 'Unable to load single extension';
+  public static UNABLE_TO_CREATE_EXTENSIONS: string = 'Unable to create new extensions';
+  public static UNABLE_TO_UPDATE_EXTENSIONS: string = 'Unable to update extensions';
+  public static UNABLE_TO_DELETE_EXTENSIONS: string = 'Unable to delete extensions';
+  public static DUPLICATE_EXTENSION: string = 'There is already an extension with that name in the Organizaton';
 }

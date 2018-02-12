@@ -4,6 +4,7 @@ import { Answers } from 'inquirer';
 import { InteractiveQuestion } from './InteractiveQuestion';
 import { Logger } from '../commons/logger';
 import { Utils } from '../commons/utils/Utils';
+import { Colors } from '../commons/colors';
 
 export interface ISourceContentSettingOptions {
   configuration: boolean;
@@ -28,7 +29,7 @@ export class InteractionController {
         fs
           .writeFile(commandFilename, [this.setShebangLine(), command].join('\n'))
           .then(() => {
-            console.log(`Intruction saved in ${chalk.bold(commandFilename)}`);
+            console.log(`Intruction saved in ${Colors.filename(commandFilename)}`);
           })
           .catch((err: any) => {
             Logger.error('Unable to save command', err);

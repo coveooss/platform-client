@@ -1,14 +1,16 @@
 import * as opn from 'opn';
 import * as fs from 'fs-extra';
+import * as _ from 'underscore';
+import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
 import { FieldController } from '../controllers/FieldController';
 import { Organization } from '../coveoObjects/Organization';
 import { Logger } from '../commons/logger';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { Field } from '../coveoObjects/Field';
-import * as _ from 'underscore';
 import { ExtensionController } from '../controllers/ExtensionController';
 import { Extension } from '../coveoObjects/Extension';
 import { StaticErrorMessage, IGenericError } from '../commons/errors';
+import { BaseController } from '../controllers/BaseController';
 
 export interface IDiffOptions {
   /**
@@ -29,54 +31,76 @@ export interface IDiffOptions {
 export class DiffCommand {
   private organization1: Organization;
   private organization2: Organization;
-  private options: IDiffOptions;
 
-  constructor(
-    originOrganization: string,
-    destinationOrganization: string,
-    originApiKey: string,
-    destinationApiKey: string,
-    options?: IDiffOptions
-  ) {
+  constructor(originOrganization: string, destinationOrganization: string, originApiKey: string, destinationApiKey: string) {
     this.organization1 = new Organization(originOrganization, originApiKey);
     this.organization2 = new Organization(destinationOrganization, destinationApiKey);
-    this.options = _.extend(DiffCommand.DEFAULT_OPTIONS, options) as IDiffOptions;
   }
 
   static DEFAULT_OPTIONS: IDiffOptions = {
     keysToIgnore: [],
-    includeOnly: []
+    includeOnly: [],
+    silent: false
   };
 
   static COMMAND_NAME: string = 'diff';
 
-  // private getFieldDiffDefaultOptions(): IDiffOptions {
-  //   return { keysToIgnore: [] };
-  // }
+  /**
+   * Diff the fields of both organizations passed in parameter
+   *
+   */
+  public diffFields(options?: IDiffOptions) {
+    const fieldController: FieldController = new FieldController(this.organization1, this.organization2);
+    this.diff(fieldController, 'Field', (fields: Field[]) => _.map(fields, (f: Field) => f.getFieldModel()), options);
+  }
 
-  // private getExtensionsDiffDefaultOptions(): IDiffOptions {
-  //   return { includeOnly: ['name', 'content', 'description', 'enabled', 'requiredDataStreams'] };
-  // }
+  /**
+   * Diff the extensions of both organizations passed in parameter
+   *
+   */
+  public diffExtensions(options?: IDiffOptions) {
+    const extensionController: ExtensionController = new ExtensionController(this.organization1, this.organization2);
+    this.diff(
+      extensionController,
+      'Extension',
+      (extensions: Extension[]) => _.map(extensions, (e: Extension) => e.getExtensionModel()),
+      options
+    );
+  }
 
-  public diff(): void {}
   // FIXME: Enable command to diff to objects without exiting the application first
   /**
-   * Perform a "diff" over the organization fields
+   * This is the generic 'diff' method
+   *
+   * @private
+   * @param {BaseController} controller
+   * @param {string} objectName
+   * @param {(object: any[]) => any[]} extractionMethod
+   * @param {IDiffOptions} options
    */
-  public diffFields() {
-    const fieldController: FieldController = new FieldController(this.organization1, this.organization2);
+  private diff(controller: BaseController, objectName: string, extractionMethod: (object: any[]) => any[], opt?: IDiffOptions) {
+    const options = _.extend(DiffCommand.DEFAULT_OPTIONS, opt) as IDiffOptions;
+
     Logger.startSpinner('Performing a field diff');
-    fieldController
-      .diff(this.options)
-      .then((diffResultArray: DiffResultArray<Field>) => {
+
+    // Give some useful information
+    options.includeOnly
+      ? Logger.verbose(`Diff will be applied exclusively to the following keys: ${JSON.stringify(options.includeOnly)}`)
+      : options.keysToIgnore
+        ? Logger.verbose(`Diff will not be applied to the following keys: ${JSON.stringify(options.keysToIgnore)}`)
+        : void 0;
+
+    controller
+      .diff(options)
+      .then((diffResultArray: DiffResultArray<BaseCoveoObject>) => {
         fs
-          .writeJSON('fieldDiff.json', fieldController.getCleanVersion(diffResultArray), { spaces: 2 })
+          .writeJSON(`${objectName}Diff.json`, controller.getCleanVersion(diffResultArray, extractionMethod), { spaces: 2 })
           .then(() => {
             Logger.info('Diff operation completed');
-            Logger.info('File saved as fieldDiff.json');
+            Logger.info(`File saved as ${objectName}Diff.json`);
             Logger.stopSpinner();
-            if (!this.options.silent) {
-              opn('fieldDiff.json');
+            if (!options.silent) {
+              opn(`${objectName}Diff.json`);
             }
             process.exit();
           })
@@ -90,38 +114,6 @@ export class DiffCommand {
         Logger.error(StaticErrorMessage.UNABLE_TO_DIFF);
         Logger.stopSpinner();
         process.exit();
-      });
-  }
-
-  /**
-   * Perform a "diff" over the organization extensions
-   */
-  public diffExtensions() {
-    const extensionController: ExtensionController = new ExtensionController(this.organization1, this.organization2);
-    Logger.startSpinner('Performing an extension diff');
-    extensionController
-      .diff(this.options)
-      // TODO: add getCleanVersion in extension controller
-      .then((diffResultArray: DiffResultArray<Extension>) => {
-        fs
-          .writeJSON('extensionDiff.json', diffResultArray, { spaces: 2 })
-          .then(() => {
-            Logger.info('Diff operation completed');
-            Logger.info('File saved as extensionDiff.json');
-            Logger.stopSpinner();
-            opn('extensionDiff.json');
-            process.exit();
-          })
-          .catch((err: any) => {
-            Logger.error('Unable to save setting file', err);
-            Logger.stopSpinner();
-            // process.exit();
-          });
-      })
-      .catch((err: IGenericError) => {
-        Logger.error(StaticErrorMessage.UNABLE_TO_DIFF);
-        Logger.stopSpinner();
-        // process.exit();
       });
   }
 }
