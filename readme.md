@@ -53,17 +53,17 @@ In order to run the tool, you will need 2 things:
 
 - Make sure you were able to run gulp entirely without any errors first. Then, run `node coveo-client.js --help` from the `bin` folder. The help screen will be displayed and will list the available commands.
 
-INSERT SCREEN SHOT HERE
+![](https://raw.githubusercontent.com/y-lakhdar/coveo-client/master/documentation/images/help.png)
 
 To get help regarding a specific command, run `node coveo-client.js <command_name> --help`, for example `node coveo-client.js graduate --help`. You will get detailed help regarding the different parameters.
 
-INSERT SCREEN SHOT HERE
+![](https://raw.githubusercontent.com/y-lakhdar/coveo-client/master/documentation/images/graduate-help.png)
 
 Parameters include, amongst others, a `Force` mode, a restriction on the http methods you can use (allows to prevent overiding existing values when graduating, for example) and a log level chooser.
 
 When running a real command, for example when graduating fields between 2 orgs with the command `node coveo-client.js graduate -f -l verbose <org_1_id> <org_2_id> <org_1_key> <org_2_key>`, you will see the following output in the terminal.
 
-INSERT SCREEN SHOT HERE
+![](https://raw.githubusercontent.com/y-lakhdar/coveo-client/master/documentation/images/graduate-fields.png)
 
 The fields will also get graduated from organization 1 to organization 2.
 
