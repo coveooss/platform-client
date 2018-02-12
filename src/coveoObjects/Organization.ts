@@ -6,6 +6,8 @@ import { Source } from './Source';
 import { Field } from './Field';
 import { Dictionary } from '../commons/collections/Dictionary';
 import { IStringMap } from '../commons/interfaces/IStringMap';
+import { Assert } from '../commons/misc/Assert';
+import { StaticErrorMessage } from '../commons/errors';
 
 /**
  * Organization Class. By default, the organization instance do not contain any field, sources nor extension.
@@ -79,7 +81,9 @@ export class Organization extends BaseCoveoObject implements IOrganization {
    * @param {Extension} extension Extension to be added
    */
   public addExtension(extension: Extension) {
-    this.extensions.add(extension.getId(), extension);
+    // Using the extension name as the key since the extension ID is not the same from on org to another
+    Assert.isUndefined(this.extensions.getItem(extension.getName()), StaticErrorMessage.DUPLICATE_EXTENSION);
+    this.extensions.add(extension.getName(), extension);
   }
 
   /**
