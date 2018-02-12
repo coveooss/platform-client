@@ -7,7 +7,7 @@ import { Extension } from '../../coveoObjects/Extension';
 import { IStringMap } from '../interfaces/IStringMap';
 import { Assert } from '../misc/Assert';
 import { Logger } from '../logger';
-import { StaticErrorMessage } from '../errors';
+import { StaticErrorMessage, IGenericError } from '../errors';
 import { Colors } from '../colors';
 import { ArrayUtils } from '../utils/ArrayUtils';
 import { JsonUtils } from '../utils/JsonUtils';
@@ -46,10 +46,12 @@ export class ExtensionAPI {
           // Load each extension
           return ExtensionAPI.loadEachExtension(org, response)
             .then(() => resolve())
-            .catch((err: any) => reject(err));
+            .catch((err: any) => {
+              reject({ orgId: org.getId(), message: err } as IGenericError);
+            });
         })
         .catch((err: any) => {
-          reject(err);
+          reject({ orgId: org.getId(), message: err } as IGenericError);
         });
     });
   }
@@ -58,20 +60,22 @@ export class ExtensionAPI {
     Logger.verbose(`${response.body.length} extensions found from ${Colors.organization(org.getId())}`);
     return Promise.all(
       _.map(response.body, (extension: any) => {
-        Logger.loadingTask(`Loading "${extension['name']}" extension from ${Colors.organization(org.getId())}`);
+        Assert.exists(extension['id'], StaticErrorMessage.UNEXPECTED_RESPONSE);
+        Logger.loadingTask(`Loading ${Colors.extension(extension['name'])} extension from ${Colors.organization(org.getId())}`);
         // tslint:disable-next-line:typedef
         return new Promise((resolve, reject) => {
           return this.getSingleExtension(org, extension['id'])
             .then((extensionBody: RequestResponse) => {
-              Logger.verbose(`Loaded "${extension['name']}" extension from ${Colors.organization(org.getId())}`);
+              Logger.verbose(
+                `Successfully loaded ${Colors.extension(extension['name'])} extension from ${Colors.organization(org.getId())}`
+              );
               // TODO: add this function as a callback since it doesn't make sense to put it here
               this.addLoadedExtensionsToOrganization(org, extensionBody.body);
               // TODO: add the extensionBody.body in the resolve
               resolve();
             })
             .catch((err: any) => {
-              Logger.error(StaticErrorMessage.UNABLE_TO_LOAD_SINGLE_EXTENTION + ` "${extension['name']}"`, err);
-              reject(err);
+              reject({ orgId: org.getId(), message: err } as IGenericError);
             });
         });
       })

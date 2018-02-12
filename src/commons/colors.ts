@@ -8,6 +8,10 @@ import * as chalk from 'chalk';
 /* istanbul ignore next */
 export class Colors {
   static organization(value: string): string {
+    return chalk.bold.cyan(value);
+  }
+
+  static extension(value: string): string {
     return chalk.cyan(value);
   }
 
