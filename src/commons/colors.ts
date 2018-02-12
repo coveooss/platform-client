@@ -5,6 +5,7 @@ import * as chalk from 'chalk';
  *
  * @class Colors
  */
+/* istanbul ignore next */
 export class Colors {
   static organization(value: string): string {
     return chalk.cyan(value);
