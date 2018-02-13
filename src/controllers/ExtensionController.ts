@@ -48,7 +48,7 @@ export class ExtensionController extends BaseController {
    * @returns {Promise<any[]>}
    */
   public graduate(diffResultArray: DiffResultArray<Extension>, options: IHTTPGraduateOptions): Promise<any[]> {
-    if (diffResultArray.containsItems()) {
+    if (diffResultArray.TO_CREATE.length > 0) {
       Logger.loadingTask('Graduating Extensions');
       return Promise.all(
         _.map(
