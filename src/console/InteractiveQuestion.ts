@@ -155,7 +155,7 @@ export class InteractiveQuestion {
       choices: fieldModel,
       when: (answer: Answers) =>
         answer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE &&
-        answer[InteractiveQuestion.COMMAND] === FieldController.CONTROLLER_NAME &&
+        answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === FieldController.CONTROLLER_NAME &&
         fieldModel.length > 0
     };
   }
