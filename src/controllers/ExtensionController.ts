@@ -41,7 +41,7 @@ export class ExtensionController extends BaseController {
   }
 
   /**
-   * Graduates the fields from origin Organization to the destination Organization.
+   * Graduates the extensions from origin Organization to the destination Organization.
    *
    * @param {DiffResultArray<Extension>} diffResultArray
    * @param {IHTTPGraduateOptions} options
@@ -49,7 +49,7 @@ export class ExtensionController extends BaseController {
    */
   public graduate(diffResultArray: DiffResultArray<Extension>, options: IHTTPGraduateOptions): Promise<any[]> {
     if (diffResultArray.containsItems()) {
-      Logger.loadingTask('Graduating fields');
+      Logger.loadingTask('Graduating Extensions');
       return Promise.all(
         _.map(
           this.getAuthorizedOperations(diffResultArray, this.graduateNew, this.graduateUpdated, this.graduateDeleted, options),
@@ -59,7 +59,7 @@ export class ExtensionController extends BaseController {
         )
       );
     } else {
-      Logger.warn('No Fields to graduate');
+      Logger.warn('No extension to graduate');
       return Promise.resolve([]);
     }
   }
@@ -75,7 +75,10 @@ export class ExtensionController extends BaseController {
             this.successHandler(response, 'POST operation successfully completed');
           })
           .catch((err: any) => {
-            this.errorHandler(err, StaticErrorMessage.UNABLE_TO_CREATE_EXTENSIONS);
+            this.errorHandler(
+              { orgId: this.organization2.getId(), message: err } as IGenericError,
+              StaticErrorMessage.UNABLE_TO_CREATE_EXTENSIONS
+            );
           });
       })
     );
@@ -94,7 +97,10 @@ export class ExtensionController extends BaseController {
             this.successHandler(response, 'PUT operation successfully completed');
           })
           .catch((err: any) => {
-            this.errorHandler(err, StaticErrorMessage.UNABLE_TO_UPDATE_EXTENSIONS);
+            this.errorHandler(
+              { orgId: this.organization2.getId(), message: err } as IGenericError,
+              StaticErrorMessage.UNABLE_TO_UPDATE_EXTENSIONS
+            );
           });
       })
     );
@@ -113,7 +119,10 @@ export class ExtensionController extends BaseController {
             this.successHandler(response, 'DELETE operation successfully completed');
           })
           .catch((err: any) => {
-            this.errorHandler(err, StaticErrorMessage.UNABLE_TO_DELETE_EXTENSIONS);
+            this.errorHandler(
+              { orgId: this.organization2.getId(), message: err } as IGenericError,
+              StaticErrorMessage.UNABLE_TO_DELETE_EXTENSIONS
+            );
           });
       })
     );
