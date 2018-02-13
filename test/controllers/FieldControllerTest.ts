@@ -112,7 +112,7 @@ export const FieldControllerTest = () => {
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/indexes/page/fields')
-          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .query({ page: 0, perPage: 1000, origin: 'USER' })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -128,7 +128,7 @@ export const FieldControllerTest = () => {
             ]
           })
           .get('/rest/organizations/prod/indexes/page/fields')
-          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .query({ page: 0, perPage: 1000, origin: 'USER' })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -159,10 +159,10 @@ export const FieldControllerTest = () => {
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/indexes/page/fields')
-          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .query({ page: 0, perPage: 1000, origin: 'USER' })
           .reply(RequestUtils.ACCESS_DENIED, { message: 'Access is denied.', errorCode: 'ACCESS_DENIED' })
           .get('/rest/organizations/prod/indexes/page/fields')
-          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .query({ page: 0, perPage: 1000, origin: 'USER' })
           .reply(RequestUtils.ACCESS_DENIED, { message: 'Access is denied.', errorCode: 'ACCESS_DENIED' });
 
         fieldController
@@ -182,7 +182,7 @@ export const FieldControllerTest = () => {
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/indexes/page/fields')
-          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .query({ page: 0, perPage: 1000, origin: 'USER' })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -206,7 +206,7 @@ export const FieldControllerTest = () => {
           })
           // Second expected request
           .get('/rest/organizations/prod/indexes/page/fields')
-          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .query({ page: 0, perPage: 1000, origin: 'USER' })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -241,7 +241,7 @@ export const FieldControllerTest = () => {
       it('Should graduate fields (POST, PUT, DELETE)', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/indexes/page/fields')
-          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .query({ page: 0, perPage: 1000, origin: 'USER' })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -264,7 +264,7 @@ export const FieldControllerTest = () => {
             totalEntries: 3
           })
           .get('/rest/organizations/prod/indexes/page/fields')
-          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .query({ page: 0, perPage: 1000, origin: 'USER' })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -337,7 +337,7 @@ export const FieldControllerTest = () => {
       it('Should not graduate fields: Graduation error', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/indexes/page/fields')
-          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .query({ page: 0, perPage: 1000, origin: 'USER' })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -360,7 +360,7 @@ export const FieldControllerTest = () => {
             totalEntries: 3
           })
           .get('/rest/organizations/prod/indexes/page/fields')
-          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .query({ page: 0, perPage: 1000, origin: 'USER' })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -430,7 +430,7 @@ export const FieldControllerTest = () => {
       it('Should have nothing to graduate: Similar orgs', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/indexes/page/fields')
-          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .query({ page: 0, perPage: 1000, origin: 'USER' })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -453,7 +453,7 @@ export const FieldControllerTest = () => {
             totalEntries: 3
           })
           .get('/rest/organizations/prod/indexes/page/fields')
-          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .query({ page: 0, perPage: 1000, origin: 'USER' })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -501,10 +501,10 @@ export const FieldControllerTest = () => {
       it('Should not graduate: failed diff', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/indexes/page/fields')
-          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .query({ page: 0, perPage: 1000, origin: 'USER' })
           .reply(RequestUtils.ACCESS_DENIED, 'some message')
           .get('/rest/organizations/prod/indexes/page/fields')
-          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .query({ page: 0, perPage: 1000, origin: 'USER' })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -557,7 +557,7 @@ export const FieldControllerTest = () => {
       it('Should have nothing to graduate: No HTTP verbe selected', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/indexes/page/fields')
-          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .query({ page: 0, perPage: 1000, origin: 'USER' })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -580,7 +580,7 @@ export const FieldControllerTest = () => {
             totalEntries: 3
           })
           .get('/rest/organizations/prod/indexes/page/fields')
-          .query({ page: 0, perPage: 400, origin: 'USER' })
+          .query({ page: 0, perPage: 1000, origin: 'USER' })
           .reply(RequestUtils.OK, {
             items: [
               {

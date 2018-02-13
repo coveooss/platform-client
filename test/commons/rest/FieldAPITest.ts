@@ -131,7 +131,7 @@ export const FieldAPITest = () => {
 
       scope = nock(UrlService.getDefaultUrl())
         .get('/rest/organizations/qwerty123/indexes/page/fields')
-        .query({ page: 0, perPage: 400, origin: 'USER' })
+        .query({ page: 0, perPage: 1000, origin: 'USER' })
         .reply(RequestUtils.OK);
 
       FieldAPI.getFieldsPage(organization, 0)
@@ -149,7 +149,7 @@ export const FieldAPITest = () => {
 
       scope = nock(UrlService.getDefaultUrl())
         .get('/rest/organizations/qwerty456/indexes/page/fields')
-        .query({ page: 1, perPage: 400, origin: 'USER' })
+        .query({ page: 1, perPage: 1000, origin: 'USER' })
         .reply(RequestUtils.OK);
 
       FieldAPI.getFieldsPage(organization, 1)
@@ -470,7 +470,7 @@ export const FieldAPITest = () => {
       scope = nock(UrlService.getDefaultUrl())
         // First expected request
         .get('/rest/organizations/theorg/indexes/page/fields')
-        .query({ page: 1, perPage: 400, origin: 'USER' })
+        .query({ page: 1, perPage: 1000, origin: 'USER' })
         .reply(RequestUtils.OK, {
           items: [
             {
@@ -482,7 +482,7 @@ export const FieldAPITest = () => {
         })
         // Second expected request
         .get('/rest/organizations/theorg/indexes/page/fields')
-        .query({ page: 2, perPage: 400, origin: 'USER' })
+        .query({ page: 2, perPage: 1000, origin: 'USER' })
         .reply(RequestUtils.OK, {
           items: [
             {
@@ -515,7 +515,7 @@ export const FieldAPITest = () => {
       const organization: Organization = new Organization('67ujnbgh', 'xxx-xxx');
       scope = nock(UrlService.getDefaultUrl())
         .get('/rest/organizations/67ujnbgh/indexes/page/fields')
-        .query({ page: 0, perPage: 400, origin: 'USER' })
+        .query({ page: 0, perPage: 1000, origin: 'USER' })
         .reply(RequestUtils.OK, { invalidKey: 'random value' });
 
       FieldAPI.loadFields(organization)
@@ -535,7 +535,7 @@ export const FieldAPITest = () => {
       scope = nock(UrlService.getDefaultUrl())
         // First expected request
         .get('/rest/organizations/hjkmnbfjhj3gfde45/indexes/page/fields')
-        .query({ page: 0, perPage: 400, origin: 'USER' })
+        .query({ page: 0, perPage: 1000, origin: 'USER' })
         .reply(RequestUtils.OK, {
           items: [
             {
@@ -573,7 +573,7 @@ export const FieldAPITest = () => {
       scope = nock(UrlService.getDefaultUrl())
         // First expected request
         .get('/rest/organizations/hello/indexes/page/fields')
-        .query({ page: 0, perPage: 400, origin: 'USER' })
+        .query({ page: 0, perPage: 1000, origin: 'USER' })
         .reply(RequestUtils.OK, {
           items: [
             {
@@ -597,7 +597,7 @@ export const FieldAPITest = () => {
         })
         // Second expected request
         .get('/rest/organizations/hello/indexes/page/fields')
-        .query({ page: 1, perPage: 400, origin: 'USER' })
+        .query({ page: 1, perPage: 1000, origin: 'USER' })
         .reply(RequestUtils.OK, {
           items: [
             {
@@ -621,7 +621,7 @@ export const FieldAPITest = () => {
         })
         // Third expected request
         .get('/rest/organizations/hello/indexes/page/fields')
-        .query({ page: 2, perPage: 400, origin: 'USER' })
+        .query({ page: 2, perPage: 1000, origin: 'USER' })
         .reply(RequestUtils.OK, {
           items: [
             {

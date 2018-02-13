@@ -27,7 +27,7 @@ export class LoggerSingleton {
   // tslint:disable-next-line:typedef
   private spinner = Ora();
   private level: number = LoggerSingleton.INFO;
-  private filename: string = 'coveo-cli.log';
+  private filename: string = 'coveo-client.log';
   private spinnerEnabled: boolean = true;
 
   private isSpinnerEnabled(): boolean {
