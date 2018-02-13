@@ -56,12 +56,9 @@ program
   .description('Graduate one organisation to an other')
   .option('-F, --force', 'Force graduation without confirmation prompt')
   .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', list)
-  .option(
-    '-m, --methods []',
-    'HTTP method authorized by the Graduation. Should be a comma separated list (no spaces). Default value is "POST,PUT,DELETE".',
-    list,
-    ['POST', 'PUT', 'DELETE']
-  )
+  .option('-m, --methods []', 'HTTP method authorized by the Graduation. Currently, only "POST" method is allowed for extensions.', list, [
+    'POST'
+  ])
   .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
   .option(
     '-l, --logLevel <level>',
@@ -80,8 +77,8 @@ program
       },
       force: options.force,
       POST: options.methods.indexOf('POST') > -1,
-      PUT: options.methods.indexOf('PUT') > -1,
-      DELETE: options.methods.indexOf('DELETE') > -1
+      PUT: false,
+      DELETE: false
     };
 
     const command = new GraduateCommand(originOrg, destinationOrg, originApiKey, destinationApiKey);

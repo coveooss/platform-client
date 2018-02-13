@@ -246,7 +246,9 @@ export class InteractiveQuestion {
       message: `Select the allowed operations on the destination organization for the graduation:`,
       choices: ['POST', 'PUT', 'DELETE'],
       validate: this.checkboxValidator('You need to select at least 1 graduate operation.'),
-      when: (answer: Answers) => answer[InteractiveQuestion.COMMAND] === GraduateCommand.COMMAND_NAME
+      when: (answer: Answers) =>
+        answer[InteractiveQuestion.COMMAND] === GraduateCommand.COMMAND_NAME &&
+        answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] !== ExtensionController.CONTROLLER_NAME // choices not available yet for extension
     };
   }
 
