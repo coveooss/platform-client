@@ -4,7 +4,7 @@ export class EnvironmentUtils {
   }
 
   static setDefaultNodeEnvironment() {
-    process.env.NODE_ENV = 'development';
+    process.env.NODE_ENV = 'production';
   }
 
   static getNodeEnvironment(): string | undefined {
