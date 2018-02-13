@@ -5,16 +5,16 @@ import { Logger } from '../src/commons/logger';
 
 export const ConsoleTest = () => {
   describe('Console Messages', () => {
-    // TODO: make sure the program exit after an amount of time
     // TODO: should test multiple command to make sure nothing breaks
-    it('Should not throw any error', () => {
-      Logger.enable();
-      exec('node coveo-client.js diff dev prod xxx yyy -s -f', { cwd: './bin' }, (err: Error, stdout: string, stderr: string) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-        console.log(stdout);
+    // TODO: need to run a dev server for thos tests
+    describe('diff-field command', () => {
+      it('Should perform a diff-fields without error', (done: MochaDone) => {
+        exec('node client.js diff-fields dev prod xxx yyy -i ds,ds,dsa', { cwd: './bin' }, (err: Error, stdout: string, stderr: string) => {
+          if (err) {
+            return done(err);
+          }
+          done();
+        });
       });
     });
   });

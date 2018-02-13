@@ -7,7 +7,7 @@ export const UrlServiceTest = () => {
     it('Should generate the url to get fields', () => {
       const getFieldsPageUrl = UrlService.getFieldsPageUrl('myOrgId', 0);
       expect(getFieldsPageUrl).to.equal(
-        `${config.coveo.platformUrl}/rest/organizations/myOrgId/indexes/page/fields?&page=0&perPage=400&origin=USER`
+        `${config.coveo.platformUrl}/rest/organizations/myOrgId/indexes/page/fields?&page=0&perPage=1000&origin=USER`
       );
     });
 

@@ -11,6 +11,7 @@ import { FieldAPI } from '../commons/rest/FieldAPI';
 import { BaseController } from './BaseController';
 import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
 import { IDiffOptions } from '../commands/DiffCommand';
+import { Colors } from '../commons/colors';
 
 export class FieldController extends BaseController {
   /**
@@ -20,6 +21,7 @@ export class FieldController extends BaseController {
   static CONTROLLER_NAME: string = 'fields';
 
   private fieldsPerBatch: number = 500;
+  private deleteFieldsPerBatch: number = 200;
 
   constructor(private organization1: Organization, private organization2: Organization) {
     super();
@@ -79,14 +81,16 @@ export class FieldController extends BaseController {
 
   private graduateNew(diffResult: DiffResultArray<Field>): Promise<void> {
     Logger.verbose(
-      `Creating ${diffResult.TO_CREATE.length} new field${diffResult.TO_CREATE.length > 1 ? 's' : ''} in ${this.organization2.getId()} `
+      `Creating ${diffResult.TO_CREATE.length} new field${diffResult.TO_CREATE.length > 1 ? 's' : ''} in ${Colors.organization(
+        this.organization2.getId()
+      )} `
     );
     return FieldAPI.createFields(this.organization2, this.extractFieldModel(diffResult.TO_CREATE), this.fieldsPerBatch)
       .then((responses: RequestResponse[]) => {
         this.successHandler(responses, 'POST operation successfully completed');
       })
       .catch((err: any) => {
-        this.errorHandler(err, StaticErrorMessage.UNABLE_TO_CREATE_FIELDS);
+        this.errorHandler({ orgId: this.organization2.getId(), message: err } as IGenericError, StaticErrorMessage.UNABLE_TO_CREATE_FIELDS);
       });
   }
 
@@ -101,7 +105,7 @@ export class FieldController extends BaseController {
         this.successHandler(responses, 'PUT operation successfully completed');
       })
       .catch((err: any) => {
-        this.errorHandler(err, StaticErrorMessage.UNABLE_TO_UPDATE_FIELDS);
+        this.errorHandler({ orgId: this.organization2.getId(), message: err } as IGenericError, StaticErrorMessage.UNABLE_TO_UPDATE_FIELDS);
       });
   }
 
@@ -111,12 +115,16 @@ export class FieldController extends BaseController {
         diffResult.TO_CREATE.length > 1 ? 's' : ''
       } from ${this.organization2.getId()} `
     );
-    return FieldAPI.deleteFields(this.organization2, _.map(diffResult.TO_DELETE, (field: Field) => field.getName()), this.fieldsPerBatch)
+    return FieldAPI.deleteFields(
+      this.organization2,
+      _.map(diffResult.TO_DELETE, (field: Field) => field.getName()),
+      this.deleteFieldsPerBatch
+    )
       .then((responses: RequestResponse[]) => {
         this.successHandler(responses, 'DELETE operation successfully completed');
       })
       .catch((err: any) => {
-        this.errorHandler(err, StaticErrorMessage.UNABLE_TO_DELETE_FIELDS);
+        this.errorHandler({ orgId: this.organization2.getId(), message: err } as IGenericError, StaticErrorMessage.UNABLE_TO_DELETE_FIELDS);
       });
   }
 

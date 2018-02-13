@@ -20,8 +20,7 @@ export class InteractiveQuestion {
 
   // Options
   static GRADUATE_OPERATIONS: string = 'graduateOperations';
-  static CONTENT_TO_GRADUATE: string = 'contentToGraduate';
-  static CONTENT_TO_DIFF: string = 'contentToDiff';
+  static OBJECT_TO_MANIPULATE: string = 'objecttToManipulate';
   static SETTING_FILENAME: string = 'settingFilename';
   static LOG_FILENAME: string = 'logFilename';
   static FORCE_GRADUATION: string = 'force';
@@ -31,7 +30,7 @@ export class InteractiveQuestion {
   static ADVANCED_MODE: string = 'advancedMode';
   static BASIC_CONFIGURATION_MODE: string = 'Basic';
   static ADVANCED_CONFIGURATION_MODE: string = 'Advanced';
-  static EXECUTE_COMMAND: string = 'executeCommand';
+  // static EXECUTE_COMMAND: string = 'executeCommand';
 
   public start(): Promise<Answers> {
     const prompt = inquirer.createPromptModule();
@@ -121,7 +120,7 @@ export class InteractiveQuestion {
   public getContentToDiff(): Question {
     return {
       type: 'list',
-      name: InteractiveQuestion.CONTENT_TO_DIFF,
+      name: InteractiveQuestion.OBJECT_TO_MANIPULATE,
       message: 'What would you like to diff?',
       choices: [{ name: FieldController.CONTROLLER_NAME }, { name: ExtensionController.CONTROLLER_NAME }],
       when: (answer: Answers) => answer[InteractiveQuestion.COMMAND].indexOf(DiffCommand.COMMAND_NAME) !== -1
@@ -131,10 +130,10 @@ export class InteractiveQuestion {
   public getContentToGraduate(): Question {
     return {
       type: 'list',
-      name: InteractiveQuestion.CONTENT_TO_GRADUATE,
+      name: InteractiveQuestion.OBJECT_TO_MANIPULATE,
       message: 'What would you like to graduate?',
       choices: [{ name: FieldController.CONTROLLER_NAME }, { name: ExtensionController.CONTROLLER_NAME }],
-      when: (answer: Answers) => answer[InteractiveQuestion.COMMAND].indexOf(GraduateCommand.COMMAND_NAME) !== -1
+      when: (answer: Answers) => answer[InteractiveQuestion.COMMAND] === GraduateCommand.COMMAND_NAME
     };
   }
 
@@ -155,7 +154,9 @@ export class InteractiveQuestion {
       message: `Select the keys that will no be taken in consideration during the diff`,
       choices: fieldModel,
       when: (answer: Answers) =>
-        answer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE && fieldModel.length > 0
+        answer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE &&
+        answer[InteractiveQuestion.COMMAND] === FieldController.CONTROLLER_NAME &&
+        fieldModel.length > 0
     };
   }
 
@@ -198,7 +199,9 @@ export class InteractiveQuestion {
       name: InteractiveQuestion.FORCE_GRADUATION,
       message: 'Force graduation without confirmation prompt',
       default: false,
-      when: (answer: Answers) => answer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE
+      when: (answer: Answers) =>
+        answer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE &&
+        answer[InteractiveQuestion.COMMAND] === GraduateCommand.COMMAND_NAME
     };
   }
 
@@ -243,7 +246,9 @@ export class InteractiveQuestion {
       message: `Select the allowed operations on the destination organization for the graduation:`,
       choices: ['POST', 'PUT', 'DELETE'],
       validate: this.checkboxValidator('You need to select at least 1 graduate operation.'),
-      when: (answer: Answers) => answer[InteractiveQuestion.COMMAND].indexOf(GraduateCommand.COMMAND_NAME) !== -1
+      when: (answer: Answers) =>
+        answer[InteractiveQuestion.COMMAND] === GraduateCommand.COMMAND_NAME &&
+        answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] !== ExtensionController.CONTROLLER_NAME // choices not available yet for extension
     };
   }
 

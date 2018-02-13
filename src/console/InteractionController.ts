@@ -44,7 +44,7 @@ export class InteractionController {
     let command: string[] = [];
 
     // Required parameters
-    command.push(answers[InteractiveQuestion.COMMAND]);
+    command.push(answers[InteractiveQuestion.COMMAND] + '-' + answers[InteractiveQuestion.OBJECT_TO_MANIPULATE]);
     command.push(answers[InteractiveQuestion.ORIGIN_ORG_ID]);
     command.push(answers[InteractiveQuestion.DESTINATION_ORG_ID]);
     command.push(answers[InteractiveQuestion.ORIGIN_ORG_KEY]);
@@ -53,8 +53,6 @@ export class InteractionController {
     // Global options
     command = command
       // TODO: What if the command is generated dynamically?
-      .concat(this.saveOptionIfExists(answers, '--', InteractiveQuestion.CONTENT_TO_DIFF))
-      .concat(this.saveOptionIfExists(answers, '--', InteractiveQuestion.CONTENT_TO_GRADUATE))
       .concat(this.saveOptionIfExists(answers, '-F ', InteractiveQuestion.FORCE_GRADUATION))
       .concat(this.saveOptionIfExists(answers, '-m ', InteractiveQuestion.GRADUATE_OPERATIONS))
       .concat(this.saveOptionIfExists(answers, '-O ', InteractiveQuestion.LOG_FILENAME))
@@ -76,10 +74,8 @@ export class InteractionController {
   private saveOptionIfExists(answers: Answers, prefix: string, option: string): string[] {
     const answer = answers[option];
 
-    if (typeof answer === 'object' && Utils.isEmptyArray(answer)) {
-      return [];
-    }
-
-    return answer && Utils.isNonEmptyString(answer) ? [`${prefix}${answer}`] : [];
+    return Array.isArray(answer)
+      ? Utils.isEmptyArray(answer) ? [] : [`${prefix}${answer}`]
+      : Utils.isEmptyString(answer) ? [] : [`${prefix}${answer}`];
   }
 }

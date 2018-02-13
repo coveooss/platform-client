@@ -50,7 +50,7 @@ export class FieldAPI {
 
   public static getFieldsPage(organization: Organization, page: number): Promise<RequestResponse> {
     Assert.isLargerOrEqualsThan(0, page, 'Parameter "page" cannot be a negative value.');
-    Logger.loadingTask(`Fecthing field page ${page} from ${organization.getId()} `);
+    Logger.loadingTask(`Fecthing field page ${page} from ${Colors.organization(organization.getId())} `);
     return RequestUtils.get(UrlService.getFieldsPageUrl(organization.getId(), page), organization.getApiKey());
   }
 

@@ -1,6 +1,6 @@
 {
   "include": ["src/**/*.ts"],
-  "exclude": ["**/*.d.ts", "**/*.js", "src/commons/interfaces/**/*.ts", "src/coveo-client.ts", "src/console/*.ts"],
+  "exclude": ["**/*.d.ts", "**/*.js", "src/commons/interfaces/**/*.ts", "src/client.ts", "src/console/*.ts"],
   "extension": [".ts"],
   "require": ["ts-node/register"],
   "reporter": ["html"],

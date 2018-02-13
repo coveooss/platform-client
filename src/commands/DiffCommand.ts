@@ -11,6 +11,7 @@ import { ExtensionController } from '../controllers/ExtensionController';
 import { Extension } from '../coveoObjects/Extension';
 import { StaticErrorMessage, IGenericError } from '../commons/errors';
 import { BaseController } from '../controllers/BaseController';
+import { Colors } from '../commons/colors';
 
 export interface IDiffOptions {
   /**
@@ -79,6 +80,7 @@ export class DiffCommand {
    * @param {IDiffOptions} options
    */
   private diff(controller: BaseController, objectName: string, extractionMethod: (object: any[]) => any[], opt?: IDiffOptions) {
+    objectName = objectName.toLowerCase();
     const options = _.extend(DiffCommand.DEFAULT_OPTIONS, opt) as IDiffOptions;
 
     Logger.startSpinner('Performing a field diff');
@@ -97,7 +99,7 @@ export class DiffCommand {
           .writeJSON(`${objectName}Diff.json`, controller.getCleanVersion(diffResultArray, extractionMethod), { spaces: 2 })
           .then(() => {
             Logger.info('Diff operation completed');
-            Logger.info(`File saved as ${objectName}Diff.json`);
+            Logger.info(`File saved as ${Colors.filename(objectName + 'Diff.json')}`);
             Logger.stopSpinner();
             if (!options.silent) {
               opn(`${objectName}Diff.json`);

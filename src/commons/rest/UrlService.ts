@@ -25,8 +25,8 @@ export class UrlService {
     return `${config.coveo.platformUrl}/api-docs/Field?group=public`;
   }
 
-  static getFieldsPageUrl(organizationId: string, page: number): string {
-    return `${this.getOrganizationUrl(organizationId)}/indexes/page/fields?&page=${page}&perPage=400&origin=USER`;
+  static getFieldsPageUrl(organizationId: string, page: number, perPage: number = 1000): string {
+    return `${this.getOrganizationUrl(organizationId)}/indexes/page/fields?&page=${page}&perPage=${perPage}&origin=USER`;
   }
 
   static updateFields(organizationId: string): string {
