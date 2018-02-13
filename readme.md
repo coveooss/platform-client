@@ -23,17 +23,23 @@ In order to run the tool, you will need 2 things:
 
 ![](https://raw.githubusercontent.com/y-lakhdar/coveo-client/master/documentation/images/help.png)
 
-To get help regarding a specific command, run `node client.js <command_name> --help`, for example `node client.js graduate --help`. You will get detailed help regarding the different parameters.
+To get help regarding a specific command, run `node client.js <command_name> --help`, for example `node client.js graduate-fields --help`. You will get detailed help regarding the different parameters.
 
 ![](https://raw.githubusercontent.com/y-lakhdar/coveo-client/master/documentation/images/graduate-help.png)
 
-Parameters include, amongst others, a `Force` mode, a restriction on the http methods you can use (allows to prevent overiding existing values when graduating, for example) and a log level chooser.
+### Interactive Command
 
-When running a real command, for example when graduating fields between 2 orgs with the command `node client.js graduate -f -l verbose <org_1_id> <org_2_id> <org_1_key> <org_2_key>`, you will see the following output in the terminal.
+You can always run the interactive command with `node client.js interactive`
+
+![Alt Text](https://raw.githubusercontent.com/y-lakhdar/coveo-client/master/documentation/images/interactive.gif)
+
+<!-- Parameters include, amongst others, a `Force` mode, a restriction on the http methods you can use (allows to prevent overiding existing values when graduating, for example) and a log level chooser. -->
+
+Here is an exmaple of the field graduation between 2 orgs with the command `node client.js graduate-fields <org_1_id> <org_2_id> <org_1_key> <org_2_key> -l verbose`.
 
 ![](https://raw.githubusercontent.com/y-lakhdar/coveo-client/master/documentation/images/graduate-fields.png)
 
-The fields will also get graduated from organization 1 to organization 2.
+<!-- The fields will also get graduated from organization 1 to organization 2. -->
 
 ## Important Gulp Tasks
 
@@ -62,7 +68,7 @@ Every time you hit **Save** in a source file or in a test file, the dev server w
 
 Code coverage will be reported in `./coverage`
 
-## Available documentation
+## Available Coveo documentation
 The code for the projects uses APIs, SDKs, and code from the Coveo Platform. You can use the following resources for more information and get started:
 
 - Cloud Platform API general documentation: https://developers.coveo.com/display/public/CloudPlatform/Coveo+Cloud+V2+Home

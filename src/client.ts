@@ -12,14 +12,6 @@ const pkg: any = require('./../package.json');
 
 program.option('--env [value]', 'Environment (Production by default)').version(pkg.version);
 
-program.on('--help', () => {
-  console.log('');
-  console.log('  Examples:');
-  console.log('');
-  console.log('    $ graduate dev-org prod-org dev-api-key prod-api-key --fields -Ppd');
-  console.log('');
-});
-
 // Graduate Fields
 program
   .command('graduate-fields <originOrg> <destinationOrg> <originApiKey> <destinationApiKey>')
