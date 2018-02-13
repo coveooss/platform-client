@@ -21,6 +21,7 @@ export class FieldController extends BaseController {
   static CONTROLLER_NAME: string = 'fields';
 
   private fieldsPerBatch: number = 500;
+  private deleteFieldsPerBatch: number = 200;
 
   constructor(private organization1: Organization, private organization2: Organization) {
     super();
@@ -114,7 +115,11 @@ export class FieldController extends BaseController {
         diffResult.TO_CREATE.length > 1 ? 's' : ''
       } from ${this.organization2.getId()} `
     );
-    return FieldAPI.deleteFields(this.organization2, _.map(diffResult.TO_DELETE, (field: Field) => field.getName()), this.fieldsPerBatch)
+    return FieldAPI.deleteFields(
+      this.organization2,
+      _.map(diffResult.TO_DELETE, (field: Field) => field.getName()),
+      this.deleteFieldsPerBatch
+    )
       .then((responses: RequestResponse[]) => {
         this.successHandler(responses, 'DELETE operation successfully completed');
       })
