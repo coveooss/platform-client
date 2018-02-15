@@ -12,6 +12,9 @@ import { BaseController } from './BaseController';
 import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
 import { IDiffOptions } from '../commands/DiffCommand';
 import { Colors } from '../commons/colors';
+import { IDownloadOptions } from '../commands/DownloadCommand';
+import { DownloadResultArray } from '../commons/collections/DownloadResultArray';
+import { DownloadUtils } from '../commons/utils/DownloadUtils';
 
 export class FieldController extends BaseController {
   /**
@@ -53,6 +56,12 @@ export class FieldController extends BaseController {
         this.errorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_FIELDS);
         return Promise.reject(err);
       });
+  }
+
+  public download(downloadOptions?: IDownloadOptions): Promise<DownloadResultArray<Field>> {
+    return this.loadFieldForOrganization(this.organization1).then(() => {
+      return DownloadUtils.getDownloadResult(this.organization1.getFields());
+    });
   }
 
   /**
@@ -126,6 +135,11 @@ export class FieldController extends BaseController {
       .catch((err: any) => {
         this.errorHandler({ orgId: this.organization2.getId(), message: err } as IGenericError, StaticErrorMessage.UNABLE_TO_DELETE_FIELDS);
       });
+  }
+
+  private loadFieldForOrganization(organization1: Organization): Promise<{}[]> {
+    Logger.loadingTask('Loading fields for both organizations');
+    return Promise.all([FieldAPI.loadFields(organization1)]);
   }
 
   private loadFieldForBothOrganizations(organization1: Organization, organization2: Organization): Promise<{}[]> {

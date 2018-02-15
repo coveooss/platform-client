@@ -2,6 +2,7 @@ import * as _ from 'underscore';
 import { flatten, unflatten } from 'flat';
 import { Logger } from '../logger';
 import { Assert } from '../misc/Assert';
+import { isObject } from 'util';
 
 export class JsonUtils {
   static stringify(obj: any, space: number = 2): string {
@@ -70,5 +71,19 @@ export class JsonUtils {
       Logger.error('Unable to clone JSON object', error);
       return null;
     }
+  }
+
+  static sortObjectProperties(unordered: any, deep: boolean = false): any {
+    const ordered: any = {};
+    Object.keys(unordered)
+      .sort()
+      .forEach((key: string) => {
+        let value: any = unordered[key];
+        if (deep && isObject(value)) {
+          value = JsonUtils.sortObjectProperties(value, deep);
+        }
+        ordered[key] = value;
+      });
+    return ordered;
   }
 }

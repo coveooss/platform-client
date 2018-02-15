@@ -11,6 +11,9 @@ import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { RequestResponse } from 'request';
+import { IDownloadOptions } from '../commands/DownloadCommand';
+import { DownloadResultArray } from '../commons/collections/DownloadResultArray';
+import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
 
 export class ExtensionController extends BaseController {
   constructor(private organization1: Organization, private organization2: Organization) {
@@ -38,6 +41,14 @@ export class ExtensionController extends BaseController {
         this.errorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_EXTENTIONS);
         return Promise.reject(err);
       });
+  }
+
+  public download(downloadOptions?: IDownloadOptions): Promise<DownloadResultArray<Extension>> {
+    // tslint:disable-next-line:typedef
+    return new Promise((resolve, reject) => {
+      const downloadResult: DownloadResultArray<Extension> = new DownloadResultArray();
+      resolve(downloadResult);
+    });
   }
 
   /**
