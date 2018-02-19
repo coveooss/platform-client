@@ -72,9 +72,14 @@ export class FieldController extends BaseController {
     });
     // _.find can return Undefined; FieldAPI.loadFields expects
     const foundOrNot = isUndefined(org) ? new Organization('dummy', 'dummy') : org;
-    return FieldAPI.loadFields(foundOrNot).then(() => {
-      return DownloadUtils.getDownloadResult(foundOrNot.getFields());
-    });
+    return FieldAPI.loadFields(foundOrNot)
+      .then(() => {
+        return DownloadUtils.getDownloadResult(foundOrNot.getFields());
+      })
+      .catch((err: IGenericError) => {
+        this.errorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_FIELDS);
+        return Promise.reject(err);
+      });
   }
 
   /**

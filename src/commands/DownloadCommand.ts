@@ -10,6 +10,8 @@ import { Organization } from '../coveoObjects/Organization';
 import { Colors } from '../commons/colors';
 import { IGenericError, StaticErrorMessage } from '../commons/errors';
 import { JsonUtils } from '../commons/utils/JsonUtils';
+import { Field } from '../coveoObjects/Field';
+import { IStringMap } from '../commons/interfaces/IStringMap';
 
 export class DownloadCommand {
   private oganization: Organization;
@@ -33,10 +35,10 @@ export class DownloadCommand {
     // hack: FieldController needs 2 orgs becaase initially it was  meant for comparison. Feed it.
     const dummyOrg = new Organization('dummy', 'dummy');
     const fieldController: FieldController = new FieldController(this.oganization, dummyOrg);
-    this.download(fieldController, 'Field');
+    this.download(fieldController, 'Field', (field: Field) => field.getFieldModel());
   }
 
-  private download(controller: BaseController, objectName: string) {
+  private download(controller: BaseController, objectName: string, extractionMethod: (object: any) => IStringMap<any>) {
     Logger.startSpinner('Downloading fields');
 
     controller
@@ -48,7 +50,7 @@ export class DownloadCommand {
         const items = downloadResultArray.getItems();
         // sort items' attributes
         items.forEach((value: BaseCoveoObject, index: number, array: BaseCoveoObject[]) => {
-          array[index] = JsonUtils.sortObjectProperties(value, true);
+          array[index] = JsonUtils.sortObjectProperties(extractionMethod(value), true);
         });
         // ensure path
         fs.ensureDirSync(this.outputFolder);
