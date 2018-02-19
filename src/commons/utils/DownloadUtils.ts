@@ -1,13 +1,9 @@
 import * as _ from 'underscore';
 import { Dictionary, IClonable } from '../collections/Dictionary';
 import { JsonUtils } from './JsonUtils';
-import { DownloadResultArray } from '../collections/DownloadResultArray';
-import { IDownloadOptions } from '../../commands/DownloadCommand';
+import { DownloadResultArray, IDownloadResultArray } from '../collections/DownloadResultArray';
+import { BaseCoveoObject } from '../../coveoObjects/BaseCoveoObject';
 export class DownloadUtils {
-  static defaultOptions: IDownloadOptions = {
-    dummy: ''
-  };
-
   /**
    * Return the differences between 2 dictionaries
    *
@@ -17,12 +13,11 @@ export class DownloadUtils {
    * @param {IDownloadOptions} [diffOptions]
    * @returns {IDiffResultArray<T>} Result between dictionnaries
    */
-  static getDownloadResult<T extends IClonable<T>>(dict1: Dictionary<T>): DownloadResultArray<T> {
-    const options: IDownloadOptions = _.extend({}, DownloadUtils.defaultOptions);
-    const downloadResult: DownloadResultArray<T> = new DownloadResultArray();
+  static getDownloadResult(dict1: Dictionary<BaseCoveoObject>): DownloadResultArray {
+    const downloadResult: DownloadResultArray = new DownloadResultArray();
     dict1.keys().forEach((key: string) => {
-      const value: T = dict1.getItem(key);
-      downloadResult.ITEMS.push(value);
+      const value: BaseCoveoObject = dict1.getItem(key);
+      downloadResult.add(value);
     });
 
     return downloadResult;

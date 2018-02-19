@@ -11,8 +11,7 @@ import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { RequestResponse } from 'request';
-import { IDownloadOptions } from '../commands/DownloadCommand';
-import { DownloadResultArray } from '../commons/collections/DownloadResultArray';
+import { DownloadResultArray, IDownloadResultArray } from '../commons/collections/DownloadResultArray';
 import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
 
 export class ExtensionController extends BaseController {
@@ -43,12 +42,15 @@ export class ExtensionController extends BaseController {
       });
   }
 
-  public download(downloadOptions?: IDownloadOptions): Promise<DownloadResultArray<Extension>> {
-    // tslint:disable-next-line:typedef
-    return new Promise((resolve, reject) => {
-      const downloadResult: DownloadResultArray<Extension> = new DownloadResultArray();
-      resolve(downloadResult);
-    });
+  /**
+   * Not implemented
+   *
+   * @param {string} organization
+   * @returns {Promise<IDownloadResultArray>}
+   * @memberof ExtensionController
+   */
+  public download(organization: string): Promise<IDownloadResultArray> {
+    throw new Error('Not Implemented');
   }
 
   /**

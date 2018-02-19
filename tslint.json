@@ -18,7 +18,7 @@
     "interface-name": [true, "always-prefix"],
     "interface-over-type-literal": true,
     "jsdoc-format": true,
-    "linebreak-style": [true, "LF"],
+    "linebreak-style": [true, "CRLF"],
     "max-line-length": [false, 140],
     "member-access": false,
     "member-ordering": [

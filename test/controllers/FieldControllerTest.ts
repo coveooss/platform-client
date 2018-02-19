@@ -655,7 +655,7 @@ export const FieldControllerTest = () => {
           });
 
         fieldController
-          .download()
+          .download(org1.getId())
           .then(() => {
             expect(org1.getFields().getCount()).to.be.eql(3);
             done();

@@ -12,9 +12,9 @@ import { BaseController } from './BaseController';
 import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
 import { IDiffOptions } from '../commands/DiffCommand';
 import { Colors } from '../commons/colors';
-import { IDownloadOptions } from '../commands/DownloadCommand';
-import { DownloadResultArray } from '../commons/collections/DownloadResultArray';
+import { DownloadResultArray, IDownloadResultArray } from '../commons/collections/DownloadResultArray';
 import { DownloadUtils } from '../commons/utils/DownloadUtils';
+import { isUndefined } from 'util';
 
 export class FieldController extends BaseController {
   /**
@@ -58,9 +58,22 @@ export class FieldController extends BaseController {
       });
   }
 
-  public download(downloadOptions?: IDownloadOptions): Promise<DownloadResultArray<Field>> {
-    return this.loadFieldForOrganization(this.organization1).then(() => {
-      return DownloadUtils.getDownloadResult(this.organization1.getFields());
+  /**
+   * Download fields of one org.
+   * Provide the name of one of the orgs you specified in creator.
+   *
+   * @param {string} organization
+   * @returns {Promise<IDownloadResultArray>}
+   * @memberof FieldController
+   */
+  public download(organization: string): Promise<IDownloadResultArray> {
+    const org = _.find([this.organization1, this.organization2], (x: Organization) => {
+      return x.getId() === organization;
+    });
+    // _.find can return Undefined; FieldAPI.loadFields expects
+    const foundOrNot = isUndefined(org) ? new Organization('dummy', 'dummy') : org;
+    return FieldAPI.loadFields(foundOrNot).then(() => {
+      return DownloadUtils.getDownloadResult(foundOrNot.getFields());
     });
   }
 
