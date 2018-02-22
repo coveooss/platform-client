@@ -11,6 +11,8 @@ import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { RequestResponse } from 'request';
+import { DownloadResultArray, IDownloadResultArray } from '../commons/collections/DownloadResultArray';
+import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
 
 export class ExtensionController extends BaseController {
   constructor(private organization1: Organization, private organization2: Organization) {
@@ -38,6 +40,17 @@ export class ExtensionController extends BaseController {
         this.errorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_EXTENTIONS);
         return Promise.reject(err);
       });
+  }
+
+  /**
+   * Not implemented
+   *
+   * @param {string} organization
+   * @returns {Promise<IDownloadResultArray>}
+   * @memberof ExtensionController
+   */
+  public download(organization: string): Promise<IDownloadResultArray> {
+    throw new Error('Not Implemented');
   }
 
   /**

@@ -217,5 +217,24 @@ export const JsonUtilsTest = () => {
         });
       });
     });
+
+    describe('sortObjectProperties Method,', () => {
+      const inputObj = { one: 1, two: 2, three: { a: null, c: null, b: null } };
+      const expectedOutputObj = { one: 1, three: { a: null, c: null, b: null }, two: 2 };
+      const expectedOutputObjDeep = { one: 1, three: { a: null, b: null, c: null }, two: 2 };
+
+      it('Should return a new object with its keys sorted', () => {
+        const outputObj = JsonUtils.sortObjectProperties(inputObj);
+        expect(outputObj).to.eql(expectedOutputObj);
+      });
+      it('Should not return the same object', () => {
+        const outputObj = JsonUtils.sortObjectProperties(inputObj);
+        expect(outputObj).to.not.equal(expectedOutputObj);
+      });
+      it('Should return a new object with its keys sorted, deep', () => {
+        const outputObj = JsonUtils.sortObjectProperties(inputObj, true);
+        expect(outputObj).to.eql(expectedOutputObjDeep);
+      });
+    });
   });
 };
