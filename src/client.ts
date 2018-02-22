@@ -5,6 +5,7 @@ import * as inquirer from 'inquirer';
 import { GraduateCommand, IGraduateOptions } from './commands/GraduateCommand';
 import { InteractionController } from './console/InteractionController';
 import { DiffCommand, IDiffOptions } from './commands/DiffCommand';
+import { DownloadCommand } from './commands/DownloadCommand';
 import { Logger } from './commons/logger';
 
 const program = require('commander');
@@ -142,6 +143,24 @@ program
     const command = new DiffCommand(originOrg, destinationOrg, originApiKey, destinationApiKey);
     diffOptions.includeOnly = diffOptions.includeOnly ? diffOptions.includeOnly : ['requiredDataStreams', 'content', 'description', 'name'];
     command.diffExtensions(diffOptions);
+  });
+
+// Download Fields
+program
+  .command('download-fields <originOrg> <originApiKey> <outputFolder>')
+  .description(['Download the fields of an Organization.'])
+  .option(
+    '-l, --logLevel <level>',
+    'Possible values are: insane, verbose, info (default), error, nothing',
+    /^(insane|verbose|info|error|nothing)$/i,
+    'info'
+  )
+  .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
+  .action((originOrg: string, originApiKey: string, outputFolder: string, options: any) => {
+    setLogger(options, 'download-fields');
+
+    const command = new DownloadCommand(originOrg, originApiKey, outputFolder);
+    command.downloadFields();
   });
 
 program

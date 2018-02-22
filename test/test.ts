@@ -25,6 +25,8 @@ import { ErrorTest } from './commons/errorTest';
 import { EnvironmentUtilsTest } from './commons/utils/EnvironmentUtils';
 import { UtilsTest } from './commons/utils/UtilsTest';
 import { ConsoleTest } from './consoleTest';
+import { DownloadResultArrayTest } from './commons/collections/DownloadResultArrayTest';
+import { DownloadUtilsTest } from './commons/utils/DownloadUtilsTest';
 
 console.log(`Environment: ${config.env}\n`);
 
@@ -45,6 +47,7 @@ ExtensionControllerTest();
 // Common / Collection
 DictionaryTest();
 DiffResultArrayTest();
+DownloadResultArrayTest();
 
 // Common
 LoggerTest();
@@ -61,6 +64,7 @@ UrlServiceTest();
 // Utils
 ArrayUtilTest();
 DiffUtilsTest();
+DownloadUtilsTest();
 EnvironmentUtilsTest();
 FileUtilsTest();
 JsonUtilsTest();

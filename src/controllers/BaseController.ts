@@ -10,6 +10,7 @@ import { IDiffOptions } from '../commands/DiffCommand';
 import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
 import { Colors } from '../commons/colors';
 import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
+import { DownloadResultArray, IDownloadResultArray } from '../commons/collections/DownloadResultArray';
 
 export interface IDiffResultArrayClean {
   summary: {
@@ -29,6 +30,8 @@ export abstract class BaseController {
   public abstract diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<BaseCoveoObject>>;
 
   public abstract graduate(diffResultArray: DiffResultArray<BaseCoveoObject>, options: IHTTPGraduateOptions): Promise<any[]>;
+
+  public abstract download(organization: string): Promise<IDownloadResultArray>;
 
   protected successHandler(response: RequestResponse[] | RequestResponse, successMessage: string) {
     const successLog = (rep: RequestResponse) => {

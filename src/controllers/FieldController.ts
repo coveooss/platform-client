@@ -12,6 +12,9 @@ import { BaseController } from './BaseController';
 import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
 import { IDiffOptions } from '../commands/DiffCommand';
 import { Colors } from '../commons/colors';
+import { DownloadResultArray, IDownloadResultArray } from '../commons/collections/DownloadResultArray';
+import { DownloadUtils } from '../commons/utils/DownloadUtils';
+import { isUndefined } from 'util';
 
 export class FieldController extends BaseController {
   /**
@@ -48,6 +51,30 @@ export class FieldController extends BaseController {
           Logger.info('The field pages are identical in both organizations');
         }
         return diffResultArray;
+      })
+      .catch((err: IGenericError) => {
+        this.errorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_FIELDS);
+        return Promise.reject(err);
+      });
+  }
+
+  /**
+   * Download fields of one org.
+   * Provide the name of one of the orgs you specified in creator.
+   *
+   * @param {string} organization
+   * @returns {Promise<IDownloadResultArray>}
+   * @memberof FieldController
+   */
+  public download(organization: string): Promise<IDownloadResultArray> {
+    const org = _.find([this.organization1, this.organization2], (x: Organization) => {
+      return x.getId() === organization;
+    });
+    // _.find can return Undefined; FieldAPI.loadFields expects
+    const foundOrNot = isUndefined(org) ? new Organization('dummy', 'dummy') : org;
+    return FieldAPI.loadFields(foundOrNot)
+      .then(() => {
+        return DownloadUtils.getDownloadResult(foundOrNot.getFields());
       })
       .catch((err: IGenericError) => {
         this.errorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_FIELDS);
@@ -126,6 +153,11 @@ export class FieldController extends BaseController {
       .catch((err: any) => {
         this.errorHandler({ orgId: this.organization2.getId(), message: err } as IGenericError, StaticErrorMessage.UNABLE_TO_DELETE_FIELDS);
       });
+  }
+
+  private loadFieldForOrganization(organization1: Organization): Promise<{}[]> {
+    Logger.loadingTask('Loading fields for both organizations');
+    return Promise.all([FieldAPI.loadFields(organization1)]);
   }
 
   private loadFieldForBothOrganizations(organization1: Organization, organization2: Organization): Promise<{}[]> {

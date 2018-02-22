@@ -626,5 +626,44 @@ export const FieldControllerTest = () => {
         });
       });
     });
+
+    describe('Download Method', () => {
+      it('Should return an empty diff result', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          .get('/rest/organizations/dev/indexes/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER' })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'allmetadatavalues',
+                description: '',
+                type: 'STRING'
+              },
+              {
+                name: 'attachmentdepth',
+                description: 'The attachment depth.',
+                type: 'STRING'
+              },
+              {
+                name: 'attachmentparentid',
+                description: 'The identifier of the attachment"s immediate parent, for parent/child relationship.',
+                type: 'LONG'
+              }
+            ],
+            totalPages: 1,
+            totalEntries: 3
+          });
+
+        fieldController
+          .download(org1.getId())
+          .then(() => {
+            expect(org1.getFields().getCount()).to.be.eql(3);
+            done();
+          })
+          .catch((err: any) => {
+            done(err);
+          });
+      });
+    });
   });
 };
