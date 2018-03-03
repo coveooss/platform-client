@@ -1,22 +1,15 @@
 // tslint:disable:no-magic-numbers
+import { assert, expect } from 'chai';
 import * as nock from 'nock';
-import { expect, assert } from 'chai';
-import { ExtensionAPI } from './../../../src/commons/rest/ExtensionAPI';
+import { IGenericError } from '../../../src/commons/errors';
 import { UrlService } from '../../../src/commons/rest/UrlService';
 import { RequestUtils } from '../../../src/commons/utils/RequestUtils';
 import { Organization } from '../../../src/coveoObjects/Organization';
-import { IGenericError, StaticErrorMessage } from '../../../src/commons/errors';
+import { ExtensionAPI } from './../../../src/commons/rest/ExtensionAPI';
 
 export const ExtensionAPITest = () => {
   describe('Extension API', () => {
     let scope: nock.Scope;
-
-    const simpleExtensionModel = {
-      content: 'import urlparse\n\nprint "Hello Word"',
-      description: 'This is an extension that prints an "Hello Word"',
-      name: 'Hello Word',
-      requiredDataStreams: []
-    };
 
     const yidmuo9dsuop8fuihmfdjshjd = {
       id: 'yidmuo9dsuop8fuihmfdjshjd',
@@ -144,7 +137,6 @@ export const ExtensionAPITest = () => {
       });
 
       it('Should throw an error because of an invalid organization', () => {
-        const organization: Organization = new Organization('qwerty123', 'secret');
         expect(() => ExtensionAPI.getAllExtensions(undefined)).to.throw();
       });
     });

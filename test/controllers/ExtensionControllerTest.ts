@@ -1,16 +1,16 @@
 // tslint:disable:no-magic-numbers
-import * as _ from 'underscore';
+import { assert, expect } from 'chai';
 import * as nock from 'nock';
-import { expect, assert } from 'chai';
-import { ExtensionController } from './../../src/controllers/ExtensionController';
-import { Organization } from '../../src/coveoObjects/Organization';
-import { Utils } from '../../src/commons/utils/Utils';
-import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
-import { Extension } from '../../src/coveoObjects/Extension';
-import { RequestUtils } from '../../src/commons/utils/RequestUtils';
-import { UrlService } from '../../src/commons/rest/UrlService';
-import { IGenericError } from '../../src/commons/errors';
+import * as _ from 'underscore';
 import { IHTTPGraduateOptions } from '../../src/commands/GraduateCommand';
+import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
+import { IGenericError } from '../../src/commons/errors';
+import { UrlService } from '../../src/commons/rest/UrlService';
+import { RequestUtils } from '../../src/commons/utils/RequestUtils';
+import { Utils } from '../../src/commons/utils/Utils';
+import { Extension } from '../../src/coveoObjects/Extension';
+import { Organization } from '../../src/coveoObjects/Organization';
+import { ExtensionController } from './../../src/controllers/ExtensionController';
 
 export const ExtensionControllerTest = () => {
   describe('Extension Controller', () => {
@@ -341,12 +341,6 @@ export const ExtensionControllerTest = () => {
           // Fetching prod extensions one by one
           .get('/rest/organizations/prod/extensions/prodmuo9dsuop8fuihmfdjshjd')
           .reply(RequestUtils.OK, prodmuo9dsuop8fuihmfdjshjd);
-
-        const graduateOptions: IHTTPGraduateOptions = {
-          POST: true,
-          PUT: true,
-          DELETE: true
-        };
 
         controller
           .diff()

@@ -1,5 +1,5 @@
-import { config } from './../../config/index';
 import { Assert } from '../misc/Assert';
+import { config } from './../../config/index';
 
 export class UrlService {
   static getDefaultUrl(path: string = ''): string {

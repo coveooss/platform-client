@@ -1,5 +1,5 @@
-import * as _ from 'underscore';
 import { expect } from 'chai';
+import * as _ from 'underscore';
 import { StaticErrorMessage } from '../../src/commons/errors';
 
 export const ErrorTest = () => {

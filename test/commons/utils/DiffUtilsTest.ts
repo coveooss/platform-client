@@ -1,12 +1,12 @@
 // tslint:disable:no-magic-numbers
-import { IDiffOptions } from './../../../src/commands/DiffCommand';
 import { expect } from 'chai';
-import { DiffUtils } from '../../../src/commons/utils/DiffUtils';
+import * as _ from 'underscore';
 import { Dictionary } from '../../../src/commons/collections/Dictionary';
 import { DiffResultArray } from '../../../src/commons/collections/DiffResultArray';
+import { DiffUtils } from '../../../src/commons/utils/DiffUtils';
 import { Extension } from '../../../src/coveoObjects/Extension';
 import { ClonableTest } from '../../commons/collections/ClonableTest';
-import * as _ from 'underscore';
+import { IDiffOptions } from './../../../src/commands/DiffCommand';
 
 class Car {
   constructor(public brand: string, public color: string) {}
@@ -193,8 +193,6 @@ export const DiffUtilsTest = () => {
         const dict1Clone = dict1.clone();
         const dict2Clone = dictAll.clone();
 
-        const diff: DiffResultArray<ClonableTest> = DiffUtils.getDiffResult(dict1Clone, dict2Clone);
-
         expect(dict1).to.eql(dict1Clone);
         expect(dictAll).to.eql(dict2Clone);
       });
@@ -232,14 +230,9 @@ export const DiffUtilsTest = () => {
       });
 
       it('Adding fields to ignore should not alter initial object', () => {
-        const options: IDiffOptions = {
-          keysToIgnore: ['random']
-        };
-
         const car1DictClone = car1Dict.clone();
         const car2DictClone = car2Dict.clone();
 
-        const diff: DiffResultArray<ClonableTest> = DiffUtils.getDiffResult(car1DictClone, car2DictClone, options);
         expect(car1Dict).to.eql(car1DictClone);
         expect(car2Dict).to.eql(car2DictClone);
       });
@@ -274,14 +267,9 @@ export const DiffUtilsTest = () => {
       });
 
       it('Should not alter object when all fields are removed', () => {
-        const options: IDiffOptions = {
-          keysToIgnore: ['color', 'brand']
-        };
-
         const car1DictClone = car1Dict.clone();
         const car2DictClone = car2Dict.clone();
 
-        const diff: DiffResultArray<ClonableTest> = DiffUtils.getDiffResult(car1DictClone, car2DictClone, options);
         expect(car1Dict).to.eql(car1DictClone);
         expect(car2Dict).to.eql(car2DictClone);
       });

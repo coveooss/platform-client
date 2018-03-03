@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { Field } from '../../src/coveoObjects/Field';
 import { IStringMap } from '../../src/commons/interfaces/IStringMap';
+import { Field } from '../../src/coveoObjects/Field';
 
 export const FieldTest = () => {
   describe('Field Model', () => {

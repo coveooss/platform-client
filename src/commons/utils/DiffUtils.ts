@@ -1,8 +1,8 @@
 import * as _ from 'underscore';
-import { Dictionary, IClonable } from '../collections/Dictionary';
-import { JsonUtils } from './JsonUtils';
-import { DiffResultArray } from '../collections/DiffResultArray';
 import { IDiffOptions } from '../../commands/DiffCommand';
+import { Dictionary, IClonable } from '../collections/Dictionary';
+import { DiffResultArray } from '../collections/DiffResultArray';
+import { JsonUtils } from './JsonUtils';
 
 export class DiffUtils {
   static defaultOptions: IDiffOptions = {

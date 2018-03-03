@@ -1,8 +1,8 @@
-import * as _ from 'underscore';
 import { flatten, unflatten } from 'flat';
+import * as _ from 'underscore';
+import { isObject } from 'util';
 import { Logger } from '../logger';
 import { Assert } from '../misc/Assert';
-import { isObject } from 'util';
 
 export class JsonUtils {
   static stringify(obj: any, space: number = 2): string {

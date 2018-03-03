@@ -1,7 +1,7 @@
 export class DiffResultArray<T> {
-  public TO_CREATE: T[];
-  public TO_UPDATE: T[];
-  public TO_DELETE: T[];
+  TO_CREATE: T[];
+  TO_UPDATE: T[];
+  TO_DELETE: T[];
 
   constructor() {
     this.TO_CREATE = [];
@@ -9,11 +9,11 @@ export class DiffResultArray<T> {
     this.TO_DELETE = [];
   }
 
-  public getCount(): number {
+  getCount(): number {
     return this.TO_CREATE.length + this.TO_UPDATE.length + this.TO_DELETE.length;
   }
 
-  public containsItems(): boolean {
+  containsItems(): boolean {
     return this.TO_CREATE.length + this.TO_UPDATE.length + this.TO_DELETE.length > 0;
   }
 }

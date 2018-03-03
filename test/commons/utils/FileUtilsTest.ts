@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { FileUtils } from './../../../src/commons/utils/FileUtils';
 import * as fs from 'fs-extra';
+import { FileUtils } from './../../../src/commons/utils/FileUtils';
 
 export const FileUtilsTest = () => {
   describe('File Utils', () => {

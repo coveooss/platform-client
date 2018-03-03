@@ -1,6 +1,6 @@
+import { StaticErrorMessage } from '../commons/errors';
 import { ICoveoObject } from '../commons/interfaces/ICoveoObject';
 import { Assert } from '../commons/misc/Assert';
-import { StaticErrorMessage } from '../commons/errors';
 
 /**
  * Every Coveo Object ultimately inherits from this base Model class.
@@ -15,9 +15,9 @@ export abstract class BaseCoveoObject implements ICoveoObject {
    *
    * @returns {string}
    */
-  public getId(): string {
+  getId(): string {
     return this.id;
   }
 
-  public abstract clone(): BaseCoveoObject;
+  abstract clone(): BaseCoveoObject;
 }

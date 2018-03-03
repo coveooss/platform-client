@@ -64,6 +64,7 @@
     "precommit": "lint-staged",
     "start": "node test/mock/server.js",
     "test": "gulp test",
+    "lintfix": "node node_modules/tsjs --tslint tslint.json --all --exclude node_modules/",
     "posttest": "nyc report --reporter=json && codecov -f coverage/*.json",
     "tslint-check": "tslint-config-prettier-check ./tslint.json",
     "build": "gulp",

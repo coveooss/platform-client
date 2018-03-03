@@ -1,10 +1,5 @@
 // tslint:disable:no-magic-numbers
-import { IDiffOptions } from './../../../src/commands/DiffCommand';
 import { expect } from 'chai';
-import { DiffUtils } from '../../../src/commons/utils/DiffUtils';
-import { Dictionary } from '../../../src/commons/collections/Dictionary';
-import { DiffResultArray } from '../../../src/commons/collections/DiffResultArray';
-import { IStringMap } from '../../../src/commons/interfaces/IStringMap';
 import { JsonUtils } from '../../../src/commons/utils/JsonUtils';
 
 export const JsonUtilsTest = () => {
@@ -90,7 +85,7 @@ export const JsonUtilsTest = () => {
         expect(JsonUtils.clone(undefined)).to.be.null;
         expect(JsonUtils.clone(null)).to.be.null;
         expect(JsonUtils.clone(String)).to.be.null;
-        expect(JsonUtils.clone(() => {})).to.be.null;
+        expect(JsonUtils.clone(() => void 0)).to.be.null;
       });
     });
 
@@ -150,27 +145,22 @@ export const JsonUtilsTest = () => {
       });
 
       it('Should return an empty object if all the fields to include do not exsit', () => {
-        const obj = { one: 1, two: 2, three: 3 };
         expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, [], ['four', 'five'])).to.eql({});
       });
 
       it('Should only include the field that we specified', () => {
-        const obj = { one: 1, two: 2, three: 3 };
         expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, [], ['two'])).to.eql({ two: 2 });
       });
 
       it('Should include all the fields if all specified', () => {
-        const obj = { one: 1, two: 2, three: 3 };
         expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, [], ['one', 'two', 'three'])).to.eql({ one: 1, two: 2, three: 3 });
       });
 
       it('Should return the initial object', () => {
-        const obj = { one: 1, two: 2, three: 3 };
         expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, [], [])).to.eql({ one: 1, two: 2, three: 3 });
       });
 
       it('Should override blacklist strategy', () => {
-        const obj = { one: 1, two: 2, three: 3 };
         expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, ['one'], ['one', 'two'])).to.eql({ one: 1, two: 2 });
       });
     });
@@ -183,12 +173,10 @@ export const JsonUtilsTest = () => {
       });
 
       it('Should NOT remove specified fields from JSON object if not found', () => {
-        const obj = { one: 1, two: 2, three: 3 };
         expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, ['four'])).to.eql({ one: 1, two: 2, three: 3 });
       });
 
       it('Should remove specified fields from JSON object', () => {
-        const obj = { one: 1, two: 2, three: 3 };
         expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, ['two'])).to.eql({ one: 1, three: 3 });
       });
 

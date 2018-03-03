@@ -1,7 +1,6 @@
 // tslint:disable:no-magic-numbers
 import { expect } from 'chai';
 import { Dictionary } from '../../../src/commons/collections/Dictionary';
-import { JsonUtils } from '../../../src/commons/utils/JsonUtils';
 import { ClonableTest } from './ClonableTest';
 
 export const DictionaryTest = () => {
@@ -111,7 +110,6 @@ export const DictionaryTest = () => {
 
     it('Should return undefined if an item do not exist in the dictionary', () => {
       const dict: Dictionary<ClonableTest> = new Dictionary();
-      const clone: ClonableTest = new ClonableTest('banana', banana);
       expect(dict.getItem('notInTheDict')).to.be.undefined;
     });
 

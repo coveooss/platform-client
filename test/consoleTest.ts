@@ -1,7 +1,4 @@
-import * as _ from 'underscore';
-import { expect } from 'chai';
 import { exec } from 'child_process';
-import { Logger } from '../src/commons/logger';
 
 export const ConsoleTest = () => {
   describe('Console Messages', () => {

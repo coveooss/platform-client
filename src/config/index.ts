@@ -15,7 +15,7 @@ class Config {
     this.env = EnvironmentUtils.getNodeEnvironment() || 'production';
   }
 
-  public getConfiguration(): IConfig {
+  getConfiguration(): IConfig {
     try {
       if (EnvironmentUtils.isTestRunning()) {
         return require(`../../environments/test.js`);

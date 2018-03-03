@@ -1,16 +1,14 @@
-import * as _ from 'underscore';
-import * as chalk from 'chalk';
 import { RequestResponse } from 'request';
+import * as _ from 'underscore';
+import { IDiffOptions } from '../commands/DiffCommand';
+import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
+import { DiffResultArray } from '../commons/collections/DiffResultArray';
+import { IDownloadResultArray } from '../commons/collections/DownloadResultArray';
+import { Colors } from '../commons/colors';
+import { IGenericError } from '../commons/errors';
 import { Logger } from '../commons/logger';
 import { JsonUtils } from '../commons/utils/JsonUtils';
-import { IGenericError } from '../commons/errors';
-import { IStringMap } from '../commons/interfaces/IStringMap';
-import { DiffResultArray } from '../commons/collections/DiffResultArray';
-import { IDiffOptions } from '../commands/DiffCommand';
 import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
-import { Colors } from '../commons/colors';
-import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
-import { DownloadResultArray, IDownloadResultArray } from '../commons/collections/DownloadResultArray';
 
 export interface IDiffResultArrayClean {
   summary: {
@@ -27,11 +25,11 @@ export interface IDiffResultArrayClean {
  * Every Controller ultimately inherits from this base controller class.
  */
 export abstract class BaseController {
-  public abstract diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<BaseCoveoObject>>;
+  abstract diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<BaseCoveoObject>>;
 
-  public abstract graduate(diffResultArray: DiffResultArray<BaseCoveoObject>, options: IHTTPGraduateOptions): Promise<any[]>;
+  abstract graduate(diffResultArray: DiffResultArray<BaseCoveoObject>, options: IHTTPGraduateOptions): Promise<any[]>;
 
-  public abstract download(organization: string): Promise<IDownloadResultArray>;
+  abstract download(organization: string): Promise<IDownloadResultArray>;
 
   protected successHandler(response: RequestResponse[] | RequestResponse, successMessage: string) {
     const successLog = (rep: RequestResponse) => {
@@ -67,8 +65,8 @@ export abstract class BaseController {
     graduateUpdated: (diffResult: DiffResultArray<T>) => Promise<R>,
     graduateDeleted: (diffResult: DiffResultArray<T>) => Promise<R>,
     options: IHTTPGraduateOptions
-  ): ((diffResult: DiffResultArray<T>) => Promise<R>)[] {
-    const authorizedOperations: ((diffResult: DiffResultArray<T>) => Promise<R>)[] = [];
+  ): Array<(diffResult: DiffResultArray<T>) => Promise<R>> {
+    const authorizedOperations: Array<(diffResult: DiffResultArray<T>) => Promise<R>> = [];
     if (options.POST && diffResultArray.TO_CREATE.length > 0) {
       authorizedOperations.push(graduateNew);
     } else {
@@ -101,7 +99,7 @@ export abstract class BaseController {
    * @param {boolean} [summary=true]
    * @returns {IDiffResultArrayClean} The simplified object
    */
-  public getCleanVersion<T>(
+  getCleanVersion<T>(
     diffResultArray: DiffResultArray<T>,
     extractionMethod: (object: T[]) => any[],
     summary: boolean = true

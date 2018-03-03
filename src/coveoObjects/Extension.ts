@@ -1,8 +1,8 @@
 import { ICoveoObject } from '../commons/interfaces/ICoveoObject';
-import { BaseCoveoObject } from './BaseCoveoObject';
+import { IStringMap } from '../commons/interfaces/IStringMap';
 import { Assert } from '../commons/misc/Assert';
 import { JsonUtils } from '../commons/utils/JsonUtils';
-import { IStringMap } from '../commons/interfaces/IStringMap';
+import { BaseCoveoObject } from './BaseCoveoObject';
 
 export class Extension extends BaseCoveoObject implements ICoveoObject {
   constructor(private configuration: any) {
@@ -13,19 +13,19 @@ export class Extension extends BaseCoveoObject implements ICoveoObject {
     Assert.isNotUndefined(this.configuration['requiredDataStreams'], 'Extension requiredDataStreams should not be undefined.');
   }
 
-  public getContent(): string {
+  getContent(): string {
     return this.configuration['content'];
   }
 
-  public getDescription(): string {
+  getDescription(): string {
     return this.configuration['description'];
   }
 
-  public getName(): string {
+  getName(): string {
     return this.configuration['name'];
   }
 
-  public getRequiredDataStreams(): string[] {
+  getRequiredDataStreams(): string[] {
     return this.configuration['requiredDataStreams'];
   }
 
@@ -34,7 +34,7 @@ export class Extension extends BaseCoveoObject implements ICoveoObject {
    *
    * @returns {IStringMap<any>}
    */
-  public getExtensionModel(): IStringMap<any> {
+  getExtensionModel(): IStringMap<any> {
     return {
       content: this.getContent(),
       description: this.getDescription(),
@@ -43,7 +43,7 @@ export class Extension extends BaseCoveoObject implements ICoveoObject {
     };
   }
 
-  public clone(): Extension {
+  clone(): Extension {
     return new Extension(JsonUtils.clone(this.configuration));
   }
 }

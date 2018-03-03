@@ -1,13 +1,11 @@
-import * as _ from 'underscore';
-import { IOrganization } from '../commons/interfaces/IOrganization';
-import { BaseCoveoObject } from './BaseCoveoObject';
-import { Extension } from './Extension';
-import { Source } from './Source';
-import { Field } from './Field';
 import { Dictionary } from '../commons/collections/Dictionary';
+import { IOrganization } from '../commons/interfaces/IOrganization';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { Assert } from '../commons/misc/Assert';
-import { StaticErrorMessage } from '../commons/errors';
+import { BaseCoveoObject } from './BaseCoveoObject';
+import { Extension } from './Extension';
+import { Field } from './Field';
+import { Source } from './Source';
 
 /**
  * Organization Class. By default, the organization instance do not contain any field, sources nor extension.
@@ -29,7 +27,7 @@ export class Organization extends BaseCoveoObject implements IOrganization {
    *
    * @returns {string} API Key
    */
-  public getApiKey(): string {
+  getApiKey(): string {
     return this.apiKey;
   }
 
@@ -38,7 +36,7 @@ export class Organization extends BaseCoveoObject implements IOrganization {
    *
    * @returns {Dictionary<Field>}
    */
-  public getFields(): Dictionary<Field> {
+  getFields(): Dictionary<Field> {
     return this.fields.clone();
   }
 
@@ -47,7 +45,7 @@ export class Organization extends BaseCoveoObject implements IOrganization {
    *
    * @param {Field} field Field to be added
    */
-  public addField(field: Field) {
+  addField(field: Field) {
     this.fields.add(field.getName(), field);
   }
 
@@ -56,22 +54,22 @@ export class Organization extends BaseCoveoObject implements IOrganization {
    *
    * @param {IStringMap<any>[]} fields field list
    */
-  public addFieldList(fields: IStringMap<any>[]) {
+  addFieldList(fields: Array<IStringMap<any>>) {
     fields.forEach((f: IStringMap<any>) => {
       const field = new Field(f);
       this.addField(field);
     });
   }
 
-  public clearFields() {
+  clearFields() {
     this.fields.clear();
   }
 
-  public getSources(): Dictionary<Source> {
+  getSources(): Dictionary<Source> {
     return this.sources.clone();
   }
 
-  public getExtensions(): Dictionary<Extension> {
+  getExtensions(): Dictionary<Extension> {
     return this.extensions.clone();
   }
 
@@ -80,7 +78,7 @@ export class Organization extends BaseCoveoObject implements IOrganization {
    *
    * @param {Extension} extension Extension to be added
    */
-  public addExtension(extension: Extension) {
+  addExtension(extension: Extension) {
     // Using the extension name as the key since the extension ID is not the same from on org to another
     Assert.isUndefined(
       this.extensions.getItem(extension.getName()),
@@ -94,18 +92,18 @@ export class Organization extends BaseCoveoObject implements IOrganization {
    *
    * @param {IStringMap<any>[]} extensions
    */
-  public addMultipleExtensions(extensions: IStringMap<any>[]) {
+  addMultipleExtensions(extensions: Array<IStringMap<any>>) {
     extensions.forEach((e: IStringMap<any>) => {
       const extension = new Extension(e);
       this.addExtension(extension);
     });
   }
 
-  public clearExtensions() {
+  clearExtensions() {
     this.extensions.clear();
   }
 
-  public clone() {
+  clone() {
     const newOrg = new Organization(this.getId(), this.getApiKey());
     // TODO: add extensions, mappings and fields
     return newOrg;

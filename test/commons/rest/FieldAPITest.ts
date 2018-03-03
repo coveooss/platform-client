@@ -1,14 +1,12 @@
 // tslint:disable:no-magic-numbers
+import { assert, expect } from 'chai';
 import * as nock from 'nock';
-import { FieldAPI } from './../../../src/commons/rest/FieldAPI';
-import { expect, assert } from 'chai';
+import { IGenericError, StaticErrorMessage } from '../../../src/commons/errors';
 import { UrlService } from '../../../src/commons/rest/UrlService';
+import { JsonUtils } from '../../../src/commons/utils/JsonUtils';
 import { RequestUtils } from '../../../src/commons/utils/RequestUtils';
 import { Organization } from '../../../src/coveoObjects/Organization';
-import { parse } from 'url';
-import { IStringMap } from '../../../src/commons/interfaces/IStringMap';
-import { JsonUtils } from '../../../src/commons/utils/JsonUtils';
-import { StaticErrorMessage, IGenericError } from '../../../src/commons/errors';
+import { FieldAPI } from './../../../src/commons/rest/FieldAPI';
 
 export const FieldAPITest = () => {
   describe('Field API', () => {
@@ -647,11 +645,6 @@ export const FieldAPITest = () => {
         .catch((err: any) => {
           done(err);
         });
-    });
-
-    it('Should prepare the request to load all fields', (done: MochaDone) => {
-      const organization: Organization = new Organization('theorg', 'xxx-xxx');
-      done();
     });
   });
 };

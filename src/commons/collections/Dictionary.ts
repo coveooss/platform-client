@@ -22,15 +22,15 @@ export class Dictionary<T extends IClonable<T>> implements IDictionary<T> {
     }
   }
 
-  public containsKey(key: string): boolean {
+  containsKey(key: string): boolean {
     return this.items.hasOwnProperty(key);
   }
 
-  public getCount(): number {
+  getCount(): number {
     return this.count;
   }
 
-  public add(key: string, value: T): void {
+  add(key: string, value: T): void {
     if (!this.items.hasOwnProperty(key)) {
       this.count++;
     }
@@ -38,7 +38,7 @@ export class Dictionary<T extends IClonable<T>> implements IDictionary<T> {
     this.items[key] = value;
   }
 
-  public remove(key: string): T {
+  remove(key: string): T {
     if (this.containsKey(key)) {
       this.count--;
       delete this.items[key];
@@ -46,11 +46,11 @@ export class Dictionary<T extends IClonable<T>> implements IDictionary<T> {
     return this.items[key];
   }
 
-  public getItem(key: string): T {
+  getItem(key: string): T {
     return this.items[key];
   }
 
-  public keys(): string[] {
+  keys(): string[] {
     const keySet: string[] = [];
 
     for (const prop in this.items) {
@@ -62,7 +62,7 @@ export class Dictionary<T extends IClonable<T>> implements IDictionary<T> {
     return keySet;
   }
 
-  public values(): T[] {
+  values(): T[] {
     const values: T[] = [];
 
     for (const prop in this.items) {
@@ -74,7 +74,7 @@ export class Dictionary<T extends IClonable<T>> implements IDictionary<T> {
     return values;
   }
 
-  public clone(): Dictionary<T> {
+  clone(): Dictionary<T> {
     const original = this;
     const clone: Dictionary<T> = new Dictionary<T>();
 
@@ -90,7 +90,7 @@ export class Dictionary<T extends IClonable<T>> implements IDictionary<T> {
     return clone;
   }
 
-  public clear(): void {
+  clear(): void {
     this.items = {};
     this.count = 0;
   }

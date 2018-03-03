@@ -1,9 +1,9 @@
 // tslint:disable:no-magic-numbers
-import { expect, assert } from 'chai';
-import { Organization } from '../../src/coveoObjects/Organization';
-import { Field } from '../../src/coveoObjects/Field';
-import { Extension } from '../../src/coveoObjects/Extension';
+import { assert, expect } from 'chai';
 import { StaticErrorMessage } from '../../src/commons/errors';
+import { Extension } from '../../src/coveoObjects/Extension';
+import { Field } from '../../src/coveoObjects/Field';
+import { Organization } from '../../src/coveoObjects/Organization';
 
 export const OrganizationTest = () => {
   describe('Organization Model', () => {

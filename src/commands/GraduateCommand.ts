@@ -1,16 +1,15 @@
-import * as _ from 'underscore';
 import * as inquirer from 'inquirer';
-import { Organization } from '../coveoObjects/Organization';
-import { FieldController } from '../controllers/FieldController';
-import { InteractiveQuestion } from '../console/InteractiveQuestion';
-import { Logger } from '../commons/logger';
-import { StaticErrorMessage, IGenericError } from '../commons/errors';
+import * as _ from 'underscore';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
-import { Field } from '../coveoObjects/Field';
-import { IDiffOptions, DiffCommand } from './DiffCommand';
+import { IGenericError, StaticErrorMessage } from '../commons/errors';
+import { Logger } from '../commons/logger';
+import { InteractiveQuestion } from '../console/InteractiveQuestion';
 import { BaseController } from '../controllers/BaseController';
-import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
 import { ExtensionController } from '../controllers/ExtensionController';
+import { FieldController } from '../controllers/FieldController';
+import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
+import { Organization } from '../coveoObjects/Organization';
+import { DiffCommand, IDiffOptions } from './DiffCommand';
 
 export interface IHTTPGraduateOptions {
   POST: boolean;
@@ -44,12 +43,12 @@ export class GraduateCommand {
 
   static COMMAND_NAME: string = 'graduate';
 
-  public graduateFields(options?: IGraduateOptions) {
+  graduateFields(options?: IGraduateOptions) {
     const fieldController: FieldController = new FieldController(this.organization1, this.organization2);
     this.graduate(fieldController, 'Field', options);
   }
 
-  public graduateExtensions(options?: IGraduateOptions) {
+  graduateExtensions(options?: IGraduateOptions) {
     const extensionController: ExtensionController = new ExtensionController(this.organization1, this.organization2);
     this.graduate(extensionController, 'Extension', options);
   }
@@ -98,6 +97,4 @@ export class GraduateCommand {
       }
     });
   }
-
-  public graduateSources() {}
 }

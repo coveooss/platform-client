@@ -1,10 +1,9 @@
-import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import { Answers } from 'inquirer';
-import { InteractiveQuestion } from './InteractiveQuestion';
+import { Colors } from '../commons/colors';
 import { Logger } from '../commons/logger';
 import { Utils } from '../commons/utils/Utils';
-import { Colors } from '../commons/colors';
+import { InteractiveQuestion } from './InteractiveQuestion';
 
 export interface ISourceContentSettingOptions {
   configuration: boolean;
@@ -20,7 +19,7 @@ export class InteractionController {
     this.questions = new InteractiveQuestion();
   }
 
-  public start() {
+  start() {
     this.questions
       .start()
       .then((answers: Answers) => {
@@ -40,7 +39,7 @@ export class InteractionController {
       });
   }
 
-  public generateCommand(answers: Answers) {
+  generateCommand(answers: Answers) {
     let command: string[] = [];
 
     // Required parameters
