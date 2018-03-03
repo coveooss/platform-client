@@ -50,7 +50,6 @@
     "no-unnecessary-initializer": true,
     "no-unsafe-finally": true,
     "no-unused-expression": false,
-    "no-unused-variable": true,
     "no-var-keyword": true,
     "no-var-requires": false,
     "one-line": [true, "check-catch", "check-else", "check-finally", "check-open-brace", "check-whitespace"],

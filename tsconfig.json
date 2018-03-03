@@ -10,7 +10,7 @@
     "outDir": "./bin",
     "sourceMap": true,
     "forceConsistentCasingInFileNames": true,
-    // "noUnusedLocals": true,
+    "noUnusedLocals": true,
     "typeRoots": ["lib", "./node_modules/@types"]
   },
   "include": ["./src/**/*.ts"],
