@@ -1,4 +1,4 @@
-# Coveo-Platform-Client [![Build Status](https://api.travis-ci.org/y-lakhdar/coveo-client.svg?branch=master)](https://travis-ci.org/y-lakhdar/coveo-client) [![codecov](https://codecov.io/gh/y-lakhdar/coveo-client/branch/master/graph/badge.svg)](https://codecov.io/gh/y-lakhdar/coveo-client) [![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/ellerbrock/typescript-badges/) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+# Coveo-Platform-Client [![Build Status](https://api.travis-ci.org/coveo/platform-client.svg?branch=master)](https://travis-ci.org/coveo/platform-client) [![codecov](https://codecov.io/gh/coveo/platform-client/branch/master/graph/badge.svg)](https://codecov.io/gh/coveo/platform-client) [![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/ellerbrock/typescript-badges/) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 A simple client to manage organizations in the Coveo Cloud Platform.
 
@@ -21,23 +21,23 @@ In order to run the tool, you will need 2 things:
 
 > Make sure you were able to run gulp entirely without any errors first. Then, run `node client.js --help` from the `bin` folder. The help screen will be displayed and will list the available commands.
 
-![](https://raw.githubusercontent.com/y-lakhdar/coveo-client/master/documentation/images/help.png)
+![](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/help.png)
 
 To get help regarding a specific command, run `node client.js <command_name> --help`, for example `node client.js graduate-fields --help`. You will get detailed help regarding the different parameters.
 
-![](https://raw.githubusercontent.com/y-lakhdar/coveo-client/master/documentation/images/graduate-help.png)
+![](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/graduate-help.png)
 
 ### Interactive Command
 
 You can always run the interactive command with `node client.js interactive`
 
-![Alt Text](https://raw.githubusercontent.com/y-lakhdar/coveo-client/master/documentation/images/interactive.gif)
+![Alt Text](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/interactive.gif)
 
 <!-- Parameters include, amongst others, a `Force` mode, a restriction on the http methods you can use (allows to prevent overiding existing values when graduating, for example) and a log level chooser. -->
 
 Here is an exmaple of the field graduation between 2 orgs with the command `node client.js graduate-fields <org_1_id> <org_2_id> <org_1_key> <org_2_key> -l verbose`.
 
-![](https://raw.githubusercontent.com/y-lakhdar/coveo-client/master/documentation/images/graduate-fields.png)
+![](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/graduate-fields.png)
 
 <!-- The fields will also get graduated from organization 1 to organization 2. -->
 
@@ -81,7 +81,7 @@ It's also built on nodejs/typescript.
 
 ## Contributing
 - Branch
-- Pull request to default putting at least 2 reviewers and at least 1 reviewer in y-lakhdar or ancientwinds.
+- Pull request to default putting at least 2 reviewers and at least 1 reviewer in coveo or ancientwinds.
 - Simple as that!
 
 The Coveo Team will look at your code and validate that :
@@ -91,4 +91,4 @@ The Coveo Team will look at your code and validate that :
 
 ## Authors
 - Jean-François Cloutier (https://github.com/ancientwinds)
-- Yassine Lakhdar (https://github.com/y-lakhdar)
+- Yassine Lakhdar (https://github.com/coveo)
