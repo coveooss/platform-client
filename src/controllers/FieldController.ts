@@ -1,20 +1,20 @@
-import * as _ from 'underscore';
 import { RequestResponse } from 'request';
-import { Field } from '../coveoObjects/Field';
-import { Logger } from '../commons/logger';
-import { StaticErrorMessage, IGenericError } from '../commons/errors';
-import { DiffUtils } from '../commons/utils/DiffUtils';
-import { IStringMap } from '../commons/interfaces/IStringMap';
-import { Organization } from '../coveoObjects/Organization';
-import { DiffResultArray } from '../commons/collections/DiffResultArray';
-import { FieldAPI } from '../commons/rest/FieldAPI';
-import { BaseController } from './BaseController';
-import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
-import { IDiffOptions } from '../commands/DiffCommand';
-import { Colors } from '../commons/colors';
-import { DownloadResultArray, IDownloadResultArray } from '../commons/collections/DownloadResultArray';
-import { DownloadUtils } from '../commons/utils/DownloadUtils';
+import * as _ from 'underscore';
 import { isUndefined } from 'util';
+import { IDiffOptions } from '../commands/DiffCommand';
+import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
+import { DiffResultArray } from '../commons/collections/DiffResultArray';
+import { IDownloadResultArray } from '../commons/collections/DownloadResultArray';
+import { Colors } from '../commons/colors';
+import { IGenericError, StaticErrorMessage } from '../commons/errors';
+import { IStringMap } from '../commons/interfaces/IStringMap';
+import { Logger } from '../commons/logger';
+import { FieldAPI } from '../commons/rest/FieldAPI';
+import { DiffUtils } from '../commons/utils/DiffUtils';
+import { DownloadUtils } from '../commons/utils/DownloadUtils';
+import { Field } from '../coveoObjects/Field';
+import { Organization } from '../coveoObjects/Organization';
+import { BaseController } from './BaseController';
 
 export class FieldController extends BaseController {
   /**
@@ -37,7 +37,7 @@ export class FieldController extends BaseController {
    * changed the "description" property of the field in the destination org and you don't want the diff to tell you that it has changed.
    * @returns {Promise<DiffResultArray<Field>>}
    */
-  public diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Field>> {
+  diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Field>> {
     return this.loadFieldForBothOrganizations(this.organization1, this.organization2)
 
       .then(() => {
@@ -66,7 +66,7 @@ export class FieldController extends BaseController {
    * @returns {Promise<IDownloadResultArray>}
    * @memberof FieldController
    */
-  public download(organization: string): Promise<IDownloadResultArray> {
+  download(organization: string): Promise<IDownloadResultArray> {
     const org = _.find([this.organization1, this.organization2], (x: Organization) => {
       return x.getId() === organization;
     });
@@ -89,7 +89,7 @@ export class FieldController extends BaseController {
    * @param {IHTTPGraduateOptions} options
    * @returns {Promise<any[]>}
    */
-  public graduate(diffResultArray: DiffResultArray<Field>, options: IHTTPGraduateOptions): Promise<any[]> {
+  graduate(diffResultArray: DiffResultArray<Field>, options: IHTTPGraduateOptions): Promise<any[]> {
     if (diffResultArray.containsItems()) {
       Logger.loadingTask('Graduating fields');
       return Promise.all(
@@ -155,17 +155,12 @@ export class FieldController extends BaseController {
       });
   }
 
-  private loadFieldForOrganization(organization1: Organization): Promise<{}[]> {
-    Logger.loadingTask('Loading fields for both organizations');
-    return Promise.all([FieldAPI.loadFields(organization1)]);
-  }
-
-  private loadFieldForBothOrganizations(organization1: Organization, organization2: Organization): Promise<{}[]> {
+  private loadFieldForBothOrganizations(organization1: Organization, organization2: Organization): Promise<Array<{}>> {
     Logger.loadingTask('Loading fields for both organizations');
     return Promise.all([FieldAPI.loadFields(organization1), FieldAPI.loadFields(organization2)]);
   }
 
-  private extractFieldModel(fields: Field[]): IStringMap<any>[] {
+  private extractFieldModel(fields: Field[]): Array<IStringMap<any>> {
     return _.map(fields, (field: Field) => field.getFieldModel());
   }
 }

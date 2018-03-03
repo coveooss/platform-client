@@ -1,18 +1,16 @@
-import * as _ from 'underscore';
-import { IDiffOptions } from './../commands/DiffCommand';
-import { Extension } from '../coveoObjects/Extension';
-import { Logger } from '../commons/logger';
-import { StaticErrorMessage, IGenericError } from '../commons/errors';
-import { DiffUtils } from '../commons/utils/DiffUtils';
-import { BaseController } from './BaseController';
-import { Organization } from '../coveoObjects/Organization';
-import { ExtensionAPI } from '../commons/rest/ExtensionAPI';
-import { DiffResultArray } from '../commons/collections/DiffResultArray';
-import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
-import { IStringMap } from '../commons/interfaces/IStringMap';
 import { RequestResponse } from 'request';
-import { DownloadResultArray, IDownloadResultArray } from '../commons/collections/DownloadResultArray';
-import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
+import * as _ from 'underscore';
+import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
+import { DiffResultArray } from '../commons/collections/DiffResultArray';
+import { IDownloadResultArray } from '../commons/collections/DownloadResultArray';
+import { IGenericError, StaticErrorMessage } from '../commons/errors';
+import { Logger } from '../commons/logger';
+import { ExtensionAPI } from '../commons/rest/ExtensionAPI';
+import { DiffUtils } from '../commons/utils/DiffUtils';
+import { Extension } from '../coveoObjects/Extension';
+import { Organization } from '../coveoObjects/Organization';
+import { IDiffOptions } from './../commands/DiffCommand';
+import { BaseController } from './BaseController';
 
 export class ExtensionController extends BaseController {
   constructor(private organization1: Organization, private organization2: Organization) {
@@ -21,7 +19,7 @@ export class ExtensionController extends BaseController {
 
   static CONTROLLER_NAME: string = 'extensions';
 
-  public diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Extension>> {
+  diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Extension>> {
     return this.loadExtensionsForBothOrganizations(this.organization1, this.organization2)
       .then(() => {
         const diffResultArray = DiffUtils.getDiffResult(
@@ -49,7 +47,7 @@ export class ExtensionController extends BaseController {
    * @returns {Promise<IDownloadResultArray>}
    * @memberof ExtensionController
    */
-  public download(organization: string): Promise<IDownloadResultArray> {
+  download(organization: string): Promise<IDownloadResultArray> {
     throw new Error('Not Implemented');
   }
 
@@ -60,7 +58,7 @@ export class ExtensionController extends BaseController {
    * @param {IHTTPGraduateOptions} options
    * @returns {Promise<any[]>}
    */
-  public graduate(diffResultArray: DiffResultArray<Extension>, options: IHTTPGraduateOptions): Promise<any[]> {
+  graduate(diffResultArray: DiffResultArray<Extension>, options: IHTTPGraduateOptions): Promise<any[]> {
     if (diffResultArray.TO_CREATE.length > 0) {
       Logger.loadingTask('Graduating Extensions');
       return Promise.all(
@@ -141,7 +139,7 @@ export class ExtensionController extends BaseController {
     );
   }
 
-  private loadExtensionsForBothOrganizations(organization1: Organization, organization2: Organization): Promise<{}[]> {
+  private loadExtensionsForBothOrganizations(organization1: Organization, organization2: Organization): Promise<Array<{}>> {
     Logger.verbose('Loading extensions for both organizations.');
     return Promise.all([ExtensionAPI.loadExtensions(organization1), ExtensionAPI.loadExtensions(organization2)]);
   }

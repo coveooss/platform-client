@@ -1,4 +1,5 @@
 require('colors');
+const TSLintPlugin = require('tslint-webpack-plugin');
 const webpack = require('webpack');
 const minimize = process.argv.indexOf('--minimize') !== -1;
 const devMode = process.argv.indexOf('--dev-mode') !== -1;
@@ -24,6 +25,11 @@ plugins.push(
 
 if (devMode) {
   plugins.push(new WebpackNotifierPlugin());
+  plugins.push(
+    new TSLintPlugin({
+      files: ['./src/**/*.ts']
+    })
+  );
 }
 
 if (minimize) {

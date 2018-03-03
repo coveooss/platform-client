@@ -1,8 +1,8 @@
-import * as _ from 'underscore';
 import * as Ora from 'ora';
-import { Utils } from './utils/Utils';
+import * as _ from 'underscore';
 import { Assert } from './misc/Assert';
 import { FileUtils } from './utils/FileUtils';
+import { Utils } from './utils/Utils';
 
 /**
  * The LoggerSingleton which is a Singleton class.
@@ -34,70 +34,68 @@ export class LoggerSingleton {
     return this.spinnerEnabled;
   }
 
-  public newAction(actionName: string): Promise<void> {
+  newAction(actionName: string): Promise<void> {
     const actionTime = new Date();
     const data = `\n\n#######################################\n${actionName}\n${actionTime}\n#######################################\n`;
-    return FileUtils.appendToFile(this.filename, data)
-      .then(() => {})
-      .catch((err: any) => {
-        console.error('Unable to save log', err);
-      });
+    return FileUtils.appendToFile(this.filename, data).catch((err: any) => {
+      console.error('Unable to save log', err);
+    });
   }
 
-  public startSpinner(initialMessage?: string) {
+  startSpinner(initialMessage?: string) {
     if (this.isSpinnerEnabled()) {
       this.spinner.start(initialMessage || '');
     }
   }
 
-  public stopSpinner() {
+  stopSpinner() {
     if (this.isSpinnerEnabled()) {
       this.spinner.stop();
     }
   }
 
-  public loadingTask(message: string) {
+  loadingTask(message: string) {
     if (this.isSpinnerEnabled()) {
       this.spinner.text = message;
     }
   }
 
-  public info(message: string, ...meta: any[]) {
+  info(message: string, ...meta: any[]) {
     if (this.level <= LoggerSingleton.INFO) {
       this.log('INFO', 'succeed', message, meta);
     }
     this.addToLogFile('INFO', message, meta);
   }
 
-  public warn(message: string, ...meta: any[]) {
+  warn(message: string, ...meta: any[]) {
     if (this.level <= LoggerSingleton.INFO) {
       this.log('WARN', 'warn', message, meta);
     }
     this.addToLogFile('WARN', message, meta);
   }
 
-  public error(message: string, ...meta: any[]) {
+  error(message: string, ...meta: any[]) {
     if (this.level <= LoggerSingleton.ERROR) {
       this.log('ERROR', 'fail', message, meta);
     }
     this.addToLogFile('ERROR', message, meta);
   }
 
-  public verbose(message: string, ...meta: any[]) {
+  verbose(message: string, ...meta: any[]) {
     if (this.level <= LoggerSingleton.VERBOSE) {
       this.log('VERBOSE', 'info', message, meta);
     }
     this.addToLogFile('VERBOSE', message, meta);
   }
 
-  public insane(message: string, ...meta: any[]) {
+  insane(message: string, ...meta: any[]) {
     if (this.level <= LoggerSingleton.INSANE) {
       this.log('INSANE', 'succeed', message, meta);
     }
     this.addToLogFile('INSANE', message, meta);
   }
 
-  public addToLogFile(level: string, message: string, ...meta: any[]) {
+  addToLogFile(level: string, message: string, ...meta: any[]) {
     const today = new Date().toLocaleString();
     FileUtils.appendToFile(this.filename, [today, level, message, '\n'].join(' | '));
     _.each(meta, (m: any) => {
@@ -107,7 +105,7 @@ export class LoggerSingleton {
     });
   }
 
-  public log(level: string, logAction: 'succeed' | 'warn' | 'fail' | 'info', message: string, ...meta: any[]) {
+  log(level: string, logAction: 'succeed' | 'warn' | 'fail' | 'info', message: string, ...meta: any[]) {
     let fullMessage: string = '';
     _.each(meta, (m: any) => {
       if (!Utils.isEmptyString(m.toString())) {
@@ -121,7 +119,7 @@ export class LoggerSingleton {
     }
   }
 
-  public setLogLevel(level: string) {
+  setLogLevel(level: string) {
     switch (level.toLowerCase()) {
       case 'info':
         this.level = LoggerSingleton.INFO;
@@ -144,32 +142,32 @@ export class LoggerSingleton {
     }
   }
 
-  public setFilename(filename: string) {
+  setFilename(filename: string) {
     Assert.isNotUndefined(filename);
     this.filename = filename.toString();
   }
 
-  public getFilename(): string {
+  getFilename(): string {
     return this.filename;
   }
 
-  public enable() {
+  enable() {
     this.level = LoggerSingleton.INFO;
   }
 
-  public disable() {
+  disable() {
     this.level = LoggerSingleton.NOTHING;
   }
 
-  public disableSpinner() {
+  disableSpinner() {
     this.spinnerEnabled = false;
   }
 
-  public enableSpinner() {
+  enableSpinner() {
     this.spinnerEnabled = true;
   }
 
-  public getLogLevel(): number {
+  getLogLevel(): number {
     return this.level;
   }
 }

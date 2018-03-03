@@ -1,12 +1,11 @@
 import { EnvironmentUtils } from './commons/utils/EnvironmentUtils';
 setEnvironmentIfNecessary();
 
-import * as inquirer from 'inquirer';
-import { GraduateCommand, IGraduateOptions } from './commands/GraduateCommand';
-import { InteractionController } from './console/InteractionController';
 import { DiffCommand, IDiffOptions } from './commands/DiffCommand';
 import { DownloadCommand } from './commands/DownloadCommand';
+import { GraduateCommand, IGraduateOptions } from './commands/GraduateCommand';
 import { Logger } from './commons/logger';
+import { InteractionController } from './console/InteractionController';
 
 const program = require('commander');
 const pkg: any = require('./../package.json');

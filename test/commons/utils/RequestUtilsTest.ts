@@ -1,7 +1,6 @@
-import * as nock from 'nock';
-import * as request from 'request';
-import { UrlService } from '../../../src/commons/rest/UrlService';
 import { assert, expect } from 'chai';
+import * as nock from 'nock';
+import { UrlService } from '../../../src/commons/rest/UrlService';
 import { RequestUtils } from './../../../src/commons/utils/RequestUtils';
 
 export const RequestUtilsTest = () => {

@@ -1,17 +1,16 @@
 // tslint:disable:no-magic-numbers
-import * as _ from 'underscore';
+import { assert, expect } from 'chai';
 import * as nock from 'nock';
-import { expect, assert } from 'chai';
-import { Organization } from './../../src/coveoObjects/Organization';
-import { FieldController } from './../../src/controllers/FieldController';
+import * as _ from 'underscore';
+import { IHTTPGraduateOptions } from '../../src/commands/GraduateCommand';
 import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
-import { Field } from '../../src/coveoObjects/Field';
+import { IGenericError } from '../../src/commons/errors';
 import { UrlService } from '../../src/commons/rest/UrlService';
 import { RequestUtils } from '../../src/commons/utils/RequestUtils';
 import { Utils } from '../../src/commons/utils/Utils';
-import { StaticErrorMessage, IGenericError } from '../../src/commons/errors';
-import { IGraduateOptions, IHTTPGraduateOptions } from '../../src/commands/GraduateCommand';
-import { BaseController } from '../../src/controllers/BaseController';
+import { Field } from '../../src/coveoObjects/Field';
+import { FieldController } from './../../src/controllers/FieldController';
+import { Organization } from './../../src/coveoObjects/Organization';
 
 export const FieldControllerTest = () => {
   describe('Field Controller', () => {

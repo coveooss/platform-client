@@ -1,6 +1,5 @@
 // tslint:disable:no-magic-numbers
 import { expect } from 'chai';
-import { DiffUtils } from '../../../src/commons/utils/DiffUtils';
 import { DownloadResultArray } from '../../../src/commons/collections/DownloadResultArray';
 
 export const DownloadResultArrayTest = () => {

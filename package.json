@@ -1,5 +1,5 @@
 {
-  "name": "coveo-platform-client",
+  "name": "platform-client",
   "version": "1.1.1",
   "description": "A simple client to manage organizations in the Coveo Cloud Platform",
   "main": "client.ts",
@@ -54,6 +54,7 @@
     "ts-loader": "^2.3.7",
     "ts-node": "^4.1.0",
     "tslint": "^5.7.0",
+    "tslint-webpack-plugin": "^1.2.0",
     "webpack": "1.15.0",
     "webpack-dev-server": "^1.14.1",
     "webpack-fail-plugin": "^1.0.6",
@@ -64,6 +65,7 @@
     "precommit": "lint-staged",
     "start": "node test/mock/server.js",
     "test": "gulp test",
+    "lintfix": "node node_modules/tsjs --tslint tslint.json --all --exclude node_modules/",
     "posttest": "nyc report --reporter=json && codecov -f coverage/*.json",
     "tslint-check": "tslint-config-prettier-check ./tslint.json",
     "build": "gulp",

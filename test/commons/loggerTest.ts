@@ -1,8 +1,8 @@
 // tslint:disable:no-magic-numbers
-import { Logger, LoggerSingleton } from '../../src/commons/logger';
 import { expect } from 'chai';
 import * as fs from 'fs-extra';
 import * as _ from 'underscore';
+import { Logger, LoggerSingleton } from '../../src/commons/logger';
 
 export const LoggerTest = () => {
   describe('Logger', () => {

@@ -1,44 +1,46 @@
-import * as chalk from 'chalk';
-import * as _ from 'underscore';
 import { RequestResponse } from 'request';
+import * as _ from 'underscore';
 import { Organization } from '../../coveoObjects/Organization';
+import { Colors } from '../colors';
+import { IGenericError, StaticErrorMessage } from '../errors';
+import { IStringMap } from '../interfaces/IStringMap';
 import { Logger } from '../logger';
+import { Assert } from '../misc/Assert';
+import { ArrayUtils } from '../utils/ArrayUtils';
+import { JsonUtils } from '../utils/JsonUtils';
 import { RequestUtils } from '../utils/RequestUtils';
 import { UrlService } from './UrlService';
-import { ArrayUtils } from '../utils/ArrayUtils';
-import { Assert } from '../misc/Assert';
-import { IStringMap } from '../interfaces/IStringMap';
-import { JsonUtils } from '../utils/JsonUtils';
-import { StaticErrorMessage, IGenericError } from '../errors';
-import { Colors } from '../colors';
 
 export class FieldAPI {
-  public static getFieldDefinitions(): Promise<RequestResponse> {
+  static getFieldDefinitions(): Promise<RequestResponse> {
     const url = UrlService.getFieldDocs();
     return RequestUtils.get(url, '');
   }
 
-  public static createFields(org: Organization, fieldModels: IStringMap<any>[], fieldsPerBatch: number): Promise<RequestResponse[]> {
+  static createFields(org: Organization, fieldModels: Array<IStringMap<any>>, fieldsPerBatch: number): Promise<RequestResponse[]> {
     Assert.isLargerThan(0, fieldModels.length);
     const url = UrlService.createFields(org.getId());
     return Promise.all(
-      _.map(ArrayUtils.chunkArray(JsonUtils.clone(fieldModels) as IStringMap<any>[], fieldsPerBatch), (batch: IStringMap<any>[]) => {
-        return RequestUtils.post(url, org.getApiKey(), batch);
-      })
+      _.map(
+        ArrayUtils.chunkArray(JsonUtils.clone(fieldModels) as Array<IStringMap<any>>, fieldsPerBatch),
+        (batch: Array<IStringMap<any>>) => {
+          return RequestUtils.post(url, org.getApiKey(), batch);
+        }
+      )
     );
   }
 
-  public static updateFields(org: Organization, fieldModels: IStringMap<any>[], fieldsPerBatch: number): Promise<RequestResponse[]> {
+  static updateFields(org: Organization, fieldModels: Array<IStringMap<any>>, fieldsPerBatch: number): Promise<RequestResponse[]> {
     Assert.isLargerThan(0, fieldModels.length);
     const url = UrlService.updateFields(org.getId());
     return Promise.all(
-      _.map(ArrayUtils.chunkArray(fieldModels, fieldsPerBatch), (batch: IStringMap<any>[]) => {
+      _.map(ArrayUtils.chunkArray(fieldModels, fieldsPerBatch), (batch: Array<IStringMap<any>>) => {
         return RequestUtils.put(url, org.getApiKey(), batch);
       })
     );
   }
 
-  public static deleteFields(org: Organization, fieldList: string[], fieldsPerBatch: number): Promise<RequestResponse[]> {
+  static deleteFields(org: Organization, fieldList: string[], fieldsPerBatch: number): Promise<RequestResponse[]> {
     Assert.isLargerThan(0, fieldList.length);
     return Promise.all(
       _.map(ArrayUtils.chunkArray(fieldList, fieldsPerBatch), (batch: string[]) => {
@@ -48,13 +50,13 @@ export class FieldAPI {
     );
   }
 
-  public static getFieldsPage(organization: Organization, page: number): Promise<RequestResponse> {
+  static getFieldsPage(organization: Organization, page: number): Promise<RequestResponse> {
     Assert.isLargerOrEqualsThan(0, page, 'Parameter "page" cannot be a negative value.');
     Logger.loadingTask(`Fetching field page ${page} from ${Colors.organization(organization.getId())} `);
     return RequestUtils.get(UrlService.getFieldsPageUrl(organization.getId(), page), organization.getApiKey());
   }
 
-  public static loadFields(org: Organization): Promise<{}> {
+  static loadFields(org: Organization): Promise<{}> {
     // tslint:disable-next-line:typedef
     return new Promise((resolve, reject) => {
       this.getFieldsPage(org, 0)
@@ -80,7 +82,7 @@ export class FieldAPI {
     });
   }
 
-  public static loadOtherPages(org: Organization, totalPages: number): Promise<void> {
+  static loadOtherPages(org: Organization, totalPages: number): Promise<void> {
     Assert.isLargerOrEqualsThan(0, totalPages, 'Parameter "totalPages" cannot be a negative value.');
     Logger.loadingTask(`Loading ${totalPages - 1} more pages of fields from ${Colors.organization(org.getId())} `);
     const emptyArray: number[] = new Array(totalPages - 1);

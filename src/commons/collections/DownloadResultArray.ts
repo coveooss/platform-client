@@ -20,25 +20,25 @@ export class DownloadResultArray implements IDownloadResultArray {
     this.ITEMS = [];
   }
 
-  public add(item: BaseCoveoObject) {
+  add(item: BaseCoveoObject) {
     this.ITEMS.push(item);
   }
 
-  public getCount(): number {
+  getCount(): number {
     return this.ITEMS.length;
   }
 
-  public containsItems(): boolean {
+  containsItems(): boolean {
     return this.ITEMS.length > 0;
   }
 
-  public sort(): void {
+  sort(): void {
     this.ITEMS.sort((a: BaseCoveoObject, b: BaseCoveoObject) => {
       return a.getId().localeCompare(b.getId());
     });
   }
 
-  public getItems(): BaseCoveoObject[] {
+  getItems(): BaseCoveoObject[] {
     return this.ITEMS;
   }
 }

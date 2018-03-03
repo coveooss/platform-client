@@ -1,17 +1,16 @@
 import * as fs from 'fs-extra';
-import _ = require('underscore');
 import path = require('path');
-import { BaseController } from '../controllers/BaseController';
-import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
-import { DownloadResultArray, IDownloadResultArray } from '../commons/collections/DownloadResultArray';
-import { FieldController } from '../controllers/FieldController';
-import { Logger } from '../commons/logger';
-import { Organization } from '../coveoObjects/Organization';
+import { IDownloadResultArray } from '../commons/collections/DownloadResultArray';
 import { Colors } from '../commons/colors';
 import { IGenericError, StaticErrorMessage } from '../commons/errors';
-import { JsonUtils } from '../commons/utils/JsonUtils';
-import { Field } from '../coveoObjects/Field';
 import { IStringMap } from '../commons/interfaces/IStringMap';
+import { Logger } from '../commons/logger';
+import { JsonUtils } from '../commons/utils/JsonUtils';
+import { BaseController } from '../controllers/BaseController';
+import { FieldController } from '../controllers/FieldController';
+import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
+import { Field } from '../coveoObjects/Field';
+import { Organization } from '../coveoObjects/Organization';
 
 export class DownloadCommand {
   private oganization: Organization;
@@ -31,7 +30,7 @@ export class DownloadCommand {
    * Downloads the fields of organization. Produces a ${objectName}.json file
    * @memberof DownloadCommand
    */
-  public downloadFields() {
+  downloadFields() {
     // hack: FieldController needs 2 orgs becaase initially it was  meant for comparison. Feed it.
     const dummyOrg = new Organization('dummy', 'dummy');
     const fieldController: FieldController = new FieldController(this.oganization, dummyOrg);

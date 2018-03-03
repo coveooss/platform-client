@@ -1,14 +1,14 @@
-import * as _ from 'underscore';
-import * as inquirer from 'inquirer';
-import { RequestResponse } from 'request';
 import { Question } from 'inquirer';
 import { Answers } from 'inquirer';
-import { Utils } from '../commons/utils/Utils';
-import { GraduateCommand } from '../commands/GraduateCommand';
+import * as inquirer from 'inquirer';
+import { RequestResponse } from 'request';
+import * as _ from 'underscore';
 import { DiffCommand } from '../commands/DiffCommand';
-import { FieldController } from '../controllers/FieldController';
-import { ExtensionController } from '../controllers/ExtensionController';
+import { GraduateCommand } from '../commands/GraduateCommand';
 import { FieldAPI } from '../commons/rest/FieldAPI';
+import { Utils } from '../commons/utils/Utils';
+import { ExtensionController } from '../controllers/ExtensionController';
+import { FieldController } from '../controllers/FieldController';
 
 export class InteractiveQuestion {
   // Required parameters
@@ -32,7 +32,7 @@ export class InteractiveQuestion {
   static ADVANCED_CONFIGURATION_MODE: string = 'Advanced';
   // static EXECUTE_COMMAND: string = 'executeCommand';
 
-  public start(): Promise<Answers> {
+  start(): Promise<Answers> {
     const prompt = inquirer.createPromptModule();
     return this.loadFieldModel()
       .then((model: {}) => {
@@ -44,7 +44,7 @@ export class InteractiveQuestion {
       });
   }
 
-  public loadFieldModel() {
+  loadFieldModel() {
     // tslint:disable-next-line:typedef
     return new Promise((resolve, reject) => {
       FieldAPI.getFieldDefinitions()
@@ -61,7 +61,7 @@ export class InteractiveQuestion {
     });
   }
 
-  public getOriginOrganizationId(): Question {
+  getOriginOrganizationId(): Question {
     return {
       type: 'input',
       name: InteractiveQuestion.ORIGIN_ORG_ID,
@@ -70,7 +70,7 @@ export class InteractiveQuestion {
     };
   }
 
-  public getOriginOrganizationKey(): Question {
+  getOriginOrganizationKey(): Question {
     return {
       type: 'input',
       name: InteractiveQuestion.ORIGIN_ORG_KEY,
@@ -79,7 +79,7 @@ export class InteractiveQuestion {
     };
   }
 
-  public getDestinationOrganizationId(): Question {
+  getDestinationOrganizationId(): Question {
     return {
       type: 'input',
       name: InteractiveQuestion.DESTINATION_ORG_ID,
@@ -88,7 +88,7 @@ export class InteractiveQuestion {
     };
   }
 
-  public getDestinationOrganizationKey(): Question {
+  getDestinationOrganizationKey(): Question {
     return {
       type: 'input',
       name: InteractiveQuestion.DESTINATION_ORG_KEY,
@@ -97,7 +97,7 @@ export class InteractiveQuestion {
     };
   }
 
-  public getCommandList(): Question {
+  getCommandList(): Question {
     return {
       type: 'list',
       name: InteractiveQuestion.COMMAND,
@@ -106,7 +106,7 @@ export class InteractiveQuestion {
     };
   }
 
-  public setLogLevel(): Question {
+  setLogLevel(): Question {
     return {
       type: 'list',
       name: InteractiveQuestion.LOG_LEVEL,
@@ -117,7 +117,7 @@ export class InteractiveQuestion {
     };
   }
 
-  public getContentToDiff(): Question {
+  getContentToDiff(): Question {
     return {
       type: 'list',
       name: InteractiveQuestion.OBJECT_TO_MANIPULATE,
@@ -127,7 +127,7 @@ export class InteractiveQuestion {
     };
   }
 
-  public getContentToGraduate(): Question {
+  getContentToGraduate(): Question {
     return {
       type: 'list',
       name: InteractiveQuestion.OBJECT_TO_MANIPULATE,
@@ -137,7 +137,7 @@ export class InteractiveQuestion {
     };
   }
 
-  public setAdvancedConfiguration(): Question {
+  setAdvancedConfiguration(): Question {
     return {
       type: 'list',
       name: InteractiveQuestion.ADVANCED_MODE,
@@ -147,7 +147,7 @@ export class InteractiveQuestion {
     };
   }
 
-  public setKeysToIgnore(fieldModel: string[]): Question {
+  setKeysToIgnore(fieldModel: string[]): Question {
     return {
       type: 'checkbox',
       name: InteractiveQuestion.KEY_TO_IGNORE,
@@ -160,7 +160,7 @@ export class InteractiveQuestion {
     };
   }
 
-  public setKeysToIncludeOnly(fieldModel: string[]): Question {
+  setKeysToIncludeOnly(fieldModel: string[]): Question {
     return {
       type: 'checkbox',
       name: InteractiveQuestion.KEY_TO_INCLUDE_ONLY,
@@ -171,7 +171,7 @@ export class InteractiveQuestion {
     };
   }
 
-  public getFileNameForSettings(): Question {
+  getFileNameForSettings(): Question {
     return this.getGenericFilename(
       InteractiveQuestion.SETTING_FILENAME,
       'command.sh',
@@ -180,11 +180,11 @@ export class InteractiveQuestion {
     );
   }
 
-  public getFileNameForLogs(): Question {
+  getFileNameForLogs(): Question {
     return this.getGenericFilename(InteractiveQuestion.LOG_FILENAME, 'logs.txt', 'Enter the filename to output logs: ');
   }
 
-  public confirmGraduationAction(mes: string = 'Are you sure you want to perform this action?', variable: string): Question {
+  confirmGraduationAction(mes: string = 'Are you sure you want to perform this action?', variable: string): Question {
     return {
       type: 'confirm',
       name: variable,
@@ -193,7 +193,7 @@ export class InteractiveQuestion {
     };
   }
 
-  public forceGraduation(): Question {
+  forceGraduation(): Question {
     return {
       type: 'confirm',
       name: InteractiveQuestion.FORCE_GRADUATION,
@@ -214,7 +214,7 @@ export class InteractiveQuestion {
   //   };
   // }
 
-  public getQuestions(data: any): Question[] {
+  getQuestions(data: any): Question[] {
     return [
       this.getOriginOrganizationId(),
       this.getDestinationOrganizationId(),

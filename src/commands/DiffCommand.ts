@@ -1,17 +1,17 @@
-import * as opn from 'opn';
 import * as fs from 'fs-extra';
+import * as opn from 'opn';
 import * as _ from 'underscore';
-import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
-import { FieldController } from '../controllers/FieldController';
-import { Organization } from '../coveoObjects/Organization';
-import { Logger } from '../commons/logger';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
-import { Field } from '../coveoObjects/Field';
-import { ExtensionController } from '../controllers/ExtensionController';
-import { Extension } from '../coveoObjects/Extension';
-import { StaticErrorMessage, IGenericError } from '../commons/errors';
-import { BaseController } from '../controllers/BaseController';
 import { Colors } from '../commons/colors';
+import { IGenericError, StaticErrorMessage } from '../commons/errors';
+import { Logger } from '../commons/logger';
+import { BaseController } from '../controllers/BaseController';
+import { ExtensionController } from '../controllers/ExtensionController';
+import { FieldController } from '../controllers/FieldController';
+import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
+import { Extension } from '../coveoObjects/Extension';
+import { Field } from '../coveoObjects/Field';
+import { Organization } from '../coveoObjects/Organization';
 
 export interface IDiffOptions {
   /**
@@ -50,7 +50,7 @@ export class DiffCommand {
    * Diff the fields of both organizations passed in parameter
    *
    */
-  public diffFields(options?: IDiffOptions) {
+  diffFields(options?: IDiffOptions) {
     const fieldController: FieldController = new FieldController(this.organization1, this.organization2);
     this.diff(fieldController, 'Field', (fields: Field[]) => _.map(fields, (f: Field) => f.getFieldModel()), options);
   }
@@ -59,7 +59,7 @@ export class DiffCommand {
    * Diff the extensions of both organizations passed in parameter
    *
    */
-  public diffExtensions(options?: IDiffOptions) {
+  diffExtensions(options?: IDiffOptions) {
     const extensionController: ExtensionController = new ExtensionController(this.organization1, this.organization2);
     this.diff(
       extensionController,

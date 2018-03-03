@@ -1,8 +1,6 @@
-import * as _ from 'underscore';
-import { Dictionary, IClonable } from '../collections/Dictionary';
-import { JsonUtils } from './JsonUtils';
-import { DownloadResultArray, IDownloadResultArray } from '../collections/DownloadResultArray';
 import { BaseCoveoObject } from '../../coveoObjects/BaseCoveoObject';
+import { Dictionary } from '../collections/Dictionary';
+import { DownloadResultArray } from '../collections/DownloadResultArray';
 export class DownloadUtils {
   /**
    * Return the differences between 2 dictionaries

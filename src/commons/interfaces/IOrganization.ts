@@ -1,8 +1,8 @@
-import { ICoveoObject } from './ICoveoObject';
-import { Source } from '../../coveoObjects/Source';
-import { Field } from '../../coveoObjects/Field';
-import { Dictionary } from '../collections/Dictionary';
 import { Extension } from '../../coveoObjects/Extension';
+import { Field } from '../../coveoObjects/Field';
+import { Source } from '../../coveoObjects/Source';
+import { Dictionary } from '../collections/Dictionary';
+import { ICoveoObject } from './ICoveoObject';
 
 export interface IOrganization extends ICoveoObject {
   getApiKey(): string;
