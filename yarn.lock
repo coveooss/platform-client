@@ -4921,6 +4921,12 @@ tslib@^1.8.0, tslib@^1.8.1:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.9.0.tgz#e37a86fda8cbbaf23a057f473c9f4dc64e5fc2e8"
 
+tslint-webpack-plugin@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/tslint-webpack-plugin/-/tslint-webpack-plugin-1.2.0.tgz#b7ee325ca2fd020c621f1f123268ea674a49070e"
+  dependencies:
+    chalk "^2.1.0"
+
 tslint@^5.7.0:
   version "5.9.1"
   resolved "https://registry.yarnpkg.com/tslint/-/tslint-5.9.1.tgz#1255f87a3ff57eb0b0e1f0e610a8b4748046c9ae"
