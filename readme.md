@@ -19,23 +19,23 @@ In order to run the tool, you will need 2 things:
 1. At least 2 organizations
 2. API keys for each organizations with the proper privileges
 
-> Make sure you were able to run gulp entirely without any errors first. Then, run `node client.js --help` from the `bin` folder. The help screen will be displayed and will list the available commands.
+> Make sure you were able to run gulp entirely without any errors first. Then, run `node index.js --help` from the `bin` folder. The help screen will be displayed and will list the available commands.
 
 ![](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/help.png)
 
-To get help regarding a specific command, run `node client.js <command_name> --help`, for example `node client.js graduate-fields --help`. You will get detailed help regarding the different parameters.
+To get help regarding a specific command, run `node index.js <command_name> --help`, for example `node index.js graduate-fields --help`. You will get detailed help regarding the different parameters.
 
 ![](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/graduate-help.png)
 
 ### Interactive Command
 
-You can always run the interactive command with `node client.js interactive`
+You can always run the interactive command with `node index.js interactive`
 
 ![Alt Text](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/interactive.gif)
 
 <!-- Parameters include, amongst others, a `Force` mode, a restriction on the http methods you can use (allows to prevent overiding existing values when graduating, for example) and a log level chooser. -->
 
-Here is an exmaple of the field graduation between 2 orgs with the command `node client.js graduate-fields <org_1_id> <org_2_id> <org_1_key> <org_2_key> -l verbose`.
+Here is an exmaple of the field graduation between 2 orgs with the command `node index.js graduate-fields <org_1_id> <org_2_id> <org_1_key> <org_2_key> -l verbose`.
 
 ![](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/graduate-fields.png)
 
