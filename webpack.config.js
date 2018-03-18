@@ -43,7 +43,7 @@ module.exports = {
   output: {
     path: path.resolve('./bin/'),
     filename: 'index.js',
-    library: 'CoveoClient',
+    library: 'PlatformClient',
     publicPath: '/bin/'
   },
   externals: [nodeExternals()],

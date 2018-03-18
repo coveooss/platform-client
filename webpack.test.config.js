@@ -14,9 +14,11 @@ if (minimize) {
 // Fail plugin will allow the webpack ts-loader to fail correctly when the TS compilation fails
 const plugins = [failPlugin];
 
-plugins.push(new webpack.HotModuleReplacementPlugin({
-  multiStep: true
-}));
+plugins.push(
+  new webpack.HotModuleReplacementPlugin({
+    multiStep: true
+  })
+);
 
 if (minimize) {
   plugins.push(new webpack.optimize.UglifyJsPlugin());
@@ -29,7 +31,7 @@ module.exports = {
   output: {
     path: path.resolve('./bin/tests'),
     filename: 'test.js',
-    library: 'CoveoClientTest',
+    library: 'PlatformClientTest',
     publicPath: '/bin/test'
   },
   externals: [nodeExternals()],
@@ -40,11 +42,8 @@ module.exports = {
     }
   },
   module: {
-    loaders: [
-      { test: /\.ts$/, loader: 'ts-loader' },
-      { test: /\.json$/, loader: 'json-loader' }
-    ]
+    loaders: [{ test: /\.ts$/, loader: 'ts-loader' }, { test: /\.json$/, loader: 'json-loader' }]
   },
   plugins: plugins,
   bail: true
-}
+};

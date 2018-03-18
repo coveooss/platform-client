@@ -33,9 +33,9 @@ You can always run the interactive command with `node index.js interactive`
 
 ![Alt Text](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/interactive.gif)
 
-<!-- Parameters include, amongst others, a `Force` mode, a restriction on the http methods you can use (allows to prevent overiding existing values when graduating, for example) and a log level chooser. -->
+<!-- Parameters include, amongst others, a `Force` mode, a restriction on the http methods you can use (allows to prevent overriding existing values when graduating, for example) and a log level chooser. -->
 
-Here is an exmaple of the field graduation between 2 orgs with the command `node index.js graduate-fields <org_1_id> <org_2_id> <org_1_key> <org_2_key> -l verbose`.
+Here is an example of the field graduation between 2 orgs with the command `node index.js graduate-fields <org_1_id> <org_2_id> <org_1_key> <org_2_key> -l verbose`.
 
 ![](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/graduate-fields.png)
 
@@ -78,17 +78,3 @@ The code for the projects uses APIs, SDKs, and code from the Coveo Platform. You
 - Coveo Search UI Framework: https://github.com/coveo/search-ui
 
 It's also built on nodejs/typescript.
-
-## Contributing
-- Branch
-- Pull request to default putting at least 2 reviewers and at least 1 reviewer in coveo or ancientwinds.
-- Simple as that!
-
-The Coveo Team will look at your code and validate that :
-- The guidelines are respected
-- You didn’t forget any API key or password in it
-- There is no malicious code
-
-## Authors
-- Jean-François Cloutier (https://github.com/ancientwinds)
-- Yassine Lakhdar (https://github.com/coveo)

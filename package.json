@@ -1,8 +1,9 @@
 {
-  "name": "platform-client",
+  "name": "coveo-platform-client",
   "version": "1.1.1",
   "description": "A simple client to manage organizations in the Coveo Cloud Platform",
   "main": "./bin/index.js",
+  "types": "./bin/ts/index.d.ts",
   "keywords": ["coveo", "cloud", "platform", "graduation", "diff", "fields", "extensions"],
   "dependencies": {
     "chalk": "2.1.0",
@@ -91,6 +92,13 @@
     "*.ts": ["tslint --fix", "prettier --write", "git add"],
     "*.{js,json}": ["prettier --write", "git add"]
   },
-  "author": "Jean-Francois Cloutier & Yassine Lakhdar",
-  "license": "GPL-3.0"
+  "author": {
+    "name": "Yassine Lakhdar",
+    "url": "http://github.com/y-lakhdar"
+  },
+  "contributors": ["Jean-François Cloutier <github.com/ancientwindsm> (https://github.com/ancientwinds)"],
+  "bin": {
+    "platformclient": "./bin/client-global.js"
+  },
+  "license": "Apache-2.0"
 }
