@@ -1,6 +1,7 @@
 import { EnvironmentUtils } from './commons/utils/EnvironmentUtils';
 setEnvironmentIfNecessary();
 
+import * as _ from 'underscore';
 import { DiffCommand, IDiffOptions } from './commands/DiffCommand';
 import { DownloadCommand } from './commands/DownloadCommand';
 import { GraduateCommand, IGraduateOptions } from './commands/GraduateCommand';
@@ -172,6 +173,12 @@ program
 
 // Parsing the arguments
 program.parse(process.argv);
+
+if (program.args && _.last(program.args)) {
+  !program.commands.map((cmd: any) => cmd._name).includes((_.last(program.args) as any)._name) && program.help();
+} else {
+  console.log('Missing argument');
+}
 
 // Utils
 function list(val: string) {
