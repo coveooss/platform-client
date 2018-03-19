@@ -3,52 +3,89 @@
 A simple client to manage organizations in the Coveo Cloud Platform.
 
 ## Description
-This repository contains a command line tool to perform administrative tasks in the Coveo Cloud Platform. It also allows automation of tasks that previously had to be done manually, like graduating the configuration from organizations in a different stage (ex.: dev, uat, prod).
+This repository contains a command line tool to perform administrative tasks in the Coveo Cloud Platform. It also allows automation of tasks that previously had to be done manually, like graduating the configuration from organizations in a different stage (ex.: DEV, UAT, PROD).
 
-## How-to build
-You should have node 6.9.1 (or later) installed to build this project.
+## Installation
+Either through cloning with git or by using [npm](http://npmjs.org) (the recommended way):
 
 ```
-npm install -g gulp
-npm install
-gulp
+npm install -g coveo-platform-client
 ```
 
-## How-to run
-In order to run the tool, you will need 2 things:
-1. At least 2 organizations
-2. API keys for each organizations with the proper privileges
+And the Coveo Platform clien will be installed globally to your system path.
 
-> Make sure you were able to run gulp entirely without any errors first. Then, run `node index.js --help` from the `bin` folder. The help screen will be displayed and will list the available commands.
+## Usage
 
-![](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/help.png)
-
-To get help regarding a specific command, run `node index.js <command_name> --help`, for example `node index.js graduate-fields --help`. You will get detailed help regarding the different parameters.
-
-![](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/graduate-help.png)
-
-### Interactive Command
-
-You can always run the interactive command with `node index.js interactive`
+```
+platformclient interactive
+```
 
 ![Alt Text](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/interactive.gif)
 
-<!-- Parameters include, amongst others, a `Force` mode, a restriction on the http methods you can use (allows to prevent overriding existing values when graduating, for example) and a log level chooser. -->
+<!-- In order to run the tool, you will need 2 things:
+1. At least 2 organizations
+2. API keys for each organizations with the proper privileges -->
 
-Here is an example of the field graduation between 2 orgs with the command `node index.js graduate-fields <org_1_id> <org_2_id> <org_1_key> <org_2_key> -l verbose`.
+For CLI options, use the -h (or --help) argument:
 
-![](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/graduate-fields.png)
+![](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/help.png)
 
-<!-- The fields will also get graduated from organization 1 to organization 2. -->
+To get help regarding a specific command, run `platformclient <command_name> --help`, for example `platformclient graduate-fields --help`. You will get detailed help regarding the different parameters.
 
-## Important Gulp Tasks
+![](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/graduate-help.png)
+
+## Available Commands
+---------------------
+
+### Graduate Fields - `graduate-fields`
+
+Required privileges:
+
+| Service |  Name  | View  | Edit  |
+| :-----: | :----: | :---: | :---: |
+| Content | Source |   ✔   |   ✔   |
+
+---
+
+### Graduate Extensions - `graduate-extensions`
+
+Required privileges:
+
+| Service |    Name    | View  | Edit  |
+| :-----: | :--------: | :---: | :---: |
+| Content | Extensions |   ✔   |   ✔   |
+
+---
+
+### Diff Fields - `diff-fields`
+
+Required privileges:
+
+| Service |  Name  | View  | Edit  |
+| :-----: | :----: | :---: | :---: |
+| Content | Source |   ✔   |       |
+
+---
+
+### Diff Extensions - `diff-extensions`
+
+Required privileges:
+
+| Service |    Name    | View  | Edit  |
+| :-----: | :--------: | :---: | :---: |
+| Content | Extensions |   ✔   |       |
+
+---
+
+## Dev
+### Important Gulp Tasks
 
 * `gulp default`: Builds the entire project
 * `gulp dev`: Starts a nodemon dev server for the project.
 * `gulp devTest`: Starts a nodemon dev server for the tests.
 * `gulp test`: Builds and runs the unit tests and saves the coverage.
 
-## Dev
+### Dev server
 ```
 gulp dev
 ```
