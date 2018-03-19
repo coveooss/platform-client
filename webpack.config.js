@@ -42,8 +42,8 @@ module.exports = {
   entry: ['./src/client.ts'],
   output: {
     path: path.resolve('./bin/'),
-    filename: 'client.js',
-    library: 'CoveoClient',
+    filename: 'index.js',
+    library: 'PlatformClient',
     publicPath: '/bin/'
   },
   externals: [nodeExternals()],

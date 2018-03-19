@@ -30,7 +30,7 @@ export class ExtensionAPI {
     return RequestUtils.get(UrlService.getExtensionsUrl(organization.getId()), organization.getApiKey());
   }
 
-  static getSingleExtension(organization: Organization, extensionId: string) {
+  static getSingleExtension(organization: Organization, extensionId: string): Promise<RequestResponse> {
     Assert.isNotUndefined(extensionId, 'Cannot load undefined extension');
     return RequestUtils.get(UrlService.getSingleExtensionUrl(organization.getId(), extensionId), organization.getApiKey());
   }

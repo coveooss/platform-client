@@ -15,7 +15,7 @@ gulp.task('build:prod', function(done) {
 });
 
 gulp.task('build', function(done) {
-  runsequence('clean', 'setup', 'compile', done);
+  runsequence('clean', 'setup', 'compile', 'definitions', done);
 });
 
 gulp.task('watch', ['watchTS']);
@@ -31,5 +31,5 @@ gulp.task('watchTest', () => {
 
 // Remove bin and all zip folders.
 gulp.task('clean', function() {
-  return del(['./bin', './zip/**.zip']);
+  return del(['./bin', './zip/**.zip', '*.log']);
 });
