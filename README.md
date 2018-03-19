@@ -35,7 +35,6 @@ To get help regarding a specific command, run `platformclient <command_name> --h
 ![](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/graduate-help.png)
 
 ## Available Commands
----------------------
 
 ### Graduate Fields - `graduate-fields`
 
