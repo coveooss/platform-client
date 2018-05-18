@@ -8,3 +8,5 @@ npm-debug\.log\.*
 *.log
 demo/
 test/mock/
+fieldDiff.json
+package-lock.json

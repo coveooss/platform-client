@@ -3,18 +3,26 @@
 A simple client to manage organizations in the Coveo Cloud Platform.
 
 ## Description
-This repository contains a command line tool to perform administrative tasks in the Coveo Cloud Platform. It also allows automation of tasks that previously had to be done manually, like graduating the configuration from organizations in a different stage (ex.: DEV, UAT, PROD).
+This repository contains a command line tool to perform administrative tasks in the Coveo Cloud Platform. It also allows automation of tasks that previously had to be done manually, like graduating the configuration from organizations in a different stage (e.g.: DEV, UAT, PROD).
 
 ## Installation
-Either through cloning with git or by using [npm](http://npmjs.org) (the recommended way):
+Either through cloning with git or by using [npm](http://npmjs.org) (the recommended way) :
 
 ```
 npm install -g coveo-platform-client
 ```
 
-And the Coveo Platform clien will be installed globally to your system path.
+And the Coveo Platform client will be installed globally to your system path.
 
 ## Usage
+
+In order to run the tool, you will need 2 things:
+1. At least 2 organizations
+2. API keys for each organization with the proper privileges (see [Available commands](https://github.com/coveo/platform-client#available-commands))
+
+###### Interactive tool
+
+The command line tool can be used in two different ways. The first one is by using the interactive tool :
 
 ```
 platformclient interactive
@@ -22,9 +30,7 @@ platformclient interactive
 
 ![Alt Text](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/interactive.gif)
 
-<!-- In order to run the tool, you will need 2 things:
-1. At least 2 organizations
-2. API keys for each organizations with the proper privileges -->
+###### Commands
 
 For CLI options, use the -h (or --help) argument:
 
@@ -38,7 +44,7 @@ To get help regarding a specific command, run `platformclient <command_name> --h
 
 ### Graduate Fields - `graduate-fields`
 
-Required privileges:
+Required API key privileges:
 
 | Service |  Name  | View  | Edit  |
 | :-----: | :----: | :---: | :---: |
@@ -48,7 +54,7 @@ Required privileges:
 
 ### Graduate Extensions - `graduate-extensions`
 
-Required privileges:
+Required API key privileges:
 
 | Service |    Name    | View  | Edit  |
 | :-----: | :--------: | :---: | :---: |
@@ -58,7 +64,7 @@ Required privileges:
 
 ### Diff Fields - `diff-fields`
 
-Required privileges:
+Required API key privileges:
 
 | Service |  Name  | View  | Edit  |
 | :-----: | :----: | :---: | :---: |
@@ -68,7 +74,7 @@ Required privileges:
 
 ### Diff Extensions - `diff-extensions`
 
-Required privileges:
+Required API key privileges:
 
 | Service |    Name    | View  | Edit  |
 | :-----: | :--------: | :---: | :---: |
