@@ -41,6 +41,7 @@ export class DiffUtils {
         );
         if (!_.isEqual(dict1CopyCleanedItem, dict2CopyCleanedItem)) {
           diffResult.TO_UPDATE.push(value);
+          diffResult.TO_UPDATE_DEST.push(dict2Copy.getItem(key));
         }
       } else {
         diffResult.TO_CREATE.push(value);
