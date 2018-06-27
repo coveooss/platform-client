@@ -217,6 +217,7 @@ export const ExtensionControllerTest = () => {
           summary: { TO_CREATE: 0, TO_UPDATE: 0, TO_DELETE: 0 },
           TO_CREATE: [],
           TO_UPDATE: [],
+          TO_UPDATE_OLD: [],
           TO_DELETE: []
         });
       });
@@ -240,6 +241,7 @@ export const ExtensionControllerTest = () => {
               requiredDataStreams: []
             }
           ],
+          TO_UPDATE_OLD: [],
           TO_UPDATE: [
             {
               content:

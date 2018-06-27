@@ -70,9 +70,9 @@ export class FieldController extends BaseController {
     const org = _.find([this.organization1, this.organization2], (x: Organization) => {
       return x.getId() === organization;
     });
-    // _.find can return Undefined; FieldAPI.loadFields expects
+    // _.find can return Undefined; FieldAPI.loadFieldsWithSources expects
     const foundOrNot = isUndefined(org) ? new Organization('dummy', 'dummy') : org;
-    return FieldAPI.loadFields(foundOrNot)
+    return FieldAPI.loadFieldsWithSources(foundOrNot)
       .then(() => {
         return DownloadUtils.getDownloadResult(foundOrNot.getFields());
       })

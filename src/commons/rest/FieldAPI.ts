@@ -82,6 +82,43 @@ export class FieldAPI {
     });
   }
 
+  static getFieldsWithSourcesPage(organization: Organization, page: number): Promise<RequestResponse> {
+    Assert.isLargerOrEqualsThan(0, page, 'Parameter "page" cannot be a negative value.');
+    Logger.loadingTask(`Fetching field page ${page} from ${Colors.organization(organization.getId())} `);
+    return RequestUtils.get(UrlService.getFieldsWithSourcesPageUrl(organization.getId(), page), organization.getApiKey());
+  }
+
+  static loadFieldsWithSources(org: Organization): Promise<{}> {
+    // tslint:disable-next-line:typedef
+    return new Promise((resolve, reject) => {
+      this.getFieldsWithSourcesPage(org, 0)
+        .then((response: RequestResponse) => {
+          Assert.exists(response.body && response.body.items, StaticErrorMessage.UNEXPECTED_RESPONSE);
+          response.body.items.forEach((item: IStringMap<any>) => {
+            if (item.mappings) {
+              delete item.mappings;
+            }
+          });
+          org.addFieldList(response.body.items);
+
+          Logger.verbose(`${response.body.items.length} fields found in ${Colors.organization(org.getId())}`);
+          Logger.verbose(`Successfully loaded first field page from ${Colors.organization(org.getId())}`);
+          if (response.body.totalPages > 1) {
+            this.loadOtherPages(org, response.body.totalPages)
+              .then(() => resolve())
+              .catch((err: any) => {
+                reject({ orgId: org.getId(), message: err } as IGenericError);
+              });
+          } else {
+            resolve();
+          }
+        })
+        .catch((err: any) => {
+          reject({ orgId: org.getId(), message: err } as IGenericError);
+        });
+    });
+  }
+
   static loadOtherPages(org: Organization, totalPages: number): Promise<void> {
     Assert.isLargerOrEqualsThan(0, totalPages, 'Parameter "totalPages" cannot be a negative value.');
     Logger.loadingTask(`Loading ${totalPages - 1} more pages of fields from ${Colors.organization(org.getId())} `);
