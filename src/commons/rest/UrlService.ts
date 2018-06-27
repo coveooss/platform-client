@@ -29,6 +29,10 @@ export class UrlService {
     return `${this.getOrganizationUrl(organizationId)}/indexes/page/fields?&page=${page}&perPage=${perPage}&origin=USER`;
   }
 
+  static getFieldsWithSourcesPageUrl(organizationId: string, page: number, perPage: number = 1000): string {
+    return `${this.getOrganizationUrl(organizationId)}/sources/page/fields?&page=${page}&perPage=${perPage}`;
+  }
+
   static updateFields(organizationId: string): string {
     return `${this.getOrganizationUrl(organizationId)}/indexes/fields/batch/update`;
   }
