@@ -12,10 +12,10 @@ export class DiffResultArray<T> {
   }
 
   getCount(): number {
-    return this.TO_CREATE.length + this.TO_UPDATE.length + this.TO_UPDATE_OLD.length + this.TO_DELETE.length;
+    return this.TO_CREATE.length + this.TO_UPDATE.length + this.TO_DELETE.length;
   }
 
   containsItems(): boolean {
-    return this.TO_CREATE.length + this.TO_UPDATE.length + this.TO_UPDATE_OLD.length + this.TO_DELETE.length > 0;
+    return this.TO_CREATE.length + this.TO_UPDATE.length + this.TO_DELETE.length > 0;
   }
 }

@@ -21,6 +21,7 @@ export const DiffResultArrayTest = () => {
     it('Should add and remove items to the DiffResult Object', () => {
       const diffResult: DiffResultArray<string> = new DiffResultArray();
       diffResult.TO_UPDATE.push('updated value');
+      diffResult.TO_UPDATE_OLD.push('old value'); // this should not affect the count
       expect(diffResult.containsItems()).to.be.true;
       expect(diffResult.getCount()).to.equal(1);
       diffResult.TO_UPDATE.pop();
