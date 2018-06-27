@@ -18,7 +18,7 @@ export interface IDiffResultArrayClean {
   };
   TO_CREATE: any[];
   TO_UPDATE: any[];
-  TO_UPDATE_DEST: any[];
+  TO_UPDATE_OLD: any[];
   TO_DELETE: any[];
 }
 
@@ -113,7 +113,7 @@ export abstract class BaseController {
       },
       TO_CREATE: [],
       TO_UPDATE: [],
-      TO_UPDATE_DEST: [],
+      TO_UPDATE_OLD: [],
       TO_DELETE: []
     };
 
@@ -128,7 +128,7 @@ export abstract class BaseController {
     _.extend(cleanVersion, {
       TO_CREATE: extractionMethod(diffResultArray.TO_CREATE),
       TO_UPDATE: extractionMethod(diffResultArray.TO_UPDATE),
-      TO_UPDATE_DEST: extractionMethod(diffResultArray.TO_UPDATE_DEST),
+      TO_UPDATE_OLD: extractionMethod(diffResultArray.TO_UPDATE_OLD),
       TO_DELETE: extractionMethod(diffResultArray.TO_DELETE)
     });
 
