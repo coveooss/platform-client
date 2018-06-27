@@ -32,6 +32,12 @@ export const FieldControllerTest = () => {
       type: 'STRING',
       includeInQuery: true
     });
+    const field2Old: Field = new Field({
+      name: 'lastname',
+      description: 'The last name of a person',
+      type: 'STRING',
+      includeInQuery: false
+    });
     const field3: Field = new Field({
       name: 'birth',
       description: 'Day of birth',
@@ -64,6 +70,7 @@ export const FieldControllerTest = () => {
           summary: { TO_CREATE: 0, TO_UPDATE: 0, TO_DELETE: 0 },
           TO_CREATE: [],
           TO_UPDATE: [],
+          TO_UPDATE_OLD: [],
           TO_DELETE: []
         });
       });
@@ -73,6 +80,7 @@ export const FieldControllerTest = () => {
         diffResultArray.TO_CREATE.push(field1);
         diffResultArray.TO_UPDATE.push(field2);
         diffResultArray.TO_UPDATE.push(field3);
+        diffResultArray.TO_UPDATE_OLD.push(field2Old);
 
         const cleanVersion = fieldController.getCleanVersion(diffResultArray, (fields: Field[]) =>
           _.map(fields, (f: Field) => f.getFieldModel())
@@ -101,7 +109,15 @@ export const FieldControllerTest = () => {
               includeInQuery: false
             }
           ],
-          TO_DELETE: []
+          TO_DELETE: [],
+          TO_UPDATE_OLD: [
+            {
+              name: 'lastname',
+              description: 'The last name of a person',
+              type: 'STRING',
+              includeInQuery: false
+            }
+          ]
         });
       });
     });
