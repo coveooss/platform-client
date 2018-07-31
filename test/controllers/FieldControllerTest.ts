@@ -19,7 +19,6 @@ export const FieldControllerTest = () => {
     const org2: Organization = new Organization('prod', 'yyy');
 
     // Fields
-
     const field1: Field = new Field({
       name: 'firstname',
       description: 'The first name of a person',
@@ -118,6 +117,64 @@ export const FieldControllerTest = () => {
               includeInQuery: false
             }
           ]
+        });
+      });
+    });
+
+    describe('GetCleanerVersion Method', () => {
+      it('Should return the clean diff version - empty', () => {
+        const diffResultArray: DiffResultArray<Field> = new DiffResultArray();
+        const cleanVersion = fieldController.getCleanerVersion(diffResultArray, (fields: Field[]) =>
+          _.map(fields, (f: Field) => f.getFieldModel())
+        );
+        expect(cleanVersion).to.eql({
+          summary: { TO_CREATE: 0, TO_UPDATE: 0, TO_DELETE: 0 },
+          TO_CREATE: [],
+          TO_UPDATE: [],
+          TO_DELETE: []
+        });
+      });
+
+      it('Should return the clean diff version', () => {
+        const diffResultArray: DiffResultArray<Field> = new DiffResultArray();
+        diffResultArray.TO_CREATE.push(field1);
+        diffResultArray.TO_UPDATE.push(field2);
+        diffResultArray.TO_UPDATE_OLD.push(field2Old);
+
+        const cleanVersion = fieldController.getCleanerVersion(diffResultArray, (fields: Field[]) =>
+          _.map(fields, (f: Field) => f.getFieldModel())
+        );
+        expect(cleanVersion).to.eql({
+          summary: { TO_CREATE: 1, TO_UPDATE: 1, TO_DELETE: 0 },
+          TO_CREATE: [
+            {
+              name: 'firstname',
+              description: 'The first name of a person',
+              type: 'STRING',
+              includeInQuery: true
+            }
+          ],
+          TO_UPDATE: [
+            {
+              name: {
+                new: 'lastname',
+                old: 'lastname'
+              },
+              description: {
+                new: 'The last name of a person',
+                old: 'The last name of a person'
+              },
+              type: {
+                new: 'STRING',
+                old: 'STRING'
+              },
+              includeInQuery: {
+                new: true,
+                old: false
+              }
+            }
+          ],
+          TO_DELETE: []
         });
       });
     });

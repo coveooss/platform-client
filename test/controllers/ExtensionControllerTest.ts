@@ -263,6 +263,66 @@ export const ExtensionControllerTest = () => {
       });
     });
 
+    describe('GetCleanerVersion Method', () => {
+      it('Should return the clean diff version - empty', () => {
+        const diffResultArray: DiffResultArray<Extension> = new DiffResultArray();
+        const cleanVersion = controller.getCleanerVersion(diffResultArray, (extensions: Extension[]) =>
+          _.map(extensions, (e: Extension) => e.getExtensionModel())
+        );
+        expect(cleanVersion).to.eql({
+          summary: { TO_CREATE: 0, TO_UPDATE: 0, TO_DELETE: 0 },
+          TO_CREATE: [],
+          TO_UPDATE: [],
+          TO_DELETE: []
+        });
+      });
+
+      it('Should return the clean diff version', () => {
+        const diffResultArray: DiffResultArray<Extension> = new DiffResultArray();
+        diffResultArray.TO_CREATE.push(extension1);
+        diffResultArray.TO_UPDATE.push(extension2);
+        diffResultArray.TO_UPDATE_OLD.push(extension3);
+
+        const cleanVersion = controller.getCleanerVersion(diffResultArray, (fields: Extension[]) =>
+          _.map(fields, (f: Extension) => f.getExtensionModel())
+        );
+        expect(cleanVersion).to.eql({
+          summary: { TO_CREATE: 1, TO_UPDATE: 1, TO_DELETE: 0 },
+          TO_CREATE: [
+            {
+              content: 'import urlparse\n\nprint "Hello Word"',
+              description: 'This is an extension that prints an "Hello Word"',
+              name: 'Hello Word',
+              requiredDataStreams: []
+            }
+          ],
+          TO_UPDATE: [
+            {
+              content: {
+                new:
+                  'import urlparse\n\n# Title: URL Parsing to extract metadata\n# Description: This extension is used to parse urls to extract metadata like categories.\n# Required data:\n\n# captures the Web Path\npath = urlparse.urlparse(document.uri).path\n\ncategories = {}\n\nfor i, p in enumerate(path.split("/")):\n    # path will start with /, so the first p (i=0) is usually empty\n    if p:\n        # Add categories as meta1, meta2, meta3.\n        # You can use an array if you want specific names for the categories.\n        categories[\'meta\'+str(i)] = p\n\nif len(categories):\n    # Set the categories\n    document.add_meta_data(categories)\n',
+                old:
+                  'import urlparse\n\n# Title: URL Parsing to extract metadata\n# Description: This extension is used to parse urls to extract metadata like categories.\n# Required data:\n\n# captures the Web Path\npath = urlparse.urlparse(document.uri).path\n\ncategories = {}\n\nfor i, p in enumerate(path.split("/")):\n    # path will start with /, so the first p (i=0) is usually empty\n    if p:\n        # Add categories as meta1, meta2, meta3.\n        # You can use an array if you want specific names for the categories.\n        categories[\'meta\'+str(i)] = p\n\nif len(categories):\n    # Set the categories\n    document.add_meta_data(categories)\n'
+              },
+              description: {
+                new: 'This extension is used to parse urls to extract metadata like categories.',
+                old: 'This extension is used to parse urls to extract metadata like categories.'
+              },
+              name: {
+                new: 'URL Parsing to extract metadata',
+                old: 'URL Parsing to extract metadata'
+              },
+              requiredDataStreams: {
+                new: [],
+                old: []
+              }
+            }
+          ],
+          TO_DELETE: []
+        });
+      });
+    });
+
     describe('Diff Method', () => {
       it('Should not diff: ACCESS_DENIED', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
