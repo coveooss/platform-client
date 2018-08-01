@@ -4,6 +4,7 @@ import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { IDownloadResultArray } from '../commons/collections/DownloadResultArray';
 import { IGenericError, StaticErrorMessage } from '../commons/errors';
+import { IStringMap } from '../commons/interfaces/IStringMap';
 import { Logger } from '../commons/logger';
 import { ExtensionAPI } from '../commons/rest/ExtensionAPI';
 import { DiffUtils } from '../commons/utils/DiffUtils';
@@ -142,5 +143,30 @@ export class ExtensionController extends BaseController {
   private loadExtensionsForBothOrganizations(organization1: Organization, organization2: Organization): Promise<Array<{}>> {
     Logger.verbose('Loading extensions for both organizations.');
     return Promise.all([ExtensionAPI.loadExtensions(organization1), ExtensionAPI.loadExtensions(organization2)]);
+  }
+
+  extractionMethod(object: any[], oldVersion?: any[]): any[] {
+    if (oldVersion === undefined) {
+      return _.map(object, (e: Extension) => e.getExtensionModel());
+    } else {
+      return _.map(oldVersion, (oldExtension: Extension) => {
+        const newExtension: Extension = _.find(object, (e: Extension) => {
+          return e.getName() === oldExtension.getName();
+        });
+
+        const newExtensionModel = newExtension.getExtensionModel();
+        const oldExtensionModel = oldExtension.getExtensionModel();
+
+        const updatedExtensionModel: IStringMap<any> = _.mapObject(newExtensionModel, (val, key) => {
+          if (oldExtensionModel[key] !== val) {
+            // if not empty arrays
+            return { new: val, old: oldExtensionModel[key] };
+          } else {
+            return val;
+          }
+        });
+        return updatedExtensionModel;
+      });
+    }
   }
 }

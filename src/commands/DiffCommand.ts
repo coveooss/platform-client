@@ -9,8 +9,6 @@ import { BaseController } from '../controllers/BaseController';
 import { ExtensionController } from '../controllers/ExtensionController';
 import { FieldController } from '../controllers/FieldController';
 import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
-import { Extension } from '../coveoObjects/Extension';
-import { Field } from '../coveoObjects/Field';
 import { Organization } from '../coveoObjects/Organization';
 
 export interface IDiffOptions {
@@ -46,27 +44,13 @@ export class DiffCommand {
 
   static COMMAND_NAME: string = 'diff';
 
-  // displayOldFields(object1: any[], object2?: any[]) : any[] {
-  //   if (object2 == undefined) {
-  //     _.map(object1, (f: Field) => f.getFieldModel());
-  //   } else {
-  //     // logic to display both old and new values
-  //   }
-  // }
-
   /**
    * Diff the fields of both organizations passed in parameter
    *
    */
   diffFields(options?: IDiffOptions) {
     const fieldController: FieldController = new FieldController(this.organization1, this.organization2);
-    // this.diff(fieldController, 'Field', (fields: Field[]) => _.map(fields, (f: Field) => f.getFieldModel()), options);
-    this.diff(
-      fieldController,
-      'Field',
-      (fields: Field[]) => _.map(fields, (f: Field) => f.getFieldModel()), // use displayOldFields()
-      options
-    );
+    this.diff(fieldController, 'Field', options);
   }
 
   /**
@@ -75,12 +59,7 @@ export class DiffCommand {
    */
   diffExtensions(options?: IDiffOptions) {
     const extensionController: ExtensionController = new ExtensionController(this.organization1, this.organization2);
-    this.diff(
-      extensionController,
-      'Extension',
-      (extensions: Extension[]) => _.map(extensions, (e: Extension) => e.getExtensionModel()),
-      options
-    );
+    this.diff(extensionController, 'Extension', options);
   }
 
   // FIXME: Enable command to diff to objects without exiting the application first
@@ -93,12 +72,7 @@ export class DiffCommand {
    * @param {(object: any[]) => any[]} extractionMethod
    * @param {IDiffOptions} options
    */
-  private diff(
-    controller: BaseController,
-    objectName: string,
-    extractionMethod: (object1: any[], object2?: any[]) => any[],
-    opt?: IDiffOptions
-  ) {
+  private diff(controller: BaseController, objectName: string, opt?: IDiffOptions) {
     objectName = objectName.toLowerCase();
     const options = _.extend(DiffCommand.DEFAULT_OPTIONS, opt) as IDiffOptions;
 
@@ -115,8 +89,7 @@ export class DiffCommand {
       .diff(options)
       .then((diffResultArray: DiffResultArray<BaseCoveoObject>) => {
         fs
-          // .writeJSON(`${objectName}Diff.json`, controller.getCleanVersion(diffResultArray, extractionMethod), { spaces: 2 })
-          .writeJSON(`${objectName}Diff.json`, controller.getCleanerVersion(diffResultArray, extractionMethod), { spaces: 2 })
+          .writeJSON(`${objectName}Diff.json`, controller.getCleanerVersion(diffResultArray), { spaces: 2 })
           .then(() => {
             Logger.info('Diff operation completed');
             Logger.info(`File saved as ${Colors.filename(objectName + 'Diff.json')}`);

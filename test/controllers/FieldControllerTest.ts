@@ -43,6 +43,12 @@ export const FieldControllerTest = () => {
       type: 'Date',
       includeInQuery: false
     });
+    const field3Old: Field = new Field({
+      name: 'birth',
+      description: 'Birthday',
+      type: 'Date',
+      includeInQuery: true
+    });
 
     // Controller
     const fieldController = new FieldController(org1, org2);
@@ -124,9 +130,7 @@ export const FieldControllerTest = () => {
     describe('GetCleanerVersion Method', () => {
       it('Should return the clean diff version - empty', () => {
         const diffResultArray: DiffResultArray<Field> = new DiffResultArray();
-        const cleanVersion = fieldController.getCleanerVersion(diffResultArray, (fields: Field[]) =>
-          _.map(fields, (f: Field) => f.getFieldModel())
-        );
+        const cleanVersion = fieldController.getCleanerVersion(diffResultArray);
         expect(cleanVersion).to.eql({
           summary: { TO_CREATE: 0, TO_UPDATE: 0, TO_DELETE: 0 },
           TO_CREATE: [],
@@ -138,12 +142,10 @@ export const FieldControllerTest = () => {
       it('Should return the clean diff version', () => {
         const diffResultArray: DiffResultArray<Field> = new DiffResultArray();
         diffResultArray.TO_CREATE.push(field1);
-        diffResultArray.TO_UPDATE.push(field2);
-        diffResultArray.TO_UPDATE_OLD.push(field2Old);
+        diffResultArray.TO_UPDATE.push(field3);
+        diffResultArray.TO_UPDATE_OLD.push(field3Old);
 
-        const cleanVersion = fieldController.getCleanerVersion(diffResultArray, (fields: Field[]) =>
-          _.map(fields, (f: Field) => f.getFieldModel())
-        );
+        const cleanVersion = fieldController.getCleanerVersion(diffResultArray);
         expect(cleanVersion).to.eql({
           summary: { TO_CREATE: 1, TO_UPDATE: 1, TO_DELETE: 0 },
           TO_CREATE: [
@@ -156,21 +158,15 @@ export const FieldControllerTest = () => {
           ],
           TO_UPDATE: [
             {
-              name: {
-                new: 'lastname',
-                old: 'lastname'
-              },
+              name: 'birth',
               description: {
-                new: 'The last name of a person',
-                old: 'The last name of a person'
+                new: 'Day of birth',
+                old: 'Birthday'
               },
-              type: {
-                new: 'STRING',
-                old: 'STRING'
-              },
+              type: 'Date',
               includeInQuery: {
-                new: true,
-                old: false
+                new: false,
+                old: true
               }
             }
           ],

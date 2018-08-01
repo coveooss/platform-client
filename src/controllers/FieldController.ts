@@ -163,4 +163,29 @@ export class FieldController extends BaseController {
   private extractFieldModel(fields: Field[]): Array<IStringMap<any>> {
     return _.map(fields, (field: Field) => field.getFieldModel());
   }
+
+  extractionMethod(object: any[], oldVersion?: any[]): any[] {
+    if (oldVersion === undefined) {
+      return _.map(object, (f: Field) => f.getFieldModel());
+    } else {
+      return _.map(oldVersion, (oldField: Field) => {
+        const newField: Field = _.find(object, (f: Field) => {
+          return f.getName() === oldField.getName();
+        });
+
+        const newFieldModel = newField.getFieldModel();
+        const oldFieldModel = oldField.getFieldModel();
+
+        const updatedFieldModel: IStringMap<any> = _.mapObject(newFieldModel, (val, key) => {
+          if (oldFieldModel[key] !== val) {
+            // if not empty arrays
+            return { new: val, old: oldFieldModel[key] };
+          } else {
+            return val;
+          }
+        });
+        return updatedFieldModel;
+      });
+    }
+  }
 }

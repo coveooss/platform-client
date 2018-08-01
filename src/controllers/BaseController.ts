@@ -43,6 +43,8 @@ export abstract class BaseController {
 
   abstract download(organization: string): Promise<IDownloadResultArray>;
 
+  abstract extractionMethod(object: any[], oldVersion?: any[]): any[];
+
   protected successHandler(response: RequestResponse[] | RequestResponse, successMessage: string) {
     const successLog = (rep: RequestResponse) => {
       const info: any = { statusCode: rep.statusCode };
@@ -146,21 +148,16 @@ export abstract class BaseController {
     return cleanVersion as IDiffResultArrayClean;
   }
 
-  /** TODO
+  /**
    * Return a simplified diff object.
    * This function makes it easier to get a section of the diff result and use it in a API call.
    *
    * @template T
    * @param {DiffResultArray<T>} diffResultArray
-   * @param {(object: T[]) => any[]} extractionMethod Method to extract the object model
    * @param {boolean} [summary=true]
    * @returns {IDiffResultArrayCleaner} The simplified object
    */
-  getCleanerVersion<T>(
-    diffResultArray: DiffResultArray<T>,
-    extractionMethod: (object1: T[], object2?: T[]) => any[],
-    summary: boolean = true
-  ): IDiffResultArrayCleaner {
+  getCleanerVersion<T>(diffResultArray: DiffResultArray<T>, summary: boolean = true): IDiffResultArrayCleaner {
     const cleanerVersion: IDiffResultArrayCleaner = {
       summary: {
         TO_CREATE: 0,
@@ -181,9 +178,9 @@ export abstract class BaseController {
     }
 
     _.extend(cleanerVersion, {
-      TO_CREATE: extractionMethod(diffResultArray.TO_CREATE),
-      TO_UPDATE: extractionMethod(diffResultArray.TO_UPDATE, diffResultArray.TO_UPDATE_OLD),
-      TO_DELETE: extractionMethod(diffResultArray.TO_DELETE)
+      TO_CREATE: this.extractionMethod(diffResultArray.TO_CREATE),
+      TO_UPDATE: this.extractionMethod(diffResultArray.TO_UPDATE, diffResultArray.TO_UPDATE_OLD),
+      TO_DELETE: this.extractionMethod(diffResultArray.TO_DELETE)
     });
 
     return cleanerVersion as IDiffResultArrayCleaner;
