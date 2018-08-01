@@ -177,8 +177,7 @@ export class FieldController extends BaseController {
         const oldFieldModel = oldField.getFieldModel();
 
         const updatedFieldModel: IStringMap<any> = _.mapObject(newFieldModel, (val, key) => {
-          if (oldFieldModel[key] !== val) {
-            // if not empty arrays
+          if (!_.isEqual(oldFieldModel[key], val)) {
             return { new: val, old: oldFieldModel[key] };
           } else {
             return val;
