@@ -89,7 +89,7 @@ export class DiffCommand {
       .diff(options)
       .then((diffResultArray: DiffResultArray<BaseCoveoObject>) => {
         fs
-          .writeJSON(`${objectName}Diff.json`, controller.getCleanerVersion(diffResultArray), { spaces: 2 })
+          .writeJSON(`${objectName}Diff.json`, controller.getCleanVersion(diffResultArray), { spaces: 2 })
           .then(() => {
             Logger.info('Diff operation completed');
             Logger.info(`File saved as ${Colors.filename(objectName + 'Diff.json')}`);

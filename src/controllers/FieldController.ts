@@ -178,7 +178,7 @@ export class FieldController extends BaseController {
 
         const updatedFieldModel: IStringMap<any> = _.mapObject(newFieldModel, (val, key) => {
           if (!_.isEqual(oldFieldModel[key], val)) {
-            return { new: val, old: oldFieldModel[key] };
+            return { newValue: val, oldValue: oldFieldModel[key] };
           } else {
             return val;
           }

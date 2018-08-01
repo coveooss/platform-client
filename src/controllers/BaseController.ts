@@ -18,18 +18,6 @@ export interface IDiffResultArrayClean {
   };
   TO_CREATE: any[];
   TO_UPDATE: any[];
-  TO_UPDATE_OLD: any[];
-  TO_DELETE: any[];
-}
-
-export interface IDiffResultArrayCleaner {
-  summary: {
-    TO_CREATE: number;
-    TO_UPDATE: number;
-    TO_DELETE: number;
-  };
-  TO_CREATE: any[];
-  TO_UPDATE: any[];
   TO_DELETE: any[];
 }
 
@@ -109,56 +97,11 @@ export abstract class BaseController {
    *
    * @template T
    * @param {DiffResultArray<T>} diffResultArray
-   * @param {(object: T[]) => any[]} extractionMethod Method to extract the object model
    * @param {boolean} [summary=true]
    * @returns {IDiffResultArrayClean} The simplified object
    */
-  getCleanVersion<T>(
-    diffResultArray: DiffResultArray<T>,
-    extractionMethod: (object: T[]) => any[],
-    summary: boolean = true
-  ): IDiffResultArrayClean {
-    const cleanVersion: IDiffResultArrayClean = {
-      summary: {
-        TO_CREATE: 0,
-        TO_UPDATE: 0,
-        TO_DELETE: 0
-      },
-      TO_CREATE: [],
-      TO_UPDATE: [],
-      TO_UPDATE_OLD: [],
-      TO_DELETE: []
-    };
-
-    if (summary) {
-      cleanVersion.summary = {
-        TO_CREATE: diffResultArray.TO_CREATE.length,
-        TO_UPDATE: diffResultArray.TO_UPDATE.length,
-        TO_DELETE: diffResultArray.TO_DELETE.length
-      };
-    }
-
-    _.extend(cleanVersion, {
-      TO_CREATE: extractionMethod(diffResultArray.TO_CREATE),
-      TO_UPDATE: extractionMethod(diffResultArray.TO_UPDATE),
-      TO_UPDATE_OLD: extractionMethod(diffResultArray.TO_UPDATE_OLD),
-      TO_DELETE: extractionMethod(diffResultArray.TO_DELETE)
-    });
-
-    return cleanVersion as IDiffResultArrayClean;
-  }
-
-  /**
-   * Return a simplified diff object.
-   * This function makes it easier to get a section of the diff result and use it in a API call.
-   *
-   * @template T
-   * @param {DiffResultArray<T>} diffResultArray
-   * @param {boolean} [summary=true]
-   * @returns {IDiffResultArrayCleaner} The simplified object
-   */
-  getCleanerVersion<T>(diffResultArray: DiffResultArray<T>, summary: boolean = true): IDiffResultArrayCleaner {
-    const cleanerVersion: IDiffResultArrayCleaner = {
+  getCleanVersion<T>(diffResultArray: DiffResultArray<T>, summary: boolean = true): IDiffResultArrayClean {
+    const cleanerVersion: IDiffResultArrayClean = {
       summary: {
         TO_CREATE: 0,
         TO_UPDATE: 0,
@@ -183,6 +126,6 @@ export abstract class BaseController {
       TO_DELETE: this.extractionMethod(diffResultArray.TO_DELETE)
     });
 
-    return cleanerVersion as IDiffResultArrayCleaner;
+    return cleanerVersion as IDiffResultArrayClean;
   }
 }

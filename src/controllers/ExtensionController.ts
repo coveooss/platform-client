@@ -159,7 +159,7 @@ export class ExtensionController extends BaseController {
 
         const updatedExtensionModel: IStringMap<any> = _.mapObject(newExtensionModel, (val, key) => {
           if (!_.isEqual(oldExtensionModel[key], val)) {
-            return { new: val, old: oldExtensionModel[key] };
+            return { newValue: val, oldValue: oldExtensionModel[key] };
           } else {
             return val;
           }

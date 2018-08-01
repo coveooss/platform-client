@@ -26,24 +26,12 @@ export const FieldControllerTest = () => {
       includeInQuery: true
     });
     const field2: Field = new Field({
-      name: 'lastname',
-      description: 'The last name of a person',
-      type: 'STRING',
-      includeInQuery: true
-    });
-    const field2Old: Field = new Field({
-      name: 'lastname',
-      description: 'The last name of a person',
-      type: 'STRING',
-      includeInQuery: false
-    });
-    const field3: Field = new Field({
       name: 'birth',
       description: 'Day of birth',
       type: 'Date',
       includeInQuery: false
     });
-    const field3Old: Field = new Field({
+    const field2Old: Field = new Field({
       name: 'birth',
       description: 'Birthday',
       type: 'Date',
@@ -68,14 +56,11 @@ export const FieldControllerTest = () => {
     describe('GetCleanVersion Method', () => {
       it('Should return the clean diff version - empty', () => {
         const diffResultArray: DiffResultArray<Field> = new DiffResultArray();
-        const cleanVersion = fieldController.getCleanVersion(diffResultArray, (fields: Field[]) =>
-          _.map(fields, (f: Field) => f.getFieldModel())
-        );
+        const cleanVersion = fieldController.getCleanVersion(diffResultArray);
         expect(cleanVersion).to.eql({
           summary: { TO_CREATE: 0, TO_UPDATE: 0, TO_DELETE: 0 },
           TO_CREATE: [],
           TO_UPDATE: [],
-          TO_UPDATE_OLD: [],
           TO_DELETE: []
         });
       });
@@ -84,68 +69,9 @@ export const FieldControllerTest = () => {
         const diffResultArray: DiffResultArray<Field> = new DiffResultArray();
         diffResultArray.TO_CREATE.push(field1);
         diffResultArray.TO_UPDATE.push(field2);
-        diffResultArray.TO_UPDATE.push(field3);
         diffResultArray.TO_UPDATE_OLD.push(field2Old);
 
-        const cleanVersion = fieldController.getCleanVersion(diffResultArray, (fields: Field[]) =>
-          _.map(fields, (f: Field) => f.getFieldModel())
-        );
-        expect(cleanVersion).to.eql({
-          summary: { TO_CREATE: 1, TO_UPDATE: 2, TO_DELETE: 0 },
-          TO_CREATE: [
-            {
-              name: 'firstname',
-              description: 'The first name of a person',
-              type: 'STRING',
-              includeInQuery: true
-            }
-          ],
-          TO_UPDATE: [
-            {
-              name: 'lastname',
-              description: 'The last name of a person',
-              type: 'STRING',
-              includeInQuery: true
-            },
-            {
-              name: 'birth',
-              description: 'Day of birth',
-              type: 'Date',
-              includeInQuery: false
-            }
-          ],
-          TO_DELETE: [],
-          TO_UPDATE_OLD: [
-            {
-              name: 'lastname',
-              description: 'The last name of a person',
-              type: 'STRING',
-              includeInQuery: false
-            }
-          ]
-        });
-      });
-    });
-
-    describe('GetCleanerVersion Method', () => {
-      it('Should return the clean diff version - empty', () => {
-        const diffResultArray: DiffResultArray<Field> = new DiffResultArray();
-        const cleanVersion = fieldController.getCleanerVersion(diffResultArray);
-        expect(cleanVersion).to.eql({
-          summary: { TO_CREATE: 0, TO_UPDATE: 0, TO_DELETE: 0 },
-          TO_CREATE: [],
-          TO_UPDATE: [],
-          TO_DELETE: []
-        });
-      });
-
-      it('Should return the clean diff version', () => {
-        const diffResultArray: DiffResultArray<Field> = new DiffResultArray();
-        diffResultArray.TO_CREATE.push(field1);
-        diffResultArray.TO_UPDATE.push(field3);
-        diffResultArray.TO_UPDATE_OLD.push(field3Old);
-
-        const cleanVersion = fieldController.getCleanerVersion(diffResultArray);
+        const cleanVersion = fieldController.getCleanVersion(diffResultArray);
         expect(cleanVersion).to.eql({
           summary: { TO_CREATE: 1, TO_UPDATE: 1, TO_DELETE: 0 },
           TO_CREATE: [
@@ -160,13 +86,13 @@ export const FieldControllerTest = () => {
             {
               name: 'birth',
               description: {
-                new: 'Day of birth',
-                old: 'Birthday'
+                newValue: 'Day of birth',
+                oldValue: 'Birthday'
               },
               type: 'Date',
               includeInQuery: {
-                new: false,
-                old: true
+                newValue: false,
+                oldValue: true
               }
             }
           ],
