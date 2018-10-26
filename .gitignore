@@ -10,3 +10,4 @@ demo/
 test/mock/
 fieldDiff.json
 package-lock.json
+testScripts
