@@ -51,7 +51,16 @@ export abstract class BaseController {
     } else {
       successLog(response);
     }
-    Logger.insane(`${JsonUtils.stringify(response)} `);
+    const stringifiedResponse = `${JsonUtils.stringify(response)} `;
+
+    // Remove any API Keys from the logs
+    Logger.insane(this.obfuscateAPIKeys(stringifiedResponse));
+  }
+
+  private obfuscateAPIKeys(str: string): string {
+    const regex = /bearer\s[^"]*/gim;
+    const subst = 'Bearer xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
+    return str.replace(regex, subst);
   }
 
   protected errorHandler(error: IGenericError, errorMessage: string) {
