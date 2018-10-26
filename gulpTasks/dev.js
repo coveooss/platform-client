@@ -19,3 +19,12 @@ gulp.task('devTest', ['watchTest'], () => {
   });
   return stream;
 });
+
+gulp.task('devTest-nyan', ['watchTest'], () => {
+  let stream = nodemon({
+    exec: 'gulp test-nyan',
+    watch: 'test',
+    env: { NODE_ENV: process.env.NODE_ENV }
+  });
+  return stream;
+});
