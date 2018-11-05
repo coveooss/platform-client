@@ -114,7 +114,65 @@ export const DiffUtilsTest = () => {
       enabled: true,
       id: 'ccli1wq3fmkys-tknepx33tdhmqibch2uzxhcc44',
       lastModified: 1511812764000,
-      name: 'Reject a document.',
+      name: 'URL Parsing to extract metadata',
+      requiredDataStreams: [],
+      versionId: 'a6LyFxn91XW5IcgNMTKOabXcJWp05e7i',
+      usedBy: [],
+      status: {
+        durationHealth: {
+          healthIndicator: 'UNKNOWN'
+        },
+        dailyStatistics: {
+          averageDurationInSeconds: 0,
+          numberOfErrors: 0,
+          numberOfExecutions: 0,
+          numberOfSkips: 0,
+          numberOfTimeouts: 0
+        },
+        disabledStatus: {},
+        timeoutHealth: {
+          healthIndicator: 'UNKNOWN'
+        }
+      }
+    });
+
+    const extension3: Extension = new Extension({
+      content: '# Small extension',
+      createdDate: 1511812764000,
+      description: '',
+      enabled: true,
+      id: 'ccli1wq3fmkys-xxxxxxxxxxxxxxxx',
+      lastModified: 1511812764000,
+      name: 'extension 3',
+      requiredDataStreams: [],
+      versionId: 'a6LyFxn91XW5IcgNMTKOabXcJWp05e7i',
+      usedBy: [],
+      status: {
+        durationHealth: {
+          healthIndicator: 'UNKNOWN'
+        },
+        dailyStatistics: {
+          averageDurationInSeconds: 0,
+          numberOfErrors: 0,
+          numberOfExecutions: 0,
+          numberOfSkips: 0,
+          numberOfTimeouts: 0
+        },
+        disabledStatus: {},
+        timeoutHealth: {
+          healthIndicator: 'UNKNOWN'
+        }
+      }
+    });
+
+    const extension4: Extension = new Extension({
+      content: '# Updated version of extention 3',
+      createdDate: 1511812764000,
+      description: '',
+      enabled: true,
+      id: 'ccli1wq3fmkys-yyyyyyyyyyyyy',
+      lastModified: 1511812764000,
+      name: 'extension 3',
       requiredDataStreams: [],
       versionId: 'a6LyFxn91XW5IcgNMTKOabXcJWp05e7i',
       usedBy: [],
@@ -137,24 +195,30 @@ export const DiffUtilsTest = () => {
     });
 
     const extension1Dict: Dictionary<Extension> = new Dictionary({
+      extension_xxx: extension4,
       'URL Parsing to extract metadata': extension1
     });
 
     const extension1CopyDict: Dictionary<Extension> = new Dictionary({
+      extension_xxx: extension4,
       'URL Parsing to extract metadata': extension1
     });
 
     const extension2Dict: Dictionary<Extension> = new Dictionary({
-      'URL Parsing to extract metadata': extension2
+      'URL Parsing to extract metadata': extension2,
+      extension_xxx: extension3
     });
 
     describe('Extension Diff', () => {
       it('Should return one updated extension', () => {
         const diff: DiffResultArray<Extension> = DiffUtils.getDiffResult(extension1Dict, extension2Dict);
-        expect(diff.TO_UPDATE.length).to.equal(1);
-        expect(diff.TO_UPDATE_OLD.length).to.equal(1);
+        expect(diff.TO_UPDATE.length).to.equal(2);
+        expect(diff.TO_UPDATE_OLD.length).to.equal(2);
         expect(diff.TO_CREATE.length).to.equal(0);
         expect(diff.TO_DELETE.length).to.equal(0);
+
+        expect(diff.TO_UPDATE_OLD[0].getName()).to.equal(diff.TO_UPDATE[0].getName());
+        expect(diff.TO_UPDATE_OLD[1].getName()).to.equal(diff.TO_UPDATE[1].getName());
       });
 
       it('Should return no modification', () => {
