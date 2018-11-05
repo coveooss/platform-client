@@ -56,9 +56,15 @@ program
   .command('graduate-extensions <originOrg> <destinationOrg> <originApiKey> <destinationApiKey>')
   .description('Graduate one organisation to an other')
   .option('-F, --force', 'Force graduation without confirmation prompt')
-  .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', list)
+  .option(
+    '-o, --onlyKeys []',
+    'Diff only the specified keys. String separated by ",". By default, the extension diff will ignore the following keys: "requiredDataStreams", "content", "description" and "name"',
+    list
+  )
   .option('-m, --methods []', 'HTTP method authorized by the Graduation. Currently, only "POST" method is allowed for extensions.', list, [
-    'POST'
+    'POST',
+    'PUT',
+    'DELETE'
   ])
   .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
   .option(
@@ -73,16 +79,18 @@ program
     // Set graduation options
     const graduateOptions: IGraduateOptions = {
       diffOptions: {
-        keysToIgnore: options.ignoreKeys,
         includeOnly: options.onlyKeys
       },
       force: options.force,
       POST: options.methods.indexOf('POST') > -1,
-      PUT: false,
-      DELETE: false
+      PUT: options.methods.indexOf('PUT') > -1,
+      DELETE: options.methods.indexOf('DELETE') > -1
     };
 
     const command = new GraduateCommand(originOrg, destinationOrg, originApiKey, destinationApiKey);
+    if (!graduateOptions.diffOptions.includeOnly) {
+      graduateOptions.diffOptions.includeOnly = ['requiredDataStreams', 'content', 'description', 'name'];
+    }
     command.graduateExtensions(graduateOptions);
   });
 

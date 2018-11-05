@@ -81,7 +81,7 @@ export abstract class BaseController {
     if (options.POST && diffResultArray.TO_CREATE.length > 0) {
       authorizedOperations.push(graduateNew);
     } else {
-      Logger.verbose('Skipping DELETE operation');
+      Logger.verbose('Skipping POST operation');
     }
     if (options.PUT && diffResultArray.TO_UPDATE.length > 0) {
       authorizedOperations.push(graduateUpdated);

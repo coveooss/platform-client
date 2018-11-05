@@ -29,9 +29,10 @@ export class ExtensionController extends BaseController {
           diffOptions
         );
         if (diffResultArray.containsItems()) {
-          Logger.verbose(`${diffResultArray.TO_CREATE.length} new extension${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
-          Logger.verbose(`${diffResultArray.TO_DELETE.length} deleted extension${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
-          Logger.verbose(`${diffResultArray.TO_UPDATE.length} updated extension${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
+          Logger.verbose('Diff Summary:');
+          Logger.verbose(`${diffResultArray.TO_CREATE.length} extension${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} to creat`);
+          Logger.verbose(`${diffResultArray.TO_DELETE.length} extension${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} to delet`);
+          Logger.verbose(`${diffResultArray.TO_UPDATE.length} extension${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} to update`);
         }
         return diffResultArray;
       })
@@ -60,7 +61,7 @@ export class ExtensionController extends BaseController {
    * @returns {Promise<any[]>}
    */
   graduate(diffResultArray: DiffResultArray<Extension>, options: IHTTPGraduateOptions): Promise<any[]> {
-    if (diffResultArray.TO_CREATE.length > 0) {
+    if (diffResultArray.containsItems()) {
       Logger.loadingTask('Graduating Extensions');
       return Promise.all(
         _.map(
@@ -99,12 +100,13 @@ export class ExtensionController extends BaseController {
   private graduateUpdated(diffResult: DiffResultArray<Extension>): Promise<void[]> {
     Logger.verbose(
       `Updating ${diffResult.TO_UPDATE.length} existing extension${
-        diffResult.TO_CREATE.length > 1 ? 's' : ''
+        diffResult.TO_UPDATE.length > 1 ? 's' : ''
       } in ${this.organization2.getId()} `
     );
     return Promise.all(
-      _.map(diffResult.TO_UPDATE, (extension: Extension) => {
-        return ExtensionAPI.updateExtension(this.organization2, extension.getId(), extension.getExtensionModel())
+      _.map(diffResult.TO_UPDATE, (extension: Extension, idx: number) => {
+        const destinationExtension = diffResult.TO_UPDATE_OLD[idx].getId();
+        return ExtensionAPI.updateExtension(this.organization2, destinationExtension, extension.getExtensionModel())
           .then((response: RequestResponse) => {
             this.successHandler(response, 'PUT operation successfully completed');
           })

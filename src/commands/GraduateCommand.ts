@@ -92,7 +92,7 @@ export class GraduateCommand {
             Logger.stopSpinner();
           });
       } else {
-        Logger.info(`No ${objectName}  were graduated`);
+        Logger.info(`No ${objectName}s were graduated`);
         Logger.stopSpinner();
       }
     });

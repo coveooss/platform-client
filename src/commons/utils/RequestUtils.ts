@@ -70,7 +70,11 @@ export class RequestUtils {
           if (err) {
             reject(err);
           } else {
-            if (response.statusCode === RequestUtils.CREATED || response.statusCode === RequestUtils.NO_CONTENT) {
+            if (
+              response.statusCode === RequestUtils.OK ||
+              response.statusCode === RequestUtils.CREATED ||
+              response.statusCode === RequestUtils.NO_CONTENT
+            ) {
               resolve(response);
             } else {
               reject(JsonUtils.stringify(response.body));
