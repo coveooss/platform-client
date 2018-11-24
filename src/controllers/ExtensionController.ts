@@ -21,7 +21,7 @@ export class ExtensionController extends BaseController {
   static CONTROLLER_NAME: string = 'extensions';
 
   diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Extension>> {
-    return this.loadExtensionsForBothOrganizations(this.organization1, this.organization2)
+    return this.loadExtensionsForBothOrganizations()
       .then(() => {
         const diffResultArray = DiffUtils.getDiffResult(
           this.organization1.getExtensions(),
@@ -140,9 +140,9 @@ export class ExtensionController extends BaseController {
     );
   }
 
-  private loadExtensionsForBothOrganizations(organization1: Organization, organization2: Organization): Promise<Array<{}>> {
+  loadExtensionsForBothOrganizations(): Promise<Array<{}>> {
     Logger.verbose('Loading extensions for both organizations.');
-    return Promise.all([ExtensionAPI.loadExtensions(organization1), ExtensionAPI.loadExtensions(organization2)]);
+    return Promise.all([ExtensionAPI.loadExtensions(this.organization1), ExtensionAPI.loadExtensions(this.organization2)]);
   }
 
   extractionMethod(object: any[], oldVersion?: any[]): any[] {
