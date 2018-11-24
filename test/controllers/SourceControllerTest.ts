@@ -93,7 +93,9 @@ const source1: Source = new Source({
       extensionId: 'ccli1wq3fmkys-tknepx33tdhmqibch2uzxhcc44',
       parameters: {},
       versionId: ''
-    },
+    }
+  ],
+  preConversionExtensions: [
     {
       actionOnError: 'SKIP_EXTENSION',
       condition: '',
@@ -102,7 +104,6 @@ const source1: Source = new Source({
       versionId: ''
     }
   ],
-  preConversionExtensions: [],
   mappings: []
 });
 
@@ -156,7 +157,7 @@ export const SourceControllerTest = () => {
     });
 
     describe('Diff Method', () => {
-      it('Should replace extension Ids their according name', () => {
+      it('Should replace extension ids with their according name', () => {
         const sourceController = new SourceController(org1, org2);
         const extensionDict: Dictionary<Extension> = new Dictionary({
           'URL Parsing to extract metadata': extension1, // in Source 1
@@ -168,18 +169,47 @@ export const SourceControllerTest = () => {
         });
 
         const sourceDict: Dictionary<Source> = new Dictionary({
-          'Sitemap Source': source1,
-          'Web Source': source2
+          'Sitemap Source': source1.clone(), // Make a copy of the source
+          'Web Source': source2.clone() // Make a copy of the source
         });
 
         sourceController.replaceExtensionIdWithName(sourceDict, extensionDict);
         const _source1 = sourceDict.getItem('Sitemap Source');
         expect(_source1.getPostConversionExtensions()[0]['extensionId']).to.eq('URL Parsing to extract metadata');
         expect(_source1.getPostConversionExtensions()[1]['extensionId']).to.eq('Reject a document.');
-        expect(_source1.getPostConversionExtensions()[2]['extensionId']).to.eq('Simply prints something');
+        expect(_source1.getPreConversionExtensions()[0]['extensionId']).to.eq('Simply prints something');
 
         const _source2 = sourceDict.getItem('Web Source');
         expect(_source2.getPostConversionExtensions()[0]['extensionId']).to.eq('Simply prints something');
+      });
+
+      it('Should replace extension name with their according id', () => {
+        const sourceController = new SourceController(org1, org2);
+        const extensionDict: Dictionary<Extension> = new Dictionary({
+          'URL Parsing to extract metadata': extension1, // in Source 1
+          'Reject a document.': extension2, // in Source 1
+          'dummyExtension 1': dummyExtension1,
+          'Simply prints something': extension3, // in Source 2
+          'dummyExtension 2': dummyExtension2,
+          'dummyExtension 3': dummyExtension3
+        });
+
+        const sourceDict: Dictionary<Source> = new Dictionary({
+          'Sitemap Source': source1.clone(),
+          'Web Source': source2.clone()
+        });
+
+        sourceController.replaceExtensionIdWithName(sourceDict, extensionDict);
+        // Now do the revert operation
+        sourceController.replaceExtensionNameWithId(sourceDict, extensionDict);
+
+        const _source1 = sourceDict.getItem('Sitemap Source');
+        expect(_source1.getPostConversionExtensions()[0]['extensionId']).to.eq('ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu');
+        expect(_source1.getPostConversionExtensions()[1]['extensionId']).to.eq('ccli1wq3fmkys-tknepx33tdhmqibch2uzxhcc44');
+        expect(_source1.getPreConversionExtensions()[0]['extensionId']).to.eq('ccli1wq3fmkys-tdosaijdfsafds9fidsf0d9sfd3');
+
+        const _source2 = sourceDict.getItem('Web Source');
+        expect(_source2.getPostConversionExtensions()[0]['extensionId']).to.eq('ccli1wq3fmkys-tdosaijdfsafds9fidsf0d9sfd3');
       });
     });
 

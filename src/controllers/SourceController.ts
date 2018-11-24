@@ -62,27 +62,50 @@ export class SourceController extends BaseController {
     // TODO: Can be optimized
     _.each(sourceList.values(), (source: Source) => {
       // Get all extensions associated to the source
-      _.each(source.getPostConversionExtensions(), (sourceExt: IStringMap<string>) => {
-        Assert.exists(sourceExt.extensionId, 'Missing extensionId value from extension');
-        // For each extension associated to the source, replace its id by its name
-        const extensionFound = _.find(extensionList.values(), (extension: Extension) => {
-          return extension.getId() === sourceExt.extensionId;
-        });
+      const extensionReplacer = (sourceExtensionsList: Array<IStringMap<string>>) => {
+        _.each(sourceExtensionsList, (sourceExt: IStringMap<string>) => {
+          Assert.exists(sourceExt.extensionId, 'Missing extensionId value from extension');
+          // For each extension associated to the source, replace its id by its name
+          const extensionFound = _.find(extensionList.values(), (extension: Extension) => {
+            return extension.getId() === sourceExt.extensionId;
+          });
 
-        if (extensionFound) {
-          sourceExt.extensionId = extensionFound.getName();
-        } else {
-          throw new Error('Unable to map extension name to id');
-        }
-      });
+          if (extensionFound) {
+            sourceExt.extensionId = extensionFound.getName();
+          } else {
+            throw new Error('Unable to map extension id to name');
+          }
+        });
+      };
 
       // Post conversion extensions
+      extensionReplacer(source.getPostConversionExtensions());
       // pre conversion extensions
+      extensionReplacer(source.getPreConversionExtensions());
     });
   }
 
-  replaceNameWithId(sourceList: Dictionary<Source>, extensionList: Dictionary<Extension>) {
-    throw new Error('TODO: To implement');
+  replaceExtensionNameWithId(sourceList: Dictionary<Source>, extensionList: Dictionary<Extension>) {
+    _.each(sourceList.values(), (source: Source) => {
+      // Get all extensions associated to the source
+      const extensionReplacer = (sourceExtensionsList: Array<IStringMap<string>>) => {
+        _.each(sourceExtensionsList, (sourceExt: IStringMap<string>) => {
+          Assert.exists(sourceExt.extensionId, 'Missing extensionId value from extension');
+          const extensionFound = extensionList.getItem(sourceExt.extensionId);
+
+          if (extensionFound) {
+            sourceExt.extensionId = extensionFound.getId();
+          } else {
+            throw new Error('Unable to map extension name to id');
+          }
+        });
+      };
+
+      // Post conversion extensions
+      extensionReplacer(source.getPostConversionExtensions());
+      // pre conversion extensions
+      extensionReplacer(source.getPreConversionExtensions());
+    });
   }
 
   /**
