@@ -121,7 +121,7 @@ program
   .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
   .option(
     '-o, --onlyKeys []',
-    'Diff only the specified keys. String separated by ",". By default, the extension diff will ignore the following keys: "requiredDataStreams", "content", "description" and "name"',
+    'Diff only the specified keys. String separated by ",". By default, the extension diff will only diff the following keys: "requiredDataStreams", "content", "description" and "name"',
     list
   )
   .option(
@@ -140,9 +140,55 @@ program
       silent: options.silent
     };
 
+    // TODO: Add the extensions to diff as an option
     const command = new DiffCommand(originOrg, destinationOrg, originApiKey, destinationApiKey);
     diffOptions.includeOnly = diffOptions.includeOnly ? diffOptions.includeOnly : ['requiredDataStreams', 'content', 'description', 'name'];
     command.diffExtensions(diffOptions);
+  });
+
+// Diff Sources
+program
+  .command('diff-sources <originOrg> <destinationOrg> <originApiKey> <destinationApiKey>')
+  .description(['Diff the sources of 2 Organizations.'])
+  .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
+  // .option('-r, --rebuild', 'Rebuild the source once created. Default is false', false)
+  .option('-S, --sources []', 'List of sources to diff. String separated by ",". If no specified, all the sources will be diffed', list)
+  // Maybe we can use one of these options
+  // .option('-M, --skipMappings', 'Keys to ignore. String separated by ",".', false)
+  // .option('-E, --skipExtensions', 'Keys to ignore. String separated by ",".', false)
+
+  // Not sure ignore keys are relavant here
+  // .option('-i, --ignoreKeys []', 'Keys to ignore. String separated by ",".', list)
+  // .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', list)
+  .option(
+    '-o, --ignoreKeys []',
+    'Keys to ignore. String separated by ",". By default, the extension diff will only diff the following keys: "TODO:///"',
+    list
+  )
+  .option(
+    '-l, --logLevel <level>',
+    'Possible values are: insane, verbose, info (default), error, nothing',
+    /^(insane|verbose|info|error|nothing)$/i,
+    'info'
+  )
+  .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
+  .action((originOrg: string, destinationOrg: string, originApiKey: string, destinationApiKey: string, options: any) => {
+    setLogger(options, 'diff-fields');
+
+    // Set diff options
+    const diffOptions: IDiffOptions = {
+      silent: options.silent,
+      sources: options.sources
+    };
+
+    const command = new DiffCommand(originOrg, destinationOrg, originApiKey, destinationApiKey);
+    // TODO: add keys to ignore
+    // * resourceId
+    // * id
+    // * information
+    // * owner
+    // diffOptions.includeOnly = diffOptions.includeOnly ? diffOptions.includeOnly : ['requiredDataStreams', 'content', 'description', 'name'];
+    command.diffSources(diffOptions);
   });
 
 // Download Fields

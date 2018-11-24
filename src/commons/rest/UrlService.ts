@@ -41,4 +41,13 @@ export class UrlService {
     Assert.isLargerThan(0, fieldList.length);
     return `${this.getOrganizationUrl(organizationId)}/indexes/fields/batch/delete?fields=${fieldList.join(separator)}`;
   }
+
+  /*** Source API ***/
+  static getSourcesUrl(organizationId: string): string {
+    return `${this.getOrganizationUrl(organizationId)}/sources`;
+  }
+
+  static getSingleSourceUrl(organizationId: string, sourceId: string): string {
+    return `${this.getOrganizationUrl(organizationId)}/source/${sourceId}`;
+  }
 }
