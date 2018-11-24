@@ -1,3 +1,4 @@
+import * as _ from 'underscore';
 import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { IDownloadResultArray } from '../commons/collections/DownloadResultArray';
@@ -12,6 +13,8 @@ import { Logger } from '../commons/logger';
 import { SourceAPI } from '../commons/rest/SourceAPI';
 import { Dictionary } from '../commons/collections/Dictionary';
 import { Extension } from '../coveoObjects/Extension';
+import { IStringMap } from '../commons/interfaces/IStringMap';
+import { Assert } from '../commons/misc/Assert';
 
 export class SourceController extends BaseController {
   private extensionController: ExtensionController;
@@ -36,9 +39,10 @@ export class SourceController extends BaseController {
 
         const diffResultArray = DiffUtils.getDiffResult(sources1, sources2, diffOptions);
         if (diffResultArray.containsItems()) {
-          if (diffResultArray.TO_CREATE.length) {
+          // TODO: probably not requierd for the diff, but will be for graduate
+          if (diffResultArray.TO_CREATE.length + diffResultArray.TO_DELETE.length > 0) {
             throw new Error(
-              'Missing extensions in destination org. Run `graduate-extensions` first or use the --skipExtensions option to ignore extensions.'
+              'Inconsistent number of extensions between orgs. Run `graduate-extensions` first or use the --skipExtensions option to ignore extensions.'
             );
           }
           Logger.verbose(`${diffResultArray.TO_CREATE.length} new source${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
@@ -55,7 +59,26 @@ export class SourceController extends BaseController {
   }
 
   replaceExtensionIdWithName(sourceList: Dictionary<Source>, extensionList: Dictionary<Extension>) {
-    throw new Error('TODO: To implement');
+    // TODO: Can be optimized
+    _.each(sourceList.values(), (source: Source) => {
+      // Get all extensions associated to the source
+      _.each(source.getPostConversionExtensions(), (sourceExt: IStringMap<string>) => {
+        Assert.exists(sourceExt.extensionId, 'Missing extensionId value from extension');
+        // For each extension associated to the source, replace its id by its name
+        const extensionFound = _.find(extensionList.values(), (extension: Extension) => {
+          return extension.getId() === sourceExt.extensionId;
+        });
+
+        if (extensionFound) {
+          sourceExt.extensionId = extensionFound.getName();
+        } else {
+          throw new Error('Unable to map extension name to id');
+        }
+      });
+
+      // Post conversion extensions
+      // pre conversion extensions
+    });
   }
 
   replaceNameWithId(sourceList: Dictionary<Source>, extensionList: Dictionary<Extension>) {

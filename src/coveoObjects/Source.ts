@@ -28,11 +28,11 @@ export class Source extends BaseCoveoObject implements ISource {
     return this.configuration['mappings'];
   }
 
-  getPostConversionExtensions(): any[] {
+  getPostConversionExtensions(): Array<IStringMap<string>> {
     return this.configuration['postConversionExtensions'];
   }
 
-  getPreConversionExtensions() {
+  getPreConversionExtensions(): Array<IStringMap<string>> {
     return this.configuration['preConversionExtensions'];
   }
 

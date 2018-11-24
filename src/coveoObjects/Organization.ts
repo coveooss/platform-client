@@ -69,6 +69,21 @@ export class Organization extends BaseCoveoObject implements IOrganization {
     return this.sources.clone();
   }
 
+  /**
+   * Add a soucre to the Organization
+   *
+   * @param {Source} source Source to be added
+   */
+  addSource(source: Source) {
+    // Using the source name as the key since the source ID is not the same from on org to another
+    Assert.isUndefined(this.sources.getItem(source.getName()), `At least 2 sources are having the same name: ${source.getName()}`);
+    this.sources.add(source.getName(), source);
+  }
+
+  clearSources() {
+    this.sources.clear();
+  }
+
   getExtensions(): Dictionary<Extension> {
     return this.extensions.clone();
   }
@@ -85,17 +100,6 @@ export class Organization extends BaseCoveoObject implements IOrganization {
       `At least 2 extensions are having the same name: ${extension.getName()}`
     );
     this.extensions.add(extension.getName(), extension);
-  }
-
-  /**
-   * Add a soucre to the Organization
-   *
-   * @param {Source} source Source to be added
-   */
-  addSource(source: Source) {
-    // Using the source name as the key since the source ID is not the same from on org to another
-    Assert.isUndefined(this.sources.getItem(source.getName()), `At least 2 sources are having the same name: ${source.getName()}`);
-    this.sources.add(source.getName(), source);
   }
 
   /**
