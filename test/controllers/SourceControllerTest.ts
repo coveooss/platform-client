@@ -125,6 +125,228 @@ const source2: Source = new Source({
   mappings: []
 });
 
+const allSourcesWithInexistingExtensions = [
+  {
+    sourceType: 'SITEMAP',
+    id: 'cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74',
+    name: 'sitemaptest',
+    owner: 'user@coveo.com-google',
+    sourceVisibility: 'PRIVATE',
+    information: {
+      sourceStatus: {
+        type: 'DISABLED',
+        allowedOperations: ['DELETE', 'REBUILD']
+      },
+      rebuildRequired: true,
+      numberOfDocuments: 0,
+      documentsTotalSize: 0
+    },
+    pushEnabled: false,
+    onPremisesEnabled: false,
+    preConversionExtensions: [],
+    postConversionExtensions: [
+      {
+        actionOnError: 'SKIP_EXTENSION',
+        condition: '',
+        extensionId: 'cclidev2l78wr0o-----DOES-NOT-EXIST-----',
+        parameters: {},
+        versionId: ''
+      },
+      {
+        actionOnError: 'SKIP_EXTENSION',
+        condition: '',
+        extensionId: 'ccli1wq3fmkys-tknepx33tdhmqibch2uzxhcc44',
+        parameters: {},
+        versionId: ''
+      }
+    ],
+    permissions: {
+      permissionLevels: [
+        {
+          name: 'Source Specified Permissions',
+          permissionSets: [
+            {
+              name: 'Private',
+              permissions: [
+                {
+                  allowed: true,
+                  identityType: 'USER',
+                  identity: 'user@coveo.com',
+                  securityProvider: 'Email Security Provider'
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    urlFilters: [
+      {
+        filter: '*',
+        includeFilter: true,
+        filterType: 'WILDCARD'
+      }
+    ],
+    resourceId: 'cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74'
+  },
+  {
+    sourceType: 'YOUTUBE',
+    id: 'cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq',
+    name: 'youtube test',
+    owner: 'user@coveo.com-google',
+    sourceVisibility: 'SHARED',
+    information: {
+      sourceStatus: {
+        type: 'DISABLED',
+        allowedOperations: ['DELETE', 'REBUILD']
+      },
+      rebuildRequired: true,
+      numberOfDocuments: 0,
+      documentsTotalSize: 0
+    },
+    pushEnabled: false,
+    onPremisesEnabled: false,
+    preConversionExtensions: [],
+    postConversionExtensions: [],
+    urlFilters: [
+      {
+        filter: '*',
+        includeFilter: true,
+        filterType: 'WILDCARD'
+      }
+    ],
+    resourceId: 'cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq'
+  }
+];
+
+const ur4el4nwejfvpghipsvvs32m74 = {
+  sourceType: 'SITEMAP',
+  id: 'cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74',
+  name: 'sitemaptest',
+  owner: 'user@coveo.com-google',
+  sourceVisibility: 'PRIVATE',
+  mappings: [
+    {
+      id: 'vec6n33ff6b2jx7pdzosw6sbve',
+      kind: 'COMMON',
+      fieldName: 'mobilephone',
+      extractionMethod: 'METADATA',
+      content: '%[mobile]'
+    }
+  ],
+  information: {
+    sourceStatus: {
+      type: 'DISABLED',
+      allowedOperations: ['DELETE', 'REBUILD']
+    },
+    rebuildRequired: true,
+    numberOfDocuments: 0,
+    documentsTotalSize: 0
+  },
+  pushEnabled: false,
+  onPremisesEnabled: false,
+  preConversionExtensions: [],
+  postConversionExtensions: [
+    {
+      actionOnError: 'SKIP_EXTENSION',
+      condition: '',
+      extensionId: 'cclidev2l78wr0o-----DOES-NOT-EXIST-----',
+      parameters: {},
+      versionId: ''
+    },
+    {
+      actionOnError: 'SKIP_EXTENSION',
+      condition: '',
+      extensionId: 'ccli1wq3fmkys-tknepx33tdhmqibch2uzxhcc44',
+      parameters: {},
+      versionId: ''
+    }
+  ],
+  permissions: {
+    permissionLevels: [
+      {
+        name: 'Source Specified Permissions',
+        permissionSets: [
+          {
+            name: 'Private',
+            permissions: [
+              {
+                allowed: true,
+                identityType: 'USER',
+                identity: 'user@coveo.com',
+                securityProvider: 'Email Security Provider'
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  urlFilters: [
+    {
+      filter: '*',
+      includeFilter: true,
+      filterType: 'WILDCARD'
+    }
+  ],
+  username: 'megatron',
+  urls: ['http://test.com'],
+  userAgent: 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko) (compatible; Coveobot/2.0;+http://www.coveo.com/bot.html)',
+  enableJavaScript: true,
+  javaScriptLoadingDelayInMilliseconds: 0,
+  requestsTimeoutInSeconds: 100,
+  scrapingConfiguration:
+    '[\n  {\n    "for": {\n    "urls": [".*"]\n    },\n    "exclude": [\n      {\n        "type": "CSS",\n        "path": "body header"\n      },\n      {\n        "type": "CSS",\n        "path": "#herobox"\n      },\n      {\n        "type": "CSS",\n        "path": "#mainbar .everyonelovesstackoverflow"\n      },\n      {\n        "type": "CSS",\n        "path": "#sidebar"\n      },\n      {\n        "type": "CSS",\n        "path": "#footer"\n      },\n      {\n        "type": "CSS",\n        "path": "#answers"\n      }\n    ],\n    "metadata": {\n      "askeddate":{\n        "type": "CSS",\n        "path": "div#sidebar table#qinfo p::attr(title)"\n      },\n      "upvotecount": {\n        "type": "XPATH",\n        "path": "//div[@id=\'question\'] //span[@itemprop=\'upvoteCount\']/text()"\n      },\n      "author":{\n        "type": "CSS",\n        "path": "td.post-signature.owner div.user-details a::text"\n      }\n    },\n    "subItems": {\n      "answer": {\n        "type": "css",\n        "path": "#answers div.answer"\n      }\n    }\n  }, {\n    "for": {\n      "types": ["answer"]\n    },\n    "metadata": {\n      "upvotecount": {\n        "type": "XPATH",\n        "path": "//span[@itemprop=\'upvoteCount\']/text()"\n      },\n      "author": {\n        "type": "CSS",\n        "path": "td.post-signature:last-of-type div.user-details a::text"\n      }\n    }\n  }\n]',
+  resourceId: 'cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74'
+};
+
+const uwfuop2jp2hdvo5ao7abjlsgyq = {
+  sourceType: 'YOUTUBE',
+  id: 'cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq',
+  name: 'youtube test',
+  owner: 'user@coveo.com-google',
+  sourceVisibility: 'SHARED',
+  mappings: [
+    {
+      id: 'vxmnzryqjok5thqalcyyyekpsa',
+      kind: 'COMMON',
+      fieldName: 'ytplaylistitemstitle',
+      extractionMethod: 'METADATA',
+      content: '%[coveo_PlaylistItemsTitle]'
+    },
+    {
+      id: 'w2j6ztwrrdu7aun6inmjce2nvu',
+      kind: 'COMMON',
+      fieldName: 'ytvideodefinition',
+      extractionMethod: 'METADATA',
+      content: '%[coveo_VideoDefinition]'
+    }
+  ],
+  information: {
+    sourceStatus: {
+      type: 'DISABLED',
+      allowedOperations: ['DELETE', 'REBUILD']
+    },
+    rebuildRequired: true,
+    numberOfDocuments: 0,
+    documentsTotalSize: 0
+  },
+  pushEnabled: false,
+  onPremisesEnabled: false,
+  preConversionExtensions: [],
+  postConversionExtensions: [],
+  urlFilters: [
+    {
+      filter: '*',
+      includeFilter: true,
+      filterType: 'WILDCARD'
+    }
+  ],
+  urls: ['https://www.youtube.com/dummy'],
+  indexPlaylists: false,
+  resourceId: 'cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq'
+};
+
 export const SourceControllerTest = () => {
   describe('Source Controller', () => {
     // Organizations
@@ -134,14 +356,12 @@ export const SourceControllerTest = () => {
     // Controller
     const controller = new SourceController(org1, org2);
 
-    // let scope: nock.Scope;
-
-    // Define variables here
+    let scope: nock.Scope;
 
     afterEach(() => {
-      // if (Utils.exists(scope)) {
-      //   expect(scope.pendingMocks(), scope.pendingMocks().toString()).to.be.empty;
-      // }
+      if (Utils.exists(scope)) {
+        expect(scope.pendingMocks(), scope.pendingMocks().toString()).to.be.empty;
+      }
 
       // Reset Orgs
       org1.clearSources();
@@ -156,7 +376,7 @@ export const SourceControllerTest = () => {
       // TODO
     });
 
-    describe('Diff Method', () => {
+    describe('Extension ID and Name replacements', () => {
       it('Should replace extension ids with their according name', () => {
         const sourceController = new SourceController(org1, org2);
         const extensionDict: Dictionary<Extension> = new Dictionary({
@@ -210,6 +430,47 @@ export const SourceControllerTest = () => {
 
         const _source2 = sourceDict.getItem('Web Source');
         expect(_source2.getPostConversionExtensions()[0]['extensionId']).to.eq('ccli1wq3fmkys-tdosaijdfsafds9fidsf0d9sfd3');
+      });
+
+      it('Should throw an error if the extension does not exist in the organization', () => {
+        const sourceController = new SourceController(org1, org2);
+        const extensionDict: Dictionary<Extension> = new Dictionary({});
+
+        const sourceDict: Dictionary<Source> = new Dictionary({
+          'Sitemap Source': source1.clone()
+        });
+
+        expect(() => sourceController.replaceExtensionIdWithName(sourceDict, extensionDict)).to.throw();
+        expect(() => sourceController.replaceExtensionNameWithId(sourceDict, extensionDict)).to.throw();
+      });
+    });
+
+    describe('Diff Method', () => {
+      it('Should throw an error if an extension that does not exists is used by a source', (done: MochaDone) => {
+        // TODO: This test is not usefull. this should be tested for PUT and DELETE  fraduate operations
+        scope = nock(UrlService.getDefaultUrl())
+          // First expected request
+          .get('/rest/organizations/dev/sources')
+          .reply(RequestUtils.OK, allSourcesWithInexistingExtensions)
+          // Fetching dev sources one by one
+          .get('/rest/organizations/dev/sources/cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74')
+          .reply(RequestUtils.OK, ur4el4nwejfvpghipsvvs32m74)
+          .get('/rest/organizations/dev/sources/cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq')
+          .reply(RequestUtils.OK, uwfuop2jp2hdvo5ao7abjlsgyq)
+          // Fecthing all prod sources
+          .get('/rest/organizations/prod/sources')
+          .reply(RequestUtils.OK, {});
+
+        controller
+          .diff()
+          .then((diff: DiffResultArray<Source>) => {
+            done('This function should not resolve');
+          })
+          .catch((err: IGenericError) => {
+            expect(err.message).to.equal('Extension does not exsist');
+            nock.cleanAll();
+            done();
+          });
       });
     });
 

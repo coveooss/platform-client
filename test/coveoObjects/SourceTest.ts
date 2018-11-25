@@ -82,6 +82,14 @@ export const SourceTest = () => {
       expect(testSource.getId()).to.equal('r6ud7iksjhafgjpiokjh-sdfgr3e');
     });
 
+    it('Should return the source name', () => {
+      expect(testSource.getName()).to.equal('testSource');
+    });
+
+    it('Should return the source type', () => {
+      expect(testSource.getSourceType()).to.equal('SITEMAP');
+    });
+
     it('Should return the source mappings', () => {
       expect(testSource.getMappings()).to.eql([
         {

@@ -48,6 +48,6 @@ export class UrlService {
   }
 
   static getSingleSourceUrl(organizationId: string, sourceId: string): string {
-    return `${this.getOrganizationUrl(organizationId)}/source/${sourceId}`;
+    return `${this.getOrganizationUrl(organizationId)}/sources/${sourceId}`;
   }
 }

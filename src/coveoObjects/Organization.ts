@@ -1,3 +1,4 @@
+import * as _ from 'underscore';
 import { Dictionary } from '../commons/collections/Dictionary';
 import { IOrganization } from '../commons/interfaces/IOrganization';
 import { IStringMap } from '../commons/interfaces/IStringMap';
@@ -118,9 +119,24 @@ export class Organization extends BaseCoveoObject implements IOrganization {
     this.extensions.clear();
   }
 
+  clearAll() {
+    this.clearExtensions();
+    this.clearFields();
+    this.clearSources();
+  }
+
   clone() {
     const newOrg = new Organization(this.getId(), this.getApiKey());
-    // TODO: add extensions, mappings and fields
+    _.each(this.fields.values(), (field: Field) => {
+      newOrg.addField(field.clone());
+    });
+    _.each(this.extensions.values(), (extension: Extension) => {
+      newOrg.addExtension(extension.clone());
+    });
+    _.each(this.sources.values(), (source: Source) => {
+      newOrg.addSource(source.clone());
+    });
+
     return newOrg;
   }
 }

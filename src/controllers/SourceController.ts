@@ -25,26 +25,40 @@ export class SourceController extends BaseController {
 
   static CONTROLLER_NAME: string = 'source';
 
+  private shouldSkipExtension(diffOptions?: IDiffOptions): boolean {
+    return (
+      diffOptions !== undefined &&
+      diffOptions.keysToIgnore !== undefined &&
+      _.contains(diffOptions.keysToIgnore, 'postConversionExtensions') &&
+      _.contains(diffOptions.keysToIgnore, 'preConversionExtensions')
+    );
+  }
+
   diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Source>> {
-    // Load the extensions and the source configuration
-    // TODO: do not load the extensions if the user want to skip the extension diff
-    Promise.all([this.extensionController.loadExtensionsForBothOrganizations(), this.loadSourcesForBothOrganizations()])
+    // Do not load extensions if --skipExtension option is present
+    const diffActions = [this.loadSourcesForBothOrganizations()];
+    if (this.shouldSkipExtension(diffOptions)) {
+      diffActions.push(this.extensionController.loadExtensionsForBothOrganizations());
+    }
+    return Promise.all(diffActions)
       .then(() => {
-        // Here, the extensions should have the same name
         const sources1 = this.organization1.getSources();
         const sources2 = this.organization2.getSources();
 
-        this.replaceExtensionIdWithName(sources1, this.organization1.getExtensions());
-        this.replaceExtensionIdWithName(sources2, this.organization2.getExtensions());
+        if (!this.shouldSkipExtension(diffOptions)) {
+          // No error should be raised here as all extensions defined in a source should be available in the organization
+          this.replaceExtensionIdWithName(sources1, this.organization1.getExtensions());
+          this.replaceExtensionIdWithName(sources2, this.organization2.getExtensions());
+        }
 
         const diffResultArray = DiffUtils.getDiffResult(sources1, sources2, diffOptions);
         if (diffResultArray.containsItems()) {
           // TODO: probably not requierd for the diff, but will be for graduate
-          if (diffResultArray.TO_CREATE.length + diffResultArray.TO_DELETE.length > 0) {
-            throw new Error(
-              'Inconsistent number of extensions between orgs. Run `graduate-extensions` first or use the --skipExtensions option to ignore extensions.'
-            );
-          }
+          // if (diffResultArray.TO_CREATE.length + diffResultArray.TO_DELETE.length > 0) {
+          //   throw new Error(
+          //     'Inconsistent number of extensions between orgs. Run `graduate-extensions` first or use the --skipExtensions option to ignore extensions.'
+          //   );
+          // }
           Logger.verbose(`${diffResultArray.TO_CREATE.length} new source${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
           Logger.verbose(`${diffResultArray.TO_DELETE.length} deleted source${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
           Logger.verbose(`${diffResultArray.TO_UPDATE.length} updated source${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
@@ -52,10 +66,9 @@ export class SourceController extends BaseController {
         return diffResultArray;
       })
       .catch((err: IGenericError) => {
-        this.errorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_EXTENTIONS);
+        this.errorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_SOURCES);
         return Promise.reject(err);
       });
-    throw new Error('TODO: To implement');
   }
 
   replaceExtensionIdWithName(sourceList: Dictionary<Source>, extensionList: Dictionary<Extension>) {
@@ -73,7 +86,7 @@ export class SourceController extends BaseController {
           if (extensionFound) {
             sourceExt.extensionId = extensionFound.getName();
           } else {
-            throw new Error('Unable to map extension id to name');
+            throw new Error('Extension does not exsist');
           }
         });
       };
@@ -96,7 +109,7 @@ export class SourceController extends BaseController {
           if (extensionFound) {
             sourceExt.extensionId = extensionFound.getId();
           } else {
-            throw new Error('Unable to map extension name to id');
+            throw new Error('Extension does not exsist');
           }
         });
       };
@@ -139,7 +152,7 @@ export class SourceController extends BaseController {
   }
 
   loadSourcesForBothOrganizations(): Promise<Array<{}>> {
-    Logger.verbose('Loading sources for both organizations.');
+    Logger.verbose('Loading sources from both organizations.');
     return Promise.all([SourceAPI.loadSources(this.organization1), SourceAPI.loadSources(this.organization2)]);
   }
 }

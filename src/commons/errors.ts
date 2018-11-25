@@ -24,6 +24,7 @@ export class StaticErrorMessage {
   static UNABLE_TO_DELETE_FIELDS: string = 'Unable to delete field';
 
   // Extensions
+  static UNABLE_TO_LOAD_SOURCES: string = 'Unable to load sources';
   static UNABLE_TO_LOAD_EXTENTIONS: string = 'Unable to load extensions';
   static UNABLE_TO_LOAD_SINGLE_EXTENTION: string = 'Unable to load single extension';
   static UNABLE_TO_CREATE_EXTENSIONS: string = 'Unable to create extension';

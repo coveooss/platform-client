@@ -24,6 +24,7 @@ import { ExtensionTest } from './coveoObjects/ExtensionTest';
 import { FieldTest } from './coveoObjects/FieldTest';
 import { OrganizationTest } from './coveoObjects/OrganizationTest';
 import { SourceTest } from './coveoObjects/SourceTest';
+import { SourceAPITest } from './commons/rest/SourceAPITest';
 
 console.log(`Environment: ${config.env}\n`);
 
@@ -52,6 +53,7 @@ ErrorTest();
 // Common / Rest
 FieldAPITest();
 ExtensionAPITest();
+SourceAPITest();
 UrlServiceTest();
 
 // Utils
