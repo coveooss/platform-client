@@ -40,7 +40,7 @@ export class SourceAPI {
   }
 
   static loadEachSource(org: Organization, response: RequestResponse) {
-    Logger.verbose(`${response.body.length} sources found from ${Colors.organization(org.getId())}`);
+    Logger.verbose(`${response.body.length} sources found from ${Colors.organization(org.getId())} to fetch`);
     return Promise.all(
       _.map(response.body, (source: any) => {
         Assert.exists(source['id'], StaticErrorMessage.UNEXPECTED_RESPONSE);
