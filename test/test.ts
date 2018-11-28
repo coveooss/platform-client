@@ -31,43 +31,43 @@ console.log(`Environment: ${config.env}\n`);
 Logger.disableSpinner();
 
 // Coveo Objects
-FieldTest();
-ExtensionTest();
-OrganizationTest();
-SourceTest();
+// FieldTest();
+// ExtensionTest();
+// OrganizationTest();
+// SourceTest();
 
-// Controllers
-FieldControllerTest();
-ExtensionControllerTest();
+// // Controllers
+// FieldControllerTest();
+// ExtensionControllerTest();
 SourceControllerTest();
 
-// Common / Collection
-DictionaryTest();
-DiffResultArrayTest();
-DownloadResultArrayTest();
+// // Common / Collection
+// DictionaryTest();
+// DiffResultArrayTest();
+// DownloadResultArrayTest();
 
-// Common
-LoggerTest();
-ErrorTest();
+// // Common
+// LoggerTest();
+// ErrorTest();
 
-// Common / Rest
-FieldAPITest();
-ExtensionAPITest();
-SourceAPITest();
-UrlServiceTest();
+// // Common / Rest
+// FieldAPITest();
+// ExtensionAPITest();
+// SourceAPITest();
+// UrlServiceTest();
 
-// Utils
-ArrayUtilTest();
-DiffUtilsTest();
-DownloadUtilsTest();
-EnvironmentUtilsTest();
-FileUtilsTest();
-JsonUtilsTest();
-RequestUtilsTest();
-UtilsTest();
+// // Utils
+// ArrayUtilTest();
+// DiffUtilsTest();
+// DownloadUtilsTest();
+// EnvironmentUtilsTest();
+// FileUtilsTest();
+// JsonUtilsTest();
+// RequestUtilsTest();
+// UtilsTest();
 
-// Config
-configTest();
+// // Config
+// configTest();
 
-// Console
-// ConsoleTest();
+// // Console
+// // ConsoleTest();

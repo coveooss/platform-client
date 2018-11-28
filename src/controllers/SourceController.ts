@@ -15,6 +15,7 @@ import { Dictionary } from '../commons/collections/Dictionary';
 import { Extension } from '../coveoObjects/Extension';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { Assert } from '../commons/misc/Assert';
+import { ExtensionAPI } from '../commons/rest/ExtensionAPI';
 
 export class SourceController extends BaseController {
   private extensionController: ExtensionController;
@@ -37,18 +38,20 @@ export class SourceController extends BaseController {
   diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Source>> {
     // Do not load extensions if --skipExtension option is present
     const diffActions = [this.loadSourcesForBothOrganizations()];
-    if (this.shouldSkipExtension(diffOptions)) {
-      diffActions.push(this.extensionController.loadExtensionsForBothOrganizations());
+    // FIXME: do not load each extension one by one. Just load the extension list and cache it
+    if (!this.shouldSkipExtension(diffOptions)) {
+      diffActions.push(this.loadExtensionsListForBothOrganizations());
     }
     return Promise.all(diffActions)
-      .then(() => {
+      .then(results => {
+        const extensionList = results[1];
         const sources1 = this.organization1.getSources();
         const sources2 = this.organization2.getSources();
 
         if (!this.shouldSkipExtension(diffOptions)) {
           // No error should be raised here as all extensions defined in a source should be available in the organization
-          this.replaceExtensionIdWithName(sources1, this.organization1.getExtensions());
-          this.replaceExtensionIdWithName(sources2, this.organization2.getExtensions());
+          this.replaceExtensionIdWithName(sources1, extensionList[0]);
+          this.replaceExtensionIdWithName(sources2, extensionList[1]);
         }
 
         const diffResultArray = DiffUtils.getDiffResult(sources1, sources2, diffOptions);
@@ -71,7 +74,7 @@ export class SourceController extends BaseController {
       });
   }
 
-  replaceExtensionIdWithName(sourceList: Dictionary<Source>, extensionList: Dictionary<Extension>) {
+  replaceExtensionKey(sourceList: Dictionary<Source>, extensionList: any[], inputKey: string, outputKey: string) {
     // TODO: Can be optimized
     _.each(sourceList.values(), (source: Source) => {
       // Get all extensions associated to the source
@@ -79,14 +82,14 @@ export class SourceController extends BaseController {
         _.each(sourceExtensionsList, (sourceExt: IStringMap<string>) => {
           Assert.exists(sourceExt.extensionId, 'Missing extensionId value from extension');
           // For each extension associated to the source, replace its id by its name
-          const extensionFound = _.find(extensionList.values(), (extension: Extension) => {
-            return extension.getId() === sourceExt.extensionId;
+          const extensionFound = _.find(extensionList, extension => {
+            return extension[inputKey] === sourceExt.extensionId;
           });
 
           if (extensionFound) {
-            sourceExt.extensionId = extensionFound.getName();
+            sourceExt.extensionId = extensionFound[outputKey];
           } else {
-            throw new Error('Extension does not exsist');
+            throw new Error('Extension does not exsist: ' + sourceExt.extensionId);
           }
         });
       };
@@ -98,27 +101,12 @@ export class SourceController extends BaseController {
     });
   }
 
-  replaceExtensionNameWithId(sourceList: Dictionary<Source>, extensionList: Dictionary<Extension>) {
-    _.each(sourceList.values(), (source: Source) => {
-      // Get all extensions associated to the source
-      const extensionReplacer = (sourceExtensionsList: Array<IStringMap<string>>) => {
-        _.each(sourceExtensionsList, (sourceExt: IStringMap<string>) => {
-          Assert.exists(sourceExt.extensionId, 'Missing extensionId value from extension');
-          const extensionFound = extensionList.getItem(sourceExt.extensionId);
+  replaceExtensionIdWithName(sourceList: Dictionary<Source>, extensionList: any[]) {
+    this.replaceExtensionKey(sourceList, extensionList, 'id', 'name');
+  }
 
-          if (extensionFound) {
-            sourceExt.extensionId = extensionFound.getId();
-          } else {
-            throw new Error('Extension does not exsist');
-          }
-        });
-      };
-
-      // Post conversion extensions
-      extensionReplacer(source.getPostConversionExtensions());
-      // pre conversion extensions
-      extensionReplacer(source.getPreConversionExtensions());
-    });
+  replaceExtensionNameWithId(sourceList: Dictionary<Source>, extensionList: any[]) {
+    this.replaceExtensionKey(sourceList, extensionList, 'name', 'id');
   }
 
   /**
@@ -139,7 +127,7 @@ export class SourceController extends BaseController {
    * @returns {Promise<any[]>}
    */
   graduate(diffResultArray: DiffResultArray<Source>, options: IHTTPGraduateOptions): Promise<any[]> {
-    // this.extensionController.loadExtensionsForBothOrganizations().then(() => {
+    // this.extensionController.loadExtensionsListForBothOrganizations().then(() => {
     // Here, the extensions should have the id of the destination org
     //   // Do graduation stuff
     // });
@@ -149,6 +137,11 @@ export class SourceController extends BaseController {
 
   extractionMethod(object: any[], oldVersion?: any[]): any[] {
     throw new Error('TODO: To implement');
+  }
+
+  loadExtensionsListForBothOrganizations(): Promise<Array<{}>> {
+    Logger.verbose('Loading extensions for both organizations.');
+    return Promise.all([ExtensionAPI.getExtensionList(this.organization1), ExtensionAPI.getExtensionList(this.organization2)]);
   }
 
   loadSourcesForBothOrganizations(): Promise<Array<{}>> {

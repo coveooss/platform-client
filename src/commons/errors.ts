@@ -14,6 +14,8 @@ export class StaticErrorMessage {
   // Rest
   static FAILED_API_REQUEST: string = 'Unable to perform API request';
   static UNEXPECTED_RESPONSE: string = 'Unexpected response from the server';
+  static MISSING_SOURCE_ID_FROM_THE_RESPONSE: string = 'Missing source id from the response';
+  static MISSING_EXTENSION_ID_FROM_THE_RESPONSE: string = 'Missing extension id from the response';
 
   // Fields
   static MISSING_FIELD_NAME: string = 'Missing field name';

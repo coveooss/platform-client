@@ -43,7 +43,7 @@ export class SourceAPI {
     Logger.verbose(`${response.body.length} sources found from ${Colors.organization(org.getId())} to fetch`);
     return Promise.all(
       _.map(response.body, (source: any) => {
-        Assert.exists(source['id'], StaticErrorMessage.UNEXPECTED_RESPONSE);
+        Assert.exists(source['id'], StaticErrorMessage.MISSING_SOURCE_ID_FROM_THE_RESPONSE);
         Logger.loadingTask(`Loading ${Colors.source(source['name'])} source from ${Colors.organization(org.getId())}`);
         // tslint:disable-next-line:typedef
         return new Promise((resolve, reject) => {

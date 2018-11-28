@@ -14,7 +14,7 @@ import { SourceController } from './../../src/controllers/SourceController';
 import { Dictionary } from '../../src/commons/collections/Dictionary';
 import { Extension } from '../../src/coveoObjects/Extension';
 
-const extension1: Extension = new Extension({
+const rawExtension1 = {
   content: 'random content',
   createdDate: 1511812769000,
   description: 'This extension is used to parse urls to extract metadata like categories.',
@@ -24,9 +24,9 @@ const extension1: Extension = new Extension({
   name: 'URL Parsing to extract metadata',
   requiredDataStreams: [],
   versionId: 'hwnahJ9mql3cBB4PH6qG_9yXEwwFEhgX'
-});
+};
 
-const extension2: Extension = new Extension({
+const rawExtension2 = {
   content: '# Title: Reject a document.\n# Description: This extension simply rejects a document.\n',
   createdDate: 1512812764000,
   description: 'This extension simply rejects a document. It gets triggered on certain file types in the source configuration',
@@ -36,9 +36,9 @@ const extension2: Extension = new Extension({
   name: 'Reject a document.',
   requiredDataStreams: [],
   versionId: 'a6LyFxn91XW5IcgNMTKOabXcJWp05e7i'
-});
+};
 
-const extension3: Extension = new Extension({
+const rawExtension3 = {
   content: 'print "test"',
   createdDate: 1511322764000,
   description: 'An extension that prints "test"',
@@ -48,31 +48,50 @@ const extension3: Extension = new Extension({
   name: 'Simply prints something',
   requiredDataStreams: [],
   versionId: 'a6LyFxJKLDKDK0dsDDDOabXcJWp05e1k'
-});
+};
 
-const dummyExtension1: Extension = new Extension({
+const rawExtension4 = {
+  content: 'Production extension',
+  createdDate: 1511322764000,
+  description: 'An extension for the production',
+  enabled: false,
+  id: 'ccliprodozvzoaua-vvdaravex2tqdt5npreoz2clgu',
+  lastModified: 1511812764000,
+  name: 'Simply prints something',
+  requiredDataStreams: [],
+  versionId: 'a6LyFxJKLDKDK0dsDDDOabXcJWp05e1k'
+};
+
+const rawDummyExtension1 = {
   content: 'dummy',
   description: 'An extension that prints "test"',
   id: 'dummy-xx1',
   name: 'dummyExtension 1',
   requiredDataStreams: []
-});
+};
 
-const dummyExtension2: Extension = new Extension({
+const rawDummyExtension2 = {
   content: 'dummy',
   description: 'An extension that prints "test"',
   id: 'dummy-xx2',
   name: 'dummyExtension 2',
   requiredDataStreams: []
-});
+};
 
-const dummyExtension3: Extension = new Extension({
+const rawDummyExtension3 = {
   content: 'dummy',
   description: 'An extension that prints "test"',
   id: 'dummy-xx3',
   name: 'dummyExtension 3',
   requiredDataStreams: []
-});
+};
+
+const extension1: Extension = new Extension(rawExtension1);
+const extension2: Extension = new Extension(rawExtension2);
+const extension3: Extension = new Extension(rawExtension3);
+const dummyExtension1: Extension = new Extension(rawDummyExtension1);
+const dummyExtension2: Extension = new Extension(rawDummyExtension2);
+const dummyExtension3: Extension = new Extension(rawDummyExtension3);
 
 const source1: Source = new Source({
   id: 'rdsajkldjsakjdklsajh-sadsa9f',
@@ -125,7 +144,140 @@ const source2: Source = new Source({
   mappings: []
 });
 
-const allSourcesWithInexistingExtensions = [
+const allProdSources = [
+  {
+    sourceType: 'SITEMAP',
+    id: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4',
+    name: 'sitemaptest',
+    owner: 'prodUser@coveo.com-google',
+    sourceVisibility: 'PRIVATE',
+    information: {
+      sourceStatus: {
+        type: 'DISABLED',
+        allowedOperations: ['DELETE', 'REBUILD']
+      },
+      rebuildRequired: true,
+      numberOfDocuments: 0,
+      documentsTotalSize: 0
+    },
+    pushEnabled: false,
+    onPremisesEnabled: false,
+    preConversionExtensions: [],
+    postConversionExtensions: [
+      {
+        actionOnError: 'SKIP_EXTENSION',
+        condition: '',
+        extensionId: 'ccliprodozvzoaua-vvdaravex2tqdt5npreoz2clgu',
+        parameters: {},
+        versionId: ''
+      }
+    ],
+    permissions: {
+      permissionLevels: [
+        {
+          name: 'Source Specified Permissions',
+          permissionSets: [
+            {
+              name: 'Private',
+              permissions: [
+                {
+                  allowed: true,
+                  identityType: 'USER',
+                  identity: 'prodUser@coveo.com',
+                  securityProvider: 'Email Security Provider'
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    urlFilters: [
+      {
+        filter: '*',
+        includeFilter: true,
+        filterType: 'WILDCARD'
+      }
+    ],
+    resourceId: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4'
+  }
+];
+
+const xze6hjeidrpcborfhqk4vxkgy4 = {
+  sourceType: 'SITEMAP',
+  id: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4',
+  name: 'sitemaptest',
+  owner: 'prodUser@coveo.com-google',
+  sourceVisibility: 'PRIVATE',
+  mappings: [
+    {
+      id: 'wif6chohkgyel5brxb6dnt2o44',
+      kind: 'COMMON',
+      fieldName: 'mobilephone',
+      extractionMethod: 'METADATA',
+      content: '%[mobilephone]'
+    }
+  ],
+  information: {
+    sourceStatus: {
+      type: 'DISABLED',
+      allowedOperations: ['DELETE', 'REBUILD']
+    },
+    rebuildRequired: true,
+    numberOfDocuments: 0,
+    documentsTotalSize: 0
+  },
+  pushEnabled: false,
+  onPremisesEnabled: false,
+  preConversionExtensions: [],
+  postConversionExtensions: [
+    {
+      actionOnError: 'SKIP_EXTENSION',
+      condition: '',
+      extensionId: 'ccliprodozvzoaua-vvdaravex2tqdt5npreoz2clgu',
+      parameters: {},
+      versionId: ''
+    }
+  ],
+  permissions: {
+    permissionLevels: [
+      {
+        name: 'Source Specified Permissions',
+        permissionSets: [
+          {
+            name: 'Private',
+            permissions: [
+              {
+                allowed: true,
+                identityType: 'USER',
+                identity: 'prodUser@coveo.com',
+                securityProvider: 'Email Security Provider'
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  urlFilters: [
+    {
+      filter: '*',
+      includeFilter: true,
+      filterType: 'WILDCARD'
+    }
+  ],
+  username: 'megatron',
+  urls: ['http://test.com'],
+  userAgent: 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko) (compatible; Coveobot/2.0;+http://www.coveo.com/bot.html)',
+  enableJavaScript: true,
+  javaScriptLoadingDelayInMilliseconds: 0,
+  requestsTimeoutInSeconds: 100,
+  scrapingConfiguration:
+    '[\n  {\n    "for": {\n    "urls": [".*"]\n    },\n    "exclude": [\n      {\n        "type": "CSS",\n        "path": "body header"\n      },\n      {\n        "type": "CSS",\n        "path": "#herobox"\n      },\n      {\n        "type": "CSS",\n        "path": "#mainbar .everyonelovesstackoverflow"\n      },\n      {\n        "type": "CSS",\n        "path": "#sidebar"\n      },\n      {\n        "type": "CSS",\n        "path": "#footer"\n      },\n      {\n        "type": "CSS",\n        "path": "#answers"\n      }\n    ],\n    "metadata": {\n      "askeddate":{\n        "type": "CSS",\n        "path": "div#sidebar table#qinfo p::attr(title)"\n      },\n      "upvotecount": {\n        "type": "XPATH",\n        "path": "//div[@id=\'question\'] //span[@itemprop=\'upvoteCount\']/text()"\n      },\n      "author":{\n        "type": "CSS",\n        "path": "td.post-signature.owner div.user-details a::text"\n      }\n    },\n    "subItems": {\n      "answer": {\n        "type": "css",\n        "path": "#answers div.answer"\n      }\n    }\n  }, {\n    "for": {\n      "types": ["answer"]\n    },\n    "metadata": {\n      "upvotecount": {\n        "type": "XPATH",\n        "path": "//span[@itemprop=\'upvoteCount\']/text()"\n      },\n      "author": {\n        "type": "CSS",\n        "path": "td.post-signature:last-of-type div.user-details a::text"\n      }\n    }\n  }\n]',
+  resourceId: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4'
+};
+
+const allDevSources = [
   {
     sourceType: 'SITEMAP',
     id: 'cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74',
@@ -148,7 +300,7 @@ const allSourcesWithInexistingExtensions = [
       {
         actionOnError: 'SKIP_EXTENSION',
         condition: '',
-        extensionId: 'cclidev2l78wr0o-----DOES-NOT-EXIST-----',
+        extensionId: 'ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu',
         parameters: {},
         versionId: ''
       },
@@ -247,13 +399,6 @@ const ur4el4nwejfvpghipsvvs32m74 = {
   onPremisesEnabled: false,
   preConversionExtensions: [],
   postConversionExtensions: [
-    {
-      actionOnError: 'SKIP_EXTENSION',
-      condition: '',
-      extensionId: 'cclidev2l78wr0o-----DOES-NOT-EXIST-----',
-      parameters: {},
-      versionId: ''
-    },
     {
       actionOnError: 'SKIP_EXTENSION',
       condition: '',
@@ -379,21 +524,13 @@ export const SourceControllerTest = () => {
     describe('Extension ID and Name replacements', () => {
       it('Should replace extension ids with their according name', () => {
         const sourceController = new SourceController(org1, org2);
-        const extensionDict: Dictionary<Extension> = new Dictionary({
-          'URL Parsing to extract metadata': extension1, // in Source 1
-          'Reject a document.': extension2, // in Source 1
-          'dummyExtension 1': dummyExtension1,
-          'Simply prints something': extension3, // in Source 2
-          'dummyExtension 2': dummyExtension2,
-          'dummyExtension 3': dummyExtension3
-        });
-
         const sourceDict: Dictionary<Source> = new Dictionary({
           'Sitemap Source': source1.clone(), // Make a copy of the source
           'Web Source': source2.clone() // Make a copy of the source
         });
+        const extensionList = [rawExtension1, rawExtension2, rawExtension3, rawDummyExtension1, rawDummyExtension2, rawDummyExtension3];
 
-        sourceController.replaceExtensionIdWithName(sourceDict, extensionDict);
+        sourceController.replaceExtensionIdWithName(sourceDict, extensionList);
         const _source1 = sourceDict.getItem('Sitemap Source');
         expect(_source1.getPostConversionExtensions()[0]['extensionId']).to.eq('URL Parsing to extract metadata');
         expect(_source1.getPostConversionExtensions()[1]['extensionId']).to.eq('Reject a document.');
@@ -405,23 +542,15 @@ export const SourceControllerTest = () => {
 
       it('Should replace extension name with their according id', () => {
         const sourceController = new SourceController(org1, org2);
-        const extensionDict: Dictionary<Extension> = new Dictionary({
-          'URL Parsing to extract metadata': extension1, // in Source 1
-          'Reject a document.': extension2, // in Source 1
-          'dummyExtension 1': dummyExtension1,
-          'Simply prints something': extension3, // in Source 2
-          'dummyExtension 2': dummyExtension2,
-          'dummyExtension 3': dummyExtension3
-        });
-
+        const extensionList = [rawExtension1, rawExtension2, rawExtension3, rawDummyExtension1, rawDummyExtension2, rawDummyExtension3];
         const sourceDict: Dictionary<Source> = new Dictionary({
           'Sitemap Source': source1.clone(),
           'Web Source': source2.clone()
         });
 
-        sourceController.replaceExtensionIdWithName(sourceDict, extensionDict);
+        sourceController.replaceExtensionIdWithName(sourceDict, extensionList);
         // Now do the revert operation
-        sourceController.replaceExtensionNameWithId(sourceDict, extensionDict);
+        sourceController.replaceExtensionNameWithId(sourceDict, extensionList);
 
         const _source1 = sourceDict.getItem('Sitemap Source');
         expect(_source1.getPostConversionExtensions()[0]['extensionId']).to.eq('ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu');
@@ -434,24 +563,29 @@ export const SourceControllerTest = () => {
 
       it('Should throw an error if the extension does not exist in the organization', () => {
         const sourceController = new SourceController(org1, org2);
-        const extensionDict: Dictionary<Extension> = new Dictionary({});
-
         const sourceDict: Dictionary<Source> = new Dictionary({
           'Sitemap Source': source1.clone()
         });
 
-        expect(() => sourceController.replaceExtensionIdWithName(sourceDict, extensionDict)).to.throw();
-        expect(() => sourceController.replaceExtensionNameWithId(sourceDict, extensionDict)).to.throw();
+        expect(() => sourceController.replaceExtensionIdWithName(sourceDict, [])).to.throw();
+        expect(() => sourceController.replaceExtensionNameWithId(sourceDict, [])).to.throw();
       });
     });
 
     describe('Diff Method', () => {
-      it('Should throw an error if an extension that does not exists is used by a source', (done: MochaDone) => {
+      it('Should diff sources', (done: MochaDone) => {
         // TODO: This test is not usefull. this should be tested for PUT and DELETE  fraduate operations
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources')
-          .reply(RequestUtils.OK, allSourcesWithInexistingExtensions)
+          .reply(RequestUtils.OK, allDevSources)
+          // Fecth extensions from dev
+          .get('/rest/organizations/dev/extensions')
+          .reply(RequestUtils.OK, [rawExtension1, rawExtension2, rawExtension3])
+          // Fecth extensions from Prod
+          .get('/rest/organizations/prod/extensions')
+          // Rename extension Ids
+          .reply(RequestUtils.OK, [rawExtension4])
           // Fetching dev sources one by one
           .get('/rest/organizations/dev/sources/cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74')
           .reply(RequestUtils.OK, ur4el4nwejfvpghipsvvs32m74)
@@ -459,17 +593,17 @@ export const SourceControllerTest = () => {
           .reply(RequestUtils.OK, uwfuop2jp2hdvo5ao7abjlsgyq)
           // Fecthing all prod sources
           .get('/rest/organizations/prod/sources')
-          .reply(RequestUtils.OK, {});
+          .reply(RequestUtils.OK, allProdSources)
+          .get('/rest/organizations/prod/sources/ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4')
+          .reply(RequestUtils.OK, xze6hjeidrpcborfhqk4vxkgy4);
 
         controller
           .diff()
           .then((diff: DiffResultArray<Source>) => {
-            done('This function should not resolve');
+            done();
           })
           .catch((err: IGenericError) => {
-            expect(err.message).to.equal('Extension does not exsist');
-            nock.cleanAll();
-            done();
+            done(err);
           });
       });
     });

@@ -54,11 +54,25 @@ export class ExtensionAPI {
     });
   }
 
+  static getExtensionList(org: Organization): Promise<{}> {
+    // tslint:disable-next-line:typedef
+    return new Promise((resolve, reject) => {
+      this.getAllExtensions(org)
+        .then((response: RequestResponse) => {
+          resolve(response.body);
+        })
+        .catch((err: any) => {
+          reject({ orgId: org.getId(), message: err } as IGenericError);
+        });
+    });
+  }
+
   static loadEachExtension(org: Organization, response: RequestResponse) {
     Logger.verbose(`${response.body.length} extensions found from ${Colors.organization(org.getId())}`);
     return Promise.all(
       _.map(response.body, (extension: any) => {
-        Assert.exists(extension['id'], StaticErrorMessage.UNEXPECTED_RESPONSE);
+        console.log('>>>>Loading extension : ' + JSON.stringify(extension));
+        Assert.exists(extension['id'], StaticErrorMessage.MISSING_EXTENSION_ID_FROM_THE_RESPONSE);
         Logger.loadingTask(`Loading ${Colors.extension(extension['name'])} extension from ${Colors.organization(org.getId())}`);
         // tslint:disable-next-line:typedef
         return new Promise((resolve, reject) => {
