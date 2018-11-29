@@ -155,7 +155,7 @@ program
   .option('-S, --sources []', 'List of sources to diff. String separated by ",". If no specified, all the sources will be diffed', list)
   // Maybe we can use one of these options
   // .option('-M, --skipMappings', 'Keys to ignore. String separated by ",".', false)
-  .option('-E, --skipExtensions', 'Keys to ignore. String separated by ",".', false)
+  // .option('-E, --skipExtensions', 'Keys to ignore. String separated by ",".', false)
 
   // Not sure ignore keys are relavant here
   // .option('-i, --ignoreKeys []', 'Keys to ignore. String separated by ",".', list)
@@ -188,9 +188,9 @@ program
     // * information
     // * owner
     // diffOptions.includeOnly = diffOptions.includeOnly ? diffOptions.includeOnly : ['requiredDataStreams', 'content', 'description', 'name'];
-    if (options.skipExtensions) {
-      _.extend(options.keysToIgnore, [], ['preConversionExtensions', 'postConversionExtensions']);
-    }
+    // if (options.skipExtensions) {
+    //   _.extend(options.keysToIgnore, [], ['preConversionExtensions', 'postConversionExtensions']);
+    // }
     command.diffSources(diffOptions);
   });
 

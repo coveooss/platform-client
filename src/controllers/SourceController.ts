@@ -6,53 +6,43 @@ import { Organization } from '../coveoObjects/Organization';
 import { Source } from '../coveoObjects/Source';
 import { IDiffOptions } from './../commands/DiffCommand';
 import { BaseController } from './BaseController';
-import { ExtensionController } from './ExtensionController';
 import { IGenericError, StaticErrorMessage } from '../commons/errors';
 import { DiffUtils } from '../commons/utils/DiffUtils';
 import { Logger } from '../commons/logger';
 import { SourceAPI } from '../commons/rest/SourceAPI';
 import { Dictionary } from '../commons/collections/Dictionary';
-import { Extension } from '../coveoObjects/Extension';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { Assert } from '../commons/misc/Assert';
 import { ExtensionAPI } from '../commons/rest/ExtensionAPI';
 
 export class SourceController extends BaseController {
-  private extensionController: ExtensionController;
   constructor(private organization1: Organization, private organization2: Organization) {
     super();
-    this.extensionController = new ExtensionController(this.organization1, this.organization2);
   }
 
   static CONTROLLER_NAME: string = 'source';
 
-  private shouldSkipExtension(diffOptions?: IDiffOptions): boolean {
-    return (
-      diffOptions !== undefined &&
-      diffOptions.keysToIgnore !== undefined &&
-      _.contains(diffOptions.keysToIgnore, 'postConversionExtensions') &&
-      _.contains(diffOptions.keysToIgnore, 'preConversionExtensions')
-    );
-  }
+  // private shouldSkipExtension(diffOptions?: IDiffOptions): boolean {
+  //   return (
+  //     diffOptions !== undefined &&
+  //     diffOptions.keysToIgnore !== undefined &&
+  //     _.contains(diffOptions.keysToIgnore, 'postConversionExtensions') &&
+  //     _.contains(diffOptions.keysToIgnore, 'preConversionExtensions')
+  //   );
+  // }
 
   diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Source>> {
     // Do not load extensions if --skipExtension option is present
-    const diffActions = [this.loadSourcesForBothOrganizations()];
-    // FIXME: do not load each extension one by one. Just load the extension list and cache it
-    if (!this.shouldSkipExtension(diffOptions)) {
-      diffActions.push(this.loadExtensionsListForBothOrganizations());
-    }
+    const diffActions = [this.loadSourcesForBothOrganizations(), this.loadExtensionsListForBothOrganizations()];
     return Promise.all(diffActions)
-      .then(results => {
-        const extensionList = results[1];
+      .then(values => {
+        const extensionList = values[1] as Array<Array<{}>>; // 2 dim table: extensions per sources
         const sources1 = this.organization1.getSources();
         const sources2 = this.organization2.getSources();
 
-        if (!this.shouldSkipExtension(diffOptions)) {
-          // No error should be raised here as all extensions defined in a source should be available in the organization
-          this.replaceExtensionIdWithName(sources1, extensionList[0]);
-          this.replaceExtensionIdWithName(sources2, extensionList[1]);
-        }
+        // No error should be raised here as all extensions defined in a source should be available in the organization
+        this.replaceExtensionIdWithName(sources1, extensionList[0]);
+        this.replaceExtensionIdWithName(sources2, extensionList[1]);
 
         const diffResultArray = DiffUtils.getDiffResult(sources1, sources2, diffOptions);
         if (diffResultArray.containsItems()) {
@@ -101,11 +91,11 @@ export class SourceController extends BaseController {
     });
   }
 
-  replaceExtensionIdWithName(sourceList: Dictionary<Source>, extensionList: any[]) {
+  replaceExtensionIdWithName(sourceList: Dictionary<Source>, extensionList: Array<{}>) {
     this.replaceExtensionKey(sourceList, extensionList, 'id', 'name');
   }
 
-  replaceExtensionNameWithId(sourceList: Dictionary<Source>, extensionList: any[]) {
+  replaceExtensionNameWithId(sourceList: Dictionary<Source>, extensionList: Array<{}>) {
     this.replaceExtensionKey(sourceList, extensionList, 'name', 'id');
   }
 
@@ -139,7 +129,12 @@ export class SourceController extends BaseController {
     throw new Error('TODO: To implement');
   }
 
-  loadExtensionsListForBothOrganizations(): Promise<Array<{}>> {
+  /**
+   * Returns a 2 dimension table: extensions per sources
+   *
+   * @returns {Promise<Array<Array<{}>>>}
+   */
+  loadExtensionsListForBothOrganizations(): Promise<Array<Array<{}>>> {
     Logger.verbose('Loading extensions for both organizations.');
     return Promise.all([ExtensionAPI.getExtensionList(this.organization1), ExtensionAPI.getExtensionList(this.organization2)]);
   }
