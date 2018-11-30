@@ -284,6 +284,259 @@ const xze6hjeidrpcborfhqk4vxkgy4 = {
   resourceId: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4'
 };
 
+const allProdSources2 = [
+  {
+    sourceType: 'SITEMAP',
+    id: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4',
+    name: 'sitemaptest',
+    owner: 'prodUser@coveo.com-google',
+    sourceVisibility: 'PRIVATE',
+    information: {
+      sourceStatus: {
+        type: 'DISABLED',
+        allowedOperations: ['DELETE', 'REBUILD']
+      },
+      rebuildRequired: true,
+      numberOfDocuments: 0,
+      documentsTotalSize: 0
+    },
+    pushEnabled: false,
+    onPremisesEnabled: false,
+    preConversionExtensions: [],
+    postConversionExtensions: [],
+    permissions: {
+      permissionLevels: [
+        {
+          name: 'Source Specified Permissions',
+          permissionSets: [
+            {
+              name: 'Private',
+              permissions: [
+                {
+                  allowed: true,
+                  identityType: 'USER',
+                  identity: 'prodUser@coveo.com',
+                  securityProvider: 'Email Security Provider'
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    urlFilters: [
+      {
+        filter: '*',
+        includeFilter: true,
+        filterType: 'WILDCARD'
+      }
+    ],
+    resourceId: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4'
+  }
+];
+
+// This is a copy of a dev source without any updates expect for some keys to ignore
+const xze6hjeidrpcborfhqk4vxkgy4Copy = {
+  sourceType: 'SITEMAP',
+  id: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4',
+  name: 'sitemaptest',
+  owner: 'prodUser@coveo.com-google',
+  sourceVisibility: 'PRIVATE',
+  mappings: [
+    {
+      id: 'xknmlmdlpb6e5vpukm52nzkoii',
+      kind: 'COMMON',
+      fieldName: 'foldingchild',
+      extractionMethod: 'METADATA',
+      content: '%[coveo_foldingchild]'
+    },
+    {
+      id: 'xzhwsjxkvcksfngdospjn7keie',
+      kind: 'COMMON',
+      fieldName: 'printableuri',
+      extractionMethod: 'METADATA',
+      content: '%[printableuri]/test.html'
+    }
+  ],
+  information: {
+    sourceStatus: {
+      type: 'DISABLED',
+      allowedOperations: ['DELETE', 'REBUILD']
+    },
+    rebuildRequired: true,
+    numberOfDocuments: 0,
+    documentsTotalSize: 0
+  },
+  pushEnabled: false,
+  onPremisesEnabled: false,
+  preConversionExtensions: [],
+  postConversionExtensions: [],
+  permissions: {
+    permissionLevels: [
+      {
+        name: 'Source Specified Permissions',
+        permissionSets: [
+          {
+            name: 'Private',
+            permissions: [
+              {
+                allowed: true,
+                identityType: 'USER',
+                identity: 'userDev@coveo.com',
+                securityProvider: 'Email Security Provider'
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  urlFilters: [
+    {
+      filter: '*',
+      includeFilter: true,
+      filterType: 'WILDCARD'
+    }
+  ],
+  username: 'megatron',
+  urls: ['http://test.com'],
+  userAgent: 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko) (compatible; Coveobot/2.0;+http://www.coveo.com/bot.html)',
+  enableJavaScript: true,
+  javaScriptLoadingDelayInMilliseconds: 0,
+  requestsTimeoutInSeconds: 100,
+  resourceId: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4'
+};
+
+const allDevSources2 = [
+  {
+    sourceType: 'SITEMAP',
+    id: 'cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74',
+    name: 'sitemaptest',
+    owner: 'userDev@coveo.com-google',
+    sourceVisibility: 'PRIVATE',
+    information: {
+      sourceStatus: {
+        type: 'DISABLED',
+        allowedOperations: ['DELETE', 'REBUILD']
+      },
+      nextOperation: {
+        operationType: 'FULL_REFRESH',
+        timestamp: 1543633200000
+      },
+      rebuildRequired: true,
+      numberOfDocuments: 0,
+      documentsTotalSize: 0
+    },
+    pushEnabled: false,
+    onPremisesEnabled: false,
+    preConversionExtensions: [],
+    postConversionExtensions: [],
+    permissions: {
+      permissionLevels: [
+        {
+          name: 'Source Specified Permissions',
+          permissionSets: [
+            {
+              name: 'Private',
+              permissions: [
+                {
+                  allowed: true,
+                  identityType: 'USER',
+                  identity: 'userDev@coveo.com',
+                  securityProvider: 'Email Security Provider'
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    urlFilters: [
+      {
+        filter: '*',
+        includeFilter: true,
+        filterType: 'WILDCARD'
+      }
+    ],
+    resourceId: 'cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74'
+  }
+];
+
+const ur4el4nwejfvpghipsvvs32m74Copy = {
+  sourceType: 'SITEMAP',
+  id: 'cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74',
+  name: 'sitemaptest',
+  owner: 'userDev@coveo.com-google',
+  sourceVisibility: 'PRIVATE',
+  mappings: [
+    {
+      id: 'xknmlmdlpb6e5vpukm52nzkoii',
+      kind: 'COMMON',
+      fieldName: 'foldingchild',
+      extractionMethod: 'METADATA',
+      content: '%[coveo_foldingchild]'
+    },
+    {
+      id: 'xzhwsjxkvcksfngdospjn7keie',
+      kind: 'COMMON',
+      fieldName: 'printableuri',
+      extractionMethod: 'METADATA',
+      content: '%[printableuri]/test.html'
+    }
+  ],
+  information: {
+    sourceStatus: {
+      type: 'DISABLED',
+      allowedOperations: ['DELETE', 'REBUILD']
+    },
+    nextOperation: {
+      operationType: 'FULL_REFRESH',
+      timestamp: 1543633200000
+    },
+    rebuildRequired: true,
+    numberOfDocuments: 0,
+    documentsTotalSize: 0
+  },
+  pushEnabled: false,
+  onPremisesEnabled: false,
+  preConversionExtensions: [],
+  postConversionExtensions: [],
+  permissions: {
+    permissionLevels: [
+      {
+        name: 'Source Specified Permissions',
+        permissionSets: [
+          {
+            name: 'Private',
+            permissions: [
+              {
+                allowed: true,
+                identityType: 'USER',
+                identity: 'userDev@coveo.com',
+                securityProvider: 'Email Security Provider'
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  urlFilters: [
+    {
+      filter: '*',
+      includeFilter: true,
+      filterType: 'WILDCARD'
+    }
+  ],
+  username: 'megatron',
+  urls: ['http://test.com'],
+  userAgent: 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko) (compatible; Coveobot/2.0;+http://www.coveo.com/bot.html)',
+  enableJavaScript: true,
+  javaScriptLoadingDelayInMilliseconds: 0,
+  requestsTimeoutInSeconds: 100,
+  resourceId: 'cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74'
+};
+
 const allDevSources = [
   {
     sourceType: 'SITEMAP',
@@ -657,11 +910,48 @@ export const SourceControllerTest = () => {
           .get('/rest/organizations/prod/sources/ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4')
           .reply(RequestUtils.OK, xze6hjeidrpcborfhqk4vxkgy4);
 
+        const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner'] };
         controller
-          .diff()
+          .diff(diffOptions)
           .then((diff: DiffResultArray<Source>) => {
             expect(diff.TO_CREATE.length).to.eql(1);
             expect(diff.TO_UPDATE.length).to.eql(1);
+            expect(diff.TO_DELETE.length).to.eql(0);
+            done();
+          })
+          .catch((err: IGenericError) => {
+            done(err);
+          });
+      });
+
+      it('Should not have updated source in the diff', (done: MochaDone) => {
+        // TODO: This test is not usefull. this should be tested for PUT and DELETE  fraduate operations
+        scope = nock(UrlService.getDefaultUrl())
+          // First expected request
+          .get('/rest/organizations/dev/sources')
+          .reply(RequestUtils.OK, allDevSources2)
+          // Fecth extensions from dev
+          .get('/rest/organizations/dev/extensions')
+          .reply(RequestUtils.OK, [])
+          // Fecth extensions from Prod
+          .get('/rest/organizations/prod/extensions')
+          // Rename extension Ids
+          .reply(RequestUtils.OK, [])
+          // Fetching dev sources one by one
+          .get('/rest/organizations/dev/sources/cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74')
+          .reply(RequestUtils.OK, ur4el4nwejfvpghipsvvs32m74Copy)
+          // Fecthing all prod sources
+          .get('/rest/organizations/prod/sources')
+          .reply(RequestUtils.OK, allProdSources2)
+          .get('/rest/organizations/prod/sources/ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4')
+          .reply(RequestUtils.OK, xze6hjeidrpcborfhqk4vxkgy4Copy);
+
+        const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner'] };
+        controller
+          .diff(diffOptions)
+          .then((diff: DiffResultArray<Source>) => {
+            expect(diff.TO_CREATE.length).to.eql(0);
+            expect(diff.TO_UPDATE.length).to.eql(0);
             expect(diff.TO_DELETE.length).to.eql(0);
             done();
           })
@@ -703,37 +993,11 @@ export const SourceControllerTest = () => {
           'newValue',
           'oldValue'
         );
-        // It should have not diff keys to ignore ['information', 'resourceId', 'id', 'owner']
-
-        // expect(cleanVersion).to.eql({
-        //   summary: { TO_CREATE: 1, TO_UPDATE: 1, TO_DELETE: 0 },
-        //   TO_CREATE: [
-        //     {
-        //       content: 'import urlparse\n\nprint "Hello Word"',
-        //       description: 'This is an source that prints an "Hello Word"',
-        //       name: 'Hello Word',
-        //       requiredDataStreams: []
-        //     }
-        //   ],
-        //   TO_UPDATE: [
-        //     {
-        //       content:
-        //         'import urlparse\n\n# Title: URL Parsing to extract metadata\n# Description: This extension is used to parse urls to extract metadata like categories.\n# Required data:\n\n# captures the Web Path\npath = urlparse.urlparse(document.uri).path\n\ncategories = {}\n\nfor i, p in enumerate(path.split("/")):\n    # path will start with /, so the first p (i=0) is usually empty\n    if p:\n        # Add categories as meta1, meta2, meta3.\n        # You can use an array if you want specific names for the categories.\n        categories[\'meta\'+str(i)] = p\n\nif len(categories):\n    # Set the categories\n    document.add_meta_data(categories)\n',
-        //       description: {
-        //         newValue: 'This extension is used to parse urls to extract metadata like categories.',
-        //         oldValue: 'This extension is the older version, it is used to parse urls to extract metadata like categories.'
-        //       },
-        //       name: 'URL Parsing to extract metadata',
-        //       requiredDataStreams: []
-        //     }
-        //   ],
-        //   TO_DELETE: []
-        // });
       });
     });
 
-    describe('Graduate Method', () => {
-      // TODO
-    });
+    // describe('Graduate Method', () => {
+    //   // TODO
+    // });
   });
 };

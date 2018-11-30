@@ -152,13 +152,12 @@ program
   .description(['Diff the sources of 2 Organizations.'])
   .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
   // .option('-r, --rebuild', 'Rebuild the source once created. Default is false', false)
-  .option('-S, --sources []', 'List of sources to diff. String separated by ",". If no specified, all the sources will be diffed', list)
+  // .option('-S, --sources []', 'List of sources to diff. String separated by ",". If no specified, all the sources will be diffed', list)
   // Maybe we can use one of these options
   // .option('-M, --skipMappings', 'Keys to ignore. String separated by ",".', false)
   // .option('-E, --skipExtensions', 'Keys to ignore. String separated by ",".', false)
 
   // Not sure ignore keys are relavant here
-  // .option('-i, --ignoreKeys []', 'Keys to ignore. String separated by ",".', list)
   // .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', list)
   .option(
     '-o, --ignoreKeys []',
