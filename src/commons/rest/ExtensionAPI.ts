@@ -74,7 +74,8 @@ export class ExtensionAPI {
   }
 
   static loadEachExtension(org: Organization, response: RequestResponse) {
-    Logger.verbose(`${response.body.length} extensions found from ${Colors.organization(org.getId())}`);
+    const count = response.body.length;
+    Logger.verbose(`${count} extension${count > 1 ? 's' : ''} from ${Colors.organization(org.getId())}`);
     return Promise.all(
       _.map(response.body, (extension: any) => {
         Assert.exists(extension['id'], StaticErrorMessage.MISSING_EXTENSION_ID_FROM_THE_RESPONSE);
