@@ -125,7 +125,7 @@ export class SourceController extends BaseController {
     throw new Error('TODO: graduate command not implemented');
   }
 
-  extractionMethod(object: any[], oldVersion?: any[]): any[] {
+  extractionMethod(object: any[], diffOptions: IDiffOptions, oldVersion?: any[]): any[] {
     if (oldVersion === undefined) {
       return _.map(object, (e: Source) => e.getConfiguration());
     } else {
@@ -138,7 +138,8 @@ export class SourceController extends BaseController {
         const oldSourceModel = oldSource.getConfiguration();
 
         const updatedSourceModel: IStringMap<any> = _.mapObject(newSourceModel, (val, key) => {
-          if (!_.isEqual(oldSourceModel[key], val)) {
+          // TODO: this only parse the first level keys. It would be nice to drill down the nested object
+          if (!_.isEqual(oldSourceModel[key], val) && (!diffOptions.keysToIgnore || diffOptions.keysToIgnore.indexOf(key) === -1)) {
             return { newValue: val, oldValue: oldSourceModel[key] };
           } else {
             return val;

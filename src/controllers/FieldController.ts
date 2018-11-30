@@ -164,7 +164,7 @@ export class FieldController extends BaseController {
     return _.map(fields, (field: Field) => field.getFieldModel());
   }
 
-  extractionMethod(object: any[], oldVersion?: any[]): any[] {
+  extractionMethod(object: any[], diffOptions: IDiffOptions, oldVersion?: any[]): any[] {
     if (oldVersion === undefined) {
       return _.map(object, (f: Field) => f.getFieldModel());
     } else {

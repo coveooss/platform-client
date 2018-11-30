@@ -178,17 +178,12 @@ program
     // Set diff options
     const diffOptions: IDiffOptions = {
       silent: options.silent,
-      sources: options.sources
+      sources: options.sources,
+      keysToIgnore: options.ignoreKeys
     };
 
     const command = new DiffCommand(originOrg, destinationOrg, originApiKey, destinationApiKey);
-    // TODO: add keys to ignore
-    // * resourceId
-    // * id
-    // * information
-    // * owner
     diffOptions.keysToIgnore = _.extend(diffOptions.keysToIgnore || [], ['information', 'resourceId', 'id', 'owner']);
-    // diffOptions.keysToIgnore ? diffOptions.keysToIgnore : ['requiredDataStreams', 'content', 'description', 'name'];
     // if (options.skipExtensions) {
     //   _.extend(options.keysToIgnore, [], ['preConversionExtensions', 'postConversionExtensions']);
     // }

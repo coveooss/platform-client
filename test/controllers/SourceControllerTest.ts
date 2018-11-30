@@ -211,11 +211,18 @@ const xze6hjeidrpcborfhqk4vxkgy4 = {
   sourceVisibility: 'PRIVATE',
   mappings: [
     {
-      id: 'wif6chohkgyel5brxb6dnt2o44',
+      id: 'q3uv7s6lw6iqirufv4e5vhkloy',
       kind: 'COMMON',
-      fieldName: 'mobilephone',
+      fieldName: 'foldingchild',
       extractionMethod: 'METADATA',
-      content: '%[mobilephone]'
+      content: '%[coveo_foldingchild]'
+    },
+    {
+      id: 'q4qripnnvztvqempxtkvdb2cqa',
+      kind: 'COMMON',
+      fieldName: 'printableuri',
+      extractionMethod: 'METADATA',
+      content: '%[printableuri]'
     }
   ],
   information: {
@@ -282,12 +289,16 @@ const allDevSources = [
     sourceType: 'SITEMAP',
     id: 'cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74',
     name: 'sitemaptest',
-    owner: 'user@coveo.com-google',
+    owner: 'userDev@coveo.com-google',
     sourceVisibility: 'PRIVATE',
     information: {
       sourceStatus: {
         type: 'DISABLED',
         allowedOperations: ['DELETE', 'REBUILD']
+      },
+      nextOperation: {
+        operationType: 'FULL_REFRESH',
+        timestamp: 1543633200000
       },
       rebuildRequired: true,
       numberOfDocuments: 0,
@@ -323,7 +334,7 @@ const allDevSources = [
                 {
                   allowed: true,
                   identityType: 'USER',
-                  identity: 'user@coveo.com',
+                  identity: 'userDev@coveo.com',
                   securityProvider: 'Email Security Provider'
                 }
               ]
@@ -345,12 +356,16 @@ const allDevSources = [
     sourceType: 'YOUTUBE',
     id: 'cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq',
     name: 'youtube test',
-    owner: 'user@coveo.com-google',
+    owner: 'userDev@coveo.com-google',
     sourceVisibility: 'SHARED',
     information: {
       sourceStatus: {
         type: 'DISABLED',
         allowedOperations: ['DELETE', 'REBUILD']
+      },
+      nextOperation: {
+        operationType: 'INCREMENTAL_REFRESH',
+        timestamp: 1543623960000
       },
       rebuildRequired: true,
       numberOfDocuments: 0,
@@ -359,7 +374,15 @@ const allDevSources = [
     pushEnabled: false,
     onPremisesEnabled: false,
     preConversionExtensions: [],
-    postConversionExtensions: [],
+    postConversionExtensions: [
+      {
+        actionOnError: 'SKIP_EXTENSION',
+        condition: '',
+        extensionId: 'ccli1wq3fmkys-tknepx33tdhmqibch2uzxhcc44',
+        parameters: {},
+        versionId: ''
+      }
+    ],
     urlFilters: [
       {
         filter: '*',
@@ -375,21 +398,32 @@ const ur4el4nwejfvpghipsvvs32m74 = {
   sourceType: 'SITEMAP',
   id: 'cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74',
   name: 'sitemaptest',
-  owner: 'user@coveo.com-google',
+  owner: 'userDev@coveo.com-google',
   sourceVisibility: 'PRIVATE',
   mappings: [
     {
-      id: 'vec6n33ff6b2jx7pdzosw6sbve',
+      id: 'xknmlmdlpb6e5vpukm52nzkoii',
       kind: 'COMMON',
-      fieldName: 'mobilephone',
+      fieldName: 'foldingchild',
       extractionMethod: 'METADATA',
-      content: '%[mobile]'
+      content: '%[coveo_foldingchild]'
+    },
+    {
+      id: 'xzhwsjxkvcksfngdospjn7keie',
+      kind: 'COMMON',
+      fieldName: 'printableuri',
+      extractionMethod: 'METADATA',
+      content: '%[printableuri]/test.html'
     }
   ],
   information: {
     sourceStatus: {
       type: 'DISABLED',
       allowedOperations: ['DELETE', 'REBUILD']
+    },
+    nextOperation: {
+      operationType: 'FULL_REFRESH',
+      timestamp: 1543633200000
     },
     rebuildRequired: true,
     numberOfDocuments: 0,
@@ -399,6 +433,13 @@ const ur4el4nwejfvpghipsvvs32m74 = {
   onPremisesEnabled: false,
   preConversionExtensions: [],
   postConversionExtensions: [
+    {
+      actionOnError: 'SKIP_EXTENSION',
+      condition: '',
+      extensionId: 'ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu',
+      parameters: {},
+      versionId: ''
+    },
     {
       actionOnError: 'SKIP_EXTENSION',
       condition: '',
@@ -418,7 +459,7 @@ const ur4el4nwejfvpghipsvvs32m74 = {
               {
                 allowed: true,
                 identityType: 'USER',
-                identity: 'user@coveo.com',
+                identity: 'userDev@coveo.com',
                 securityProvider: 'Email Security Provider'
               }
             ]
@@ -449,28 +490,39 @@ const uwfuop2jp2hdvo5ao7abjlsgyq = {
   sourceType: 'YOUTUBE',
   id: 'cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq',
   name: 'youtube test',
-  owner: 'user@coveo.com-google',
+  owner: 'userDev@coveo.com-google',
   sourceVisibility: 'SHARED',
   mappings: [
     {
-      id: 'vxmnzryqjok5thqalcyyyekpsa',
+      id: 'xcdsbzj2spglvzwbyeoiqecl2u',
       kind: 'COMMON',
-      fieldName: 'ytplaylistitemstitle',
+      fieldName: 'fax',
       extractionMethod: 'METADATA',
-      content: '%[coveo_PlaylistItemsTitle]'
+      content: '%[fax]'
     },
     {
-      id: 'w2j6ztwrrdu7aun6inmjce2nvu',
+      id: 'xmx3f32kxl6re526vypml22ku4',
       kind: 'COMMON',
-      fieldName: 'ytvideodefinition',
+      fieldName: 'connectortype',
       extractionMethod: 'METADATA',
-      content: '%[coveo_VideoDefinition]'
+      content: '%[connectortype]'
+    },
+    {
+      id: 'xobrohc7eog6oxty4hgzfskgle',
+      kind: 'COMMON',
+      fieldName: 'homephone',
+      extractionMethod: 'METADATA',
+      content: '%[homephone]'
     }
   ],
   information: {
     sourceStatus: {
       type: 'DISABLED',
       allowedOperations: ['DELETE', 'REBUILD']
+    },
+    nextOperation: {
+      operationType: 'INCREMENTAL_REFRESH',
+      timestamp: 1543623960000
     },
     rebuildRequired: true,
     numberOfDocuments: 0,
@@ -479,7 +531,15 @@ const uwfuop2jp2hdvo5ao7abjlsgyq = {
   pushEnabled: false,
   onPremisesEnabled: false,
   preConversionExtensions: [],
-  postConversionExtensions: [],
+  postConversionExtensions: [
+    {
+      actionOnError: 'SKIP_EXTENSION',
+      condition: '',
+      extensionId: 'ccli1wq3fmkys-tknepx33tdhmqibch2uzxhcc44',
+      parameters: {},
+      versionId: ''
+    }
+  ],
   urlFilters: [
     {
       filter: '*',
@@ -600,6 +660,9 @@ export const SourceControllerTest = () => {
         controller
           .diff()
           .then((diff: DiffResultArray<Source>) => {
+            expect(diff.TO_CREATE.length).to.eql(1);
+            expect(diff.TO_UPDATE.length).to.eql(1);
+            expect(diff.TO_DELETE.length).to.eql(0);
             done();
           })
           .catch((err: IGenericError) => {
@@ -611,7 +674,7 @@ export const SourceControllerTest = () => {
     describe('GetCleanVersion Method', () => {
       it('Should return the clean diff version - empty', () => {
         const diffResultArray: DiffResultArray<Source> = new DiffResultArray();
-        const cleanVersion = controller.getCleanVersion(diffResultArray);
+        const cleanVersion = controller.getCleanVersion(diffResultArray, {});
         expect(cleanVersion).to.eql({
           summary: { TO_CREATE: 0, TO_UPDATE: 0, TO_DELETE: 0 },
           TO_CREATE: [],
@@ -622,11 +685,26 @@ export const SourceControllerTest = () => {
 
       it('Should return the clean diff version', () => {
         const diffResultArray: DiffResultArray<Source> = new DiffResultArray();
-        diffResultArray.TO_CREATE.push(source1);
-        diffResultArray.TO_UPDATE.push(new Source(allProdSources[0]));
-        diffResultArray.TO_UPDATE_OLD.push(source2);
+        diffResultArray.TO_CREATE.push(new Source(uwfuop2jp2hdvo5ao7abjlsgyq));
+        diffResultArray.TO_UPDATE.push(new Source(ur4el4nwejfvpghipsvvs32m74));
+        diffResultArray.TO_UPDATE_OLD.push(new Source(xze6hjeidrpcborfhqk4vxkgy4));
 
-        const cleanVersion = controller.getCleanVersion(diffResultArray);
+        const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner'] };
+        const cleanVersion = controller.getCleanVersion(diffResultArray, diffOptions);
+
+        const updatedSource = cleanVersion.TO_UPDATE[0];
+        expect(updatedSource.id, 'Should not include the source id in the diff').to.not.have.keys('newValue', 'oldValue');
+        expect(updatedSource.owner, 'Should not include the `owner` property in the diff').to.not.have.keys('newValue', 'oldValue');
+        expect(updatedSource.resourceId, 'Should not include the `resourceId` property in the diff').to.not.have.keys(
+          'newValue',
+          'oldValue'
+        );
+        expect(updatedSource.information, 'Should not include the `information` property in the diff').to.not.have.keys(
+          'newValue',
+          'oldValue'
+        );
+        // It should have not diff keys to ignore ['information', 'resourceId', 'id', 'owner']
+
         // expect(cleanVersion).to.eql({
         //   summary: { TO_CREATE: 1, TO_UPDATE: 1, TO_DELETE: 0 },
         //   TO_CREATE: [

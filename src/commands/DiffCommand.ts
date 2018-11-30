@@ -92,7 +92,7 @@ export class DiffCommand {
     Logger.startSpinner('Performing a field diff');
 
     // Give some useful information
-    options.includeOnly
+    options.includeOnly && options.includeOnly.length > 0
       ? Logger.verbose(`Diff will be applied exclusively to the following keys: ${JSON.stringify(options.includeOnly)}`)
       : options.keysToIgnore
         ? Logger.verbose(`Diff will not be applied to the following keys: ${JSON.stringify(options.keysToIgnore)}`)
@@ -102,7 +102,7 @@ export class DiffCommand {
       .diff(options)
       .then((diffResultArray: DiffResultArray<BaseCoveoObject>) => {
         fs
-          .writeJSON(`${objectName}Diff.json`, controller.getCleanVersion(diffResultArray), { spaces: 2 })
+          .writeJSON(`${objectName}Diff.json`, controller.getCleanVersion(diffResultArray, options), { spaces: 2 })
           .then(() => {
             Logger.info('Diff operation completed');
             Logger.info(`File saved as ${Colors.filename(objectName + 'Diff.json')}`);

@@ -21,6 +21,10 @@ export interface IDiffResultArrayClean {
   TO_DELETE: any[];
 }
 
+export interface IPrintOptions {
+  includeSummary?: boolean;
+}
+
 /**
  * Every Controller ultimately inherits from this base controller class.
  */
@@ -31,7 +35,7 @@ export abstract class BaseController {
 
   abstract download(organization: string): Promise<IDownloadResultArray>;
 
-  abstract extractionMethod(object: any[], oldVersion?: any[]): any[];
+  abstract extractionMethod(object: any[], diffOptions?: IDiffOptions, oldVersion?: any[]): any[];
 
   protected successHandler(response: RequestResponse[] | RequestResponse, successMessage: string) {
     const successLog = (rep: RequestResponse) => {
@@ -109,7 +113,13 @@ export abstract class BaseController {
    * @param {boolean} [summary=true]
    * @returns {IDiffResultArrayClean} The simplified object
    */
-  getCleanVersion<T>(diffResultArray: DiffResultArray<T>, summary: boolean = true): IDiffResultArrayClean {
+  getCleanVersion<T>(
+    diffResultArray: DiffResultArray<T>,
+    diffOptions: IDiffOptions = {},
+    printOptions: IPrintOptions = {}
+  ): IDiffResultArrayClean {
+    printOptions = _.extend(printOptions, { includeSummary: true });
+
     const cleanerVersion: IDiffResultArrayClean = {
       summary: {
         TO_CREATE: 0,
@@ -121,7 +131,7 @@ export abstract class BaseController {
       TO_DELETE: []
     };
 
-    if (summary) {
+    if (printOptions.includeSummary) {
       cleanerVersion.summary = {
         TO_CREATE: diffResultArray.TO_CREATE.length,
         TO_UPDATE: diffResultArray.TO_UPDATE.length,
@@ -130,9 +140,9 @@ export abstract class BaseController {
     }
 
     _.extend(cleanerVersion, {
-      TO_CREATE: this.extractionMethod(diffResultArray.TO_CREATE),
-      TO_UPDATE: this.extractionMethod(diffResultArray.TO_UPDATE, diffResultArray.TO_UPDATE_OLD),
-      TO_DELETE: this.extractionMethod(diffResultArray.TO_DELETE)
+      TO_CREATE: this.extractionMethod(diffResultArray.TO_CREATE, diffOptions),
+      TO_UPDATE: this.extractionMethod(diffResultArray.TO_UPDATE, diffOptions, diffResultArray.TO_UPDATE_OLD),
+      TO_DELETE: this.extractionMethod(diffResultArray.TO_DELETE, diffOptions)
     });
 
     return cleanerVersion as IDiffResultArrayClean;
