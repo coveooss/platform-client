@@ -119,7 +119,7 @@ export class DiffCommand {
           });
       })
       .catch((err: IGenericError) => {
-        Logger.error(StaticErrorMessage.UNABLE_TO_DIFF);
+        Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err);
         Logger.stopSpinner();
         process.exit();
       });

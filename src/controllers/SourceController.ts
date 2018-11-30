@@ -106,7 +106,7 @@ export class SourceController extends BaseController {
    * @memberof SourceController
    */
   download(organization: string): Promise<IDownloadResultArray> {
-    throw new Error('TODO: To implement');
+    throw new Error('TODO: download method not implemented');
   }
 
   /**
@@ -122,11 +122,31 @@ export class SourceController extends BaseController {
     //   // Do graduation stuff
     // });
     // TODO: change the extension name with the destination id
-    throw new Error('TODO: To implement');
+    throw new Error('TODO: graduate command not implemented');
   }
 
   extractionMethod(object: any[], oldVersion?: any[]): any[] {
-    throw new Error('TODO: To implement');
+    if (oldVersion === undefined) {
+      return _.map(object, (e: Source) => e.getConfiguration());
+    } else {
+      return _.map(oldVersion, (oldSource: Source) => {
+        const newSource: Source = _.find(object, (e: Source) => {
+          return e.getName() === oldSource.getName();
+        });
+
+        const newSourceModel = newSource.getConfiguration();
+        const oldSourceModel = oldSource.getConfiguration();
+
+        const updatedSourceModel: IStringMap<any> = _.mapObject(newSourceModel, (val, key) => {
+          if (!_.isEqual(oldSourceModel[key], val)) {
+            return { newValue: val, oldValue: oldSourceModel[key] };
+          } else {
+            return val;
+          }
+        });
+        return updatedSourceModel;
+      });
+    }
   }
 
   /**

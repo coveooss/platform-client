@@ -34,7 +34,7 @@ program
     'info'
   )
   .action((originOrg: string, destinationOrg: string, originApiKey: string, destinationApiKey: string, options: any) => {
-    setLogger(options, 'graduate');
+    setLogger(options, 'graduate-fields');
 
     // Set graduation options
     const graduateOptions: IGraduateOptions = {
@@ -68,7 +68,7 @@ program
     'info'
   )
   .action((originOrg: string, destinationOrg: string, originApiKey: string, destinationApiKey: string, options: any) => {
-    setLogger(options, 'graduate');
+    setLogger(options, 'graduate-extensions');
 
     // Set graduation options
     const graduateOptions: IGraduateOptions = {
@@ -173,7 +173,7 @@ program
   )
   .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
   .action((originOrg: string, destinationOrg: string, originApiKey: string, destinationApiKey: string, options: any) => {
-    setLogger(options, 'diff-fields');
+    setLogger(options, 'diff-sources');
 
     // Set diff options
     const diffOptions: IDiffOptions = {
@@ -187,7 +187,8 @@ program
     // * id
     // * information
     // * owner
-    // diffOptions.includeOnly = diffOptions.includeOnly ? diffOptions.includeOnly : ['requiredDataStreams', 'content', 'description', 'name'];
+    diffOptions.keysToIgnore = _.extend(diffOptions.keysToIgnore || [], ['information', 'resourceId', 'id', 'owner']);
+    // diffOptions.keysToIgnore ? diffOptions.keysToIgnore : ['requiredDataStreams', 'content', 'description', 'name'];
     // if (options.skipExtensions) {
     //   _.extend(options.keysToIgnore, [], ['preConversionExtensions', 'postConversionExtensions']);
     // }
