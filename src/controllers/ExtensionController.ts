@@ -21,7 +21,7 @@ export class ExtensionController extends BaseController {
   static CONTROLLER_NAME: string = 'extensions';
 
   diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Extension>> {
-    return this.loadExtensionsForBothOrganizations(this.organization1, this.organization2)
+    return this.loadExtensionsForBothOrganizations()
       .then(() => {
         const diffResultArray = DiffUtils.getDiffResult(
           this.organization1.getExtensions(),
@@ -142,12 +142,12 @@ export class ExtensionController extends BaseController {
     );
   }
 
-  private loadExtensionsForBothOrganizations(organization1: Organization, organization2: Organization): Promise<Array<{}>> {
+  loadExtensionsForBothOrganizations(): Promise<Array<{}>> {
     Logger.verbose('Loading extensions for both organizations.');
-    return Promise.all([ExtensionAPI.loadExtensions(organization1), ExtensionAPI.loadExtensions(organization2)]);
+    return Promise.all([ExtensionAPI.loadExtensions(this.organization1), ExtensionAPI.loadExtensions(this.organization2)]);
   }
 
-  extractionMethod(object: any[], oldVersion?: any[]): any[] {
+  extractionMethod(object: any[], diffOptions: IDiffOptions, oldVersion?: any[]): any[] {
     if (oldVersion === undefined) {
       return _.map(object, (e: Extension) => e.getExtensionModel());
     } else {
@@ -159,8 +159,10 @@ export class ExtensionController extends BaseController {
         const newExtensionModel = newExtension.getExtensionModel();
         const oldExtensionModel = oldExtension.getExtensionModel();
 
+        // TODO: add keys to ignore here
+        // TODO: ignore mac and windows chariot return
         const updatedExtensionModel: IStringMap<any> = _.mapObject(newExtensionModel, (val, key) => {
-          if (!_.isEqual(oldExtensionModel[key], val)) {
+          if (!_.isEqual(oldExtensionModel[key], val) && (!diffOptions.keysToIgnore || diffOptions.keysToIgnore.indexOf(key) === -1)) {
             return { newValue: val, oldValue: oldExtensionModel[key] };
           } else {
             return val;

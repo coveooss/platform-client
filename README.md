@@ -82,6 +82,16 @@ Required API key privileges:
 
 ---
 
+### Diff Sources - `diff-sources`
+
+Required API key privileges:
+
+| Service |    Name    | View  | Edit  |
+| :-----: | :--------: | :---: | :---: |
+| Content | Sources    |   ✔   |       |
+
+---
+
 ## Dev
 ### Important Gulp Tasks
 

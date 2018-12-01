@@ -7,6 +7,7 @@ import { DiffUtils } from '../../../src/commons/utils/DiffUtils';
 import { Extension } from '../../../src/coveoObjects/Extension';
 import { ClonableTest } from '../../commons/collections/ClonableTest';
 import { IDiffOptions } from './../../../src/commands/DiffCommand';
+import { Source } from '../../../src/coveoObjects/Source';
 
 class Car {
   constructor(public brand: string, public color: string) {}
@@ -107,78 +108,49 @@ export const DiffUtilsTest = () => {
       }
     });
 
+    const extension1FalseChange: Extension = new Extension({
+      content: 'random content',
+      createdDate: 1511815769000,
+      description: 'This extension is used to parse urls to extract metadata like categories.',
+      enabled: true,
+      id: 'ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu',
+      lastModified: 1511812770000,
+      name: 'URL Parsing to extract metadata',
+      requiredDataStreams: [],
+      versionId: 'hwna2ql3cBB4PH6qG_9yXEwwFEhgX',
+      usedBy: [],
+      status: {
+        durationHealth: {
+          healthIndicator: 'BAD'
+        },
+        dailyStatistics: {
+          averageDurationInSeconds: 0,
+          numberOfErrors: 0,
+          numberOfExecutions: 0,
+          numberOfSkips: 0,
+          numberOfTimeouts: 0
+        },
+        disabledStatus: {},
+        timeoutHealth: {
+          healthIndicator: 'BAD'
+        }
+      }
+    });
+
     const extension2: Extension = new Extension({
       content: '# Title: Reject a document.\n# Description: This extension simply rejects a document.\n',
       createdDate: 1511812764000,
       description: 'This extension simply rejects a document. It gets triggered on certain file types in the source configuration',
       enabled: true,
       id: 'ccli1wq3fmkys-tknepx33tdhmqibch2uzxhcc44',
-      lastModified: 1511812764000,
-      name: 'URL Parsing to extract metadata',
+      lastModified: 1511812264000,
+      name: 'Reject a document.',
       requiredDataStreams: [],
       versionId: 'a6LyFxn91XW5IcgNMTKOabXcJWp05e7i',
       usedBy: [],
       status: {
         durationHealth: {
-          healthIndicator: 'UNKNOWN'
-        },
-        dailyStatistics: {
-          averageDurationInSeconds: 0,
-          numberOfErrors: 0,
-          numberOfExecutions: 0,
-          numberOfSkips: 0,
-          numberOfTimeouts: 0
-        },
-        disabledStatus: {},
-        timeoutHealth: {
-          healthIndicator: 'UNKNOWN'
-        }
-      }
-    });
-
-    const extension3: Extension = new Extension({
-      content: '# Small extension',
-      createdDate: 1511812764000,
-      description: '',
-      enabled: true,
-      id: 'ccli1wq3fmkys-xxxxxxxxxxxxxxxx',
-      lastModified: 1511812764000,
-      name: 'extension 3',
-      requiredDataStreams: [],
-      versionId: 'a6LyFxn91XW5IcgNMTKOabXcJWp05e7i',
-      usedBy: [],
-      status: {
-        durationHealth: {
-          healthIndicator: 'UNKNOWN'
-        },
-        dailyStatistics: {
-          averageDurationInSeconds: 0,
-          numberOfErrors: 0,
-          numberOfExecutions: 0,
-          numberOfSkips: 0,
-          numberOfTimeouts: 0
-        },
-        disabledStatus: {},
-        timeoutHealth: {
-          healthIndicator: 'UNKNOWN'
-        }
-      }
-    });
-
-    const extension4: Extension = new Extension({
-      content: '# Updated version of extention 3',
-      createdDate: 1511812764000,
-      description: '',
-      enabled: true,
-      id: 'ccli1wq3fmkys-yyyyyyyyyyyyy',
-      lastModified: 1511812764000,
-      name: 'extension 3',
-      requiredDataStreams: [],
-      versionId: 'a6LyFxn91XW5IcgNMTKOabXcJWp05e7i',
-      usedBy: [],
-      status: {
-        durationHealth: {
-          healthIndicator: 'UNKNOWN'
+          healthIndicator: 'BAD'
         },
         dailyStatistics: {
           averageDurationInSeconds: 0,
@@ -195,30 +167,163 @@ export const DiffUtilsTest = () => {
     });
 
     const extension1Dict: Dictionary<Extension> = new Dictionary({
-      extension_xxx: extension4,
       'URL Parsing to extract metadata': extension1
     });
 
+    const extension1FalseChangeDict: Dictionary<Extension> = new Dictionary({
+      'URL Parsing to extract metadata': extension1FalseChange
+    });
+
     const extension1CopyDict: Dictionary<Extension> = new Dictionary({
-      extension_xxx: extension4,
       'URL Parsing to extract metadata': extension1
     });
 
     const extension2Dict: Dictionary<Extension> = new Dictionary({
-      'URL Parsing to extract metadata': extension2,
-      extension_xxx: extension3
+      'URL Parsing to extract metadata': extension2
+    });
+
+    const source1Dict: Dictionary<Source> = new Dictionary({
+      'youtube test': new Source({
+        sourceType: 'YOUTUBE',
+        id: 'cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq',
+        name: 'youtube test',
+        owner: 'user@coveo.com-google',
+        sourceVisibility: 'SHARED',
+        mappings: [
+          {
+            id: 'q36h22bp2oqbogq3wwjlcbkj3e',
+            kind: 'COMMON',
+            fieldName: 'yttopfoldingparentid',
+            extractionMethod: 'METADATA',
+            content: '%[coveo_topfoldingparentid]'
+          },
+          {
+            id: 'qbmbpszcawiid7pyfjcaracboi',
+            kind: 'COMMON',
+            fieldName: 'year',
+            extractionMethod: 'METADATA',
+            content: '%[year]'
+          }
+        ],
+        information: {
+          sourceStatus: {
+            type: 'DISABLED',
+            allowedOperations: ['DELETE', 'REBUILD']
+          },
+          nextOperation: {
+            operationType: 'INCREMENTAL_REFRESH',
+            timestamp: 1543537560000
+          },
+          rebuildRequired: true,
+          numberOfDocuments: 0,
+          documentsTotalSize: 0
+        },
+        pushEnabled: false,
+        onPremisesEnabled: false,
+        preConversionExtensions: [],
+        postConversionExtensions: [],
+        urlFilters: [
+          {
+            filter: '*',
+            includeFilter: true,
+            filterType: 'WILDCARD'
+          }
+        ],
+        urls: ['https://www.youtube.com/dummy'],
+        indexPlaylists: false,
+        resourceId: 'cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq'
+      })
+    });
+
+    const source2Dict: Dictionary<Source> = new Dictionary({
+      'youtube test': new Source({
+        sourceType: 'YOUTUBE',
+        id: 'ccliprod2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq',
+        name: 'youtube test',
+        owner: 'user2@coveo.com-google',
+        sourceVisibility: 'SHARED',
+        mappings: [
+          {
+            id: '95io43fjr3joijifodjskfjkds',
+            kind: 'COMMON',
+            fieldName: 'yttopfoldingparentid',
+            extractionMethod: 'METADATA',
+            content: '%[coveo_topfoldingparentid]'
+          },
+          {
+            id: 'qbmbpsdsadsadsasdsdsaracboi',
+            kind: 'COMMON',
+            fieldName: 'year',
+            extractionMethod: 'METADATA',
+            content: '%[year]'
+          }
+        ],
+        information: {
+          sourceStatus: {
+            type: 'DISABLED',
+            allowedOperations: ['DELETE', 'REBUILD']
+          },
+          nextOperation: {
+            operationType: 'INCREMENTAL_REFRESH',
+            timestamp: 1543237560000
+          },
+          rebuildRequired: false,
+          numberOfDocuments: 0,
+          documentsTotalSize: 0
+        },
+        pushEnabled: false,
+        onPremisesEnabled: false,
+        preConversionExtensions: [],
+        postConversionExtensions: [],
+        urlFilters: [
+          {
+            filter: '*',
+            includeFilter: true,
+            filterType: 'WILDCARD'
+          }
+        ],
+        urls: ['https://www.youtube.com/dummy'],
+        indexPlaylists: false,
+        resourceId: 'ccliprod2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq'
+      })
+    });
+
+    describe('Source Diff', () => {
+      it('Should return no updated sources', () => {
+        // The following keys should be ignored:
+        // - resourceId
+        // - id
+        // - information
+        // - owner
+        const options: IDiffOptions = {
+          keysToIgnore: ['information', 'resourceId', 'id', 'owner']
+        };
+        const diff: DiffResultArray<Source> = DiffUtils.getDiffResult(source1Dict, source2Dict, options);
+        expect(diff.TO_UPDATE.length).to.equal(0);
+        expect(diff.TO_UPDATE_OLD.length).to.equal(0);
+        expect(diff.TO_CREATE.length).to.equal(0);
+        expect(diff.TO_DELETE.length).to.equal(0);
+      });
     });
 
     describe('Extension Diff', () => {
       it('Should return one updated extension', () => {
         const diff: DiffResultArray<Extension> = DiffUtils.getDiffResult(extension1Dict, extension2Dict);
-        expect(diff.TO_UPDATE.length).to.equal(2);
-        expect(diff.TO_UPDATE_OLD.length).to.equal(2);
+        expect(diff.TO_UPDATE.length).to.equal(1);
+        expect(diff.TO_UPDATE_OLD.length).to.equal(1);
         expect(diff.TO_CREATE.length).to.equal(0);
         expect(diff.TO_DELETE.length).to.equal(0);
+      });
 
-        expect(diff.TO_UPDATE_OLD[0].getName()).to.equal(diff.TO_UPDATE[0].getName());
-        expect(diff.TO_UPDATE_OLD[1].getName()).to.equal(diff.TO_UPDATE[1].getName());
+      it('Should return an empty diff because of ignore keys', () => {
+        const options: IDiffOptions = {
+          includeOnly: ['requiredDataStreams', 'content', 'description', 'name']
+        };
+        const diff: DiffResultArray<Extension> = DiffUtils.getDiffResult(extension1Dict, extension1FalseChangeDict, options);
+        expect(diff.TO_UPDATE.length).to.equal(0);
+        expect(diff.TO_UPDATE_OLD.length).to.equal(0);
+        expect(diff.TO_CREATE.length).to.equal(0);
+        expect(diff.TO_DELETE.length).to.equal(0);
       });
 
       it('Should return no modification', () => {

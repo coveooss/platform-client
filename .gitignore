@@ -1,5 +1,6 @@
 bin
 .nyc_output
+.deploy.sh
 coverage
 node_modules
 output/

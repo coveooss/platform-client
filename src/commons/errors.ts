@@ -14,6 +14,8 @@ export class StaticErrorMessage {
   // Rest
   static FAILED_API_REQUEST: string = 'Unable to perform API request';
   static UNEXPECTED_RESPONSE: string = 'Unexpected response from the server';
+  static MISSING_SOURCE_ID_FROM_THE_RESPONSE: string = 'Missing source id from the response';
+  static MISSING_EXTENSION_ID_FROM_THE_RESPONSE: string = 'Missing extension id from the response';
 
   // Fields
   static MISSING_FIELD_NAME: string = 'Missing field name';
@@ -24,6 +26,7 @@ export class StaticErrorMessage {
   static UNABLE_TO_DELETE_FIELDS: string = 'Unable to delete field';
 
   // Extensions
+  static UNABLE_TO_LOAD_SOURCES: string = 'Unable to load sources';
   static UNABLE_TO_LOAD_EXTENTIONS: string = 'Unable to load extensions';
   static UNABLE_TO_LOAD_SINGLE_EXTENTION: string = 'Unable to load single extension';
   static UNABLE_TO_CREATE_EXTENSIONS: string = 'Unable to create extension';

@@ -19,6 +19,7 @@ script:
 branches:
   only:
   - master
+  - develop
 # deploy: # need an account to deploy
 # - provider: script
 #   skip_cleanup: true

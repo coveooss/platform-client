@@ -45,7 +45,13 @@ export const SourceTest = () => {
       }
     ];
     const configuration = {
+      id: 'r6ud7iksjhafgjpiokjh-sdfgr3e',
+      name: 'testSource',
+      sourceType: 'SITEMAP',
       sourceSecurityOption: 'Specified',
+      postConversionExtensions: postConversionExtensions,
+      preConversionExtensions: [],
+      mappings: mappings,
       addressPatterns: [
         {
           expression: '*',
@@ -70,10 +76,18 @@ export const SourceTest = () => {
       ]
     };
 
-    const testSource = new Source('testSource', configuration, mappings, [], postConversionExtensions);
+    const testSource = new Source(configuration);
 
     it('Should return the source ID', () => {
-      expect(testSource.getId()).to.equal('testSource');
+      expect(testSource.getId()).to.equal('r6ud7iksjhafgjpiokjh-sdfgr3e');
+    });
+
+    it('Should return the source name', () => {
+      expect(testSource.getName()).to.equal('testSource');
+    });
+
+    it('Should return the source type', () => {
+      expect(testSource.getSourceType()).to.equal('SITEMAP');
     });
 
     it('Should return the source mappings', () => {
@@ -129,7 +143,13 @@ export const SourceTest = () => {
 
     it('Should return the source configuration', () => {
       expect(testSource.getConfiguration()).to.eql({
+        id: 'r6ud7iksjhafgjpiokjh-sdfgr3e',
+        name: 'testSource',
+        sourceType: 'SITEMAP',
         sourceSecurityOption: 'Specified',
+        postConversionExtensions: postConversionExtensions,
+        preConversionExtensions: [],
+        mappings: mappings,
         addressPatterns: [
           {
             expression: '*',
