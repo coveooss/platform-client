@@ -11,12 +11,12 @@ cache:
 before_install:
   - npm install -g npm@5.6.0
 before_script:
-- npm install -g gulp
-  script:
-- source read.version.sh
-- echo "$TRAVIS_TAG"
-- npm run minimize
-- npm test
+  - npm install -g gulp
+script:
+  - source read.version.sh
+  - echo "$TRAVIS_TAG"
+  - npm run minimize
+  - npm test
 after_success:
   - npm run zipForGitReleases
 deploy:
