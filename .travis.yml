@@ -19,8 +19,6 @@ before_script:
 - npm test
 after_success:
   - npm run zipForGitReleases
-before_deploy:
-  - npm run minimize # not sure if it is required here. Just in case
 deploy:
   - provider: npm
     email: ylakhdar@coveo.com
@@ -39,7 +37,7 @@ deploy:
     skip_cleanup: true
     on:
       tags: true
-      repo: y-lakhdar/coveo-platform-client
+      repo: coveo/coveo-platform-client
       all_branches: true
 branches:
   only:
