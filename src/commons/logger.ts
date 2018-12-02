@@ -4,6 +4,9 @@ import { Assert } from './misc/Assert';
 import { FileUtils } from './utils/FileUtils';
 import { Utils } from './utils/Utils';
 
+declare const require: (module: string) => any;
+const stripAnsi = require('strip-ansi');
+
 /**
  * The LoggerSingleton which is a Singleton class.
  *
@@ -97,7 +100,7 @@ export class LoggerSingleton {
 
   addToLogFile(level: string, message: string, ...meta: any[]) {
     const today = new Date().toLocaleString();
-    FileUtils.appendToFile(this.filename, [today, level, message, '\n'].join(' | '));
+    FileUtils.appendToFile(this.filename, [today, level, stripAnsi(message), '\n'].join(' | '));
     _.each(meta, (m: any) => {
       if (!Utils.isEmptyString(m.toString())) {
         FileUtils.appendToFile(this.filename, [today, level, m.toString(), '\n'].join(' | '));
