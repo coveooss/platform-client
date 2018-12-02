@@ -1,28 +1,48 @@
 language: node_js
 notifications:
+    email:
+    on_success: change
+    on_failure: always
 node_js:
-- 6.10.3
+  - '8.9'
 cache:
   directories:
   - node_modules
+before_install:
+  - npm install -g npm@5.6.0
 before_script:
 - npm install -g gulp
-before_install:
-- npm install -g npm@5.6.0
-# - "{ sed -nE 's/^[ \\t]*\"version\": \"([0-9]{1,}\\.[0-9]{1,}\\.)[0-9x]{1,}\",$/\\1/p' package.json; git describe --abbrev=0 | sed -E 's/^v([0-9]{1,}\\.[0-9]{1,}\\.)([0-9]{1,})$/\\1 \\2/g'; } | tr \"\\n\" \" \" | awk '{printf($1==$2?\"v\"$2$3+1:\"v\"$1\"0\")}' | xargs -I {} git tag -a {} -m \"{}\"\n"
-# - npm --no-git-tag-version version from-git
-script:
+  script:
 - source read.version.sh
-- echo $PACKAGE_JSON_VERSION
+- echo "$TRAVIS_TAG"
 - npm run minimize
 - npm test
+after_success:
+  - npm run zipForGitReleases
+before_deploy:
+  - npm run minimize # not sure if it is required here. Just in case
+deploy:
+  - provider: npm
+    email: ylakhdar@coveo.com
+    skip_cleanup: true
+    api_key:
+      secure: VRqAmg9MoIBTJ3zC6aqA8P72xA9qNY8KLPz8zvrWSUu6aBEK7KwnDDPTWV4eBNHv2xvcbU9bOQ460kqXP37odUf/xf5ikRaaMuJ1B4Vb9dNJaXxTcBhzIk1Nq4j9lnpfoslc1d0L/d8LdewgnJQ80FMQcqpRBMJCyBkh43Y+kaDIPmhMOAWWZLy2mZe4cdGtzZTScSfdE51mz0se33WAvXKfbBaAUBmjToT4mF47NaJ9jQLzeuPOz1/WCLw8BorYypPjVgNKweGyDLsDmWvSYaiAEKwEm6+QrpUetPlw3Zm7ZMJK+sJpuf1cDmyKlkD2UqEaERDOAESEsj7p/od4E1P19tKMVz9b0+tAXudHtVO0p+5NLbpIPm1UyW40IiS4EIjLEQkQHMaS+hECQyOkFKDvUX1VcGEYNIb4IoFYZeo4/g0m11bUlQoM4hSYsWEa21Jgn1Hd7dksWwT+qbwFL83o7/lPIseI7mQpWKvAuGavtiSsaJhukkH+NCEaF/3lW5uJNGaJSCEPlVv55XdNPJw+rmJf86rA0SIJCC3+8zditMzj70LgCuaHkGjUEfDPVF1Ex7IFEPirJaNMQjcZzyHktqFXzMoidEwsMuILGi8eENVSut9AxHbdvt+Lsx7RJot7OYvuBK6off7uTb1yiNzItYArgjMzFHr14dWMzA8=
+    on:
+      tags: true
+      all_branches: true
+  - provider: releases
+    api_key:
+      secure: YjCZ3WntS/m3MbRdPBwtYFEs5CjZGSk5T2QQ0vjjPk6Ox3L6OA2m0NJoqHKS0SW7QuMiugUcFbOi7wCuSMY4dIEFlpXyCREIv6ESFNGES97Bm5Wc+ygjeZBhtYNA+j85HtI5pUo6hoVHs10czQDypISjhfemtA7eowN4v+JmQPAodADHmnHVXmhr8knpOWuKtd00ry/dScjmym7HyLwcvH345TU2A1Q04EGn+QkblRVp1ewNhtaaf8jqFHXTehg4g/qM02X0CqukXOzg4zPyQgk/gvgFqSMXo2WxXteD9781MfXfNJeMlv8OjQ+GE2LdnXrutcFqDOiDApKmLfqjPc1S84qfP5C0OrjrD7XQmdNuXE9YgMqJqVO110+AX9LBWq/MNBsQDJnJ7XXsmOSZfQM4ZrYubQbsH2tLSxaZ61myOG8YC/aprWGIlweSd73y9DEDIy7fY9gjF40w3QsFyTfFdVC5MBvGPTjBnbz7lNl8ZBUNANQ4di9qvGEhFrZSfkwAIL7KD1g6UR7ILCM4E6hrYmgnDdmX/p+L64N2/YG655VUsJTDlg0nRG/TQr5IOUHrZSTf7BmSnSkkfX89Y+hmPJa+qSF3pI2fYIfMf9OHZ5yEzFl/Q3gUeoL0V2ZIWoaMCm6ETFTACI9LrXDoicHRcTjm6uHscmhs5jtTZYc=
+    file:
+      - platform-client.zip
+    file_glob: true
+    skip_cleanup: true
+    on:
+      tags: true
+      repo: y-lakhdar/coveo-platform-client
+      all_branches: true
 branches:
   only:
-  - master
-  - develop
-# deploy: # need an account to deploy
-# - provider: script
-#   skip_cleanup: true
-#   script: git push --tags
-#   on:
-#     branch: master
+    - master
+    - develop
+    - "/[0-9]+\\.[0-9]+\\.[0-9]+/"

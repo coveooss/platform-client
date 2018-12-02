@@ -12,3 +12,5 @@ test/mock/
 fieldDiff.json
 package-lock.json
 testScripts
+release.sh
+.zip
