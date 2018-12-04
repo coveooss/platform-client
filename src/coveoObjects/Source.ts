@@ -2,28 +2,38 @@ import { ISource } from '../commons/interfaces/ISource';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 import { BaseCoveoObject } from './BaseCoveoObject';
+import { Assert } from '../commons/misc/Assert';
 
 export class Source extends BaseCoveoObject implements ISource {
-  constructor(
-    id: string,
-    private configuration: any,
-    private mappings: Array<IStringMap<string>>,
-    private preConversionExtensions: any[],
-    private postConversionExtensions: any[]
-  ) {
-    super(id);
+  constructor(private configuration: any) {
+    super(configuration['id']);
+    // TODO: do the required assertions here
+    Assert.isNotUndefined(this.configuration['name'], 'Missing name from source configuration.');
+    Assert.isNotUndefined(this.configuration['mappings'], 'Missing mappings from source configuration.');
+    Assert.isNotUndefined(this.configuration['sourceType'], 'Missing sourceType from source configuration.');
+    Assert.isNotUndefined(this.configuration['preConversionExtensions'], 'Missing preConversionExtensions from source configuration.');
+    Assert.isNotUndefined(this.configuration['postConversionExtensions'], 'Missing postConversionExtensions from source configuration.');
+  }
+
+  // This will be useful specialy for Salesforce sources
+  getName(): string {
+    return this.configuration['name'];
+  }
+
+  getSourceType(): Array<IStringMap<string>> {
+    return this.configuration['sourceType'];
   }
 
   getMappings(): Array<IStringMap<string>> {
-    return this.mappings;
+    return this.configuration['mappings'];
   }
 
-  getPostConversionExtensions(): any[] {
-    return this.postConversionExtensions;
+  getPostConversionExtensions(): Array<IStringMap<string>> {
+    return this.configuration['postConversionExtensions'];
   }
 
-  getPreConversionExtensions() {
-    return this.preConversionExtensions;
+  getPreConversionExtensions(): Array<IStringMap<string>> {
+    return this.configuration['preConversionExtensions'];
   }
 
   getConfiguration(): any {
@@ -31,12 +41,6 @@ export class Source extends BaseCoveoObject implements ISource {
   }
 
   clone(): Source {
-    return new Source(
-      this.getId(),
-      JsonUtils.clone(this.getConfiguration()),
-      JsonUtils.clone(this.getMappings()),
-      JsonUtils.clone(this.getPostConversionExtensions()),
-      JsonUtils.clone(this.getPreConversionExtensions())
-    );
+    return new Source(JsonUtils.clone(this.configuration));
   }
 }

@@ -8,6 +8,7 @@ import { Logger } from '../commons/logger';
 import { BaseController } from '../controllers/BaseController';
 import { ExtensionController } from '../controllers/ExtensionController';
 import { FieldController } from '../controllers/FieldController';
+import { SourceController } from '../controllers/SourceController';
 import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
 import { Organization } from '../coveoObjects/Organization';
 
@@ -25,6 +26,10 @@ export interface IDiffOptions {
    * Prevent the diff result to be opened in a file once the operation has complete
    */
   silent?: boolean;
+  /**
+   * Specify which source to take into account for the Diff action.
+   */
+  sources?: string[];
 }
 
 export class DiffCommand {
@@ -62,6 +67,15 @@ export class DiffCommand {
     this.diff(extensionController, 'Extension', options);
   }
 
+  /**
+   * Diff the sources of both organizations passed in parameter
+   *
+   */
+  diffSources(options?: IDiffOptions) {
+    const sourceController: SourceController = new SourceController(this.organization1, this.organization2);
+    this.diff(sourceController, 'Source', options);
+  }
+
   // FIXME: Enable command to diff to objects without exiting the application first
   /**
    * This is the generic 'diff' method
@@ -69,7 +83,6 @@ export class DiffCommand {
    * @private
    * @param {BaseController} controller
    * @param {string} objectName
-   * @param {(object: any[]) => any[]} extractionMethod
    * @param {IDiffOptions} options
    */
   private diff(controller: BaseController, objectName: string, opt?: IDiffOptions) {
@@ -79,7 +92,7 @@ export class DiffCommand {
     Logger.startSpinner('Performing a field diff');
 
     // Give some useful information
-    options.includeOnly
+    options.includeOnly && options.includeOnly.length > 0
       ? Logger.verbose(`Diff will be applied exclusively to the following keys: ${JSON.stringify(options.includeOnly)}`)
       : options.keysToIgnore
         ? Logger.verbose(`Diff will not be applied to the following keys: ${JSON.stringify(options.keysToIgnore)}`)
@@ -89,7 +102,7 @@ export class DiffCommand {
       .diff(options)
       .then((diffResultArray: DiffResultArray<BaseCoveoObject>) => {
         fs
-          .writeJSON(`${objectName}Diff.json`, controller.getCleanVersion(diffResultArray), { spaces: 2 })
+          .writeJSON(`${objectName}Diff.json`, controller.getCleanVersion(diffResultArray, options), { spaces: 2 })
           .then(() => {
             Logger.info('Diff operation completed');
             Logger.info(`File saved as ${Colors.filename(objectName + 'Diff.json')}`);
@@ -106,7 +119,7 @@ export class DiffCommand {
           });
       })
       .catch((err: IGenericError) => {
-        Logger.error(StaticErrorMessage.UNABLE_TO_DIFF);
+        Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err);
         Logger.stopSpinner();
         process.exit();
       });

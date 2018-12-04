@@ -55,13 +55,6 @@
     "one-line": [true, "check-catch", "check-else", "check-finally", "check-open-brace", "check-whitespace"],
     "one-variable-per-declaration": [true, "ignore-for-loop"],
     "only-arrow-functions": [true, "allow-declarations", "allow-named-functions"],
-    "ordered-imports": [
-      true,
-      {
-        "import-sources-order": "case-insensitive",
-        "named-imports-order": "case-insensitive"
-      }
-    ],
     "prefer-const": true,
     "quotemark": [true, "single", "avoid-escape"],
     "radix": true,

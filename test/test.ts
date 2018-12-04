@@ -19,10 +19,12 @@ import { UtilsTest } from './commons/utils/UtilsTest';
 import { configTest } from './config/indexTest';
 import { ExtensionControllerTest } from './controllers/ExtensionControllerTest';
 import { FieldControllerTest } from './controllers/FieldControllerTest';
+import { SourceControllerTest } from './controllers/SourceControllerTest';
 import { ExtensionTest } from './coveoObjects/ExtensionTest';
 import { FieldTest } from './coveoObjects/FieldTest';
 import { OrganizationTest } from './coveoObjects/OrganizationTest';
 import { SourceTest } from './coveoObjects/SourceTest';
+import { SourceAPITest } from './commons/rest/SourceAPITest';
 
 console.log(`Environment: ${config.env}\n`);
 
@@ -37,6 +39,7 @@ SourceTest();
 // Controllers
 FieldControllerTest();
 ExtensionControllerTest();
+SourceControllerTest();
 
 // Common / Collection
 DictionaryTest();
@@ -50,6 +53,7 @@ ErrorTest();
 // Common / Rest
 FieldAPITest();
 ExtensionAPITest();
+SourceAPITest();
 UrlServiceTest();
 
 // Utils

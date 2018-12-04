@@ -4,6 +4,7 @@ import { StaticErrorMessage } from '../../src/commons/errors';
 import { Extension } from '../../src/coveoObjects/Extension';
 import { Field } from '../../src/coveoObjects/Field';
 import { Organization } from '../../src/coveoObjects/Organization';
+import { Source } from '../../src/coveoObjects/Source';
 
 export const OrganizationTest = () => {
   describe('Organization Model', () => {
@@ -206,6 +207,46 @@ export const OrganizationTest = () => {
 
       it('Should clear all extensions from the organization', () => {
         const organization: Organization = new Organization('rambo1', 'xxx-aaa-123');
+
+        const source: Source = new Source({
+          id: 'r6ud7iksjhafgjpiokjh-sdfgr3e',
+          name: 'testSource',
+          sourceType: 'SITEMAP',
+          sourceSecurityOption: 'Specified',
+          postConversionExtensions: [],
+          preConversionExtensions: [],
+          mappings: [],
+          addressPatterns: [
+            {
+              expression: '*',
+              patternType: 'Wildcard',
+              allowed: true
+            }
+          ],
+          permissions: [
+            {
+              permissionSets: [
+                {
+                  allowedPermissions: [
+                    {
+                      identityType: 'Group',
+                      securityProvider: 'Email Security Provider',
+                      identity: '*@*'
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        });
+        organization.addSource(source);
+        expect(organization.getSources().getCount()).to.equal(1);
+        organization.clearSources();
+        expect(organization.getSources().getCount()).to.equal(0);
+      });
+
+      it('Should add anc clear all sources from the organization', () => {
+        const organization: Organization = new Organization('rambo1', 'xxx-aaa-123');
         const extension: Extension = new Extension({
           content: 'random content',
           createdDate: 1511812764000,
@@ -301,6 +342,82 @@ export const OrganizationTest = () => {
         };
         organization.addMultipleExtensions([extension1, extension2]);
         expect(organization.getExtensions().getCount()).to.equal(2);
+      });
+
+      it('Should clone an extension with all its fields, extensions and sources', () => {
+        const organization: Organization = new Organization('org321', 'xxx-aaa-123');
+        const extension: Extension = new Extension({
+          content: 'random content',
+          createdDate: 1511812764000,
+          description: 'This extension simply rejects a document. It gets triggered on certain file types in the source configuration',
+          enabled: true,
+          id: 'ccli1wq3fmkys-tknepx33tdhmqibch2uzxhcc44',
+          lastModified: 1511812764000,
+          name: 'Reject a document.',
+          requiredDataStreams: [],
+          versionId: 'a6LyFxn91XW5IcgNMTKOabXcJWp05e7i'
+        });
+
+        const source: Source = new Source({
+          id: 'r6ud7iksjhafgjpiokjh-sdfgr3e',
+          name: 'testSource',
+          sourceType: 'SITEMAP',
+          sourceSecurityOption: 'Specified',
+          postConversionExtensions: [],
+          preConversionExtensions: [],
+          mappings: [],
+          addressPatterns: [
+            {
+              expression: '*',
+              patternType: 'Wildcard',
+              allowed: true
+            }
+          ],
+          permissions: [
+            {
+              permissionSets: [
+                {
+                  allowedPermissions: [
+                    {
+                      identityType: 'Group',
+                      securityProvider: 'Email Security Provider',
+                      identity: '*@*'
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        });
+        const fields = [
+          {
+            name: 'field1',
+            description: 'Place to put content for metadata discovery.',
+            type: 'STRING'
+          },
+          {
+            name: 'field2',
+            description: 'Place to put content for metadata discovery.',
+            type: 'STRING'
+          },
+          {
+            name: 'field3',
+            description: 'Place to put content for metadata discovery.',
+            type: 'STRING'
+          }
+        ];
+        organization.addFieldList(fields);
+        organization.addSource(source);
+        organization.addExtension(extension);
+
+        const copy = organization.clone();
+        // clear orginial organization and make sure it does not affect the copy
+        organization.clearAll();
+        expect(copy.getId()).to.equal('org321');
+        expect(copy.getApiKey()).to.equal('xxx-aaa-123');
+        expect(copy.getFields().getCount()).to.equal(3);
+        expect(copy.getExtensions().getCount()).to.equal(1);
+        expect(copy.getSources().getCount()).to.equal(1);
       });
     });
   });

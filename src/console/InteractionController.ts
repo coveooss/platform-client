@@ -24,7 +24,7 @@ export class InteractionController {
       .start()
       .then((answers: Answers) => {
         const commandFilename = answers[InteractiveQuestion.SETTING_FILENAME];
-        const command = ['node ' + this.getApplicationFilename(), this.generateCommand(answers)].join(' ');
+        const command = ['platformclient', this.generateCommand(answers)].join(' ');
         fs
           .writeFile(commandFilename, [this.setShebangLine(), command].join('\n'))
           .then(() => {
@@ -51,7 +51,7 @@ export class InteractionController {
 
     // Global options
     command = command
-      // TODO: What if the command is generated dynamically?
+      .concat(this.saveOptionIfExists(answers, '-S ', InteractiveQuestion.SOURCES))
       .concat(this.saveOptionIfExists(answers, '-F ', InteractiveQuestion.FORCE_GRADUATION))
       .concat(this.saveOptionIfExists(answers, '-m ', InteractiveQuestion.GRADUATE_OPERATIONS))
       .concat(this.saveOptionIfExists(answers, '-O ', InteractiveQuestion.LOG_FILENAME))
@@ -60,10 +60,6 @@ export class InteractionController {
       .concat(this.saveOptionIfExists(answers, '-o ', InteractiveQuestion.KEY_TO_INCLUDE_ONLY));
 
     return command.join(' ');
-  }
-
-  private getApplicationFilename(): string {
-    return process.argv[1];
   }
 
   private setShebangLine(): string {
