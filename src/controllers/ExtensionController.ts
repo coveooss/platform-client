@@ -30,8 +30,8 @@ export class ExtensionController extends BaseController {
         );
         if (diffResultArray.containsItems()) {
           Logger.verbose('Diff Summary:');
-          Logger.verbose(`${diffResultArray.TO_CREATE.length} extension${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} to creat`);
-          Logger.verbose(`${diffResultArray.TO_DELETE.length} extension${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} to delet`);
+          Logger.verbose(`${diffResultArray.TO_CREATE.length} extension${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} to create`);
+          Logger.verbose(`${diffResultArray.TO_DELETE.length} extension${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} to delete`);
           Logger.verbose(`${diffResultArray.TO_UPDATE.length} extension${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} to update`);
         }
         return diffResultArray;
