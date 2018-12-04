@@ -20,7 +20,7 @@ export class SourceController extends BaseController {
     super();
   }
 
-  static CONTROLLER_NAME: string = 'source';
+  static CONTROLLER_NAME: string = 'sources';
 
   // private shouldSkipExtension(diffOptions?: IDiffOptions): boolean {
   //   return (
@@ -52,9 +52,9 @@ export class SourceController extends BaseController {
           //     'Inconsistent number of extensions between orgs. Run `graduate-extensions` first or use the --skipExtensions option to ignore extensions.'
           //   );
           // }
-          Logger.verbose(`${diffResultArray.TO_CREATE.length} new source${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
-          Logger.verbose(`${diffResultArray.TO_DELETE.length} deleted source${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
-          Logger.verbose(`${diffResultArray.TO_UPDATE.length} updated source${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
+          Logger.verbose(`${diffResultArray.TO_CREATE.length} source${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} to create`);
+          Logger.verbose(`${diffResultArray.TO_DELETE.length} source${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} to delete`);
+          Logger.verbose(`${diffResultArray.TO_UPDATE.length} source${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} to update`);
         }
         return diffResultArray;
       })

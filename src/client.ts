@@ -160,6 +160,7 @@ program
   .description(['Diff the sources of 2 Organizations.'])
   .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
   // .option('-r, --rebuild', 'Rebuild the source once created. Default is false', false)
+  // TODO: sources options not implemented yet
   // .option('-S, --sources []', 'List of sources to diff. String separated by ",". If no specified, all the sources will be diffed', list)
   // Maybe we can use one of these options
   // .option('-M, --skipMappings', 'Keys to ignore. String separated by ",".', false)
@@ -169,7 +170,7 @@ program
   // .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', list)
   .option(
     '-o, --ignoreKeys []',
-    'Keys to ignore. String separated by ",". By default, the extension diff will only diff the following keys: "TODO:///"',
+    'Keys to ignore. String separated by ",". By default, the extension diff will ignore "information", "resourceId", "id", and "owner"',
     list
   )
   .option(
