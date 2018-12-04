@@ -170,7 +170,7 @@ program
   // .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', list)
   .option(
     '-o, --ignoreKeys []',
-    'Keys to ignore. String separated by ",". By default, the extension diff will ignore "information", "resourceId", "id", and "owner"',
+    'Keys to ignore. String separated by ",". By default, the diff will ignore "information", "resourceId", "id", and "owner"',
     list
   )
   .option(
