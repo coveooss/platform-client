@@ -37,7 +37,7 @@ deploy:
     skip_cleanup: true
     on:
       tags: true
-      repo: coveo/coveo-platform-client
+      repo: coveo/platform-client
       all_branches: true
 branches:
   only:
