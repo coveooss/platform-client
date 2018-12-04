@@ -1,7 +1,7 @@
 import { Question } from 'inquirer';
 import { Answers } from 'inquirer';
-import * as inquirer from 'inquirer';
 import { RequestResponse } from 'request';
+import * as inquirer from 'inquirer';
 import * as _ from 'underscore';
 import { DiffCommand } from '../commands/DiffCommand';
 import { GraduateCommand } from '../commands/GraduateCommand';
@@ -9,6 +9,9 @@ import { FieldAPI } from '../commons/rest/FieldAPI';
 import { Utils } from '../commons/utils/Utils';
 import { ExtensionController } from '../controllers/ExtensionController';
 import { FieldController } from '../controllers/FieldController';
+import { SourceAPI } from '../commons/rest/SourceAPI';
+import { Organization } from '../coveoObjects/Organization';
+import { SourceController } from '../controllers/SourceController';
 
 export class InteractiveQuestion {
   // Required parameters
@@ -24,6 +27,7 @@ export class InteractiveQuestion {
   static SETTING_FILENAME: string = 'settingFilename';
   static LOG_FILENAME: string = 'logFilename';
   static FORCE_GRADUATION: string = 'force';
+  static SOURCES: string = 'sources';
   static LOG_LEVEL: string = 'logLevel';
   static KEY_TO_IGNORE: string = 'keyToIgnore';
   static KEY_TO_INCLUDE_ONLY: string = 'keyToIncludeOnly';
@@ -32,15 +36,39 @@ export class InteractiveQuestion {
   static ADVANCED_CONFIGURATION_MODE: string = 'Advanced';
   // static EXECUTE_COMMAND: string = 'executeCommand';
 
-  start(): Promise<Answers> {
+  // To answers from previous prompts
+  static PREVIOUS_ANSWERS: Answers = {};
+
+  start() {
     const prompt = inquirer.createPromptModule();
     return this.loadFieldModel()
       .then((model: {}) => {
-        return prompt(this.getQuestions({ fieldModel: model }));
+        return prompt(this.getInitialQuestions({ fieldModel: model })).then((ans: Answers) => {
+          InteractiveQuestion.PREVIOUS_ANSWERS = ans;
+
+          return prompt(this.getFinalQuestions([]));
+
+          // TODO: uncomment when sources option is working
+          // Getting sources from origin Organization
+          // console.log('fetching sources from org');
+          // const org = new Organization(ans[InteractiveQuestion.ORIGIN_ORG_ID], ans[InteractiveQuestion.ORIGIN_ORG_KEY]);
+          // return this.loadSourceList(org)
+          //   .then(sources => {
+          //     console.log('done fetching sources');
+          //     return prompt(this.getFinalQuestions(sources));
+          //   })
+          //   .catch((err: any) => {
+          //     console.error(chalk.red('Unable to load sources.'), chalk.red(err));
+          //     return prompt(this.getFinalQuestions([]));
+          //   });
+        });
       })
       .catch((err: any) => {
-        console.error('Unable to load Field model.');
-        return prompt(this.getQuestions({}));
+        console.error('Unable to load Field model.', err);
+        return prompt(this.getInitialQuestions({})).then((ans: Answers) => {
+          InteractiveQuestion.PREVIOUS_ANSWERS = ans;
+          return prompt(this.getFinalQuestions([]));
+        });
       });
   }
 
@@ -57,6 +85,23 @@ export class InteractiveQuestion {
         })
         .catch((err: any) => {
           reject('Unable to fetch field model');
+        });
+    });
+  }
+
+  loadSourceList(org: Organization) {
+    // tslint:disable-next-line:typedef
+    return new Promise((resolve, reject) => {
+      SourceAPI.getAllSources(org)
+        .then((resp: RequestResponse) => {
+          if (resp.body.length > 0) {
+            resolve(_.pluck(resp.body, 'name'));
+          } else {
+            reject('No source available in this organization');
+          }
+        })
+        .catch((err: any) => {
+          reject(err);
         });
     });
   }
@@ -113,7 +158,10 @@ export class InteractiveQuestion {
       message: 'Log Level',
       default: 'info',
       choices: [{ name: 'nothing' }, { name: 'error' }, { name: 'info' }, { name: 'verbose' }, { name: 'insane' }],
-      when: (answer: Answers) => answer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE
+      when: (answer: Answers) => {
+        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        return answer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE;
+      }
     };
   }
 
@@ -122,8 +170,15 @@ export class InteractiveQuestion {
       type: 'list',
       name: InteractiveQuestion.OBJECT_TO_MANIPULATE,
       message: 'What would you like to diff?',
-      choices: [{ name: FieldController.CONTROLLER_NAME }, { name: ExtensionController.CONTROLLER_NAME }],
-      when: (answer: Answers) => answer[InteractiveQuestion.COMMAND].indexOf(DiffCommand.COMMAND_NAME) !== -1
+      choices: [
+        { name: FieldController.CONTROLLER_NAME },
+        { name: ExtensionController.CONTROLLER_NAME },
+        { name: SourceController.CONTROLLER_NAME }
+      ],
+      when: (answer: Answers) => {
+        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        return answer[InteractiveQuestion.COMMAND].indexOf(DiffCommand.COMMAND_NAME) !== -1;
+      }
     };
   }
 
@@ -132,8 +187,15 @@ export class InteractiveQuestion {
       type: 'list',
       name: InteractiveQuestion.OBJECT_TO_MANIPULATE,
       message: 'What would you like to graduate?',
-      choices: [{ name: FieldController.CONTROLLER_NAME }, { name: ExtensionController.CONTROLLER_NAME }],
-      when: (answer: Answers) => answer[InteractiveQuestion.COMMAND] === GraduateCommand.COMMAND_NAME
+      choices: [
+        { name: FieldController.CONTROLLER_NAME },
+        { name: ExtensionController.CONTROLLER_NAME },
+        { name: SourceController.CONTROLLER_NAME }
+      ],
+      when: (answer: Answers) => {
+        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        return answer[InteractiveQuestion.COMMAND] === GraduateCommand.COMMAND_NAME;
+      }
     };
   }
 
@@ -153,10 +215,14 @@ export class InteractiveQuestion {
       name: InteractiveQuestion.KEY_TO_IGNORE,
       message: `Select the keys that will no be taken in consideration during the diff`,
       choices: fieldModel,
-      when: (answer: Answers) =>
-        answer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE &&
-        answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === FieldController.CONTROLLER_NAME &&
-        fieldModel.length > 0
+      when: (answer: Answers) => {
+        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        return (
+          answer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE &&
+          answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === FieldController.CONTROLLER_NAME &&
+          fieldModel.length > 0
+        );
+      }
     };
   }
 
@@ -166,8 +232,31 @@ export class InteractiveQuestion {
       name: InteractiveQuestion.KEY_TO_INCLUDE_ONLY,
       message: `Select the keys that you only want to perform the diff`,
       choices: fieldModel,
-      when: (answer: Answers) =>
-        answer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE && fieldModel.length > 0
+      when: (answer: Answers) => {
+        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        return (
+          answer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE &&
+          answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === FieldController.CONTROLLER_NAME &&
+          fieldModel.length > 0
+        );
+      }
+    };
+  }
+
+  selectSources(sources: string[]): Question {
+    return {
+      type: 'checkbox',
+      name: InteractiveQuestion.SOURCES,
+      message: `Select the sources to diff. Selecting nothing will diff all sources`,
+      choices: sources,
+      when: (answer: Answers) => {
+        const panswer: Answers = InteractiveQuestion.PREVIOUS_ANSWERS;
+        return (
+          panswer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE &&
+          panswer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === SourceController.CONTROLLER_NAME &&
+          sources.length > 0
+        );
+      }
     };
   }
 
@@ -199,9 +288,13 @@ export class InteractiveQuestion {
       name: InteractiveQuestion.FORCE_GRADUATION,
       message: 'Force graduation without confirmation prompt',
       default: false,
-      when: (answer: Answers) =>
-        answer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE &&
-        answer[InteractiveQuestion.COMMAND] === GraduateCommand.COMMAND_NAME
+      when: (answer: Answers) => {
+        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        return (
+          answer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE &&
+          answer[InteractiveQuestion.COMMAND] === GraduateCommand.COMMAND_NAME
+        );
+      }
     };
   }
 
@@ -214,7 +307,7 @@ export class InteractiveQuestion {
   //   };
   // }
 
-  getQuestions(data: any): Question[] {
+  getInitialQuestions(data: any): Question[] {
     return [
       this.getOriginOrganizationId(),
       this.getDestinationOrganizationId(),
@@ -230,12 +323,17 @@ export class InteractiveQuestion {
       // Common Options
       this.setAdvancedConfiguration(),
       this.setKeysToIgnore(data['fieldModel'] || []), // only execute when in advanced option
-      this.setKeysToIncludeOnly(data['fieldModel'] || []), // only execute when in advanced option
+      this.setKeysToIncludeOnly(data['fieldModel'] || []) // only execute when in advanced option
+    ];
+  }
+
+  getFinalQuestions(data: any): Question[] {
+    return [
+      // this.selectSources(data), // only execute when in advanced option
       this.setLogLevel(),
       this.forceGraduation(),
       this.getFileNameForLogs(),
       this.getFileNameForSettings()
-      // this.executeCommand()
     ];
   }
 
@@ -246,7 +344,10 @@ export class InteractiveQuestion {
       message: `Select the allowed operations on the destination organization for the graduation:`,
       choices: ['POST', 'PUT', 'DELETE'],
       validate: this.checkboxValidator('You need to select at least 1 graduate operation.'),
-      when: (answer: Answers) => answer[InteractiveQuestion.COMMAND] === GraduateCommand.COMMAND_NAME
+      when: (answer: Answers) => {
+        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        return answer[InteractiveQuestion.COMMAND] === GraduateCommand.COMMAND_NAME;
+      }
     };
   }
 

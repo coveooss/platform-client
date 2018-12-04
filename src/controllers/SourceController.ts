@@ -20,7 +20,7 @@ export class SourceController extends BaseController {
     super();
   }
 
-  static CONTROLLER_NAME: string = 'source';
+  static CONTROLLER_NAME: string = 'sources';
 
   // private shouldSkipExtension(diffOptions?: IDiffOptions): boolean {
   //   return (
