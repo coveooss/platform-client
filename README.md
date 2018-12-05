@@ -30,7 +30,7 @@ The command line tool can be used in two different ways. The first one is by usi
 platformclient interactive
 ```
 
-![Alt Text](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/interactive.gif)
+![Alt Text](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/interactive.png)
 
 #### Commands
 
