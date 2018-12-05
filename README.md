@@ -17,7 +17,7 @@ And the Coveo Platform client will be installed globally to your system path.
 _Alternatively_, if you are using **NPM 5.2+** you can [use `npx`](https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b) instead of installing globally:
 
 ```
-npx coveo-platform-clientsla
+npx coveo-platform-client
 ```
 
 ## Usage the command line tool
