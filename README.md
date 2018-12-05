@@ -14,13 +14,15 @@ npm install -g coveo-platform-client
 
 And the Coveo Platform client will be installed globally to your system path.
 
-## Usage
+_Alternatively_, if you are using **NPM 5.2+** you can [use `npx`](https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b) instead of installing globally:
 
-In order to run the tool, you will need 2 things:
-1. At least 2 organizations
-2. API keys for each organization with the proper privileges (see [Available commands](https://github.com/coveo/platform-client#available-commands))
+```
+npx coveo-platform-clientsla
+```
 
-###### Interactive tool
+## Usage the command line tool
+
+#### Interactive tool
 
 The command line tool can be used in two different ways. The first one is by using the interactive tool :
 
@@ -30,7 +32,7 @@ platformclient interactive
 
 ![Alt Text](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/interactive.gif)
 
-###### Commands
+#### Commands
 
 For CLI options, use the -h (or --help) argument:
 
