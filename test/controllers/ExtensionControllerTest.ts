@@ -352,6 +352,10 @@ export const ExtensionControllerTest = () => {
             done(err);
           });
       });
+
+      it('Should not retrieve blacklisted extensions during the diff', (done: MochaDone) => {
+        done(new Error('TODO'));
+      });
     });
 
     describe('Graduate Method', () => {

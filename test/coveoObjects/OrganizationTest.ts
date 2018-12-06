@@ -279,6 +279,16 @@ export const OrganizationTest = () => {
         expect(organization.getSources().getCount()).to.equal(0);
       });
 
+      it('Should return the source, fields, and extensions that have been blacklisted', () => {
+        const organization: Organization = new Organization('rambo1', 'xxx-aaa-123', {
+          fields: ['mycustomfield'],
+          sources: ['My Salesforce Source', 'YOUTUBE - source']
+        });
+        expect(organization.getfieldBlacklist()).to.eql(['mycustomfield']);
+        expect(organization.getSourceBlacklist()).to.eql(['mysalesforcesource', 'youtube-source']);
+        expect(organization.getExtensionBlacklist()).to.eql([]);
+      });
+
       it('Should add and clear all sources from the organization', () => {
         const organization: Organization = new Organization('rambo1', 'xxx-aaa-123');
         const extension: Extension = new Extension({

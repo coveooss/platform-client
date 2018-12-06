@@ -853,6 +853,22 @@ export const SourceControllerTest = () => {
         expect(_source2.getPostConversionExtensions()[0]['extensionId']).to.eq('Simply prints something');
       });
 
+      it('Should remove extensions that have been blacklisted form the source configuration', () => {
+        const org3 = new Organization('dev', 'xxx', { extensions: ['URL Parsing to extract metadata'] });
+        const sourceController = new SourceController(org3, org2);
+        const extensionList = [rawExtension1, rawExtension2, rawExtension3, rawDummyExtension1, rawDummyExtension2, rawDummyExtension3];
+        const sourceDict: Dictionary<Source> = new Dictionary({
+          'Sitemap Source': source1.clone(),
+          'Web Source': source2.clone()
+        });
+
+        expect(sourceDict.getItem('Sitemap Source').getPostConversionExtensions().length).to.eql(2);
+        // First replace extension IDs with their respective name
+        sourceController.replaceExtensionIdWithName(sourceDict, extensionList);
+        sourceController.removeExtensionFromOriginSource(sourceDict);
+        expect(sourceDict.getItem('Sitemap Source').getPostConversionExtensions().length).to.eql(1);
+      });
+
       it('Should replace extension name with their according id', () => {
         const sourceController = new SourceController(org1, org2);
         const extensionList = [rawExtension1, rawExtension2, rawExtension3, rawDummyExtension1, rawDummyExtension2, rawDummyExtension3];
@@ -922,6 +938,10 @@ export const SourceControllerTest = () => {
           .catch((err: IGenericError) => {
             done(err);
           });
+      });
+
+      it('Should not load extensions that have been blacklisted on the source diff', (done: MochaDone) => {
+        done(new Error('TODO'));
       });
 
       it('Should not have updated source in the diff', (done: MochaDone) => {
