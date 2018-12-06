@@ -9,6 +9,7 @@ import { Logger } from '../logger';
 import { Colors } from '../colors';
 import { Assert } from '../misc/Assert';
 import { Source } from '../../coveoObjects/Source';
+import { StringUtil } from '../utils/StringUtils';
 
 export class SourceAPI {
   static getAllSources(organization: Organization): Promise<RequestResponse> {
@@ -41,7 +42,18 @@ export class SourceAPI {
 
   static loadEachSource(org: Organization, response: RequestResponse) {
     const count = response.body.length;
-    Logger.verbose(`${count} source${count > 1 ? 's' : ''}  from ${Colors.organization(org.getId())} to fetch`);
+    Logger.verbose(`${count} source${count > 1 ? 's' : ''} from ${Colors.organization(org.getId())} to fetch`);
+
+    // Reject all sources that have been blacklisted. Do not load blacklisted sources for nothing
+    response.body = _.reject(response.body, (source: any) => {
+      const sourceName: string = source['name'] || '';
+      const condition = _.contains(org.getSourceBlacklist(), StringUtil.lowerAndStripSpaces(sourceName));
+      if (condition) {
+        Logger.info(`Skipping source ${Colors.source(sourceName)}`);
+      }
+      return condition;
+    });
+
     return Promise.all(
       _.map(response.body, (source: any) => {
         Assert.exists(source['id'], StaticErrorMessage.MISSING_SOURCE_ID_FROM_THE_RESPONSE);
