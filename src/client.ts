@@ -61,6 +61,11 @@ program
     'Diff only the specified keys. String separated by ",". By default, the extension diff will ignore the following keys: "requiredDataStreams", "content", "description" and "name"',
     list
   )
+  .option(
+    '-e, --ignoreExtensions []',
+    'Extensions to ignore. String separated by ",". By default, the diff will ignore the : "All metadata values" extension',
+    list
+  )
   .option('-m, --methods []', 'HTTP method authorized by the Graduation. Currently, only "POST" method is allowed for extensions.', list, [
     'POST',
     'PUT',
@@ -87,7 +92,10 @@ program
       DELETE: options.methods.indexOf('DELETE') > -1
     };
 
-    const command = new GraduateCommand(originOrg, destinationOrg, originApiKey, destinationApiKey);
+    const blacklistOptions = {
+      extensions: _.extend(options.ignoreExtensions || [], ['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'])
+    };
+    const command = new GraduateCommand(originOrg, destinationOrg, originApiKey, destinationApiKey, blacklistOptions);
     if (!graduateOptions.diffOptions.includeOnly) {
       graduateOptions.diffOptions.includeOnly = ['requiredDataStreams', 'content', 'description', 'name'];
     }
@@ -133,6 +141,11 @@ program
     list
   )
   .option(
+    '-e, --ignoreExtensions []',
+    'Extensions to ignore. String separated by ",". By default, the diff will ignore the : "All metadata values" extension',
+    list
+  )
+  .option(
     '-l, --logLevel <level>',
     'Possible values are: insane, verbose, info (default), error, nothing',
     /^(insane|verbose|info|error|nothing)$/i,
@@ -148,8 +161,10 @@ program
       silent: options.silent
     };
 
-    // TODO: Add the extensions to diff as an option
-    const command = new DiffCommand(originOrg, destinationOrg, originApiKey, destinationApiKey);
+    const blacklistOptions = {
+      extensions: _.extend(options.ignoreExtensions || [], ['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'])
+    };
+    const command = new DiffCommand(originOrg, destinationOrg, originApiKey, destinationApiKey, blacklistOptions);
     diffOptions.includeOnly = diffOptions.includeOnly ? diffOptions.includeOnly : ['requiredDataStreams', 'content', 'description', 'name'];
     command.diffExtensions(diffOptions);
   });
@@ -174,6 +189,11 @@ program
     list
   )
   .option(
+    '-e, --ignoreExtensions []',
+    'Extensions to ignore. String separated by ",". By default, the diff will ignore the : "All metadata values" extension',
+    list
+  )
+  .option(
     '-l, --logLevel <level>',
     'Possible values are: insane, verbose, info (default), error, nothing',
     /^(insane|verbose|info|error|nothing)$/i,
@@ -190,7 +210,10 @@ program
       keysToIgnore: options.ignoreKeys
     };
 
-    const command = new DiffCommand(originOrg, destinationOrg, originApiKey, destinationApiKey);
+    const blacklistOptions = {
+      extensions: _.extend(options.ignoreExtensions || [], ['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'])
+    };
+    const command = new DiffCommand(originOrg, destinationOrg, originApiKey, destinationApiKey, blacklistOptions);
     diffOptions.keysToIgnore = _.extend(diffOptions.keysToIgnore || [], ['information', 'resourceId', 'id', 'owner']);
     // if (options.skipExtensions) {
     //   _.extend(options.keysToIgnore, [], ['preConversionExtensions', 'postConversionExtensions']);

@@ -8,6 +8,13 @@ import { Extension } from './Extension';
 import { Field } from './Field';
 import { Source } from './Source';
 
+// Blacklist all the objects that we do not want to add to the organization.
+export interface IBlacklistObjects {
+  fields?: string[];
+  extensions?: string[];
+  sources?: string[];
+}
+
 /**
  * Organization Class. By default, the organization instance do not contain any field, sources nor extension.
  * This is a way to prevent unecessary HTTP calls to the platform.
@@ -18,7 +25,7 @@ export class Organization extends BaseCoveoObject implements IOrganization {
   private sources: Dictionary<Source> = new Dictionary<Source>();
   private extensions: Dictionary<Extension> = new Dictionary<Extension>();
 
-  constructor(id: string, private apiKey: string) {
+  constructor(id: string, private apiKey: string, private blacklist: IBlacklistObjects = {}) {
     super(id);
     this.apiKey = apiKey;
   }
@@ -47,7 +54,17 @@ export class Organization extends BaseCoveoObject implements IOrganization {
    * @param {Field} field Field to be added
    */
   addField(field: Field) {
-    this.fields.add(field.getName(), field);
+    if (
+      !_.contains(
+        this.blacklist.fields || [],
+        field
+          .getName()
+          .toLowerCase()
+          .replace(/\s/g, '')
+      )
+    ) {
+      this.fields.add(field.getName(), field);
+    }
   }
 
   /**
@@ -58,7 +75,17 @@ export class Organization extends BaseCoveoObject implements IOrganization {
   addFieldList(fields: Array<IStringMap<any>>) {
     fields.forEach((f: IStringMap<any>) => {
       const field = new Field(f);
-      this.addField(field);
+      if (
+        !_.contains(
+          this.blacklist.fields || [],
+          field
+            .getName()
+            .toLowerCase()
+            .replace(/\s/g, '')
+        )
+      ) {
+        this.addField(field);
+      }
     });
   }
 
@@ -78,7 +105,17 @@ export class Organization extends BaseCoveoObject implements IOrganization {
   addSource(source: Source) {
     // Using the source name as the key since the source ID is not the same from on org to another
     Assert.isUndefined(this.sources.getItem(source.getName()), `At least 2 sources are having the same name: ${source.getName()}`);
-    this.sources.add(source.getName(), source);
+    if (
+      !_.contains(
+        this.blacklist.sources || [],
+        source
+          .getName()
+          .toLowerCase()
+          .replace(/\s/g, '')
+      )
+    ) {
+      this.sources.add(source.getName(), source);
+    }
   }
 
   clearSources() {
@@ -100,7 +137,17 @@ export class Organization extends BaseCoveoObject implements IOrganization {
       this.extensions.getItem(extension.getName()),
       `At least 2 extensions are having the same name: ${extension.getName()}`
     );
-    this.extensions.add(extension.getName(), extension);
+    if (
+      !_.contains(
+        this.blacklist.extensions || [],
+        extension
+          .getName()
+          .toLowerCase()
+          .replace(/\s/g, '')
+      )
+    ) {
+      this.extensions.add(extension.getName(), extension);
+    }
   }
 
   /**
