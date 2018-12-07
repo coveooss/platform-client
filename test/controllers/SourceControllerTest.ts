@@ -903,7 +903,6 @@ export const SourceControllerTest = () => {
 
     describe('Diff Method', () => {
       it('Should diff sources', (done: MochaDone) => {
-        // TODO: This test is not usefull. this should be tested for PUT and DELETE  fraduate operations
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources')
@@ -941,7 +940,71 @@ export const SourceControllerTest = () => {
       });
 
       it('Should not load extensions that have been blacklisted on the source diff', (done: MochaDone) => {
-        done(new Error('TODO'));
+        const orgx: Organization = new Organization('dev', 'xxx', { extensions: ['URL Parsing to extract metadata'] });
+        const orgy: Organization = new Organization('prod', 'yyy');
+        const controllerxy = new SourceController(orgx, orgy);
+
+        const localDevSource = {
+          sourceType: 'SITEMAP',
+          id: 'dev-source',
+          name: 'sitemaptest',
+          mappings: [],
+          preConversionExtensions: [],
+          postConversionExtensions: [
+            {
+              actionOnError: 'SKIP_EXTENSION',
+              condition: '',
+              extensionId: 'ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu',
+              parameters: {},
+              versionId: ''
+            }
+          ],
+          resourceId: 'dev-source4'
+        };
+
+        const localProdSource = {
+          sourceType: 'SITEMAP',
+          id: 'prod-source',
+          name: 'sitemaptest',
+          mappings: [],
+          preConversionExtensions: [],
+          postConversionExtensions: [],
+          resourceId: 'prod-source'
+        };
+
+        scope = nock(UrlService.getDefaultUrl())
+          // First expected request
+          .get('/rest/organizations/dev/sources')
+          .reply(RequestUtils.OK, [localDevSource])
+          // Fecth extensions from dev
+          .get('/rest/organizations/dev/extensions')
+          .reply(RequestUtils.OK, [rawExtension1])
+          // Fecth extensions from Prod
+          .get('/rest/organizations/prod/extensions')
+          // Rename extension Ids
+          .reply(RequestUtils.OK, [])
+          // Fetching dev sources one by one
+          .get('/rest/organizations/dev/sources/dev-source')
+          .reply(RequestUtils.OK, localDevSource)
+          // Fecthing all prod sources
+          .get('/rest/organizations/prod/sources')
+          .reply(RequestUtils.OK, [localProdSource])
+          .get('/rest/organizations/prod/sources/prod-source')
+          .reply(RequestUtils.OK, localProdSource);
+
+        const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner'] };
+        controllerxy
+          .diff(diffOptions)
+          .then((diff: DiffResultArray<Source>) => {
+            expect(diff.TO_CREATE.length).to.eql(0);
+
+            expect(diff.TO_UPDATE.length).to.eql(0);
+            expect(diff.TO_DELETE.length).to.eql(0);
+            done();
+          })
+          .catch((err: IGenericError) => {
+            done(err);
+          });
       });
 
       it('Should not have updated source in the diff', (done: MochaDone) => {
