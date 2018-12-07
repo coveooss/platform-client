@@ -12,6 +12,22 @@ import { Source } from '../../coveoObjects/Source';
 import { StringUtil } from '../utils/StringUtils';
 
 export class SourceAPI {
+  static createSource(org: Organization, sourceModel: IStringMap<any>): Promise<RequestResponse> {
+    const url = UrlService.createSource(org.getId());
+    // FIXME: rebuild is not set to false
+    return RequestUtils.post(url, org.getApiKey(), sourceModel);
+  }
+
+  static updateSource(org: Organization, sourceId: string, sourceModel: IStringMap<any>): Promise<RequestResponse> {
+    const url = UrlService.updateSource(org.getId(), sourceId);
+    return RequestUtils.put(url, org.getApiKey(), sourceModel);
+  }
+
+  static deleteSource(org: Organization, sourceId: string): Promise<RequestResponse> {
+    const url = UrlService.getSingleSourceUrl(org.getId(), sourceId);
+    return RequestUtils.delete(url, org.getApiKey());
+  }
+
   static getAllSources(organization: Organization): Promise<RequestResponse> {
     return RequestUtils.get(UrlService.getSourcesUrl(organization.getId()), organization.getApiKey());
   }

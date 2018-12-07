@@ -40,7 +40,8 @@ program
     const graduateOptions: IGraduateOptions = {
       diffOptions: {
         keysToIgnore: options.ignoreKeys,
-        includeOnly: options.onlyKeys
+        includeOnly: options.onlyKeys,
+        silent: options.silent
       },
       force: options.force,
       POST: options.methods.indexOf('POST') > -1,
@@ -84,7 +85,8 @@ program
     // Set graduation options
     const graduateOptions: IGraduateOptions = {
       diffOptions: {
-        includeOnly: options.onlyKeys
+        includeOnly: options.onlyKeys,
+        silent: options.silent
       },
       force: options.force,
       POST: options.methods.indexOf('POST') > -1,
@@ -219,6 +221,79 @@ program
     //   _.extend(options.keysToIgnore, [], ['preConversionExtensions', 'postConversionExtensions']);
     // }
     command.diffSources(diffOptions);
+  });
+
+program
+  .command('graduate-sources <originOrg> <destinationOrg> <originApiKey> <destinationApiKey>')
+  .description(['BETA Feature!! - Diff the sources of 2 Organizations.'])
+  .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
+  // .option('-r, --rebuild', 'Rebuild the source once created. Default is false', false)
+  // TODO: sources options not implemented yet
+  // .option('-S, --sources []', 'List of sources to diff. String separated by ",". If no specified, all the sources will be diffed', list)
+  // Maybe we can use one of these options
+  // .option('-M, --skipMappings', 'Keys to ignore. String separated by ",".', false)
+  // .option('-E, --skipExtensions', 'Keys to ignore. String separated by ",".', false)
+
+  // Not sure ignore keys are relavant here
+  // .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', list)
+  // TODO: provide option to rebuild
+  // .option('-r, --rebuild', 'Rebuild source after graduation')
+  .option(
+    '-o, --ignoreKeys []',
+    'Keys to ignore. String separated by ",". By default, the diff will ignore "information", "resourceId", "id", and "owner"',
+    list
+  )
+  .option(
+    '-e, --ignoreExtensions []',
+    'Extensions to ignore. String separated by ",". By default, the diff will ignore the : "All metadata values" extension',
+    list
+  )
+  .option(
+    '-m, --methods []',
+    'HTTP method authorized by the Graduation. Should be a comma separated list (no spaces). Default value is "POST,PUT,DELETE".',
+    list,
+    ['POST', 'PUT', 'DELETE']
+  )
+  .option(
+    '-l, --logLevel <level>',
+    'Possible values are: insane, verbose, info (default), error, nothing',
+    /^(insane|verbose|info|error|nothing)$/i,
+    'info'
+  )
+  .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
+  .action((originOrg: string, destinationOrg: string, originApiKey: string, destinationApiKey: string, options: any) => {
+    setLogger(options, 'graduate-sources');
+
+    // Set diff options
+    const diffOptions: IDiffOptions = {
+      silent: options.silent,
+      sources: options.sources,
+      keysToIgnore: options.ignoreKeys
+    };
+
+    const graduateOptions: IGraduateOptions = {
+      diffOptions: {
+        includeOnly: options.onlyKeys,
+        sources: options.sources,
+        silent: options.silent
+      },
+      rebuild: options.rebuild,
+      force: options.force,
+      POST: options.methods.indexOf('POST') > -1,
+      PUT: options.methods.indexOf('PUT') > -1,
+      DELETE: options.methods.indexOf('DELETE') > -1
+    };
+
+    const blacklistOptions = {
+      extensions: _.union(['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'], options.ignoreExtensions)
+    };
+    const command = new GraduateCommand(originOrg, destinationOrg, originApiKey, destinationApiKey, blacklistOptions);
+    // TODO: ignore securityProviderReferences
+    diffOptions.keysToIgnore = _.extend(diffOptions.keysToIgnore || [], ['information', 'resourceId', 'id', 'owner']);
+    // if (options.skipExtensions) {
+    //   _.extend(options.keysToIgnore, [], ['preConversionExtensions', 'postConversionExtensions']);
+    // }
+    command.graduateSources(graduateOptions);
   });
 
 // Download Fields

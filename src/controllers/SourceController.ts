@@ -14,8 +14,11 @@ import { Dictionary } from '../commons/collections/Dictionary';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { Assert } from '../commons/misc/Assert';
 import { ExtensionAPI } from '../commons/rest/ExtensionAPI';
+import { RequestResponse } from 'request';
 
 export class SourceController extends BaseController {
+  private extensionList: Array<Array<{}>> = [];
+
   constructor(private organization1: Organization, private organization2: Organization) {
     super();
   }
@@ -36,13 +39,13 @@ export class SourceController extends BaseController {
     const diffActions = [this.loadSourcesForBothOrganizations(), this.loadExtensionsListForBothOrganizations()];
     return Promise.all(diffActions)
       .then(values => {
-        const extensionList = values[1] as Array<Array<{}>>; // 2 dim table: extensions per sources
+        this.extensionList = values[1] as Array<Array<{}>>; // 2 dim table: extensions per sources
         const source1 = this.organization1.getSources();
         const source2 = this.organization2.getSources();
 
         // No error should be raised here as all extensions defined in a source should be available in the organization
-        this.replaceExtensionIdWithName(source1, extensionList[0]);
-        this.replaceExtensionIdWithName(source2, extensionList[1]);
+        this.replaceExtensionIdWithName(source1, this.extensionList[0]); // TODO: remove second argument. Not required anymore.
+        this.replaceExtensionIdWithName(source2, this.extensionList[1]);
 
         // Do not graduate extensions that have been blacklisted
         // Always apply to the organization 1
@@ -108,8 +111,35 @@ export class SourceController extends BaseController {
     this.replaceExtensionKey(sourceList, extensionList, 'id', 'name');
   }
 
+  // TODO: remove
   replaceExtensionNameWithId(sourceList: Dictionary<Source>, extensionList: Array<{}>) {
     this.replaceExtensionKey(sourceList, extensionList, 'name', 'id');
+  }
+
+  _replaceExtensionNameWithId(source: Source, extensionList: Array<{}>) {
+    // this.replaceExtensionKey(source, extensionList, 'name', 'id');
+
+    // Get all extensions associated to the source
+    const extensionReplacer = (sourceExtensionsList: Array<IStringMap<string>>) => {
+      _.each(sourceExtensionsList, (sourceExt: IStringMap<string>) => {
+        Assert.exists(sourceExt.extensionId, 'Missing extensionId value from extension');
+        // For each extension associated to the source, replace its id by its name
+        const extensionFound = _.find(extensionList, extension => {
+          return (extension as any)['name'] === sourceExt.extensionId;
+        });
+
+        if (extensionFound) {
+          sourceExt.extensionId = (extensionFound as any)['id'];
+        } else {
+          throw new Error('Extension does not exsist: ' + sourceExt.extensionId);
+        }
+      });
+    };
+
+    // Post conversion extensions
+    extensionReplacer(source.getPostConversionExtensions());
+    // pre conversion extensions
+    extensionReplacer(source.getPreConversionExtensions());
   }
 
   /**
@@ -130,12 +160,92 @@ export class SourceController extends BaseController {
    * @returns {Promise<any[]>}
    */
   graduate(diffResultArray: DiffResultArray<Source>, options: IHTTPGraduateOptions): Promise<any[]> {
-    // this.extensionController.loadExtensionsListForBothOrganizations().then(() => {
-    // Here, the extensions should have the id of the destination org
-    //   // Do graduation stuff
-    // });
-    // TODO: change the extension name with the destination id
-    throw new Error('TODO: graduate command not implemented');
+    if (diffResultArray.containsItems()) {
+      Logger.loadingTask('Graduating Sources');
+
+      _.each(_.union(diffResultArray.TO_CREATE, diffResultArray.TO_DELETE, diffResultArray.TO_UPDATE), source => {
+        // Make some assertions here. Return an error if an extension is missing
+        // Replacing extensions with destination id
+        this._replaceExtensionNameWithId(source, this.extensionList[1]);
+      });
+
+      return Promise.all(
+        _.map(
+          this.getAuthorizedOperations(diffResultArray, this.graduateNew, this.graduateUpdated, this.graduateDeleted, options),
+          (operation: (diffResult: DiffResultArray<Source>) => Promise<void>) => {
+            return operation.call(this, diffResultArray);
+          }
+        )
+      );
+    } else {
+      Logger.warn('No sources to graduate');
+      return Promise.resolve([]);
+    }
+  }
+
+  private graduateNew(diffResult: DiffResultArray<Source>): Promise<void[]> {
+    Logger.verbose(
+      `Creating ${diffResult.TO_CREATE.length} new source${diffResult.TO_CREATE.length > 1 ? 's' : ''} in ${this.organization2.getId()} `
+    );
+    return Promise.all(
+      _.map(diffResult.TO_CREATE, (source: Source) => {
+        return SourceAPI.createSource(this.organization2, source.getConfiguration())
+          .then((response: RequestResponse) => {
+            this.successHandler(response, 'POST operation successfully completed');
+          })
+          .catch((err: any) => {
+            this.errorHandler(
+              { orgId: this.organization2.getId(), message: err } as IGenericError,
+              StaticErrorMessage.UNABLE_TO_CREATE_SOURCE
+            );
+          });
+      })
+    );
+  }
+
+  private graduateUpdated(diffResult: DiffResultArray<Source>): Promise<void[]> {
+    Logger.verbose(
+      `Updating ${diffResult.TO_UPDATE.length} existing source${
+        diffResult.TO_UPDATE.length > 1 ? 's' : ''
+      } in ${this.organization2.getId()} `
+    );
+    return Promise.all(
+      _.map(diffResult.TO_UPDATE, (source: Source, idx: number) => {
+        const destinationSource = diffResult.TO_UPDATE_OLD[idx].getId();
+        return SourceAPI.updateSource(this.organization2, destinationSource, source.getConfiguration())
+          .then((response: RequestResponse) => {
+            this.successHandler(response, 'PUT operation successfully completed');
+          })
+          .catch((err: any) => {
+            this.errorHandler(
+              { orgId: this.organization2.getId(), message: err } as IGenericError,
+              StaticErrorMessage.UNABLE_TO_UPDATE_SOURCE
+            );
+          });
+      })
+    );
+  }
+
+  private graduateDeleted(diffResult: DiffResultArray<Source>): Promise<void[]> {
+    Logger.verbose(
+      `Deleting ${diffResult.TO_UPDATE.length} existing source${
+        diffResult.TO_CREATE.length > 1 ? 's' : ''
+      } from ${this.organization2.getId()} `
+    );
+    return Promise.all(
+      _.map(diffResult.TO_DELETE, (source: Source) => {
+        return SourceAPI.deleteSource(this.organization2, source.getId())
+          .then((response: RequestResponse) => {
+            this.successHandler(response, 'DELETE operation successfully completed');
+          })
+          .catch((err: any) => {
+            this.errorHandler(
+              { orgId: this.organization2.getId(), message: err } as IGenericError,
+              StaticErrorMessage.UNABLE_TO_DELETE_SOURCE
+            );
+          });
+      })
+    );
   }
 
   extractionMethod(object: any[], diffOptions: IDiffOptions, oldVersion?: any[]): any[] {

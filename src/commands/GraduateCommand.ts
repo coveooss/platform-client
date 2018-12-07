@@ -10,6 +10,7 @@ import { FieldController } from '../controllers/FieldController';
 import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
 import { Organization, IBlacklistObjects } from '../coveoObjects/Organization';
 import { DiffCommand, IDiffOptions } from './DiffCommand';
+import { SourceController } from '../controllers/SourceController';
 
 export interface IHTTPGraduateOptions {
   POST: boolean;
@@ -18,6 +19,7 @@ export interface IHTTPGraduateOptions {
 }
 
 export interface IGraduateOptions extends IHTTPGraduateOptions {
+  rebuild?: boolean; // Only available for sources
   force: boolean;
   diffOptions: IDiffOptions;
 }
@@ -41,6 +43,7 @@ export class GraduateCommand {
 
   static DEFAULT_OPTIONS: IGraduateOptions = {
     diffOptions: DiffCommand.DEFAULT_OPTIONS,
+    rebuild: false,
     force: false,
     POST: true,
     PUT: true,
@@ -57,6 +60,11 @@ export class GraduateCommand {
   graduateExtensions(options?: IGraduateOptions) {
     const extensionController: ExtensionController = new ExtensionController(this.organization1, this.organization2);
     this.graduate(extensionController, 'Extension', options);
+  }
+
+  graduateSources(options?: IGraduateOptions) {
+    const sourceController: SourceController = new SourceController(this.organization1, this.organization2);
+    this.graduate(sourceController, 'Source', options);
   }
 
   private graduate(controller: BaseController, objectName: string, opts?: IGraduateOptions) {
