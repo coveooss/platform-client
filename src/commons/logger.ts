@@ -103,7 +103,7 @@ export class LoggerSingleton {
     FileUtils.appendToFile(this.filename, [today, level, stripAnsi(message), '\n'].join(' | '));
     _.each(meta, (m: any) => {
       if (!Utils.isEmptyString(m.toString())) {
-        FileUtils.appendToFile(this.filename, [today, level, m.toString(), '\n'].join(' | '));
+        FileUtils.appendToFile(this.filename, [today, level, stripAnsi(m).toString(), '\n'].join(' | '));
       }
     });
   }
