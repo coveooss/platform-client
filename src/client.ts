@@ -93,7 +93,7 @@ program
     };
 
     const blacklistOptions = {
-      extensions: _.extend(options.ignoreExtensions || [], ['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'])
+      extensions: _.union(['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'], options.ignoreExtensions)
     };
     const command = new GraduateCommand(originOrg, destinationOrg, originApiKey, destinationApiKey, blacklistOptions);
     if (!graduateOptions.diffOptions.includeOnly) {
@@ -142,7 +142,7 @@ program
   )
   .option(
     '-e, --ignoreExtensions []',
-    'Extensions to ignore. String separated by ",". By default, the diff will ignore the : "All metadata values" extension',
+    'Extensions to ignore. String separated by ",". By default, the diff will ignore the : "All metadata values" extension.',
     list
   )
   .option(
@@ -162,7 +162,7 @@ program
     };
 
     const blacklistOptions = {
-      extensions: _.extend(options.ignoreExtensions || [], ['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'])
+      extensions: _.union(['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'], options.ignoreExtensions)
     };
     const command = new DiffCommand(originOrg, destinationOrg, originApiKey, destinationApiKey, blacklistOptions);
     diffOptions.includeOnly = diffOptions.includeOnly ? diffOptions.includeOnly : ['requiredDataStreams', 'content', 'description', 'name'];
@@ -211,7 +211,7 @@ program
     };
 
     const blacklistOptions = {
-      extensions: _.extend(options.ignoreExtensions || [], ['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'])
+      extensions: _.union(['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'], options.ignoreExtensions)
     };
     const command = new DiffCommand(originOrg, destinationOrg, originApiKey, destinationApiKey, blacklistOptions);
     diffOptions.keysToIgnore = _.extend(diffOptions.keysToIgnore || [], ['information', 'resourceId', 'id', 'owner']);
