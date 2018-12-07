@@ -8,7 +8,7 @@ import { BaseController } from '../controllers/BaseController';
 import { ExtensionController } from '../controllers/ExtensionController';
 import { FieldController } from '../controllers/FieldController';
 import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
-import { Organization } from '../coveoObjects/Organization';
+import { Organization, IBlacklistObjects } from '../coveoObjects/Organization';
 import { DiffCommand, IDiffOptions } from './DiffCommand';
 
 export interface IHTTPGraduateOptions {
@@ -27,9 +27,15 @@ export class GraduateCommand {
   private organization2: Organization;
   private InteractiveQuestion: InteractiveQuestion;
 
-  constructor(originOrganization: string, destinationOrganization: string, originApiKey: string, destinationApiKey: string) {
-    this.organization1 = new Organization(originOrganization, originApiKey);
-    this.organization2 = new Organization(destinationOrganization, destinationApiKey);
+  constructor(
+    originOrganization: string,
+    destinationOrganization: string,
+    originApiKey: string,
+    destinationApiKey: string,
+    blacklistObjects?: IBlacklistObjects
+  ) {
+    this.organization1 = new Organization(originOrganization, originApiKey, blacklistObjects);
+    this.organization2 = new Organization(destinationOrganization, destinationApiKey, blacklistObjects);
     this.InteractiveQuestion = new InteractiveQuestion();
   }
 

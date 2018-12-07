@@ -3,7 +3,7 @@ import { assert, expect } from 'chai';
 import { StaticErrorMessage } from '../../src/commons/errors';
 import { Extension } from '../../src/coveoObjects/Extension';
 import { Field } from '../../src/coveoObjects/Field';
-import { Organization } from '../../src/coveoObjects/Organization';
+import { Organization, IBlacklistObjects } from '../../src/coveoObjects/Organization';
 import { Source } from '../../src/coveoObjects/Source';
 
 export const OrganizationTest = () => {
@@ -107,8 +107,37 @@ export const OrganizationTest = () => {
         expect(organization.getFields().getCount()).to.equal(1);
       });
 
+      it('Should not add field that has been blacklisted', () => {
+        const blacklist = { fields: ['allmetadatavalues'] };
+        const organization: Organization = new Organization('rambo3', 'xxx-aaa-123', blacklist);
+        const field: Field = new Field({
+          name: 'allmetadatavalues',
+          description: 'Place to put content for metadata discovery.',
+          type: 'STRING',
+          includeInQuery: true,
+          includeInResults: true,
+          mergeWithLexicon: false,
+          smartDateFacet: false,
+          facet: false,
+          multiValueFacet: false,
+          sort: false,
+          ranking: false,
+          stemming: false,
+          multiValueFacetTokenizers: ';',
+          useCacheForNestedQuery: false,
+          useCacheForSort: false,
+          useCacheForNumericQuery: false,
+          useCacheForComputedFacet: false,
+          dateFormat: '',
+          system: false
+        });
+        organization.addField(field);
+        expect(organization.getFields().getCount()).to.equal(0);
+      });
+
       it('Should add multiple fields in the Organization', () => {
-        const organization: Organization = new Organization('theorg', 'xxx-xxx');
+        const blacklist = { fields: ['fieldxxx'] };
+        const organization: Organization = new Organization('theorg', 'xxx-xxx', blacklist);
 
         expect(organization.getFields().getCount()).to.be.eql(0);
         organization.addFieldList([
@@ -119,6 +148,11 @@ export const OrganizationTest = () => {
           },
           {
             name: 'field2',
+            description: 'Place to put content for metadata discovery.',
+            type: 'STRING'
+          },
+          {
+            name: 'fieldxxx',
             description: 'Place to put content for metadata discovery.',
             type: 'STRING'
           },
@@ -245,7 +279,17 @@ export const OrganizationTest = () => {
         expect(organization.getSources().getCount()).to.equal(0);
       });
 
-      it('Should add anc clear all sources from the organization', () => {
+      it('Should return the source, fields, and extensions that have been blacklisted', () => {
+        const organization: Organization = new Organization('rambo1', 'xxx-aaa-123', {
+          fields: ['mycustomfield'],
+          sources: ['My Salesforce Source', 'YOUTUBE - source']
+        });
+        expect(organization.getfieldBlacklist()).to.eql(['mycustomfield']);
+        expect(organization.getSourceBlacklist()).to.eql(['mysalesforcesource', 'youtube-source']);
+        expect(organization.getExtensionBlacklist()).to.eql([]);
+      });
+
+      it('Should add and clear all sources from the organization', () => {
         const organization: Organization = new Organization('rambo1', 'xxx-aaa-123');
         const extension: Extension = new Extension({
           content: 'random content',
@@ -342,6 +386,41 @@ export const OrganizationTest = () => {
         };
         organization.addMultipleExtensions([extension1, extension2]);
         expect(organization.getExtensions().getCount()).to.equal(2);
+      });
+
+      it('Should not add an extensions that has been blacklisted', () => {
+        const blacklist: IBlacklistObjects = { extensions: ['allmetadatavalues'] };
+        const organization: Organization = new Organization('flower', 'xxx-aaa-123', blacklist);
+        const extension1 = {
+          content: 'random content',
+          createdDate: 1511812764000,
+          description: 'This extension simply rejects a document. It gets triggered on certain file types in the source configuration',
+          enabled: true,
+          id: 'ccli1wq3fmkys-tknepx33tdhmqibch2uzxhcc44',
+          lastModified: 1511812764000,
+          name: 'All Metadata Values',
+          requiredDataStreams: [],
+          versionId: 'a6LyFxn91XW5IcgNMTKOabXcJWp05e7i',
+          usedBy: [],
+          status: {
+            durationHealth: {
+              healthIndicator: 'UNKNOWN'
+            },
+            dailyStatistics: {
+              averageDurationInSeconds: 0,
+              numberOfErrors: 0,
+              numberOfExecutions: 0,
+              numberOfSkips: 0,
+              numberOfTimeouts: 0
+            },
+            disabledStatus: {},
+            timeoutHealth: {
+              healthIndicator: 'UNKNOWN'
+            }
+          }
+        };
+        organization.addMultipleExtensions([extension1]);
+        expect(organization.getExtensions().getCount()).to.equal(0);
       });
 
       it('Should clone an extension with all its fields, extensions and sources', () => {

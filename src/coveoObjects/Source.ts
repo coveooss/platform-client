@@ -1,8 +1,10 @@
+import * as _ from 'underscore';
 import { ISource } from '../commons/interfaces/ISource';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 import { BaseCoveoObject } from './BaseCoveoObject';
 import { Assert } from '../commons/misc/Assert';
+import { StringUtil } from '../commons/utils/StringUtils';
 
 export class Source extends BaseCoveoObject implements ISource {
   constructor(private configuration: any) {
@@ -34,6 +36,14 @@ export class Source extends BaseCoveoObject implements ISource {
 
   getPreConversionExtensions(): Array<IStringMap<string>> {
     return this.configuration['preConversionExtensions'];
+  }
+
+  removeExtension(extensionId: string, stage: 'pre' | 'post') {
+    this.configuration[`${stage}ConversionExtensions`] = _.reject(
+      this.configuration[`${stage}ConversionExtensions`],
+      (extension: IStringMap<string>) =>
+        StringUtil.lowerAndStripSpaces(extension.extensionId) === StringUtil.lowerAndStripSpaces(extensionId)
+    );
   }
 
   getConfiguration(): any {

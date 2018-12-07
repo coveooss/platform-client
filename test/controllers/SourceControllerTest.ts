@@ -853,6 +853,22 @@ export const SourceControllerTest = () => {
         expect(_source2.getPostConversionExtensions()[0]['extensionId']).to.eq('Simply prints something');
       });
 
+      it('Should remove extensions that have been blacklisted form the source configuration', () => {
+        const org3 = new Organization('dev', 'xxx', { extensions: ['URL Parsing to extract metadata'] });
+        const sourceController = new SourceController(org3, org2);
+        const extensionList = [rawExtension1, rawExtension2, rawExtension3, rawDummyExtension1, rawDummyExtension2, rawDummyExtension3];
+        const sourceDict: Dictionary<Source> = new Dictionary({
+          'Sitemap Source': source1.clone(),
+          'Web Source': source2.clone()
+        });
+
+        expect(sourceDict.getItem('Sitemap Source').getPostConversionExtensions().length).to.eql(2);
+        // First replace extension IDs with their respective name
+        sourceController.replaceExtensionIdWithName(sourceDict, extensionList);
+        sourceController.removeExtensionFromOriginSource(sourceDict);
+        expect(sourceDict.getItem('Sitemap Source').getPostConversionExtensions().length).to.eql(1);
+      });
+
       it('Should replace extension name with their according id', () => {
         const sourceController = new SourceController(org1, org2);
         const extensionList = [rawExtension1, rawExtension2, rawExtension3, rawDummyExtension1, rawDummyExtension2, rawDummyExtension3];
@@ -887,7 +903,6 @@ export const SourceControllerTest = () => {
 
     describe('Diff Method', () => {
       it('Should diff sources', (done: MochaDone) => {
-        // TODO: This test is not usefull. this should be tested for PUT and DELETE  fraduate operations
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources')
@@ -916,6 +931,74 @@ export const SourceControllerTest = () => {
           .then((diff: DiffResultArray<Source>) => {
             expect(diff.TO_CREATE.length).to.eql(1);
             expect(diff.TO_UPDATE.length).to.eql(1);
+            expect(diff.TO_DELETE.length).to.eql(0);
+            done();
+          })
+          .catch((err: IGenericError) => {
+            done(err);
+          });
+      });
+
+      it('Should not load extensions that have been blacklisted on the source diff', (done: MochaDone) => {
+        const orgx: Organization = new Organization('dev', 'xxx', { extensions: ['URL Parsing to extract metadata'] });
+        const orgy: Organization = new Organization('prod', 'yyy');
+        const controllerxy = new SourceController(orgx, orgy);
+
+        const localDevSource = {
+          sourceType: 'SITEMAP',
+          id: 'dev-source',
+          name: 'sitemaptest',
+          mappings: [],
+          preConversionExtensions: [],
+          postConversionExtensions: [
+            {
+              actionOnError: 'SKIP_EXTENSION',
+              condition: '',
+              extensionId: 'ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu',
+              parameters: {},
+              versionId: ''
+            }
+          ],
+          resourceId: 'dev-source4'
+        };
+
+        const localProdSource = {
+          sourceType: 'SITEMAP',
+          id: 'prod-source',
+          name: 'sitemaptest',
+          mappings: [],
+          preConversionExtensions: [],
+          postConversionExtensions: [],
+          resourceId: 'prod-source'
+        };
+
+        scope = nock(UrlService.getDefaultUrl())
+          // First expected request
+          .get('/rest/organizations/dev/sources')
+          .reply(RequestUtils.OK, [localDevSource])
+          // Fecth extensions from dev
+          .get('/rest/organizations/dev/extensions')
+          .reply(RequestUtils.OK, [rawExtension1])
+          // Fecth extensions from Prod
+          .get('/rest/organizations/prod/extensions')
+          // Rename extension Ids
+          .reply(RequestUtils.OK, [])
+          // Fetching dev sources one by one
+          .get('/rest/organizations/dev/sources/dev-source')
+          .reply(RequestUtils.OK, localDevSource)
+          // Fecthing all prod sources
+          .get('/rest/organizations/prod/sources')
+          .reply(RequestUtils.OK, [localProdSource])
+          .get('/rest/organizations/prod/sources/prod-source')
+          .reply(RequestUtils.OK, localProdSource);
+
+        const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner'] };
+        controllerxy
+          .diff(diffOptions)
+          .then((diff: DiffResultArray<Source>) => {
+            expect(diff.TO_CREATE.length).to.eql(0);
+
+            expect(diff.TO_UPDATE.length).to.eql(0);
             expect(diff.TO_DELETE.length).to.eql(0);
             done();
           })

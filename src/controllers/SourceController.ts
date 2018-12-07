@@ -37,14 +37,18 @@ export class SourceController extends BaseController {
     return Promise.all(diffActions)
       .then(values => {
         const extensionList = values[1] as Array<Array<{}>>; // 2 dim table: extensions per sources
-        const sources1 = this.organization1.getSources();
-        const sources2 = this.organization2.getSources();
+        const source1 = this.organization1.getSources();
+        const source2 = this.organization2.getSources();
 
         // No error should be raised here as all extensions defined in a source should be available in the organization
-        this.replaceExtensionIdWithName(sources1, extensionList[0]);
-        this.replaceExtensionIdWithName(sources2, extensionList[1]);
+        this.replaceExtensionIdWithName(source1, extensionList[0]);
+        this.replaceExtensionIdWithName(source2, extensionList[1]);
 
-        const diffResultArray = DiffUtils.getDiffResult(sources1, sources2, diffOptions);
+        // Do not graduate extensions that have been blacklisted
+        // Always apply to the organization 1
+        this.removeExtensionFromOriginSource(source1);
+
+        const diffResultArray = DiffUtils.getDiffResult(source1, source2, diffOptions);
         if (diffResultArray.containsItems()) {
           // TODO: probably not requierd for the diff, but will be for graduate
           // if (diffResultArray.TO_CREATE.length + diffResultArray.TO_DELETE.length > 0) {
@@ -88,6 +92,15 @@ export class SourceController extends BaseController {
       extensionReplacer(source.getPostConversionExtensions());
       // pre conversion extensions
       extensionReplacer(source.getPreConversionExtensions());
+    });
+  }
+
+  removeExtensionFromOriginSource(sourceList: Dictionary<Source>) {
+    _.each(sourceList.values(), (source: Source) => {
+      _.each(this.organization1.getExtensionBlacklist(), (extensionToRemove: string) => {
+        source.removeExtension(extensionToRemove, 'pre');
+        source.removeExtension(extensionToRemove, 'post');
+      });
     });
   }
 

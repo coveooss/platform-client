@@ -9,6 +9,7 @@ import { Logger } from '../logger';
 import { Assert } from '../misc/Assert';
 import { RequestUtils } from '../utils/RequestUtils';
 import { UrlService } from './UrlService';
+import { StringUtil } from '../utils/StringUtils';
 
 export class ExtensionAPI {
   static createExtension(org: Organization, extensionModel: IStringMap<any>): Promise<RequestResponse> {
@@ -76,6 +77,17 @@ export class ExtensionAPI {
   static loadEachExtension(org: Organization, response: RequestResponse) {
     const count = response.body.length;
     Logger.verbose(`${count} extension${count > 1 ? 's' : ''} from ${Colors.organization(org.getId())}`);
+
+    // Reject all extensions that have been blacklisted. Do not load blacklisted extensions for nothing
+    response.body = _.reject(response.body, (extension: any) => {
+      const extensionName: string = extension['name'] || '';
+      const condition = _.contains(org.getExtensionBlacklist(), StringUtil.lowerAndStripSpaces(extensionName));
+      if (condition) {
+        Logger.info(`Skipping extension ${Colors.extension(extensionName)}`);
+      }
+      return condition;
+    });
+
     return Promise.all(
       _.map(response.body, (extension: any) => {
         Assert.exists(extension['id'], StaticErrorMessage.MISSING_EXTENSION_ID_FROM_THE_RESPONSE);

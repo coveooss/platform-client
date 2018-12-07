@@ -10,7 +10,7 @@ import { ExtensionController } from '../controllers/ExtensionController';
 import { FieldController } from '../controllers/FieldController';
 import { SourceController } from '../controllers/SourceController';
 import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
-import { Organization } from '../coveoObjects/Organization';
+import { Organization, IBlacklistObjects } from '../coveoObjects/Organization';
 
 export interface IDiffOptions {
   /**
@@ -36,9 +36,15 @@ export class DiffCommand {
   private organization1: Organization;
   private organization2: Organization;
 
-  constructor(originOrganization: string, destinationOrganization: string, originApiKey: string, destinationApiKey: string) {
-    this.organization1 = new Organization(originOrganization, originApiKey);
-    this.organization2 = new Organization(destinationOrganization, destinationApiKey);
+  constructor(
+    originOrganization: string,
+    destinationOrganization: string,
+    originApiKey: string,
+    destinationApiKey: string,
+    blacklistObjects?: IBlacklistObjects
+  ) {
+    this.organization1 = new Organization(originOrganization, originApiKey, blacklistObjects);
+    this.organization2 = new Organization(destinationOrganization, destinationApiKey, blacklistObjects);
   }
 
   static DEFAULT_OPTIONS: IDiffOptions = {
