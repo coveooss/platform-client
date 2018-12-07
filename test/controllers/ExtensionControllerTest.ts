@@ -354,7 +354,36 @@ export const ExtensionControllerTest = () => {
       });
 
       it('Should not retrieve blacklisted extensions during the diff', (done: MochaDone) => {
-        done(new Error('TODO'));
+        const orgx: Organization = new Organization('dev', 'xxx', { extensions: ['All metadata value', 'reject a Document.'] });
+        const orgy: Organization = new Organization('prod', 'yyy');
+        const controllerxy = new ExtensionController(orgx, orgy);
+
+        scope = nock(UrlService.getDefaultUrl())
+          // Fecthing all dev extensions
+          .get('/rest/organizations/dev/extensions')
+          .reply(RequestUtils.OK, devOrganizationExtension)
+          // Fetching dev extensions one by one
+          // .get('/rest/organizations/dev/extensions/yidmuo9dsuop8fuihmfdjshjd')
+          // .reply(RequestUtils.OK, yidmuo9dsuop8fuihmfdjshjd)
+          .get('/rest/organizations/dev/extensions/sa2fjv3lwf67va2pbiztb22fsu')
+          .reply(RequestUtils.OK, sa2fjv3lwf67va2pbiztb22fsu)
+          // .get('/rest/organizations/dev/extensions/tknepx33tdhmqibch2uzxhcc44')
+          // .reply(RequestUtils.OK, tknepx33tdhmqibch2uzxhcc44)
+          // Fecthing all prod extensions
+          .get('/rest/organizations/prod/extensions')
+          .reply(RequestUtils.OK, prodOrganizationExtension)
+          // Fetching prod extensions one by one
+          .get('/rest/organizations/prod/extensions/prodmuo9dsuop8fuihmfdjshjd')
+          .reply(RequestUtils.OK, prodmuo9dsuop8fuihmfdjshjd);
+
+        controllerxy
+          .diff()
+          .then((diffResultArray: DiffResultArray<Extension>) => {
+            done();
+          })
+          .catch((err: any) => {
+            done(err);
+          });
       });
     });
 
