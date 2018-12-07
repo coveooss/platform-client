@@ -44,21 +44,15 @@ export class SourceController extends BaseController {
         const source2 = this.organization2.getSources();
 
         // No error should be raised here as all extensions defined in a source should be available in the organization
-        this.replaceExtensionIdWithName(source1, this.extensionList[0]); // TODO: remove second argument. Not required anymore.
+        this.replaceExtensionIdWithName(source1, this.extensionList[0]);
         this.replaceExtensionIdWithName(source2, this.extensionList[1]);
 
         // Do not graduate extensions that have been blacklisted
-        // Always apply to the organization 1
+        // Only applies to the organization of origin
         this.removeExtensionFromOriginSource(source1);
 
         const diffResultArray = DiffUtils.getDiffResult(source1, source2, diffOptions);
         if (diffResultArray.containsItems()) {
-          // TODO: probably not requierd for the diff, but will be for graduate
-          // if (diffResultArray.TO_CREATE.length + diffResultArray.TO_DELETE.length > 0) {
-          //   throw new Error(
-          //     'Inconsistent number of extensions between orgs. Run `graduate-extensions` first or use the --skipExtensions option to ignore extensions.'
-          //   );
-          // }
           Logger.verbose(`${diffResultArray.TO_CREATE.length} source${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} to create`);
           Logger.verbose(`${diffResultArray.TO_DELETE.length} source${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} to delete`);
           Logger.verbose(`${diffResultArray.TO_UPDATE.length} source${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} to update`);
@@ -71,7 +65,16 @@ export class SourceController extends BaseController {
       });
   }
 
-  replaceExtensionKey(sourceList: Dictionary<Source>, extensionList: any[], inputKey: string, outputKey: string) {
+  removeExtensionFromOriginSource(sourceList: Dictionary<Source>) {
+    _.each(sourceList.values(), (source: Source) => {
+      _.each(this.organization1.getExtensionBlacklist(), (extensionToRemove: string) => {
+        source.removeExtension(extensionToRemove, 'pre');
+        source.removeExtension(extensionToRemove, 'post');
+      });
+    });
+  }
+
+  replaceExtensionIdWithName(sourceList: Dictionary<Source>, extensionList: Array<{}>) {
     // TODO: Can be optimized
     _.each(sourceList.values(), (source: Source) => {
       // Get all extensions associated to the source
@@ -79,12 +82,12 @@ export class SourceController extends BaseController {
         _.each(sourceExtensionsList, (sourceExt: IStringMap<string>) => {
           Assert.exists(sourceExt.extensionId, 'Missing extensionId value from extension');
           // For each extension associated to the source, replace its id by its name
-          const extensionFound = _.find(extensionList, extension => {
-            return extension[inputKey] === sourceExt.extensionId;
+          const extensionFound = _.find(extensionList, (extension: IStringMap<string>) => {
+            return extension['id'] === sourceExt.extensionId;
           });
 
           if (extensionFound) {
-            sourceExt.extensionId = extensionFound[outputKey];
+            sourceExt.extensionId = (extensionFound as IStringMap<string>)['name'];
           } else {
             throw new Error('Extension does not exsist: ' + sourceExt.extensionId);
           }
@@ -98,27 +101,7 @@ export class SourceController extends BaseController {
     });
   }
 
-  removeExtensionFromOriginSource(sourceList: Dictionary<Source>) {
-    _.each(sourceList.values(), (source: Source) => {
-      _.each(this.organization1.getExtensionBlacklist(), (extensionToRemove: string) => {
-        source.removeExtension(extensionToRemove, 'pre');
-        source.removeExtension(extensionToRemove, 'post');
-      });
-    });
-  }
-
-  replaceExtensionIdWithName(sourceList: Dictionary<Source>, extensionList: Array<{}>) {
-    this.replaceExtensionKey(sourceList, extensionList, 'id', 'name');
-  }
-
-  // TODO: remove
-  replaceExtensionNameWithId(sourceList: Dictionary<Source>, extensionList: Array<{}>) {
-    this.replaceExtensionKey(sourceList, extensionList, 'name', 'id');
-  }
-
-  _replaceExtensionNameWithId(source: Source, extensionList: Array<{}>) {
-    // this.replaceExtensionKey(source, extensionList, 'name', 'id');
-
+  replaceExtensionNameWithId(source: Source, extensionList: Array<{}>) {
     // Get all extensions associated to the source
     const extensionReplacer = (sourceExtensionsList: Array<IStringMap<string>>) => {
       _.each(sourceExtensionsList, (sourceExt: IStringMap<string>) => {
@@ -131,7 +114,7 @@ export class SourceController extends BaseController {
         if (extensionFound) {
           sourceExt.extensionId = (extensionFound as any)['id'];
         } else {
-          throw new Error('Extension does not exsist: ' + sourceExt.extensionId);
+          throw new Error('No Extension does not exsist: ' + sourceExt.extensionId);
         }
       });
     };
@@ -166,7 +149,7 @@ export class SourceController extends BaseController {
       _.each(_.union(diffResultArray.TO_CREATE, diffResultArray.TO_DELETE, diffResultArray.TO_UPDATE), source => {
         // Make some assertions here. Return an error if an extension is missing
         // Replacing extensions with destination id
-        this._replaceExtensionNameWithId(source, this.extensionList[1]);
+        this.replaceExtensionNameWithId(source, this.extensionList[1]);
       });
 
       return Promise.all(
@@ -261,7 +244,7 @@ export class SourceController extends BaseController {
         const oldSourceModel = oldSource.getConfiguration();
 
         const updatedSourceModel: IStringMap<any> = _.mapObject(newSourceModel, (val, key) => {
-          // TODO: this only parse the first level keys. It would be nice to drill down the nested object
+          // TODO: this only parses the first level keys. It would be nice to drill down the nested object
           if (!_.isEqual(oldSourceModel[key], val) && (!diffOptions.keysToIgnore || diffOptions.keysToIgnore.indexOf(key) === -1)) {
             return { newValue: val, oldValue: oldSourceModel[key] };
           } else {

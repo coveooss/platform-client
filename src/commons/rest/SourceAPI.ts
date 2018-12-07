@@ -14,7 +14,6 @@ import { StringUtil } from '../utils/StringUtils';
 export class SourceAPI {
   static createSource(org: Organization, sourceModel: IStringMap<any>): Promise<RequestResponse> {
     const url = UrlService.createSource(org.getId());
-    // FIXME: rebuild is not set to false
     return RequestUtils.post(url, org.getApiKey(), sourceModel);
   }
 

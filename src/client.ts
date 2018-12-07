@@ -289,7 +289,13 @@ program
     };
     const command = new GraduateCommand(originOrg, destinationOrg, originApiKey, destinationApiKey, blacklistOptions);
     // TODO: ignore securityProviderReferences
-    diffOptions.keysToIgnore = _.extend(diffOptions.keysToIgnore || [], ['information', 'resourceId', 'id', 'owner']);
+    diffOptions.keysToIgnore = _.extend(diffOptions.keysToIgnore || [], [
+      'information',
+      'resourceId',
+      'id',
+      'owner',
+      'securityProviderReferences'
+    ]);
     // if (options.skipExtensions) {
     //   _.extend(options.keysToIgnore, [], ['preConversionExtensions', 'postConversionExtensions']);
     // }

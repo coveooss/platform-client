@@ -84,8 +84,6 @@ export class GraduateCommand {
     // Make sure the user selects at least one HTTP method
     inquirer.prompt(questions).then((res: inquirer.Answers) => {
       if (res.confirm || options.force) {
-        // TODO: Ask the user if he wants to perform the graduation manually HERE!!!
-
         Logger.startSpinner(`Performing ${objectName} Graduation`);
         controller
           .diff(options.diffOptions)

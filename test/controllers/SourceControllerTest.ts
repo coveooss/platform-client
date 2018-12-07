@@ -863,8 +863,9 @@ export const SourceControllerTest = () => {
         });
 
         expect(sourceDict.getItem('Sitemap Source').getPostConversionExtensions().length).to.eql(2);
-        // First replace extension IDs with their respective name
+        // First, replace extension IDs with their respective name
         sourceController.replaceExtensionIdWithName(sourceDict, extensionList);
+        // Now, remove blacklisted extensions
         sourceController.removeExtensionFromOriginSource(sourceDict);
         expect(sourceDict.getItem('Sitemap Source').getPostConversionExtensions().length).to.eql(1);
       });
@@ -872,14 +873,17 @@ export const SourceControllerTest = () => {
       it('Should replace extension name with their according id', () => {
         const sourceController = new SourceController(org1, org2);
         const extensionList = [rawExtension1, rawExtension2, rawExtension3, rawDummyExtension1, rawDummyExtension2, rawDummyExtension3];
+        const source1Clone = source1.clone();
+        const source2Clone = source2.clone();
         const sourceDict: Dictionary<Source> = new Dictionary({
-          'Sitemap Source': source1.clone(),
-          'Web Source': source2.clone()
+          'Sitemap Source': source1Clone,
+          'Web Source': source2Clone
         });
 
         sourceController.replaceExtensionIdWithName(sourceDict, extensionList);
         // Now do the revert operation
-        sourceController.replaceExtensionNameWithId(sourceDict, extensionList);
+        sourceController.replaceExtensionNameWithId(source1Clone, extensionList);
+        sourceController.replaceExtensionNameWithId(source2Clone, extensionList);
 
         const _source1 = sourceDict.getItem('Sitemap Source');
         expect(_source1.getPostConversionExtensions()[0]['extensionId']).to.eq('ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu');
@@ -897,7 +901,7 @@ export const SourceControllerTest = () => {
         });
 
         expect(() => sourceController.replaceExtensionIdWithName(sourceDict, [])).to.throw();
-        expect(() => sourceController.replaceExtensionNameWithId(sourceDict, [])).to.throw();
+        expect(() => sourceController.replaceExtensionNameWithId(source1.clone(), [])).to.throw();
       });
     });
 
@@ -1008,7 +1012,6 @@ export const SourceControllerTest = () => {
       });
 
       it('Should not have updated source in the diff', (done: MochaDone) => {
-        // TODO: This test is not usefull. this should be tested for PUT and DELETE  fraduate operations
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources')

@@ -160,7 +160,6 @@ export class ExtensionController extends BaseController {
         const oldExtensionModel = oldExtension.getExtensionModel();
 
         // TODO: add keys to ignore here
-        // TODO: ignore mac and windows chariot return
         const updatedExtensionModel: IStringMap<any> = _.mapObject(newExtensionModel, (val, key) => {
           if (!_.isEqual(oldExtensionModel[key], val) && (!diffOptions.keysToIgnore || diffOptions.keysToIgnore.indexOf(key) === -1)) {
             return { newValue: val, oldValue: oldExtensionModel[key] };
