@@ -3,7 +3,7 @@ import * as opn from 'opn';
 import * as _ from 'underscore';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { Colors } from '../commons/colors';
-import { IGenericError, StaticErrorMessage } from '../commons/errors';
+import { StaticErrorMessage } from '../commons/errors';
 import { Logger } from '../commons/logger';
 import { BaseController } from '../controllers/BaseController';
 import { ExtensionController } from '../controllers/ExtensionController';
@@ -124,8 +124,9 @@ export class DiffCommand {
             process.exit();
           });
       })
-      .catch((err: IGenericError) => {
-        Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, err);
+      .catch((err: any) => {
+        Logger.verbose(StaticErrorMessage.UNABLE_TO_DIFF, err);
+        Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, 'Consult the logs for more information');
         Logger.stopSpinner();
         process.exit();
       });

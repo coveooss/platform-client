@@ -1,7 +1,7 @@
 import * as inquirer from 'inquirer';
 import * as _ from 'underscore';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
-import { IGenericError, StaticErrorMessage } from '../commons/errors';
+import { StaticErrorMessage } from '../commons/errors';
 import { Logger } from '../commons/logger';
 import { InteractiveQuestion } from '../console/InteractiveQuestion';
 import { BaseController } from '../controllers/BaseController';
@@ -108,8 +108,9 @@ export class GraduateCommand {
                 Logger.stopSpinner();
               });
           })
-          .catch((err: IGenericError) => {
-            Logger.error('Error in graduation operation', err.message);
+          .catch((err: any) => {
+            Logger.verbose(StaticErrorMessage.UNABLE_TO_GRADUATE, err);
+            Logger.error(StaticErrorMessage.UNABLE_TO_GRADUATE, 'Consult the logs for more information');
             Logger.stopSpinner();
           });
       } else {
