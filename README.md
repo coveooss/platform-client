@@ -38,7 +38,7 @@ For CLI options, use the -h (or --help) argument:
 
 ![](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/help.png)
 
-To get help regarding a specific command, run `platformclient <command_name> --help`, for example `platformclient graduate-fields --help`. You will get detailed help regarding the different parameters.
+To get help regarding a specific command, run `platformclient <command> --help`.
 
 ![](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/graduate-help.png)
 
