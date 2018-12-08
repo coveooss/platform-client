@@ -2,6 +2,7 @@ import { Question } from 'inquirer';
 import { Answers } from 'inquirer';
 import { RequestResponse } from 'request';
 import * as inquirer from 'inquirer';
+import * as chalk from 'chalk';
 import * as _ from 'underscore';
 import { DiffCommand } from '../commands/DiffCommand';
 import { GraduateCommand } from '../commands/GraduateCommand';
@@ -16,9 +17,8 @@ import { SourceController } from '../controllers/SourceController';
 export class InteractiveQuestion {
   // Required parameters
   static ORIGIN_ORG_ID: string = 'originOrganizationId';
-  static ORIGIN_ORG_KEY: string = 'originOrganizationKey';
+  static MASTER_API_KEY: string = 'APIKey';
   static DESTINATION_ORG_ID: string = 'destinationOrganizationId';
-  static DESTINATION_ORG_KEY: string = 'destinationOrganizationKey';
   static COMMAND: string = 'command';
 
   // Options
@@ -115,15 +115,6 @@ export class InteractiveQuestion {
     };
   }
 
-  getOriginOrganizationKey(): Question {
-    return {
-      type: 'input',
-      name: InteractiveQuestion.ORIGIN_ORG_KEY,
-      message: 'Origin Organization API Key: ',
-      validate: this.inputValidator('You need to provide the API Key of the Organization')
-    };
-  }
-
   getDestinationOrganizationId(): Question {
     return {
       type: 'input',
@@ -133,12 +124,12 @@ export class InteractiveQuestion {
     };
   }
 
-  getDestinationOrganizationKey(): Question {
+  getApiKey(): Question {
     return {
       type: 'input',
-      name: InteractiveQuestion.DESTINATION_ORG_KEY,
-      message: 'Destination Organization API Key: ',
-      validate: this.inputValidator('You need to provide the API Key of the Organization')
+      name: InteractiveQuestion.MASTER_API_KEY,
+      message: 'Master API Key: ',
+      validate: this.inputValidator('You need to provide an API Key')
     };
   }
 
@@ -277,7 +268,7 @@ export class InteractiveQuestion {
     return {
       type: 'confirm',
       name: variable,
-      message: mes,
+      message: `${chalk.bgRed(mes)}`,
       default: false
     };
   }
@@ -311,8 +302,7 @@ export class InteractiveQuestion {
     return [
       this.getOriginOrganizationId(),
       this.getDestinationOrganizationId(),
-      this.getOriginOrganizationKey(),
-      this.getDestinationOrganizationKey(),
+      this.getApiKey(),
       this.getCommandList(),
 
       // If Graduation
@@ -342,7 +332,7 @@ export class InteractiveQuestion {
       type: 'checkbox',
       name: InteractiveQuestion.GRADUATE_OPERATIONS,
       message: `Select the allowed operations on the destination organization for the graduation:`,
-      choices: ['POST', 'PUT', 'DELETE'],
+      choices: ['POST', 'PUT', '💀 DELETE 💀'],
       validate: this.checkboxValidator('You need to select at least 1 graduate operation.'),
       when: (answer: Answers) => {
         answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);

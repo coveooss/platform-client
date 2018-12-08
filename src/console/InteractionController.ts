@@ -46,8 +46,7 @@ export class InteractionController {
     command.push(answers[InteractiveQuestion.COMMAND] + '-' + answers[InteractiveQuestion.OBJECT_TO_MANIPULATE]);
     command.push(answers[InteractiveQuestion.ORIGIN_ORG_ID]);
     command.push(answers[InteractiveQuestion.DESTINATION_ORG_ID]);
-    command.push(answers[InteractiveQuestion.ORIGIN_ORG_KEY]);
-    command.push(answers[InteractiveQuestion.DESTINATION_ORG_KEY]);
+    command.push(answers[InteractiveQuestion.MASTER_API_KEY]);
 
     // Global options
     command = command

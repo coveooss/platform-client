@@ -1,6 +1,6 @@
 import { RequestResponse } from 'request';
 import * as _ from 'underscore';
-import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
+import { IGraduateOptions } from '../commands/GraduateCommand';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { IDownloadResultArray } from '../commons/collections/DownloadResultArray';
 import { IGenericError, StaticErrorMessage } from '../commons/errors';
@@ -57,10 +57,10 @@ export class ExtensionController extends BaseController {
    * Graduates the extensions from origin Organization to the destination Organization.
    *
    * @param {DiffResultArray<Extension>} diffResultArray
-   * @param {IHTTPGraduateOptions} options
+   * @param {IGraduateOptions} options
    * @returns {Promise<any[]>}
    */
-  graduate(diffResultArray: DiffResultArray<Extension>, options: IHTTPGraduateOptions): Promise<any[]> {
+  graduate(diffResultArray: DiffResultArray<Extension>, options: IGraduateOptions): Promise<any[]> {
     if (diffResultArray.containsItems()) {
       Logger.loadingTask('Graduating Extensions');
       return Promise.all(

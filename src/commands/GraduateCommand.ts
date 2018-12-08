@@ -22,6 +22,10 @@ export interface IGraduateOptions extends IHTTPGraduateOptions {
   rebuild?: boolean; // Only available for sources
   force: boolean;
   diffOptions: IDiffOptions;
+  /**
+   * Specify which key to strip before graduating the Object.
+   */
+  keysToStrip?: string[];
 }
 
 export class GraduateCommand {
@@ -43,11 +47,12 @@ export class GraduateCommand {
 
   static DEFAULT_OPTIONS: IGraduateOptions = {
     diffOptions: DiffCommand.DEFAULT_OPTIONS,
+    keysToStrip: [],
     rebuild: false,
     force: false,
     POST: true,
     PUT: true,
-    DELETE: true
+    DELETE: false
   };
 
   static COMMAND_NAME: string = 'graduate';
@@ -71,15 +76,19 @@ export class GraduateCommand {
     const options = _.extend(GraduateCommand.DEFAULT_OPTIONS, opts) as IGraduateOptions;
 
     const questions: inquirer.Questions = [];
-    const allowedMethods: string[] = _.compact([options.POST ? 'POST' : '', options.PUT ? 'PUT' : '', options.DELETE ? 'DELETE' : '']);
+    const allowedMethods: string[] = _.compact([options.POST ? 'CREATE' : '', options.PUT ? 'UPDATE' : '', options.DELETE ? 'DELETE' : '']);
+
+    let phrase = allowedMethods[0];
+    for (let i = 1; i < allowedMethods.length; i++) {
+      if (i === allowedMethods.length - 1) {
+        phrase += ` and ${allowedMethods[i]}`;
+      } else {
+        phrase += `, ${allowedMethods[i]}`;
+      }
+    }
 
     if (!options.force) {
-      questions.push(
-        this.InteractiveQuestion.confirmGraduationAction(
-          `Are you sure want to perform a ${objectName} graduation (${allowedMethods})?`,
-          'confirm'
-        )
-      );
+      questions.push(this.InteractiveQuestion.confirmGraduationAction(`Are you sure want to ${phrase} ${objectName}s?`, 'confirm'));
     }
     // Make sure the user selects at least one HTTP method
     inquirer.prompt(questions).then((res: inquirer.Answers) => {

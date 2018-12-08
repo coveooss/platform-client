@@ -259,17 +259,133 @@ export const SourceAPITest = () => {
       });
     });
 
-    // it('Should prepare the request to create a source', (done: MochaDone) => {
-    //   // TODO:
-    // });
+    it('Should prepare the request to create a source', (done: MochaDone) => {
+      const organization: Organization = new Organization('qwerty123', 'secret');
 
-    // it('Should prepare the request to update a source', (done: MochaDone) => {
-    //   // TODO:
-    // });
+      scope = nock(UrlService.getDefaultUrl())
+        .post('/rest/organizations/qwerty123/sources?rebuild=false', {
+          sourceType: 'YOUTUBE',
+          id: 'cclidevwcty5v1g-tl2nzqb76il5y3zlsgp4r72aey',
+          name: 'Coffee Chat',
+          owner: 'user@coveo.com-google',
+          sourceVisibility: 'SHARED',
+          mappings: [
+            {
+              id: 'q6q72sozl73yjobkrl64cusemq',
+              kind: 'COMMON',
+              fieldName: 'workemail',
+              extractionMethod: 'METADATA',
+              content: '%[workemail]'
+            }
+          ],
+          pushEnabled: false,
+          postConversionExtensions: [
+            {
+              actionOnError: 'SKIP_EXTENSION',
+              condition: '',
+              extensionId: 'cclidevwcty5v1g-xsib6p54yjm37lagma3qvp2aji',
+              parameters: {},
+              versionId: ''
+            }
+          ],
+          urlFilters: [
+            {
+              filter: '*',
+              includeFilter: true,
+              filterType: 'WILDCARD'
+            }
+          ]
+        })
+        .reply(RequestUtils.CREATED);
 
-    // it('Should prepare the request to delete a source', (done: MochaDone) => {
-    //   // TODO:
-    //  });
+      SourceAPI.createSource(organization, {
+        sourceType: 'YOUTUBE',
+        id: 'cclidevwcty5v1g-tl2nzqb76il5y3zlsgp4r72aey',
+        name: 'Coffee Chat',
+        owner: 'user@coveo.com-google',
+        sourceVisibility: 'SHARED',
+        mappings: [
+          {
+            id: 'q6q72sozl73yjobkrl64cusemq',
+            kind: 'COMMON',
+            fieldName: 'workemail',
+            extractionMethod: 'METADATA',
+            content: '%[workemail]'
+          }
+        ],
+        pushEnabled: false,
+        postConversionExtensions: [
+          {
+            actionOnError: 'SKIP_EXTENSION',
+            condition: '',
+            extensionId: 'cclidevwcty5v1g-xsib6p54yjm37lagma3qvp2aji',
+            parameters: {},
+            versionId: ''
+          }
+        ],
+        urlFilters: [
+          {
+            filter: '*',
+            includeFilter: true,
+            filterType: 'WILDCARD'
+          }
+        ]
+      })
+        .then(() => done())
+        .catch((err: any) => done(err));
+    });
+
+    it('Should prepare the request to update a source', (done: MochaDone) => {
+      const organization: Organization = new Organization('qwerty123', 'secret');
+
+      scope = nock(UrlService.getDefaultUrl())
+        .put('/rest/organizations/qwerty123/sources/cclidevwcty5v1g-tl2nzqb76il5y3zlsgp4r72aey?rebuild=false', {
+          sourceType: 'YOUTUBE',
+          id: 'cclidevwcty5v1g-tl2nzqb76il5y3zlsgp4r72aey',
+          name: 'Coffee Chat',
+          owner: 'user@coveo.com-google',
+          sourceVisibility: 'SHARED',
+          mappings: [
+            {
+              id: 'q6q72sozl73yjobkrl64cusemq',
+              kind: 'COMMON',
+              fieldName: 'workemail',
+              content: '%[workemail]'
+            }
+          ]
+        })
+        .reply(RequestUtils.CREATED);
+
+      SourceAPI.updateSource(organization, 'cclidevwcty5v1g-tl2nzqb76il5y3zlsgp4r72aey', {
+        sourceType: 'YOUTUBE',
+        id: 'cclidevwcty5v1g-tl2nzqb76il5y3zlsgp4r72aey',
+        name: 'Coffee Chat',
+        owner: 'user@coveo.com-google',
+        sourceVisibility: 'SHARED',
+        mappings: [
+          {
+            id: 'q6q72sozl73yjobkrl64cusemq',
+            kind: 'COMMON',
+            fieldName: 'workemail',
+            content: '%[workemail]'
+          }
+        ]
+      })
+        .then(() => done())
+        .catch((err: any) => done(err));
+    });
+
+    it('Should prepare the request to delete a source', (done: MochaDone) => {
+      const organization: Organization = new Organization('qwerty123', 'secret');
+
+      scope = nock(UrlService.getDefaultUrl())
+        .delete('/rest/organizations/qwerty123/sources/cclidevwcty5v1g-tl2nzqb76il5y3zlsgp4r72aey')
+        .reply(RequestUtils.CREATED);
+
+      SourceAPI.deleteSource(organization, 'cclidevwcty5v1g-tl2nzqb76il5y3zlsgp4r72aey')
+        .then(() => done())
+        .catch((err: any) => done(err));
+    });
 
     describe('Loading sources', () => {
       it('Should prepare the request sequence that will load all the sources', (done: MochaDone) => {

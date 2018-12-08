@@ -1,5 +1,4 @@
 import * as _ from 'underscore';
-import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { IDownloadResultArray } from '../commons/collections/DownloadResultArray';
 import { Organization } from '../coveoObjects/Organization';
@@ -15,6 +14,7 @@ import { IStringMap } from '../commons/interfaces/IStringMap';
 import { Assert } from '../commons/misc/Assert';
 import { ExtensionAPI } from '../commons/rest/ExtensionAPI';
 import { RequestResponse } from 'request';
+import { IGraduateOptions } from '../commands/GraduateCommand';
 
 export class SourceController extends BaseController {
   private extensionList: Array<Array<{}>> = [];
@@ -47,7 +47,7 @@ export class SourceController extends BaseController {
         this.replaceExtensionIdWithName(source1, this.extensionList[0]);
         this.replaceExtensionIdWithName(source2, this.extensionList[1]);
 
-        // Do not graduate extensions that have been blacklisted
+        // Do not diff extensions that have been blacklisted
         // Only applies to the organization of origin
         this.removeExtensionFromOriginSource(source1);
 
@@ -65,7 +65,7 @@ export class SourceController extends BaseController {
       });
   }
 
-  removeExtensionFromOriginSource(sourceList: Dictionary<Source>) {
+  private removeExtensionFromOriginSource(sourceList: Dictionary<Source>) {
     _.each(sourceList.values(), (source: Source) => {
       _.each(this.organization1.getExtensionBlacklist(), (extensionToRemove: string) => {
         source.removeExtension(extensionToRemove, 'pre');
@@ -139,17 +139,22 @@ export class SourceController extends BaseController {
    * Graduates the sources from origin Organization to the destination Organization.
    *
    * @param {DiffResultArray<Source>} diffResultArray
-   * @param {IHTTPGraduateOptions} options
+   * @param {IGraduateOptions} options
    * @returns {Promise<any[]>}
    */
-  graduate(diffResultArray: DiffResultArray<Source>, options: IHTTPGraduateOptions): Promise<any[]> {
+  graduate(diffResultArray: DiffResultArray<Source>, options: IGraduateOptions): Promise<any[]> {
     if (diffResultArray.containsItems()) {
       Logger.loadingTask('Graduating Sources');
 
       _.each(_.union(diffResultArray.TO_CREATE, diffResultArray.TO_DELETE, diffResultArray.TO_UPDATE), source => {
         // Make some assertions here. Return an error if an extension is missing
-        // Replacing extensions with destination id
+        // 1. Replacing extensions with destination id
         this.replaceExtensionNameWithId(source, this.extensionList[1]);
+
+        // 2. Strip source from keys that should not be graduated
+        if (options.keysToStrip && options.keysToStrip.length > 0) {
+          source.removeParameters(options.keysToStrip);
+        }
       });
 
       return Promise.all(

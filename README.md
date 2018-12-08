@@ -22,7 +22,7 @@ npx coveo-platform-client
 
 ## Usage the command line tool
 
-#### Interactive tool
+### Interactive tool
 
 The command line tool can be used in two different ways. The first one is by using the interactive tool :
 
@@ -32,7 +32,7 @@ platformclient interactive
 
 ![Alt Text](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/interactive.png)
 
-#### Commands
+### Commands
 
 For CLI options, use the -h (or --help) argument:
 
@@ -42,60 +42,47 @@ To get help regarding a specific command, run `platformclient <command_name> --h
 
 ![](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/graduate-help.png)
 
-## Available Commands
+```
+platformclient <command> [options] <origin> <destination> <apiKey>
+```
 
-### Graduate Fields - `graduate-fields`
+#### Description
+1. `<command>`: Available `diff` and `graduate` commands
+1. `[options]`: Command options
+1. `<origin>`: The origin organization
+1. `<destination>`: The destination organization
+1. `<apiKey>`: An API key assigned to you by the Coveo Cloud Platform. You can view that api key if you connect to the [Coveo Cloud Platform](https://platform.cloud.coveo.com/) and open the developer console
+![API key](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/apiKey.png)
 
-Required API key privileges:
+#### Examples
 
-| Service |  Name  | View  | Edit  |
-| :-----: | :----: | :---: | :---: |
-| Content | Source |   ✔   |   ✔   |
+Diff fields between the `devEnv` and `prodEnv` organizations.
+```
+platformclient diff-fields devEnv prodEnv myApiKey
+```
 
----
+Diff fields between the `devEnv` and `prodEnv` organizations and return only fields for which the `facet` and `sort` properties have changed.
+```
+platformclient diff-fields devEnv prodEnv myApiKey --onlyKeys facet,sort
+```
 
-### Graduate Extensions - `graduate-extensions`
+Diff extensions between the `devEnv` and `prodEnv` organizations without taking into account the description property.
+```
+platformclient diff-extensions devEnv prodEnv myApiKey --ignoreKeys description
+```
 
-Required API key privileges:
+Graduate fields from the `devEnv` to the `prodEnv` organization by only performing `PUT` operations. This will only update exisiting fields. `POST` and `DELETE` arguments can be used for adding and deleting fields.
+```
+platformclient diff-extensions devEnv prodEnv myApiKey --methods PUT
+```
 
-| Service |    Name    | View  | Edit  |
-| :-----: | :--------: | :---: | :---: |
-| Content | Extensions |   ✔   |   ✔   |
+Graduate extensions from the `devEnv` to the `prodEnv` organization without a particular set of extensions. This command will prevent `my first extension` and `other extension` from being graduated
+```
+platformclient diff-extensions devEnv prodEnv myApiKey --ignoreExtensions "my first extension, other extension"
+```
 
----
 
-### Diff Fields - `diff-fields`
-
-Required API key privileges:
-
-| Service |  Name  | View  | Edit  |
-| :-----: | :----: | :---: | :---: |
-| Content | Source |   ✔   |       |
-
----
-
-### Diff Extensions - `diff-extensions`
-
-Required API key privileges:
-
-| Service |    Name    | View  | Edit  |
-| :-----: | :--------: | :---: | :---: |
-| Content | Extensions |   ✔   |       |
-
----
-
-### Diff Sources - `diff-sources`
-
-Required API key privileges:
-
-| Service |    Name    | View  | Edit  |
-| :-----: | :--------: | :---: | :---: |
-| Content | Sources    |   ✔   |       |
-| Content | Extensions |   ✔   |       |
-
----
-
-## Dev
+## Development
 ### Important Gulp Tasks
 
 * `gulp default`: Builds the entire project

@@ -37,6 +37,10 @@ export class Source extends BaseCoveoObject implements ISource {
     return this.configuration['preConversionExtensions'];
   }
 
+  removeParameters(parameterKeys: string[]) {
+    this.configuration = _.omit(this.configuration, parameterKeys);
+  }
+
   removeExtension(extensionId: string, stage: 'pre' | 'post') {
     this.configuration[`${stage}ConversionExtensions`] = _.reject(
       this.configuration[`${stage}ConversionExtensions`],
