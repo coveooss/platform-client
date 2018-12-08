@@ -125,7 +125,7 @@ export class DiffCommand {
           });
       })
       .catch((err: any) => {
-        Logger.verbose(StaticErrorMessage.UNABLE_TO_DIFF, err);
+        Logger.logOnly(StaticErrorMessage.UNABLE_TO_DIFF, err);
         Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, 'Consult the logs for more information');
         Logger.stopSpinner();
         process.exit();

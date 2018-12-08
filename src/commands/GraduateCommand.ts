@@ -109,7 +109,7 @@ export class GraduateCommand {
               });
           })
           .catch((err: any) => {
-            Logger.verbose(StaticErrorMessage.UNABLE_TO_GRADUATE, err);
+            Logger.logOnly(StaticErrorMessage.UNABLE_TO_GRADUATE, err);
             Logger.error(StaticErrorMessage.UNABLE_TO_GRADUATE, 'Consult the logs for more information');
             Logger.stopSpinner();
           });

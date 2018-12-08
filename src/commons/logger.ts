@@ -98,6 +98,10 @@ export class LoggerSingleton {
     this.addToLogFile('INSANE', message, meta);
   }
 
+  logOnly(message: string, ...meta: any[]) {
+    this.addToLogFile('LOG', message, meta);
+  }
+
   addToLogFile(level: string, message: string, ...meta: any[]) {
     const today = new Date().toLocaleString();
     FileUtils.appendToFile(this.filename, [today, level, stripAnsi(message), '\n'].join(' | '));
