@@ -1,3 +1,4 @@
+import * as chalk from 'chalk';
 import * as _ from 'underscore';
 import { Logger } from '../commons/logger';
 import { GraduateCommand, IGraduateOptions } from '../commands/GraduateCommand';
@@ -6,7 +7,7 @@ import { CommanderUtils } from './CommanderUtils';
 export const GraduateSourcesCommand = (program: any, commanderUtils: CommanderUtils) => {
   program
     .command('graduate-sources <origin> <destination> <apiKey>')
-    .description(['BETA Feature!! - Diff the sources of 2 Organizations.'])
+    .description([`${chalk.red('BETA Feature!')} - Graduate the sources of 2 Organizations`])
     .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
     // .option('-r, --rebuild', 'Rebuild the source once created. Default is false', false)
     // TODO: sources options not implemented yet

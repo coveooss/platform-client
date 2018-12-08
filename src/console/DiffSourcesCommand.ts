@@ -6,7 +6,7 @@ import { IDiffOptions, DiffCommand } from '../commands/DiffCommand';
 export const DiffSourcesCommand = (program: any, commanderUtils: CommanderUtils) => {
   program
     .command('diff-sources <origin> <destination> <apiKey>')
-    .description(['Diff the sources of 2 Organizations.'])
+    .description(['Diff the sources of 2 organizations'])
     .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
     // .option('-r, --rebuild', 'Rebuild the source once created. Default is false', false)
     // TODO: sources options not implemented yet
