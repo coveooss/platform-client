@@ -14,6 +14,8 @@ import { DiffFieldsCommand } from './console/DiffFieldsCommand';
 
 const program = require('commander');
 const pkg: any = require('./../package.json');
+const updateNotifier = require('update-notifier');
+updateNotifier({ pkg }).notify();
 
 program.option('--env [value]', 'Environment (Production by default)').version(pkg.version);
 
