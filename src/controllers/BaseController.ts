@@ -45,7 +45,8 @@ export abstract class BaseController {
         // https://github.com/node-nock/nock/issues/469
         info.statusMessage = rep.statusMessage;
       }
-      Logger.info(successMessage, `${Colors.success(JsonUtils.stringify(info))}`);
+      Logger.info(successMessage);
+      Logger.verbose(`${Colors.success(JsonUtils.stringify(info))}`);
     };
 
     if (Array.isArray(response)) {

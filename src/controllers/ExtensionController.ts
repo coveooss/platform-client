@@ -1,5 +1,6 @@
-import { RequestResponse } from 'request';
 import * as _ from 'underscore';
+import { series } from 'async';
+import { RequestResponse } from 'request';
 import { IGraduateOptions } from '../commands/GraduateCommand';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { IDownloadResultArray } from '../commons/collections/DownloadResultArray';
@@ -12,6 +13,7 @@ import { Extension } from '../coveoObjects/Extension';
 import { Organization } from '../coveoObjects/Organization';
 import { IDiffOptions } from './../commands/DiffCommand';
 import { BaseController } from './BaseController';
+import { Colors } from '../commons/colors';
 
 export class ExtensionController extends BaseController {
   constructor(private organization1: Organization, private organization2: Organization) {
@@ -81,20 +83,28 @@ export class ExtensionController extends BaseController {
     Logger.verbose(
       `Creating ${diffResult.TO_CREATE.length} new extension${diffResult.TO_CREATE.length > 1 ? 's' : ''} in ${this.organization2.getId()} `
     );
-    return Promise.all(
-      _.map(diffResult.TO_CREATE, (extension: Extension) => {
-        return ExtensionAPI.createExtension(this.organization2, extension.getExtensionModel())
+    const asyncArray = _.map(diffResult.TO_CREATE, (extension: Extension) => {
+      return (callback: any) => {
+        ExtensionAPI.createExtension(this.organization2, extension.getExtensionModel())
           .then((response: RequestResponse) => {
-            this.successHandler(response, 'POST operation successfully completed');
+            callback(null, response);
+            this.successHandler(response, `Successfully created extension ${Colors.extension(extension.getName())}`);
           })
           .catch((err: any) => {
+            callback(err);
             this.errorHandler(
               { orgId: this.organization2.getId(), message: err } as IGenericError,
               StaticErrorMessage.UNABLE_TO_CREATE_EXTENSIONS
             );
           });
-      })
-    );
+      };
+    });
+
+    return new Promise((resolve, reject) => {
+      series(asyncArray, (err, results) => {
+        err ? reject(err) : resolve();
+      });
+    });
   }
 
   private graduateUpdated(diffResult: DiffResultArray<Extension>): Promise<void[]> {
@@ -103,21 +113,28 @@ export class ExtensionController extends BaseController {
         diffResult.TO_UPDATE.length > 1 ? 's' : ''
       } in ${this.organization2.getId()} `
     );
-    return Promise.all(
-      _.map(diffResult.TO_UPDATE, (extension: Extension, idx: number) => {
-        const destinationExtension = diffResult.TO_UPDATE_OLD[idx].getId();
-        return ExtensionAPI.updateExtension(this.organization2, destinationExtension, extension.getExtensionModel())
+    const asyncArray = _.map(diffResult.TO_UPDATE, (extension: Extension, idx: number) => {
+      const destinationExtension = diffResult.TO_UPDATE_OLD[idx].getId();
+      return (callback: any) => {
+        ExtensionAPI.updateExtension(this.organization2, destinationExtension, extension.getExtensionModel())
           .then((response: RequestResponse) => {
-            this.successHandler(response, 'PUT operation successfully completed');
+            callback(null, response);
+            this.successHandler(response, `Successfully updated extension ${Colors.extension(extension.getName())}`);
           })
           .catch((err: any) => {
+            callback(err);
             this.errorHandler(
               { orgId: this.organization2.getId(), message: err } as IGenericError,
               StaticErrorMessage.UNABLE_TO_UPDATE_EXTENSIONS
             );
           });
-      })
-    );
+      };
+    });
+    return new Promise((resolve, reject) => {
+      series(asyncArray, (err, results) => {
+        err ? reject(err) : resolve();
+      });
+    });
   }
 
   private graduateDeleted(diffResult: DiffResultArray<Extension>): Promise<void[]> {
@@ -126,20 +143,28 @@ export class ExtensionController extends BaseController {
         diffResult.TO_CREATE.length > 1 ? 's' : ''
       } from ${this.organization2.getId()} `
     );
-    return Promise.all(
-      _.map(diffResult.TO_DELETE, (extension: Extension) => {
-        return ExtensionAPI.deleteExtension(this.organization2, extension.getId())
+    const asyncArray = _.map(diffResult.TO_DELETE, (extension: Extension) => {
+      return (callback: any) => {
+        ExtensionAPI.deleteExtension(this.organization2, extension.getId())
           .then((response: RequestResponse) => {
-            this.successHandler(response, 'DELETE operation successfully completed');
+            callback(null, response);
+            this.successHandler(response, `Successfully created extension ${Colors.extension(extension.getName())}`);
           })
           .catch((err: any) => {
+            callback(err);
             this.errorHandler(
               { orgId: this.organization2.getId(), message: err } as IGenericError,
               StaticErrorMessage.UNABLE_TO_DELETE_EXTENSIONS
             );
           });
-      })
-    );
+      };
+    });
+
+    return new Promise((resolve, reject) => {
+      series(asyncArray, (err, results) => {
+        err ? reject(err) : resolve();
+      });
+    });
   }
 
   loadExtensionsForBothOrganizations(): Promise<Array<{}>> {
