@@ -314,7 +314,7 @@ export class InteractiveQuestion {
       type: 'checkbox',
       name: InteractiveQuestion.GRADUATE_OPERATIONS,
       message: `Select the allowed operations on the destination organization for the graduation:`,
-      choices: ['POST', 'PUT', '💀 DELETE 💀'],
+      choices: ['POST', 'PUT', 'DELETE'],
       validate: this.checkboxValidator('You need to select at least 1 graduate operation.'),
       when: (answer: Answers) => {
         answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
