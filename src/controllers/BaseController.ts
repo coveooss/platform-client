@@ -70,7 +70,7 @@ export abstract class BaseController {
 
   protected errorHandler(error: IGenericError, errorMessage: string) {
     Logger.error(
-      `Error occurred for ${Colors.organization(error.orgId)}: ${errorMessage}`,
+      `${error.orgId ? 'Error occurred for ' + Colors.organization(error.orgId) + ': ' : ''}${errorMessage}`,
       error.message ? Colors.error(error.message) : ''
     );
   }

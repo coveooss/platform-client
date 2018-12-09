@@ -1,4 +1,5 @@
 import * as _ from 'underscore';
+import { series } from 'async';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { IDownloadResultArray } from '../commons/collections/DownloadResultArray';
 import { Organization } from '../coveoObjects/Organization';
@@ -15,6 +16,7 @@ import { Assert } from '../commons/misc/Assert';
 import { ExtensionAPI } from '../commons/rest/ExtensionAPI';
 import { RequestResponse } from 'request';
 import { IGraduateOptions } from '../commands/GraduateCommand';
+import { Colors } from '../commons/colors';
 
 export class SourceController extends BaseController {
   private extensionList: Array<Array<{}>> = [];
@@ -175,20 +177,28 @@ export class SourceController extends BaseController {
     Logger.verbose(
       `Creating ${diffResult.TO_CREATE.length} new source${diffResult.TO_CREATE.length > 1 ? 's' : ''} in ${this.organization2.getId()} `
     );
-    return Promise.all(
-      _.map(diffResult.TO_CREATE, (source: Source) => {
-        return SourceAPI.createSource(this.organization2, source.getConfiguration())
+    const asyncArray = _.map(diffResult.TO_CREATE, (source: Source) => {
+      return (callback: any) => {
+        SourceAPI.createSource(this.organization2, source.getConfiguration())
           .then((response: RequestResponse) => {
-            this.successHandler(response, 'POST operation successfully completed');
+            callback(null, response);
+            this.successHandler(response, `Successfully created source ${Colors.source(source.getName())}`);
           })
           .catch((err: any) => {
+            callback(err);
             this.errorHandler(
               { orgId: this.organization2.getId(), message: err } as IGenericError,
               StaticErrorMessage.UNABLE_TO_CREATE_SOURCE
             );
           });
-      })
-    );
+      };
+    });
+
+    return new Promise((resolve, reject) => {
+      series(asyncArray, (err, results) => {
+        err ? reject(err) : resolve();
+      });
+    });
   }
 
   private graduateUpdated(diffResult: DiffResultArray<Source>): Promise<void[]> {
@@ -197,21 +207,29 @@ export class SourceController extends BaseController {
         diffResult.TO_UPDATE.length > 1 ? 's' : ''
       } in ${this.organization2.getId()} `
     );
-    return Promise.all(
-      _.map(diffResult.TO_UPDATE, (source: Source, idx: number) => {
+    const asyncArray = _.map(diffResult.TO_UPDATE, (source: Source, idx: number) => {
+      return (callback: any) => {
         const destinationSource = diffResult.TO_UPDATE_OLD[idx].getId();
-        return SourceAPI.updateSource(this.organization2, destinationSource, source.getConfiguration())
+        SourceAPI.updateSource(this.organization2, destinationSource, source.getConfiguration())
           .then((response: RequestResponse) => {
-            this.successHandler(response, 'PUT operation successfully completed');
+            callback(null, response);
+            this.successHandler(response, `Successfully updated source ${Colors.source(source.getName())}`);
           })
           .catch((err: any) => {
+            callback(err);
             this.errorHandler(
               { orgId: this.organization2.getId(), message: err } as IGenericError,
               StaticErrorMessage.UNABLE_TO_UPDATE_SOURCE
             );
           });
-      })
-    );
+      };
+    });
+
+    return new Promise((resolve, reject) => {
+      series(asyncArray, (err, results) => {
+        err ? reject(err) : resolve();
+      });
+    });
   }
 
   private graduateDeleted(diffResult: DiffResultArray<Source>): Promise<void[]> {
@@ -220,20 +238,28 @@ export class SourceController extends BaseController {
         diffResult.TO_CREATE.length > 1 ? 's' : ''
       } from ${this.organization2.getId()} `
     );
-    return Promise.all(
-      _.map(diffResult.TO_DELETE, (source: Source) => {
-        return SourceAPI.deleteSource(this.organization2, source.getId())
+    const asyncArray = _.map(diffResult.TO_DELETE, (source: Source) => {
+      return (callback: any) => {
+        SourceAPI.deleteSource(this.organization2, source.getId())
           .then((response: RequestResponse) => {
-            this.successHandler(response, 'DELETE operation successfully completed');
+            callback(null, response);
+            this.successHandler(response, `Successfully deleted source ${Colors.source(source.getName())}`);
           })
           .catch((err: any) => {
+            callback(err);
             this.errorHandler(
               { orgId: this.organization2.getId(), message: err } as IGenericError,
               StaticErrorMessage.UNABLE_TO_DELETE_SOURCE
             );
           });
-      })
-    );
+      };
+    });
+
+    return new Promise((resolve, reject) => {
+      series(asyncArray, (err, results) => {
+        err ? reject(err) : resolve();
+      });
+    });
   }
 
   extractionMethod(object: any[], diffOptions: IDiffOptions, oldVersion?: any[]): any[] {

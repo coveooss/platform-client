@@ -1,4 +1,5 @@
 import * as _ from 'underscore';
+import { series } from 'async';
 import { RequestResponse } from 'request';
 import { Organization } from '../../coveoObjects/Organization';
 import { IStringMap } from '../interfaces/IStringMap';
@@ -69,26 +70,28 @@ export class SourceAPI {
       return condition;
     });
 
-    return Promise.all(
-      _.map(response.body, (source: any) => {
+    const asyncArray = _.map(response.body, (source: any) => {
+      return (callback: any) => {
         Assert.exists(source['id'], StaticErrorMessage.MISSING_SOURCE_ID_FROM_THE_RESPONSE);
-        Logger.loadingTask(`Loading ${Colors.source(source['name'])} source from ${Colors.organization(org.getId())}`);
+        Logger.loadingTask(`Loading source ${Colors.source(source['name'])} from ${Colors.organization(org.getId())}`);
         // tslint:disable-next-line:typedef
-        return new Promise((resolve, reject) => {
-          return this.getSingleSource(org, source['id'])
-            .then((sourceBody: RequestResponse) => {
-              Logger.verbose(`Successfully loaded ${Colors.source(source['name'])} source from ${Colors.organization(org.getId())}`);
-              // TODO: add this function as a callback since it doesn't make sense to put it here
-              this.addLoadedSourcesToOrganization(org, sourceBody.body);
-              // TODO: add the sourceBody.body in the resolve
-              resolve();
-            })
-            .catch((err: any) => {
-              reject(err);
-            });
-        });
-      })
-    );
+        return this.getSingleSource(org, source['id'])
+          .then((sourceBody: RequestResponse) => {
+            Logger.info(`Successfully loaded source ${Colors.source(source['name'])} from ${Colors.organization(org.getId())}`);
+            this.addLoadedSourcesToOrganization(org, sourceBody.body);
+            callback(null, source['name']);
+          })
+          .catch((err: any) => {
+            callback(err, null);
+          });
+      };
+    });
+
+    return new Promise((resolve, reject) => {
+      series(asyncArray, (err, results) => {
+        err ? reject(err) : resolve();
+      });
+    });
   }
 
   static addLoadedSourcesToOrganization(org: Organization, sourceConfiguration: IStringMap<any>) {

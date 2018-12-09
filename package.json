@@ -14,6 +14,7 @@
     "extensions"
   ],
   "dependencies": {
+    "async": "^2.6.1",
     "chalk": "2.1.0",
     "commander": "^2.11.0",
     "flat": "4.0.0",
@@ -27,6 +28,7 @@
     "underscore": "1.8.3"
   },
   "devDependencies": {
+    "@types/async": "^2.0.50",
     "@types/chai": "^4.0.4",
     "@types/chalk": "0.4.31",
     "@types/commander": "^2.11.0",

@@ -114,8 +114,8 @@ export class ExtensionController extends BaseController {
       } in ${this.organization2.getId()} `
     );
     const asyncArray = _.map(diffResult.TO_UPDATE, (extension: Extension, idx: number) => {
-      const destinationExtension = diffResult.TO_UPDATE_OLD[idx].getId();
       return (callback: any) => {
+        const destinationExtension = diffResult.TO_UPDATE_OLD[idx].getId();
         ExtensionAPI.updateExtension(this.organization2, destinationExtension, extension.getExtensionModel())
           .then((response: RequestResponse) => {
             callback(null, response);
