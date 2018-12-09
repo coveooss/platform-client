@@ -8,7 +8,6 @@ export const GraduateSourcesCommand = (program: any, commanderUtils: CommanderUt
   program
     .command('graduate-sources <origin> <destination> <apiKey>')
     .description([`${chalk.red('BETA Feature!')} - Graduate the sources of 2 Organizations`])
-    .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
     // .option('-r, --rebuild', 'Rebuild the source once created. Default is false', false)
     // TODO: sources options not implemented yet
     // .option('-S, --sources []', 'List of sources to diff. String separated by ",". If no specified, all the sources will be diffed', list)
@@ -49,7 +48,6 @@ export const GraduateSourcesCommand = (program: any, commanderUtils: CommanderUt
         },
         keysToStrip: ['information', 'resourceId', 'id', 'owner', 'securityProviderReferences'], // These parameters will be stripped from the source before their graduation
         rebuild: options.rebuild,
-        force: options.force,
         POST: options.methods.indexOf('POST') > -1,
         PUT: options.methods.indexOf('PUT') > -1,
         DELETE: options.methods.indexOf('DELETE') > -1

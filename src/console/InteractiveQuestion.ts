@@ -26,7 +26,6 @@ export class InteractiveQuestion {
   static OBJECT_TO_MANIPULATE: string = 'objecttToManipulate';
   static SETTING_FILENAME: string = 'settingFilename';
   static LOG_FILENAME: string = 'logFilename';
-  static FORCE_GRADUATION: string = 'force';
   static SOURCES: string = 'sources';
   static LOG_LEVEL: string = 'logLevel';
   static KEY_TO_IGNORE: string = 'keyToIgnore';
@@ -273,22 +272,6 @@ export class InteractiveQuestion {
     };
   }
 
-  forceGraduation(): Question {
-    return {
-      type: 'confirm',
-      name: InteractiveQuestion.FORCE_GRADUATION,
-      message: 'Force graduation without confirmation prompt',
-      default: false,
-      when: (answer: Answers) => {
-        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
-        return (
-          answer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE &&
-          answer[InteractiveQuestion.COMMAND] === GraduateCommand.COMMAND_NAME
-        );
-      }
-    };
-  }
-
   // public executeCommand(): Question {
   //   return {
   //     type: 'confirm',
@@ -321,7 +304,6 @@ export class InteractiveQuestion {
     return [
       // this.selectSources(data), // only execute when in advanced option
       this.setLogLevel(),
-      this.forceGraduation(),
       this.getFileNameForLogs(),
       this.getFileNameForSettings()
     ];

@@ -51,7 +51,6 @@ export class InteractionController {
     // Global options
     command = command
       .concat(this.saveOptionIfExists(answers, '-S ', InteractiveQuestion.SOURCES))
-      .concat(this.saveOptionIfExists(answers, '-F ', InteractiveQuestion.FORCE_GRADUATION))
       .concat(this.saveOptionIfExists(answers, '-m ', InteractiveQuestion.GRADUATE_OPERATIONS))
       .concat(this.saveOptionIfExists(answers, '-O ', InteractiveQuestion.LOG_FILENAME))
       .concat(this.saveOptionIfExists(answers, '-l ', InteractiveQuestion.LOG_LEVEL))

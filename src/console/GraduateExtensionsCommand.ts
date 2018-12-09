@@ -7,7 +7,6 @@ export const GraduateExtensionsCommand = (program: any, commanderUtils: Commande
   program
     .command('graduate-extensions <origin> <destination> <apiKey>')
     .description('Graduate one organisation to an other')
-    .option('-F, --force', 'Force graduation without confirmation prompt')
     .option(
       '-o, --onlyKeys []',
       'Diff only the specified keys. String separated by ",". By default, the extension diff will ignore the following keys: "requiredDataStreams", "content", "description" and "name"',
@@ -40,7 +39,6 @@ export const GraduateExtensionsCommand = (program: any, commanderUtils: Commande
           includeOnly: options.onlyKeys,
           silent: options.silent
         },
-        force: options.force,
         POST: options.methods.indexOf('POST') > -1,
         PUT: options.methods.indexOf('PUT') > -1,
         DELETE: options.methods.indexOf('DELETE') > -1

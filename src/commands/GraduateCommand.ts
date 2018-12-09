@@ -20,7 +20,6 @@ export interface IHTTPGraduateOptions {
 
 export interface IGraduateOptions extends IHTTPGraduateOptions {
   rebuild?: boolean; // Only available for sources
-  force: boolean;
   diffOptions: IDiffOptions;
   /**
    * Specify which key to strip before graduating the Object.
@@ -49,7 +48,6 @@ export class GraduateCommand {
     diffOptions: DiffCommand.DEFAULT_OPTIONS,
     keysToStrip: [],
     rebuild: false,
-    force: false,
     POST: true,
     PUT: true,
     DELETE: false
@@ -87,12 +85,10 @@ export class GraduateCommand {
       }
     }
 
-    if (!options.force) {
-      questions.push(this.InteractiveQuestion.confirmGraduationAction(`Are you sure want to ${phrase} ${objectName}s?`, 'confirm'));
-    }
+    questions.push(this.InteractiveQuestion.confirmGraduationAction(`Are you sure want to ${phrase} ${objectName}s?`, 'confirm'));
     // Make sure the user selects at least one HTTP method
     inquirer.prompt(questions).then((res: inquirer.Answers) => {
-      if (res.confirm || options.force) {
+      if (res.confirm) {
         Logger.startSpinner(`Performing ${objectName} Graduation`);
         controller
           .diff(options.diffOptions)

@@ -6,7 +6,6 @@ export const GraduateFieldsCommand = (program: any, commanderUtils: CommanderUti
   program
     .command('graduate-fields <origin> <destination> <apiKey>')
     .description('Graduate one organisation to an other')
-    .option('-F, --force', 'Force graduation without confirmation prompt')
     .option(
       '-i, --ignoreKeys []',
       'Keys to ignore. String separated by ",". This option has no effect when diffing extensions',
@@ -36,7 +35,6 @@ export const GraduateFieldsCommand = (program: any, commanderUtils: CommanderUti
           includeOnly: options.onlyKeys,
           silent: options.silent
         },
-        force: options.force,
         POST: options.methods.indexOf('POST') > -1,
         PUT: options.methods.indexOf('PUT') > -1,
         DELETE: options.methods.indexOf('DELETE') > -1
