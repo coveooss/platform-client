@@ -67,7 +67,7 @@ export class SourceController extends BaseController {
       });
   }
 
-  private removeExtensionFromOriginSource(sourceList: Dictionary<Source>) {
+  removeExtensionFromOriginSource(sourceList: Dictionary<Source>) {
     _.each(sourceList.values(), (source: Source) => {
       _.each(this.organization1.getExtensionBlacklist(), (extensionToRemove: string) => {
         source.removeExtension(extensionToRemove, 'pre');

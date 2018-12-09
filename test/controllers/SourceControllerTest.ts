@@ -870,6 +870,123 @@ export const SourceControllerTest = () => {
         expect(sourceDict.getItem('Sitemap Source').getPostConversionExtensions().length).to.eql(1);
       });
 
+      it('Should remove any obejct from the source configuration', () => {
+        const org3 = new Organization('dev', 'xxx', { extensions: ['URL Parsing to extract metadata'] });
+        const sourceController = new SourceController(org3, org2);
+        const sampleSource = new Source({
+          sourceType: 'SITEMAP',
+          id: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4',
+          name: 'sitemaptest',
+          owner: 'prodUser@coveo.com-google',
+          sourceVisibility: 'PRIVATE',
+          mappings: [],
+          information: {
+            sourceStatus: {
+              type: 'DISABLED',
+              allowedOperations: ['DELETE', 'REBUILD']
+            },
+            rebuildRequired: true,
+            numberOfDocuments: 0,
+            documentsTotalSize: 0
+          },
+          pushEnabled: false,
+          onPremisesEnabled: false,
+          preConversionExtensions: [],
+          postConversionExtensions: [
+            {
+              actionOnError: 'SKIP_EXTENSION',
+              condition: '',
+              extensionId: 'ccliprodozvzoaua-vvdaravex2tqdt5npreoz2clgu',
+              parameters: {},
+              versionId: ''
+            }
+          ],
+          permissions: {
+            permissionLevels: [
+              {
+                name: 'Source Specified Permissions',
+                permissionSets: [
+                  {
+                    name: 'Private',
+                    permissions: [
+                      {
+                        allowed: true,
+                        identityType: 'USER',
+                        identity: 'prodUser@coveo.com',
+                        securityProvider: 'Email Security Provider'
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          urlFilters: [
+            {
+              filter: '*',
+              includeFilter: true,
+              filterType: 'WILDCARD'
+            }
+          ],
+          resourceId: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4'
+        });
+
+        sampleSource.removeParameters([
+          'information',
+          'resourceId',
+          'id',
+          'owner',
+          'securityProviderReferences',
+          'dummyParameter',
+          'actionOnError'
+        ]); // actionController should not be deleted as it is not on the first level
+        expect(sampleSource.getConfiguration()).to.eql({
+          sourceType: 'SITEMAP',
+          name: 'sitemaptest',
+          sourceVisibility: 'PRIVATE',
+          pushEnabled: false,
+          onPremisesEnabled: false,
+          mappings: [],
+          preConversionExtensions: [],
+          postConversionExtensions: [
+            {
+              actionOnError: 'SKIP_EXTENSION',
+              condition: '',
+              extensionId: 'ccliprodozvzoaua-vvdaravex2tqdt5npreoz2clgu',
+              parameters: {},
+              versionId: ''
+            }
+          ],
+          permissions: {
+            permissionLevels: [
+              {
+                name: 'Source Specified Permissions',
+                permissionSets: [
+                  {
+                    name: 'Private',
+                    permissions: [
+                      {
+                        allowed: true,
+                        identityType: 'USER',
+                        identity: 'prodUser@coveo.com',
+                        securityProvider: 'Email Security Provider'
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          urlFilters: [
+            {
+              filter: '*',
+              includeFilter: true,
+              filterType: 'WILDCARD'
+            }
+          ]
+        });
+      });
+
       it('Should replace extension name with their according id', () => {
         const sourceController = new SourceController(org1, org2);
         const extensionList = [rawExtension1, rawExtension2, rawExtension3, rawDummyExtension1, rawDummyExtension2, rawDummyExtension3];
@@ -1083,7 +1200,7 @@ export const SourceControllerTest = () => {
     });
 
     // describe('Graduate Method', () => {
-    //   // TODO
+    // TODO: validate that the source does not graduate specific keys (information, ...)
     // });
   });
 };
