@@ -91,7 +91,9 @@ export class SourceController extends BaseController {
           if (extensionFound) {
             sourceExt.extensionId = (extensionFound as IStringMap<string>)['name'];
           } else {
-            throw new Error('Extension does not exsist: ' + sourceExt.extensionId);
+            const message = `The extension ${Colors.extension(sourceExt.extensionId)} does not exsist`;
+            Logger.error(`${message}`);
+            throw new Error(message);
           }
         });
       };
@@ -116,7 +118,9 @@ export class SourceController extends BaseController {
         if (extensionFound) {
           sourceExt.extensionId = (extensionFound as any)['id'];
         } else {
-          throw new Error('No Extension does not exsist: ' + sourceExt.extensionId);
+          const message = `The extension ${Colors.extension(sourceExt.extensionId)} does not exsist`;
+          Logger.error(`${message}. Make sure to graduate extensions first`);
+          throw new Error(message);
         }
       });
     };
