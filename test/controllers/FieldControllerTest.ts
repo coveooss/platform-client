@@ -2,7 +2,7 @@
 import { assert, expect } from 'chai';
 import * as nock from 'nock';
 import * as _ from 'underscore';
-import { IHTTPGraduateOptions } from '../../src/commands/GraduateCommand';
+import { IGraduateOptions } from '../../src/commands/GraduateCommand';
 import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
 import { IGenericError } from '../../src/commons/errors';
 import { UrlService } from '../../src/commons/rest/UrlService';
@@ -305,10 +305,11 @@ export const FieldControllerTest = () => {
           .query({ fields: 'attachmentparentid,authorloginname' })
           .reply(RequestUtils.NO_CONTENT);
 
-        const graduateOptions: IHTTPGraduateOptions = {
+        const graduateOptions: IGraduateOptions = {
           POST: true,
           PUT: true,
-          DELETE: true
+          DELETE: true,
+          diffOptions: {}
         };
 
         fieldController
@@ -401,10 +402,11 @@ export const FieldControllerTest = () => {
           .query({ fields: 'attachmentparentid,authorloginname' })
           .reply(RequestUtils.ACCESS_DENIED, 'stop that');
 
-        const graduateOptions: IHTTPGraduateOptions = {
+        const graduateOptions: IGraduateOptions = {
           POST: true,
           PUT: true,
-          DELETE: true
+          DELETE: true,
+          diffOptions: {}
         };
 
         fieldController
@@ -470,10 +472,11 @@ export const FieldControllerTest = () => {
             totalEntries: 3
           });
 
-        const graduateOptions: IHTTPGraduateOptions = {
+        const graduateOptions: IGraduateOptions = {
           POST: true,
           PUT: true,
-          DELETE: true
+          DELETE: true,
+          diffOptions: {}
         };
 
         fieldController.diff().then((diffResultArray: DiffResultArray<Field>) => {
@@ -521,10 +524,11 @@ export const FieldControllerTest = () => {
             totalEntries: 3
           });
 
-        const graduateOptions: IHTTPGraduateOptions = {
+        const graduateOptions: IGraduateOptions = {
           POST: true,
           PUT: true,
-          DELETE: true
+          DELETE: true,
+          diffOptions: {}
         };
 
         fieldController
@@ -602,10 +606,11 @@ export const FieldControllerTest = () => {
             totalEntries: 2
           });
 
-        const graduateOptions: IHTTPGraduateOptions = {
+        const graduateOptions: IGraduateOptions = {
           POST: false,
           PUT: false,
-          DELETE: false
+          DELETE: false,
+          diffOptions: {}
         };
 
         fieldController.diff().then((diffResultArray: DiffResultArray<Field>) => {

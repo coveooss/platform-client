@@ -2,7 +2,7 @@
 import { assert, expect } from 'chai';
 import * as nock from 'nock';
 import * as _ from 'underscore';
-import { IHTTPGraduateOptions } from '../../src/commands/GraduateCommand';
+import { IHTTPGraduateOptions, IGraduateOptions } from '../../src/commands/GraduateCommand';
 import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
 import { IGenericError } from '../../src/commons/errors';
 import { UrlService } from '../../src/commons/rest/UrlService';
@@ -1199,8 +1199,135 @@ export const SourceControllerTest = () => {
       });
     });
 
-    // describe('Graduate Method', () => {
-    // TODO: validate that the source does not graduate specific keys (information, ...)
-    // });
+    describe('Graduate Method', () => {
+      it('Should graduate', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          .post('/rest/organizations/prod/sources?rebuild=false', {
+            sourceType: 'SITEMAP',
+            name: 'sitemaptest',
+            mappings: [],
+            preConversionExtensions: [],
+            postConversionExtensions: []
+          })
+          .reply(RequestUtils.OK)
+          .put('/rest/organizations/prod/sources/web-source-prod?rebuild=false', {
+            sourceType: 'WEB',
+            name: 'My web source',
+            mappings: [
+              {
+                id: 'q4qripnnvztvqempxtkvdb2cqa',
+                kind: 'COMMON',
+                fieldName: 'printableuri',
+                extractionMethod: 'METADATA',
+                content: '%[printableuri]'
+              }
+            ],
+            preConversionExtensions: [],
+            postConversionExtensions: []
+          })
+          .reply(RequestUtils.OK)
+          .delete('/rest/organizations/prod/sources/dev-source-to-delete')
+          .reply(RequestUtils.OK);
+
+        const extensionDiff: DiffResultArray<Source> = new DiffResultArray();
+        extensionDiff.TO_CREATE = [
+          new Source({
+            sourceType: 'SITEMAP',
+            id: 'dev-source',
+            name: 'sitemaptest',
+            mappings: [],
+            information: {
+              sourceStatus: {
+                type: 'DISABLED',
+                allowedOperations: ['DELETE', 'REBUILD']
+              },
+              rebuildRequired: true,
+              numberOfDocuments: 0,
+              documentsTotalSize: 0
+            },
+            preConversionExtensions: [],
+            postConversionExtensions: [],
+            resourceId: 'dev-source4'
+          })
+        ];
+        extensionDiff.TO_UPDATE = [
+          new Source({
+            sourceType: 'WEB',
+            id: 'web-source',
+            name: 'My web source',
+            mappings: [
+              {
+                id: 'q4qripnnvztvqempxtkvdb2cqa',
+                kind: 'COMMON',
+                fieldName: 'printableuri',
+                extractionMethod: 'METADATA',
+                content: '%[printableuri]'
+              }
+            ],
+            information: {
+              sourceStatus: {
+                type: 'DISABLED',
+                allowedOperations: ['DELETE', 'REBUILD']
+              },
+              rebuildRequired: true,
+              numberOfDocuments: 0,
+              documentsTotalSize: 0
+            },
+            preConversionExtensions: [],
+            postConversionExtensions: [],
+            resourceId: 'web-source'
+          })
+        ];
+        extensionDiff.TO_UPDATE_OLD = [
+          new Source({
+            sourceType: 'WEB',
+            id: 'web-source-prod',
+            name: 'My web source',
+            mappings: [],
+            information: {
+              sourceStatus: {
+                type: 'DISABLED',
+                allowedOperations: ['DELETE', 'REBUILD']
+              },
+              rebuildRequired: true,
+              numberOfDocuments: 0,
+              documentsTotalSize: 0
+            },
+            preConversionExtensions: [],
+            postConversionExtensions: [],
+            resourceId: 'web-source-prod'
+          })
+        ];
+        extensionDiff.TO_DELETE = [
+          new Source({
+            sourceType: 'SITEMAP',
+            id: 'dev-source-to-delete',
+            name: 'source to delete',
+            mappings: [],
+            preConversionExtensions: [],
+            postConversionExtensions: [],
+            resourceId: 'dev-source-to-delete'
+          })
+        ];
+
+        const graduateOptions: IGraduateOptions = {
+          POST: true,
+          PUT: true,
+          DELETE: true,
+          keysToStrip: ['information', 'resourceId', 'id', 'owner', 'securityProviderReferences'],
+          diffOptions: {}
+        };
+
+        controller
+          .graduate(extensionDiff, graduateOptions)
+          .then((resolved: any[]) => {
+            // expect(resolved).to.be.empty;
+            done();
+          })
+          .catch((err: any) => {
+            done(err);
+          });
+      });
+    });
   });
 };
