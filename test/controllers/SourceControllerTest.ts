@@ -2,7 +2,7 @@
 import { assert, expect } from 'chai';
 import * as nock from 'nock';
 import * as _ from 'underscore';
-import { IHTTPGraduateOptions } from '../../src/commands/GraduateCommand';
+import { IHTTPGraduateOptions, IGraduateOptions } from '../../src/commands/GraduateCommand';
 import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
 import { IGenericError } from '../../src/commons/errors';
 import { UrlService } from '../../src/commons/rest/UrlService';
@@ -863,23 +863,144 @@ export const SourceControllerTest = () => {
         });
 
         expect(sourceDict.getItem('Sitemap Source').getPostConversionExtensions().length).to.eql(2);
-        // First replace extension IDs with their respective name
+        // First, replace extension IDs with their respective name
         sourceController.replaceExtensionIdWithName(sourceDict, extensionList);
+        // Now, remove blacklisted extensions
         sourceController.removeExtensionFromOriginSource(sourceDict);
         expect(sourceDict.getItem('Sitemap Source').getPostConversionExtensions().length).to.eql(1);
+      });
+
+      it('Should remove any obejct from the source configuration', () => {
+        const org3 = new Organization('dev', 'xxx', { extensions: ['URL Parsing to extract metadata'] });
+        const sourceController = new SourceController(org3, org2);
+        const sampleSource = new Source({
+          sourceType: 'SITEMAP',
+          id: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4',
+          name: 'sitemaptest',
+          owner: 'prodUser@coveo.com-google',
+          sourceVisibility: 'PRIVATE',
+          mappings: [],
+          information: {
+            sourceStatus: {
+              type: 'DISABLED',
+              allowedOperations: ['DELETE', 'REBUILD']
+            },
+            rebuildRequired: true,
+            numberOfDocuments: 0,
+            documentsTotalSize: 0
+          },
+          pushEnabled: false,
+          onPremisesEnabled: false,
+          preConversionExtensions: [],
+          postConversionExtensions: [
+            {
+              actionOnError: 'SKIP_EXTENSION',
+              condition: '',
+              extensionId: 'ccliprodozvzoaua-vvdaravex2tqdt5npreoz2clgu',
+              parameters: {},
+              versionId: ''
+            }
+          ],
+          permissions: {
+            permissionLevels: [
+              {
+                name: 'Source Specified Permissions',
+                permissionSets: [
+                  {
+                    name: 'Private',
+                    permissions: [
+                      {
+                        allowed: true,
+                        identityType: 'USER',
+                        identity: 'prodUser@coveo.com',
+                        securityProvider: 'Email Security Provider'
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          urlFilters: [
+            {
+              filter: '*',
+              includeFilter: true,
+              filterType: 'WILDCARD'
+            }
+          ],
+          resourceId: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4'
+        });
+
+        sampleSource.removeParameters([
+          'information',
+          'resourceId',
+          'id',
+          'owner',
+          'securityProviderReferences',
+          'dummyParameter',
+          'actionOnError'
+        ]); // actionController should not be deleted as it is not on the first level
+        expect(sampleSource.getConfiguration()).to.eql({
+          sourceType: 'SITEMAP',
+          name: 'sitemaptest',
+          sourceVisibility: 'PRIVATE',
+          pushEnabled: false,
+          onPremisesEnabled: false,
+          mappings: [],
+          preConversionExtensions: [],
+          postConversionExtensions: [
+            {
+              actionOnError: 'SKIP_EXTENSION',
+              condition: '',
+              extensionId: 'ccliprodozvzoaua-vvdaravex2tqdt5npreoz2clgu',
+              parameters: {},
+              versionId: ''
+            }
+          ],
+          permissions: {
+            permissionLevels: [
+              {
+                name: 'Source Specified Permissions',
+                permissionSets: [
+                  {
+                    name: 'Private',
+                    permissions: [
+                      {
+                        allowed: true,
+                        identityType: 'USER',
+                        identity: 'prodUser@coveo.com',
+                        securityProvider: 'Email Security Provider'
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          urlFilters: [
+            {
+              filter: '*',
+              includeFilter: true,
+              filterType: 'WILDCARD'
+            }
+          ]
+        });
       });
 
       it('Should replace extension name with their according id', () => {
         const sourceController = new SourceController(org1, org2);
         const extensionList = [rawExtension1, rawExtension2, rawExtension3, rawDummyExtension1, rawDummyExtension2, rawDummyExtension3];
+        const source1Clone = source1.clone();
+        const source2Clone = source2.clone();
         const sourceDict: Dictionary<Source> = new Dictionary({
-          'Sitemap Source': source1.clone(),
-          'Web Source': source2.clone()
+          'Sitemap Source': source1Clone,
+          'Web Source': source2Clone
         });
 
         sourceController.replaceExtensionIdWithName(sourceDict, extensionList);
         // Now do the revert operation
-        sourceController.replaceExtensionNameWithId(sourceDict, extensionList);
+        sourceController.replaceExtensionNameWithId(source1Clone, extensionList);
+        sourceController.replaceExtensionNameWithId(source2Clone, extensionList);
 
         const _source1 = sourceDict.getItem('Sitemap Source');
         expect(_source1.getPostConversionExtensions()[0]['extensionId']).to.eq('ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu');
@@ -897,7 +1018,7 @@ export const SourceControllerTest = () => {
         });
 
         expect(() => sourceController.replaceExtensionIdWithName(sourceDict, [])).to.throw();
-        expect(() => sourceController.replaceExtensionNameWithId(sourceDict, [])).to.throw();
+        expect(() => sourceController.replaceExtensionNameWithId(source1.clone(), [])).to.throw();
       });
     });
 
@@ -1008,7 +1129,6 @@ export const SourceControllerTest = () => {
       });
 
       it('Should not have updated source in the diff', (done: MochaDone) => {
-        // TODO: This test is not usefull. this should be tested for PUT and DELETE  fraduate operations
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources')
@@ -1079,8 +1199,135 @@ export const SourceControllerTest = () => {
       });
     });
 
-    // describe('Graduate Method', () => {
-    //   // TODO
-    // });
+    describe('Graduate Method', () => {
+      it('Should graduate', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          .post('/rest/organizations/prod/sources?rebuild=false', {
+            sourceType: 'SITEMAP',
+            name: 'sitemaptest',
+            mappings: [],
+            preConversionExtensions: [],
+            postConversionExtensions: []
+          })
+          .reply(RequestUtils.OK)
+          .put('/rest/organizations/prod/sources/web-source-prod?rebuild=false', {
+            sourceType: 'WEB',
+            name: 'My web source',
+            mappings: [
+              {
+                id: 'q4qripnnvztvqempxtkvdb2cqa',
+                kind: 'COMMON',
+                fieldName: 'printableuri',
+                extractionMethod: 'METADATA',
+                content: '%[printableuri]'
+              }
+            ],
+            preConversionExtensions: [],
+            postConversionExtensions: []
+          })
+          .reply(RequestUtils.OK)
+          .delete('/rest/organizations/prod/sources/dev-source-to-delete')
+          .reply(RequestUtils.OK);
+
+        const extensionDiff: DiffResultArray<Source> = new DiffResultArray();
+        extensionDiff.TO_CREATE = [
+          new Source({
+            sourceType: 'SITEMAP',
+            id: 'dev-source',
+            name: 'sitemaptest',
+            mappings: [],
+            information: {
+              sourceStatus: {
+                type: 'DISABLED',
+                allowedOperations: ['DELETE', 'REBUILD']
+              },
+              rebuildRequired: true,
+              numberOfDocuments: 0,
+              documentsTotalSize: 0
+            },
+            preConversionExtensions: [],
+            postConversionExtensions: [],
+            resourceId: 'dev-source4'
+          })
+        ];
+        extensionDiff.TO_UPDATE = [
+          new Source({
+            sourceType: 'WEB',
+            id: 'web-source',
+            name: 'My web source',
+            mappings: [
+              {
+                id: 'q4qripnnvztvqempxtkvdb2cqa',
+                kind: 'COMMON',
+                fieldName: 'printableuri',
+                extractionMethod: 'METADATA',
+                content: '%[printableuri]'
+              }
+            ],
+            information: {
+              sourceStatus: {
+                type: 'DISABLED',
+                allowedOperations: ['DELETE', 'REBUILD']
+              },
+              rebuildRequired: true,
+              numberOfDocuments: 0,
+              documentsTotalSize: 0
+            },
+            preConversionExtensions: [],
+            postConversionExtensions: [],
+            resourceId: 'web-source'
+          })
+        ];
+        extensionDiff.TO_UPDATE_OLD = [
+          new Source({
+            sourceType: 'WEB',
+            id: 'web-source-prod',
+            name: 'My web source',
+            mappings: [],
+            information: {
+              sourceStatus: {
+                type: 'DISABLED',
+                allowedOperations: ['DELETE', 'REBUILD']
+              },
+              rebuildRequired: true,
+              numberOfDocuments: 0,
+              documentsTotalSize: 0
+            },
+            preConversionExtensions: [],
+            postConversionExtensions: [],
+            resourceId: 'web-source-prod'
+          })
+        ];
+        extensionDiff.TO_DELETE = [
+          new Source({
+            sourceType: 'SITEMAP',
+            id: 'dev-source-to-delete',
+            name: 'source to delete',
+            mappings: [],
+            preConversionExtensions: [],
+            postConversionExtensions: [],
+            resourceId: 'dev-source-to-delete'
+          })
+        ];
+
+        const graduateOptions: IGraduateOptions = {
+          POST: true,
+          PUT: true,
+          DELETE: true,
+          keysToStrip: ['information', 'resourceId', 'id', 'owner', 'securityProviderReferences'],
+          diffOptions: {}
+        };
+
+        controller
+          .graduate(extensionDiff, graduateOptions)
+          .then((resolved: any[]) => {
+            // expect(resolved).to.be.empty;
+            done();
+          })
+          .catch((err: any) => {
+            done(err);
+          });
+      });
+    });
   });
 };

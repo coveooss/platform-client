@@ -50,4 +50,12 @@ export class UrlService {
   static getSingleSourceUrl(organizationId: string, sourceId: string): string {
     return `${this.getOrganizationUrl(organizationId)}/sources/${sourceId}`;
   }
+
+  static updateSource(organizationId: string, sourceId: string, rebuild = false): string {
+    return `${this.getOrganizationUrl(organizationId)}/sources/${sourceId}?rebuild=${rebuild}`;
+  }
+
+  static createSource(organizationId: string, rebuild = false): string {
+    return `${this.getOrganizationUrl(organizationId)}/sources?rebuild=${rebuild}`;
+  }
 }

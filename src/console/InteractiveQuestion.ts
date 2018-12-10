@@ -2,6 +2,7 @@ import { Question } from 'inquirer';
 import { Answers } from 'inquirer';
 import { RequestResponse } from 'request';
 import * as inquirer from 'inquirer';
+import * as chalk from 'chalk';
 import * as _ from 'underscore';
 import { DiffCommand } from '../commands/DiffCommand';
 import { GraduateCommand } from '../commands/GraduateCommand';
@@ -16,9 +17,8 @@ import { SourceController } from '../controllers/SourceController';
 export class InteractiveQuestion {
   // Required parameters
   static ORIGIN_ORG_ID: string = 'originOrganizationId';
-  static ORIGIN_ORG_KEY: string = 'originOrganizationKey';
+  static MASTER_API_KEY: string = 'APIKey';
   static DESTINATION_ORG_ID: string = 'destinationOrganizationId';
-  static DESTINATION_ORG_KEY: string = 'destinationOrganizationKey';
   static COMMAND: string = 'command';
 
   // Options
@@ -26,7 +26,6 @@ export class InteractiveQuestion {
   static OBJECT_TO_MANIPULATE: string = 'objecttToManipulate';
   static SETTING_FILENAME: string = 'settingFilename';
   static LOG_FILENAME: string = 'logFilename';
-  static FORCE_GRADUATION: string = 'force';
   static SOURCES: string = 'sources';
   static LOG_LEVEL: string = 'logLevel';
   static KEY_TO_IGNORE: string = 'keyToIgnore';
@@ -115,15 +114,6 @@ export class InteractiveQuestion {
     };
   }
 
-  getOriginOrganizationKey(): Question {
-    return {
-      type: 'input',
-      name: InteractiveQuestion.ORIGIN_ORG_KEY,
-      message: 'Origin Organization API Key: ',
-      validate: this.inputValidator('You need to provide the API Key of the Organization')
-    };
-  }
-
   getDestinationOrganizationId(): Question {
     return {
       type: 'input',
@@ -133,12 +123,12 @@ export class InteractiveQuestion {
     };
   }
 
-  getDestinationOrganizationKey(): Question {
+  getApiKey(): Question {
     return {
       type: 'input',
-      name: InteractiveQuestion.DESTINATION_ORG_KEY,
-      message: 'Destination Organization API Key: ',
-      validate: this.inputValidator('You need to provide the API Key of the Organization')
+      name: InteractiveQuestion.MASTER_API_KEY,
+      message: 'Master API Key: ',
+      validate: this.inputValidator('You need to provide an API Key')
     };
   }
 
@@ -277,24 +267,8 @@ export class InteractiveQuestion {
     return {
       type: 'confirm',
       name: variable,
-      message: mes,
+      message: `${chalk.bgRed(mes)}`,
       default: false
-    };
-  }
-
-  forceGraduation(): Question {
-    return {
-      type: 'confirm',
-      name: InteractiveQuestion.FORCE_GRADUATION,
-      message: 'Force graduation without confirmation prompt',
-      default: false,
-      when: (answer: Answers) => {
-        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
-        return (
-          answer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE &&
-          answer[InteractiveQuestion.COMMAND] === GraduateCommand.COMMAND_NAME
-        );
-      }
     };
   }
 
@@ -311,8 +285,7 @@ export class InteractiveQuestion {
     return [
       this.getOriginOrganizationId(),
       this.getDestinationOrganizationId(),
-      this.getOriginOrganizationKey(),
-      this.getDestinationOrganizationKey(),
+      this.getApiKey(),
       this.getCommandList(),
 
       // If Graduation
@@ -331,7 +304,6 @@ export class InteractiveQuestion {
     return [
       // this.selectSources(data), // only execute when in advanced option
       this.setLogLevel(),
-      this.forceGraduation(),
       this.getFileNameForLogs(),
       this.getFileNameForSettings()
     ];

@@ -2,7 +2,7 @@
 import { assert, expect } from 'chai';
 import * as nock from 'nock';
 import * as _ from 'underscore';
-import { IHTTPGraduateOptions } from '../../src/commands/GraduateCommand';
+import { IGraduateOptions } from '../../src/commands/GraduateCommand';
 import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
 import { IGenericError } from '../../src/commons/errors';
 import { UrlService } from '../../src/commons/rest/UrlService';
@@ -399,10 +399,11 @@ export const ExtensionControllerTest = () => {
           .get('/rest/organizations/prod/extensions/prodmuo9dsuop8fuihmfdjshjd')
           .reply(RequestUtils.OK, prodmuo9dsuop8fuihmfdjshjd);
 
-        const graduateOptions: IHTTPGraduateOptions = {
+        const graduateOptions: IGraduateOptions = {
           POST: true,
           PUT: true,
-          DELETE: true
+          DELETE: true,
+          diffOptions: {}
         };
 
         controller.diff().then((diffResultArray: DiffResultArray<Extension>) => {
@@ -503,10 +504,11 @@ export const ExtensionControllerTest = () => {
           })
         ];
 
-        const graduateOptions: IHTTPGraduateOptions = {
+        const graduateOptions: IGraduateOptions = {
           POST: true,
           PUT: true,
-          DELETE: true
+          DELETE: true,
+          diffOptions: {}
         };
 
         controller

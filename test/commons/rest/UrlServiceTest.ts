@@ -43,6 +43,32 @@ export const UrlServiceTest = () => {
       expect(createFields).to.equal(`${config.coveo.platformUrl}/rest/organizations/myOrgId/extensions/myExtension`);
     });
 
+    it('Should generate the url to get all sources', () => {
+      const url = UrlService.getSourcesUrl('myOrgId');
+      expect(url).to.equal(`${config.coveo.platformUrl}/rest/organizations/myOrgId/sources`);
+    });
+
+    it('Should generate the url to get a specific source', () => {
+      const url = UrlService.getSingleSourceUrl('myOrgId', 'mySource');
+      expect(url).to.equal(`${config.coveo.platformUrl}/rest/organizations/myOrgId/sources/mySource`);
+    });
+
+    it('Should generate the url to create a source', () => {
+      const url = UrlService.createSource('myOrgId');
+      expect(url).to.equal(`${config.coveo.platformUrl}/rest/organizations/myOrgId/sources?rebuild=false`);
+
+      const url2 = UrlService.createSource('myOrgId', true);
+      expect(url2).to.equal(`${config.coveo.platformUrl}/rest/organizations/myOrgId/sources?rebuild=true`);
+    });
+
+    it('Should generate the url to update a source', () => {
+      const url = UrlService.updateSource('myOrgId', 'mySource');
+      expect(url).to.equal(`${config.coveo.platformUrl}/rest/organizations/myOrgId/sources/mySource?rebuild=false`);
+
+      const url2 = UrlService.updateSource('myOrgId', 'mySource', true);
+      expect(url2).to.equal(`${config.coveo.platformUrl}/rest/organizations/myOrgId/sources/mySource?rebuild=true`);
+    });
+
     it('Should generate the url to get the Field documentation', () => {
       const fieldDoc = UrlService.getFieldDocs();
       expect(fieldDoc).to.equal(`${config.coveo.platformUrl}/api-docs/Field?group=public`);

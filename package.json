@@ -14,6 +14,7 @@
     "extensions"
   ],
   "dependencies": {
+    "async": "^2.6.1",
     "chalk": "2.1.0",
     "commander": "^2.11.0",
     "flat": "4.0.0",
@@ -24,9 +25,11 @@
     "request": "2.81.0",
     "strip-ansi": "^5.0.0",
     "typescript": "^2.5.3",
-    "underscore": "1.8.3"
+    "underscore": "1.8.3",
+    "update-notifier": "^2.5.0"
   },
   "devDependencies": {
+    "@types/async": "^2.0.50",
     "@types/chai": "^4.0.4",
     "@types/chalk": "0.4.31",
     "@types/commander": "^2.11.0",

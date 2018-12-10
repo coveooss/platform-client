@@ -46,13 +46,11 @@ export class InteractionController {
     command.push(answers[InteractiveQuestion.COMMAND] + '-' + answers[InteractiveQuestion.OBJECT_TO_MANIPULATE]);
     command.push(answers[InteractiveQuestion.ORIGIN_ORG_ID]);
     command.push(answers[InteractiveQuestion.DESTINATION_ORG_ID]);
-    command.push(answers[InteractiveQuestion.ORIGIN_ORG_KEY]);
-    command.push(answers[InteractiveQuestion.DESTINATION_ORG_KEY]);
+    command.push(answers[InteractiveQuestion.MASTER_API_KEY]);
 
     // Global options
     command = command
       .concat(this.saveOptionIfExists(answers, '-S ', InteractiveQuestion.SOURCES))
-      .concat(this.saveOptionIfExists(answers, '-F ', InteractiveQuestion.FORCE_GRADUATION))
       .concat(this.saveOptionIfExists(answers, '-m ', InteractiveQuestion.GRADUATE_OPERATIONS))
       .concat(this.saveOptionIfExists(answers, '-O ', InteractiveQuestion.LOG_FILENAME))
       .concat(this.saveOptionIfExists(answers, '-l ', InteractiveQuestion.LOG_LEVEL))
