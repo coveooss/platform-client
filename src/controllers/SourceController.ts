@@ -1,5 +1,5 @@
 import * as _ from 'underscore';
-import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
+import { series } from 'async';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { IDownloadResultArray } from '../commons/collections/DownloadResultArray';
 import { Organization } from '../coveoObjects/Organization';
@@ -14,8 +14,13 @@ import { Dictionary } from '../commons/collections/Dictionary';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { Assert } from '../commons/misc/Assert';
 import { ExtensionAPI } from '../commons/rest/ExtensionAPI';
+import { RequestResponse } from 'request';
+import { IGraduateOptions } from '../commands/GraduateCommand';
+import { Colors } from '../commons/colors';
 
 export class SourceController extends BaseController {
+  private extensionList: Array<Array<{}>> = [];
+
   constructor(private organization1: Organization, private organization2: Organization) {
     super();
   }
@@ -36,22 +41,20 @@ export class SourceController extends BaseController {
     const diffActions = [this.loadSourcesForBothOrganizations(), this.loadExtensionsListForBothOrganizations()];
     return Promise.all(diffActions)
       .then(values => {
-        const extensionList = values[1] as Array<Array<{}>>; // 2 dim table: extensions per sources
-        const sources1 = this.organization1.getSources();
-        const sources2 = this.organization2.getSources();
+        this.extensionList = values[1] as Array<Array<{}>>; // 2 dim table: extensions per sources
+        const source1 = this.organization1.getSources();
+        const source2 = this.organization2.getSources();
 
         // No error should be raised here as all extensions defined in a source should be available in the organization
-        this.replaceExtensionIdWithName(sources1, extensionList[0]);
-        this.replaceExtensionIdWithName(sources2, extensionList[1]);
+        this.replaceExtensionIdWithName(source1, this.extensionList[0]);
+        this.replaceExtensionIdWithName(source2, this.extensionList[1]);
 
-        const diffResultArray = DiffUtils.getDiffResult(sources1, sources2, diffOptions);
+        // Do not diff extensions that have been blacklisted
+        // Only applies to the organization of origin
+        this.removeExtensionFromOriginSource(source1);
+
+        const diffResultArray = DiffUtils.getDiffResult(source1, source2, diffOptions);
         if (diffResultArray.containsItems()) {
-          // TODO: probably not requierd for the diff, but will be for graduate
-          // if (diffResultArray.TO_CREATE.length + diffResultArray.TO_DELETE.length > 0) {
-          //   throw new Error(
-          //     'Inconsistent number of extensions between orgs. Run `graduate-extensions` first or use the --skipExtensions option to ignore extensions.'
-          //   );
-          // }
           Logger.verbose(`${diffResultArray.TO_CREATE.length} source${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} to create`);
           Logger.verbose(`${diffResultArray.TO_DELETE.length} source${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} to delete`);
           Logger.verbose(`${diffResultArray.TO_UPDATE.length} source${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} to update`);
@@ -64,7 +67,16 @@ export class SourceController extends BaseController {
       });
   }
 
-  replaceExtensionKey(sourceList: Dictionary<Source>, extensionList: any[], inputKey: string, outputKey: string) {
+  removeExtensionFromOriginSource(sourceList: Dictionary<Source>) {
+    _.each(sourceList.values(), (source: Source) => {
+      _.each(this.organization1.getExtensionBlacklist(), (extensionToRemove: string) => {
+        source.removeExtension(extensionToRemove, 'pre');
+        source.removeExtension(extensionToRemove, 'post');
+      });
+    });
+  }
+
+  replaceExtensionIdWithName(sourceList: Dictionary<Source>, extensionList: Array<{}>) {
     // TODO: Can be optimized
     _.each(sourceList.values(), (source: Source) => {
       // Get all extensions associated to the source
@@ -72,14 +84,16 @@ export class SourceController extends BaseController {
         _.each(sourceExtensionsList, (sourceExt: IStringMap<string>) => {
           Assert.exists(sourceExt.extensionId, 'Missing extensionId value from extension');
           // For each extension associated to the source, replace its id by its name
-          const extensionFound = _.find(extensionList, extension => {
-            return extension[inputKey] === sourceExt.extensionId;
+          const extensionFound = _.find(extensionList, (extension: IStringMap<string>) => {
+            return extension['id'] === sourceExt.extensionId;
           });
 
           if (extensionFound) {
-            sourceExt.extensionId = extensionFound[outputKey];
+            sourceExt.extensionId = (extensionFound as IStringMap<string>)['name'];
           } else {
-            throw new Error('Extension does not exsist: ' + sourceExt.extensionId);
+            const message = `The extension ${Colors.extension(sourceExt.extensionId)} does not exsist`;
+            Logger.error(`${message}`);
+            throw new Error(message);
           }
         });
       };
@@ -91,12 +105,30 @@ export class SourceController extends BaseController {
     });
   }
 
-  replaceExtensionIdWithName(sourceList: Dictionary<Source>, extensionList: Array<{}>) {
-    this.replaceExtensionKey(sourceList, extensionList, 'id', 'name');
-  }
+  replaceExtensionNameWithId(source: Source, extensionList: Array<{}>) {
+    // Get all extensions associated to the source
+    const extensionReplacer = (sourceExtensionsList: Array<IStringMap<string>>) => {
+      _.each(sourceExtensionsList, (sourceExt: IStringMap<string>) => {
+        Assert.exists(sourceExt.extensionId, 'Missing extensionId value from extension');
+        // For each extension associated to the source, replace its id by its name
+        const extensionFound = _.find(extensionList, extension => {
+          return (extension as any)['name'] === sourceExt.extensionId;
+        });
 
-  replaceExtensionNameWithId(sourceList: Dictionary<Source>, extensionList: Array<{}>) {
-    this.replaceExtensionKey(sourceList, extensionList, 'name', 'id');
+        if (extensionFound) {
+          sourceExt.extensionId = (extensionFound as any)['id'];
+        } else {
+          const message = `The extension ${Colors.extension(sourceExt.extensionId)} does not exsist`;
+          Logger.error(`${message}. Make sure to graduate extensions first`);
+          throw new Error(message);
+        }
+      });
+    };
+
+    // Post conversion extensions
+    extensionReplacer(source.getPostConversionExtensions());
+    // pre conversion extensions
+    extensionReplacer(source.getPreConversionExtensions());
   }
 
   /**
@@ -113,16 +145,125 @@ export class SourceController extends BaseController {
    * Graduates the sources from origin Organization to the destination Organization.
    *
    * @param {DiffResultArray<Source>} diffResultArray
-   * @param {IHTTPGraduateOptions} options
+   * @param {IGraduateOptions} options
    * @returns {Promise<any[]>}
    */
-  graduate(diffResultArray: DiffResultArray<Source>, options: IHTTPGraduateOptions): Promise<any[]> {
-    // this.extensionController.loadExtensionsListForBothOrganizations().then(() => {
-    // Here, the extensions should have the id of the destination org
-    //   // Do graduation stuff
-    // });
-    // TODO: change the extension name with the destination id
-    throw new Error('TODO: graduate command not implemented');
+  graduate(diffResultArray: DiffResultArray<Source>, options: IGraduateOptions): Promise<any[]> {
+    if (diffResultArray.containsItems()) {
+      Logger.loadingTask('Graduating Sources');
+
+      _.each(_.union(diffResultArray.TO_CREATE, diffResultArray.TO_DELETE, diffResultArray.TO_UPDATE), source => {
+        // Make some assertions here. Return an error if an extension is missing
+        // 1. Replacing extensions with destination id
+        this.replaceExtensionNameWithId(source, this.extensionList[1]);
+
+        // 2. Strip source from keys that should not be graduated
+        if (options.keysToStrip && options.keysToStrip.length > 0) {
+          source.removeParameters(options.keysToStrip);
+        }
+      });
+
+      return Promise.all(
+        _.map(
+          this.getAuthorizedOperations(diffResultArray, this.graduateNew, this.graduateUpdated, this.graduateDeleted, options),
+          (operation: (diffResult: DiffResultArray<Source>) => Promise<void>) => {
+            return operation.call(this, diffResultArray);
+          }
+        )
+      );
+    } else {
+      Logger.warn('No sources to graduate');
+      return Promise.resolve([]);
+    }
+  }
+
+  private graduateNew(diffResult: DiffResultArray<Source>): Promise<void[]> {
+    Logger.verbose(
+      `Creating ${diffResult.TO_CREATE.length} new source${diffResult.TO_CREATE.length > 1 ? 's' : ''} in ${this.organization2.getId()} `
+    );
+    const asyncArray = _.map(diffResult.TO_CREATE, (source: Source) => {
+      return (callback: any) => {
+        SourceAPI.createSource(this.organization2, source.getConfiguration())
+          .then((response: RequestResponse) => {
+            callback(null, response);
+            this.successHandler(response, `Successfully created source ${Colors.source(source.getName())}`);
+          })
+          .catch((err: any) => {
+            callback(err);
+            this.errorHandler(
+              { orgId: this.organization2.getId(), message: err } as IGenericError,
+              StaticErrorMessage.UNABLE_TO_CREATE_SOURCE
+            );
+          });
+      };
+    });
+
+    return new Promise((resolve, reject) => {
+      series(asyncArray, (err, results) => {
+        err ? reject(err) : resolve();
+      });
+    });
+  }
+
+  private graduateUpdated(diffResult: DiffResultArray<Source>): Promise<void[]> {
+    Logger.verbose(
+      `Updating ${diffResult.TO_UPDATE.length} existing source${
+        diffResult.TO_UPDATE.length > 1 ? 's' : ''
+      } in ${this.organization2.getId()} `
+    );
+    const asyncArray = _.map(diffResult.TO_UPDATE, (source: Source, idx: number) => {
+      return (callback: any) => {
+        const destinationSource = diffResult.TO_UPDATE_OLD[idx].getId();
+        SourceAPI.updateSource(this.organization2, destinationSource, source.getConfiguration())
+          .then((response: RequestResponse) => {
+            callback(null, response);
+            this.successHandler(response, `Successfully updated source ${Colors.source(source.getName())}`);
+          })
+          .catch((err: any) => {
+            callback(err);
+            this.errorHandler(
+              { orgId: this.organization2.getId(), message: err } as IGenericError,
+              StaticErrorMessage.UNABLE_TO_UPDATE_SOURCE
+            );
+          });
+      };
+    });
+
+    return new Promise((resolve, reject) => {
+      series(asyncArray, (err, results) => {
+        err ? reject(err) : resolve();
+      });
+    });
+  }
+
+  private graduateDeleted(diffResult: DiffResultArray<Source>): Promise<void[]> {
+    Logger.verbose(
+      `Deleting ${diffResult.TO_UPDATE.length} existing source${
+        diffResult.TO_CREATE.length > 1 ? 's' : ''
+      } from ${this.organization2.getId()} `
+    );
+    const asyncArray = _.map(diffResult.TO_DELETE, (source: Source) => {
+      return (callback: any) => {
+        SourceAPI.deleteSource(this.organization2, source.getId())
+          .then((response: RequestResponse) => {
+            callback(null, response);
+            this.successHandler(response, `Successfully deleted source ${Colors.source(source.getName())}`);
+          })
+          .catch((err: any) => {
+            callback(err);
+            this.errorHandler(
+              { orgId: this.organization2.getId(), message: err } as IGenericError,
+              StaticErrorMessage.UNABLE_TO_DELETE_SOURCE
+            );
+          });
+      };
+    });
+
+    return new Promise((resolve, reject) => {
+      series(asyncArray, (err, results) => {
+        err ? reject(err) : resolve();
+      });
+    });
   }
 
   extractionMethod(object: any[], diffOptions: IDiffOptions, oldVersion?: any[]): any[] {
@@ -138,7 +279,7 @@ export class SourceController extends BaseController {
         const oldSourceModel = oldSource.getConfiguration();
 
         const updatedSourceModel: IStringMap<any> = _.mapObject(newSourceModel, (val, key) => {
-          // TODO: this only parse the first level keys. It would be nice to drill down the nested object
+          // TODO: this only parses the first level keys. It would be nice to drill down the nested object
           if (!_.isEqual(oldSourceModel[key], val) && (!diffOptions.keysToIgnore || diffOptions.keysToIgnore.indexOf(key) === -1)) {
             return { newValue: val, oldValue: oldSourceModel[key] };
           } else {

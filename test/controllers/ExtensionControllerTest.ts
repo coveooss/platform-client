@@ -2,7 +2,7 @@
 import { assert, expect } from 'chai';
 import * as nock from 'nock';
 import * as _ from 'underscore';
-import { IHTTPGraduateOptions } from '../../src/commands/GraduateCommand';
+import { IGraduateOptions } from '../../src/commands/GraduateCommand';
 import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
 import { IGenericError } from '../../src/commons/errors';
 import { UrlService } from '../../src/commons/rest/UrlService';
@@ -352,6 +352,39 @@ export const ExtensionControllerTest = () => {
             done(err);
           });
       });
+
+      it('Should not retrieve blacklisted extensions during the diff', (done: MochaDone) => {
+        const orgx: Organization = new Organization('dev', 'xxx', { extensions: ['All metadata value', 'reject a Document.'] });
+        const orgy: Organization = new Organization('prod', 'yyy');
+        const controllerxy = new ExtensionController(orgx, orgy);
+
+        scope = nock(UrlService.getDefaultUrl())
+          // Fecthing all dev extensions
+          .get('/rest/organizations/dev/extensions')
+          .reply(RequestUtils.OK, devOrganizationExtension)
+          // Fetching dev extensions one by one
+          // .get('/rest/organizations/dev/extensions/yidmuo9dsuop8fuihmfdjshjd')
+          // .reply(RequestUtils.OK, yidmuo9dsuop8fuihmfdjshjd)
+          .get('/rest/organizations/dev/extensions/sa2fjv3lwf67va2pbiztb22fsu')
+          .reply(RequestUtils.OK, sa2fjv3lwf67va2pbiztb22fsu)
+          // .get('/rest/organizations/dev/extensions/tknepx33tdhmqibch2uzxhcc44')
+          // .reply(RequestUtils.OK, tknepx33tdhmqibch2uzxhcc44)
+          // Fecthing all prod extensions
+          .get('/rest/organizations/prod/extensions')
+          .reply(RequestUtils.OK, prodOrganizationExtension)
+          // Fetching prod extensions one by one
+          .get('/rest/organizations/prod/extensions/prodmuo9dsuop8fuihmfdjshjd')
+          .reply(RequestUtils.OK, prodmuo9dsuop8fuihmfdjshjd);
+
+        controllerxy
+          .diff()
+          .then((diffResultArray: DiffResultArray<Extension>) => {
+            done();
+          })
+          .catch((err: any) => {
+            done(err);
+          });
+      });
     });
 
     describe('Graduate Method', () => {
@@ -366,10 +399,11 @@ export const ExtensionControllerTest = () => {
           .get('/rest/organizations/prod/extensions/prodmuo9dsuop8fuihmfdjshjd')
           .reply(RequestUtils.OK, prodmuo9dsuop8fuihmfdjshjd);
 
-        const graduateOptions: IHTTPGraduateOptions = {
+        const graduateOptions: IGraduateOptions = {
           POST: true,
           PUT: true,
-          DELETE: true
+          DELETE: true,
+          diffOptions: {}
         };
 
         controller.diff().then((diffResultArray: DiffResultArray<Extension>) => {
@@ -470,10 +504,11 @@ export const ExtensionControllerTest = () => {
           })
         ];
 
-        const graduateOptions: IHTTPGraduateOptions = {
+        const graduateOptions: IGraduateOptions = {
           POST: true,
           PUT: true,
-          DELETE: true
+          DELETE: true,
+          diffOptions: {}
         };
 
         controller

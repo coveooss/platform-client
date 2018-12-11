@@ -2,7 +2,6 @@ import { RequestResponse } from 'request';
 import * as _ from 'underscore';
 import { isUndefined } from 'util';
 import { IDiffOptions } from '../commands/DiffCommand';
-import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { IDownloadResultArray } from '../commons/collections/DownloadResultArray';
 import { Colors } from '../commons/colors';
@@ -15,6 +14,7 @@ import { DownloadUtils } from '../commons/utils/DownloadUtils';
 import { Field } from '../coveoObjects/Field';
 import { Organization } from '../coveoObjects/Organization';
 import { BaseController } from './BaseController';
+import { IGraduateOptions } from '../commands/GraduateCommand';
 
 export class FieldController extends BaseController {
   /**
@@ -86,10 +86,10 @@ export class FieldController extends BaseController {
    * Graduates the fields from origin Organization to the destination Organization.
    *
    * @param {DiffResultArray<Field>} diffResultArray
-   * @param {IHTTPGraduateOptions} options
+   * @param {IGraduateOptions} options
    * @returns {Promise<any[]>}
    */
-  graduate(diffResultArray: DiffResultArray<Field>, options: IHTTPGraduateOptions): Promise<any[]> {
+  graduate(diffResultArray: DiffResultArray<Field>, options: IGraduateOptions): Promise<any[]> {
     if (diffResultArray.containsItems()) {
       Logger.loadingTask('Graduating fields');
       return Promise.all(

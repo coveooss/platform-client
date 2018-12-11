@@ -26,11 +26,16 @@ export class StaticErrorMessage {
   static UNABLE_TO_DELETE_FIELDS: string = 'Unable to delete field';
 
   // Extensions
-  static UNABLE_TO_LOAD_SOURCES: string = 'Unable to load sources';
   static UNABLE_TO_LOAD_EXTENTIONS: string = 'Unable to load extensions';
   static UNABLE_TO_LOAD_SINGLE_EXTENTION: string = 'Unable to load single extension';
   static UNABLE_TO_CREATE_EXTENSIONS: string = 'Unable to create extension';
   static UNABLE_TO_UPDATE_EXTENSIONS: string = 'Unable to update extension';
   static UNABLE_TO_DELETE_EXTENSIONS: string = 'Unable to delete extension';
   static DUPLICATE_EXTENSION: string = 'There is already an extension with that name in the Organizaton';
+
+  // Sources
+  static UNABLE_TO_LOAD_SOURCES: string = 'Unable to load sources';
+  static UNABLE_TO_CREATE_SOURCE: string = 'Unable to create source';
+  static UNABLE_TO_UPDATE_SOURCE: string = 'Unable to update source';
+  static UNABLE_TO_DELETE_SOURCE: string = 'Unable to delete source';
 }

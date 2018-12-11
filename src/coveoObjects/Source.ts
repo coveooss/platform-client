@@ -1,13 +1,14 @@
+import * as _ from 'underscore';
 import { ISource } from '../commons/interfaces/ISource';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 import { BaseCoveoObject } from './BaseCoveoObject';
 import { Assert } from '../commons/misc/Assert';
+import { StringUtil } from '../commons/utils/StringUtils';
 
 export class Source extends BaseCoveoObject implements ISource {
   constructor(private configuration: any) {
     super(configuration['id']);
-    // TODO: do the required assertions here
     Assert.isNotUndefined(this.configuration['name'], 'Missing name from source configuration.');
     Assert.isNotUndefined(this.configuration['mappings'], 'Missing mappings from source configuration.');
     Assert.isNotUndefined(this.configuration['sourceType'], 'Missing sourceType from source configuration.');
@@ -34,6 +35,18 @@ export class Source extends BaseCoveoObject implements ISource {
 
   getPreConversionExtensions(): Array<IStringMap<string>> {
     return this.configuration['preConversionExtensions'];
+  }
+
+  removeParameters(parameterKeys: string[]) {
+    this.configuration = _.omit(this.configuration, parameterKeys);
+  }
+
+  removeExtension(extensionId: string, stage: 'pre' | 'post') {
+    this.configuration[`${stage}ConversionExtensions`] = _.reject(
+      this.configuration[`${stage}ConversionExtensions`],
+      (extension: IStringMap<string>) =>
+        StringUtil.lowerAndStripSpaces(extension.extensionId) === StringUtil.lowerAndStripSpaces(extensionId)
+    );
   }
 
   getConfiguration(): any {

@@ -1,5 +1,6 @@
-import { RequestResponse } from 'request';
 import * as _ from 'underscore';
+import { series } from 'async';
+import { RequestResponse } from 'request';
 import { Extension } from '../../coveoObjects/Extension';
 import { Organization } from '../../coveoObjects/Organization';
 import { Colors } from '../colors';
@@ -9,6 +10,7 @@ import { Logger } from '../logger';
 import { Assert } from '../misc/Assert';
 import { RequestUtils } from '../utils/RequestUtils';
 import { UrlService } from './UrlService';
+import { StringUtil } from '../utils/StringUtils';
 
 export class ExtensionAPI {
   static createExtension(org: Organization, extensionModel: IStringMap<any>): Promise<RequestResponse> {
@@ -43,7 +45,9 @@ export class ExtensionAPI {
         .then((response: RequestResponse) => {
           // Load each extension
           ExtensionAPI.loadEachExtension(org, response)
-            .then(() => resolve())
+            .then(() => {
+              resolve();
+            })
             .catch((err: any) => {
               reject({ orgId: org.getId(), message: err } as IGenericError);
             });
@@ -73,31 +77,41 @@ export class ExtensionAPI {
     });
   }
 
-  static loadEachExtension(org: Organization, response: RequestResponse) {
+  static loadEachExtension(org: Organization, response: RequestResponse): Promise<{}> {
     const count = response.body.length;
     Logger.verbose(`${count} extension${count > 1 ? 's' : ''} from ${Colors.organization(org.getId())}`);
-    return Promise.all(
-      _.map(response.body, (extension: any) => {
+
+    // Reject all extensions that have been blacklisted. Do not load blacklisted extensions for nothing
+    response.body = _.reject(response.body, (extension: any) => {
+      const extensionName: string = extension['name'] || '';
+      const condition = _.contains(org.getExtensionBlacklist(), StringUtil.lowerAndStripSpaces(extensionName));
+      if (condition) {
+        Logger.info(`Skipping extension ${Colors.extension(extensionName)}`);
+      }
+      return condition;
+    });
+
+    const asyncArray = _.map(response.body, (extension: any) => {
+      return (callback: any) => {
         Assert.exists(extension['id'], StaticErrorMessage.MISSING_EXTENSION_ID_FROM_THE_RESPONSE);
-        Logger.loadingTask(`Loading ${Colors.extension(extension['name'])} extension from ${Colors.organization(org.getId())}`);
-        // tslint:disable-next-line:typedef
-        return new Promise((resolve, reject) => {
-          return this.getSingleExtension(org, extension['id'])
-            .then((extensionBody: RequestResponse) => {
-              Logger.verbose(
-                `Successfully loaded ${Colors.extension(extension['name'])} extension from ${Colors.organization(org.getId())}`
-              );
-              // TODO: add this function as a callback since it doesn't make sense to put it here
-              this.addLoadedExtensionsToOrganization(org, extensionBody.body);
-              // TODO: add the extensionBody.body in the resolve
-              resolve();
-            })
-            .catch((err: any) => {
-              reject(err);
-            });
-        });
-      })
-    );
+        Logger.loadingTask(`Loading extension ${Colors.extension(extension['name'])} from ${Colors.organization(org.getId())}`);
+        this.getSingleExtension(org, extension['id'])
+          .then((extensionBody: RequestResponse) => {
+            Logger.info(`Successfully loaded extension ${Colors.extension(extension['name'])} from ${Colors.organization(org.getId())}`);
+            this.addLoadedExtensionsToOrganization(org, extensionBody.body);
+            callback(null, extension['name']);
+          })
+          .catch((err: any) => {
+            callback(err, null);
+          });
+      };
+    });
+
+    return new Promise((resolve, reject) => {
+      series(asyncArray, (err, results) => {
+        err ? reject(err) : resolve();
+      });
+    });
   }
 
   static addLoadedExtensionsToOrganization(org: Organization, rawExtension: IStringMap<any>) {

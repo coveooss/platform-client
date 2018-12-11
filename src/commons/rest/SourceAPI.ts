@@ -1,4 +1,5 @@
 import * as _ from 'underscore';
+import { series } from 'async';
 import { RequestResponse } from 'request';
 import { Organization } from '../../coveoObjects/Organization';
 import { IStringMap } from '../interfaces/IStringMap';
@@ -9,8 +10,24 @@ import { Logger } from '../logger';
 import { Colors } from '../colors';
 import { Assert } from '../misc/Assert';
 import { Source } from '../../coveoObjects/Source';
+import { StringUtil } from '../utils/StringUtils';
 
 export class SourceAPI {
+  static createSource(org: Organization, sourceModel: IStringMap<any>): Promise<RequestResponse> {
+    const url = UrlService.createSource(org.getId());
+    return RequestUtils.post(url, org.getApiKey(), sourceModel);
+  }
+
+  static updateSource(org: Organization, sourceId: string, sourceModel: IStringMap<any>): Promise<RequestResponse> {
+    const url = UrlService.updateSource(org.getId(), sourceId);
+    return RequestUtils.put(url, org.getApiKey(), sourceModel);
+  }
+
+  static deleteSource(org: Organization, sourceId: string): Promise<RequestResponse> {
+    const url = UrlService.getSingleSourceUrl(org.getId(), sourceId);
+    return RequestUtils.delete(url, org.getApiKey());
+  }
+
   static getAllSources(organization: Organization): Promise<RequestResponse> {
     return RequestUtils.get(UrlService.getSourcesUrl(organization.getId()), organization.getApiKey());
   }
@@ -41,27 +58,40 @@ export class SourceAPI {
 
   static loadEachSource(org: Organization, response: RequestResponse) {
     const count = response.body.length;
-    Logger.verbose(`${count} source${count > 1 ? 's' : ''}  from ${Colors.organization(org.getId())} to fetch`);
-    return Promise.all(
-      _.map(response.body, (source: any) => {
+    Logger.verbose(`${count} source${count > 1 ? 's' : ''} from ${Colors.organization(org.getId())} to fetch`);
+
+    // Reject all sources that have been blacklisted. Do not load blacklisted sources for nothing
+    response.body = _.reject(response.body, (source: any) => {
+      const sourceName: string = source['name'] || '';
+      const condition = _.contains(org.getSourceBlacklist(), StringUtil.lowerAndStripSpaces(sourceName));
+      if (condition) {
+        Logger.info(`Skipping source ${Colors.source(sourceName)}`);
+      }
+      return condition;
+    });
+
+    const asyncArray = _.map(response.body, (source: any) => {
+      return (callback: any) => {
         Assert.exists(source['id'], StaticErrorMessage.MISSING_SOURCE_ID_FROM_THE_RESPONSE);
-        Logger.loadingTask(`Loading ${Colors.source(source['name'])} source from ${Colors.organization(org.getId())}`);
+        Logger.loadingTask(`Loading source ${Colors.source(source['name'])} from ${Colors.organization(org.getId())}`);
         // tslint:disable-next-line:typedef
-        return new Promise((resolve, reject) => {
-          return this.getSingleSource(org, source['id'])
-            .then((sourceBody: RequestResponse) => {
-              Logger.verbose(`Successfully loaded ${Colors.source(source['name'])} source from ${Colors.organization(org.getId())}`);
-              // TODO: add this function as a callback since it doesn't make sense to put it here
-              this.addLoadedSourcesToOrganization(org, sourceBody.body);
-              // TODO: add the sourceBody.body in the resolve
-              resolve();
-            })
-            .catch((err: any) => {
-              reject(err);
-            });
-        });
-      })
-    );
+        return this.getSingleSource(org, source['id'])
+          .then((sourceBody: RequestResponse) => {
+            Logger.info(`Successfully loaded source ${Colors.source(source['name'])} from ${Colors.organization(org.getId())}`);
+            this.addLoadedSourcesToOrganization(org, sourceBody.body);
+            callback(null, source['name']);
+          })
+          .catch((err: any) => {
+            callback(err, null);
+          });
+      };
+    });
+
+    return new Promise((resolve, reject) => {
+      series(asyncArray, (err, results) => {
+        err ? reject(err) : resolve();
+      });
+    });
   }
 
   static addLoadedSourcesToOrganization(org: Organization, sourceConfiguration: IStringMap<any>) {

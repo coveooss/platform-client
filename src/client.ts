@@ -2,227 +2,45 @@ import { EnvironmentUtils } from './commons/utils/EnvironmentUtils';
 setEnvironmentIfNecessary();
 
 import * as _ from 'underscore';
-import { DiffCommand, IDiffOptions } from './commands/DiffCommand';
-import { DownloadCommand } from './commands/DownloadCommand';
-import { GraduateCommand, IGraduateOptions } from './commands/GraduateCommand';
-import { Logger } from './commons/logger';
-import { InteractionController } from './console/InteractionController';
+import { CommanderUtils } from './console/CommanderUtils';
+import { GraduateExtensionsCommand } from './console/GraduateExtensionsCommand';
+import { GraduateSourcesCommand } from './console/GraduateSourcesCommand';
+import { DiffSourcesCommand } from './console/DiffSourcesCommand';
+import { InteractiveCommand } from './console/InteractiveCommand';
+import { DownloadFieldsCommand } from './console/DownloadFieldsCommand';
+import { GraduateFieldsCommand } from './console/GraduateFieldsCommand';
+import { DiffExtensionsCommand } from './console/DiffExtensionsCommand';
+import { DiffFieldsCommand } from './console/DiffFieldsCommand';
 
 const program = require('commander');
 const pkg: any = require('./../package.json');
+const updateNotifier = require('update-notifier');
+updateNotifier({ pkg }).notify();
 
 program.option('--env [value]', 'Environment (Production by default)').version(pkg.version);
 
-// Graduate Fields
-program
-  .command('graduate-fields <originOrg> <destinationOrg> <originApiKey> <destinationApiKey>')
-  .description('Graduate one organisation to an other')
-  .option('-F, --force', 'Force graduation without confirmation prompt')
-  .option('-i, --ignoreKeys []', 'Keys to ignore. String separated by ",". This option has no effect when diffing extensions', list)
-  .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', list)
-  .option(
-    '-m, --methods []',
-    'HTTP method authorized by the Graduation. Should be a comma separated list (no spaces). Default value is "POST,PUT,DELETE".',
-    list,
-    ['POST', 'PUT', 'DELETE']
-  )
-  .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
-  .option(
-    '-l, --logLevel <level>',
-    'Possible values are: insane, verbose, info (default), error, nothing',
-    /^(insane|verbose|info|error|nothing)$/i,
-    'info'
-  )
-  .action((originOrg: string, destinationOrg: string, originApiKey: string, destinationApiKey: string, options: any) => {
-    setLogger(options, 'graduate-fields');
+const commanderUtils = new CommanderUtils();
 
-    // Set graduation options
-    const graduateOptions: IGraduateOptions = {
-      diffOptions: {
-        keysToIgnore: options.ignoreKeys,
-        includeOnly: options.onlyKeys
-      },
-      force: options.force,
-      POST: options.methods.indexOf('POST') > -1,
-      PUT: options.methods.indexOf('PUT') > -1,
-      DELETE: options.methods.indexOf('DELETE') > -1
-    };
+InteractiveCommand(program, commanderUtils);
 
-    const command = new GraduateCommand(originOrg, destinationOrg, originApiKey, destinationApiKey);
-    command.graduateFields(graduateOptions);
-  });
+/**************************************************/
+/* Graduation commands
+/**************************************************/
+GraduateFieldsCommand(program, commanderUtils);
+GraduateExtensionsCommand(program, commanderUtils);
+GraduateSourcesCommand(program, commanderUtils);
 
-program
-  .command('graduate-extensions <originOrg> <destinationOrg> <originApiKey> <destinationApiKey>')
-  .description('Graduate one organisation to an other')
-  .option('-F, --force', 'Force graduation without confirmation prompt')
-  .option(
-    '-o, --onlyKeys []',
-    'Diff only the specified keys. String separated by ",". By default, the extension diff will ignore the following keys: "requiredDataStreams", "content", "description" and "name"',
-    list
-  )
-  .option('-m, --methods []', 'HTTP method authorized by the Graduation. Currently, only "POST" method is allowed for extensions.', list, [
-    'POST',
-    'PUT',
-    'DELETE'
-  ])
-  .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
-  .option(
-    '-l, --logLevel <level>',
-    'Possible values are: insane, verbose, info (default), error, nothing',
-    /^(insane|verbose|info|error|nothing)$/i,
-    'info'
-  )
-  .action((originOrg: string, destinationOrg: string, originApiKey: string, destinationApiKey: string, options: any) => {
-    setLogger(options, 'graduate-extensions');
+/**************************************************/
+/* Diff commands
+/**************************************************/
+DiffFieldsCommand(program, commanderUtils);
+DiffExtensionsCommand(program, commanderUtils);
+DiffSourcesCommand(program, commanderUtils);
 
-    // Set graduation options
-    const graduateOptions: IGraduateOptions = {
-      diffOptions: {
-        includeOnly: options.onlyKeys
-      },
-      force: options.force,
-      POST: options.methods.indexOf('POST') > -1,
-      PUT: options.methods.indexOf('PUT') > -1,
-      DELETE: options.methods.indexOf('DELETE') > -1
-    };
-
-    const command = new GraduateCommand(originOrg, destinationOrg, originApiKey, destinationApiKey);
-    if (!graduateOptions.diffOptions.includeOnly) {
-      graduateOptions.diffOptions.includeOnly = ['requiredDataStreams', 'content', 'description', 'name'];
-    }
-    command.graduateExtensions(graduateOptions);
-  });
-
-// Diff Fields
-program
-  .command('diff-fields <originOrg> <destinationOrg> <originApiKey> <destinationApiKey>')
-  .description(['Diff the fields of 2 Organizations.'])
-  .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
-  .option('-i, --ignoreKeys []', 'Keys to ignore. String separated by ",".', list)
-  .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', list)
-  .option(
-    '-l, --logLevel <level>',
-    'Possible values are: insane, verbose, info (default), error, nothing',
-    /^(insane|verbose|info|error|nothing)$/i,
-    'info'
-  )
-  .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
-  .action((originOrg: string, destinationOrg: string, originApiKey: string, destinationApiKey: string, options: any) => {
-    setLogger(options, 'diff-fields');
-
-    // Set diff options
-    const diffOptions: IDiffOptions = {
-      keysToIgnore: options.ignoreKeys,
-      includeOnly: options.onlyKeys,
-      silent: options.silent
-    };
-
-    const command = new DiffCommand(originOrg, destinationOrg, originApiKey, destinationApiKey);
-    command.diffFields(diffOptions);
-  });
-
-// Diff Extensions
-program
-  .command('diff-extensions <originOrg> <destinationOrg> <originApiKey> <destinationApiKey>')
-  .description(['Diff the extensions of 2 Organizations.'])
-  .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
-  .option(
-    '-o, --onlyKeys []',
-    'Diff only the specified keys. String separated by ",". By default, the extension diff will only diff the following keys: "requiredDataStreams", "content", "description" and "name"',
-    list
-  )
-  .option(
-    '-l, --logLevel <level>',
-    'Possible values are: insane, verbose, info (default), error, nothing',
-    /^(insane|verbose|info|error|nothing)$/i,
-    'info'
-  )
-  .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
-  .action((originOrg: string, destinationOrg: string, originApiKey: string, destinationApiKey: string, options: any) => {
-    setLogger(options, 'diff-extensions');
-
-    // Set diff options
-    const diffOptions: IDiffOptions = {
-      includeOnly: options.onlyKeys,
-      silent: options.silent
-    };
-
-    // TODO: Add the extensions to diff as an option
-    const command = new DiffCommand(originOrg, destinationOrg, originApiKey, destinationApiKey);
-    diffOptions.includeOnly = diffOptions.includeOnly ? diffOptions.includeOnly : ['requiredDataStreams', 'content', 'description', 'name'];
-    command.diffExtensions(diffOptions);
-  });
-
-// Diff Sources
-program
-  .command('diff-sources <originOrg> <destinationOrg> <originApiKey> <destinationApiKey>')
-  .description(['Diff the sources of 2 Organizations.'])
-  .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
-  // .option('-r, --rebuild', 'Rebuild the source once created. Default is false', false)
-  // TODO: sources options not implemented yet
-  // .option('-S, --sources []', 'List of sources to diff. String separated by ",". If no specified, all the sources will be diffed', list)
-  // Maybe we can use one of these options
-  // .option('-M, --skipMappings', 'Keys to ignore. String separated by ",".', false)
-  // .option('-E, --skipExtensions', 'Keys to ignore. String separated by ",".', false)
-
-  // Not sure ignore keys are relavant here
-  // .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', list)
-  .option(
-    '-o, --ignoreKeys []',
-    'Keys to ignore. String separated by ",". By default, the diff will ignore "information", "resourceId", "id", and "owner"',
-    list
-  )
-  .option(
-    '-l, --logLevel <level>',
-    'Possible values are: insane, verbose, info (default), error, nothing',
-    /^(insane|verbose|info|error|nothing)$/i,
-    'info'
-  )
-  .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
-  .action((originOrg: string, destinationOrg: string, originApiKey: string, destinationApiKey: string, options: any) => {
-    setLogger(options, 'diff-sources');
-
-    // Set diff options
-    const diffOptions: IDiffOptions = {
-      silent: options.silent,
-      sources: options.sources,
-      keysToIgnore: options.ignoreKeys
-    };
-
-    const command = new DiffCommand(originOrg, destinationOrg, originApiKey, destinationApiKey);
-    diffOptions.keysToIgnore = _.extend(diffOptions.keysToIgnore || [], ['information', 'resourceId', 'id', 'owner']);
-    // if (options.skipExtensions) {
-    //   _.extend(options.keysToIgnore, [], ['preConversionExtensions', 'postConversionExtensions']);
-    // }
-    command.diffSources(diffOptions);
-  });
-
-// Download Fields
-program
-  .command('download-fields <originOrg> <originApiKey> <outputFolder>')
-  .description(['Download the fields of an Organization.'])
-  .option(
-    '-l, --logLevel <level>',
-    'Possible values are: insane, verbose, info (default), error, nothing',
-    /^(insane|verbose|info|error|nothing)$/i,
-    'info'
-  )
-  .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
-  .action((originOrg: string, originApiKey: string, outputFolder: string, options: any) => {
-    setLogger(options, 'download-fields');
-
-    const command = new DownloadCommand(originOrg, originApiKey, outputFolder);
-    command.downloadFields();
-  });
-
-program
-  .command('interactive')
-  .description('Launch the application in interactive mode')
-  .action(() => {
-    const questions = new InteractionController();
-    questions.start();
-  });
+/**************************************************/
+/* Download Commands
+/**************************************************/
+DownloadFieldsCommand(program, commanderUtils);
 
 // Parsing the arguments
 program.parse(process.argv);
@@ -233,11 +51,6 @@ if (program.args && _.last(program.args)) {
   console.log('Missing argument');
 }
 
-// Utils
-function list(val: string) {
-  return val.split(',');
-}
-
 function setEnvironmentIfNecessary() {
   const i = process.argv.indexOf('--env');
   if (i !== -1 && i + 1 < process.argv.length) {
@@ -246,10 +59,4 @@ function setEnvironmentIfNecessary() {
   } else {
     EnvironmentUtils.setDefaultNodeEnvironment();
   }
-}
-
-function setLogger(options: any, command: string) {
-  Logger.setLogLevel(options.logLevel);
-  Logger.setFilename(options.output);
-  Logger.newAction(command);
 }
