@@ -5,10 +5,10 @@ import { DownloadCommand } from '../commands/DownloadCommand';
 export const DownloadFieldsCommand = (program: any, commanderUtils: CommanderUtils) => {
   program
     .command('download-fields <origin> <apiKey> <outputFolder>')
-    .description(['Download the fields of an Organization.'])
+    .description(['Download the fields of an organization.'])
     .option(
       '-l, --logLevel <level>',
-      'Possible values are: insane, verbose, info (default), error, nothing',
+      'Possible values are: insane, verbose, info, error, nothing',
       /^(insane|verbose|info|error|nothing)$/i,
       'info'
     )

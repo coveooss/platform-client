@@ -6,7 +6,7 @@ import { CommanderUtils } from './CommanderUtils';
 export const GraduateSourcesCommand = (program: any, commanderUtils: CommanderUtils) => {
   program
     .command('graduate-sources <origin> <destination> <apiKey>')
-    .description([`Graduate the sources of 2 Organizations`])
+    .description([`Graduate the sources of 2 organizations`])
     // .option('-r, --rebuild', 'Rebuild the source once created. Default is false', false)
     // TODO: sources options not implemented yet
     // .option('-S, --sources []', 'List of sources to diff. String separated by ",". If no specified, all the sources will be diffed', list)
@@ -25,13 +25,13 @@ export const GraduateSourcesCommand = (program: any, commanderUtils: CommanderUt
     )
     .option(
       '-m, --methods []',
-      'HTTP method authorized by the Graduation. Should be a comma separated list (no spaces). Default value is "POST,PUT,DELETE".',
+      'HTTP method authorized by the Graduation. Should be a comma separated list (no spaces)',
       commanderUtils.list,
       ['POST', 'PUT']
     )
     .option(
       '-l, --logLevel <level>',
-      'Possible values are: insane, verbose, info (default), error, nothing',
+      'Possible values are: insane, verbose, info, error, nothing',
       /^(insane|verbose|info|error|nothing)$/i,
       'info'
     )

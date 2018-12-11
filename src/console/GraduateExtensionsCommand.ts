@@ -6,27 +6,23 @@ import { CommanderUtils } from './CommanderUtils';
 export const GraduateExtensionsCommand = (program: any, commanderUtils: CommanderUtils) => {
   program
     .command('graduate-extensions <origin> <destination> <apiKey>')
-    .description('Graduate one organisation to an other')
-    .option(
-      '-o, --onlyKeys []',
-      'Diff only the specified keys. String separated by ",". By default, the extension diff will ignore the following keys: "requiredDataStreams", "content", "description" and "name"',
-      commanderUtils.list
-    )
+    .description('Graduate one organization to an other')
+    .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', commanderUtils.list, [
+      'requiredDataStreams',
+      'content',
+      'description',
+      'name'
+    ])
     .option(
       '-e, --ignoreExtensions []',
       'Extensions to ignore. String separated by ",". By default, the diff will ignore the : "All metadata values" extension',
       commanderUtils.list
     )
-    .option(
-      '-m, --methods []',
-      'HTTP method authorized by the Graduation. Currently, only "POST" method is allowed for extensions.',
-      commanderUtils.list,
-      ['POST', 'PUT']
-    )
+    .option('-m, --methods []', 'HTTP method authorized by the Graduation', commanderUtils.list, ['POST', 'PUT'])
     .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
     .option(
       '-l, --logLevel <level>',
-      'Possible values are: insane, verbose, info (default), error, nothing',
+      'Possible values are: insane, verbose, info, error, nothing',
       /^(insane|verbose|info|error|nothing)$/i,
       'info'
     )
@@ -48,9 +44,6 @@ export const GraduateExtensionsCommand = (program: any, commanderUtils: Commande
         extensions: _.union(['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'], options.ignoreExtensions)
       };
       const command = new GraduateCommand(origin, destination, apiKey, apiKey, blacklistOptions);
-      if (!graduateOptions.diffOptions.includeOnly) {
-        graduateOptions.diffOptions.includeOnly = ['requiredDataStreams', 'content', 'description', 'name'];
-      }
       command.graduateExtensions(graduateOptions);
     });
 };

@@ -7,11 +7,11 @@ export const DiffFieldsCommand = (program: any, commanderUtils: CommanderUtils) 
     .command('diff-fields <origin> <destination> <apiKey>')
     .description(['Diff the user defined fields of 2 organizations'])
     .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
-    .option('-i, --ignoreKeys []', 'Keys to ignore. String separated by ",".', commanderUtils.list)
+    .option('-i, --ignoreKeys []', 'Keys to ignore. String separated by ","', commanderUtils.list)
     .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', commanderUtils.list)
     .option(
       '-l, --logLevel <level>',
-      'Possible values are: insane, verbose, info (default), error, nothing',
+      'Possible values are: insane, verbose, info, error, nothing',
       /^(insane|verbose|info|error|nothing)$/i,
       'info'
     )

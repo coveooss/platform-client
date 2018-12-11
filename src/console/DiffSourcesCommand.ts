@@ -9,7 +9,6 @@ export const DiffSourcesCommand = (program: any, commanderUtils: CommanderUtils)
     .description(['Diff the sources of 2 organizations'])
     .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
     // .option('-r, --rebuild', 'Rebuild the source once created. Default is false', false)
-    // TODO: sources options not implemented yet
     // .option('-S, --sources []', 'List of sources to diff. String separated by ",". If no specified, all the sources will be diffed', list)
     // Maybe we can use one of these options
     // .option('-M, --skipMappings', 'Keys to ignore. String separated by ",".', false)
@@ -23,7 +22,7 @@ export const DiffSourcesCommand = (program: any, commanderUtils: CommanderUtils)
     )
     .option(
       '-l, --logLevel <level>',
-      'Possible values are: insane, verbose, info (default), error, nothing',
+      'Possible values are: insane, verbose, info, error, nothing',
       /^(insane|verbose|info|error|nothing)$/i,
       'info'
     )
@@ -42,9 +41,6 @@ export const DiffSourcesCommand = (program: any, commanderUtils: CommanderUtils)
       };
       const command = new DiffCommand(origin, destination, apiKey, apiKey, blacklistOptions);
       diffOptions.keysToIgnore = ['information', 'resourceId', 'id', 'owner', 'securityProviderReferences'];
-      // if (options.skipExtensions) {
-      //   _.extend(options.keysToIgnore, [], ['preConversionExtensions', 'postConversionExtensions']);
-      // }
       command.diffSources(diffOptions);
     });
 };

@@ -20,7 +20,7 @@ export const DiffExtensionsCommand = (program: any, commanderUtils: CommanderUti
     )
     .option(
       '-l, --logLevel <level>',
-      'Possible values are: insane, verbose, info (default), error, nothing',
+      'Possible values are: insane, verbose, info, error, nothing',
       /^(insane|verbose|info|error|nothing)$/i,
       'info'
     )

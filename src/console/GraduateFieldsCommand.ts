@@ -5,23 +5,19 @@ import { CommanderUtils } from './CommanderUtils';
 export const GraduateFieldsCommand = (program: any, commanderUtils: CommanderUtils) => {
   program
     .command('graduate-fields <origin> <destination> <apiKey>')
-    .description('Graduate one organisation to an other')
-    .option(
-      '-i, --ignoreKeys []',
-      'Keys to ignore. String separated by ",". This option has no effect when diffing extensions',
-      commanderUtils.list
-    )
+    .description('Graduate one organization to an other')
+    .option('-i, --ignoreKeys []', 'Keys to ignore. String separated by ","', commanderUtils.list)
     .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', commanderUtils.list)
     .option(
       '-m, --methods []',
-      'HTTP method authorized by the Graduation. Should be a comma separated list (no spaces). Default value is "POST,PUT,DELETE".',
+      'HTTP method authorized by the Graduation. Should be a comma separated list (no spaces)',
       commanderUtils.list,
       ['POST', 'PUT']
     )
     .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
     .option(
       '-l, --logLevel <level>',
-      'Possible values are: insane, verbose, info (default), error, nothing',
+      'Possible values are: insane, verbose, info, error, nothing',
       /^(insane|verbose|info|error|nothing)$/i,
       'info'
     )
