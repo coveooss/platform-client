@@ -53,7 +53,10 @@ export const GraduateSourcesCommand = (program: any, commanderUtils: CommanderUt
       };
 
       const blacklistOptions = {
-        extensions: _.union(['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'], options.ignoreExtensions)
+        extensions: _.union(
+          ['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues', 'capturemetadata'],
+          options.ignoreExtensions
+        )
       };
       const command = new GraduateCommand(origin, destination, apiKey, apiKey, blacklistOptions);
       // if (options.skipExtensions) {
