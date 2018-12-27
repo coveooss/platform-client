@@ -46,28 +46,32 @@ export class InteractiveQuestion {
         return prompt(this.getInitialQuestions({ fieldModel: model })).then((ans: Answers) => {
           InteractiveQuestion.PREVIOUS_ANSWERS = ans;
 
-          return prompt(this.getFinalQuestions([]));
-
-          // TODO: uncomment when sources option is working
           // Getting sources from origin Organization
-          // console.log('fetching sources from org');
-          // const org = new Organization(ans[InteractiveQuestion.ORIGIN_ORG_ID], ans[InteractiveQuestion.ORIGIN_ORG_KEY]);
-          // return this.loadSourceList(org)
-          //   .then(sources => {
-          //     console.log('done fetching sources');
-          //     return prompt(this.getFinalQuestions(sources));
-          //   })
-          //   .catch((err: any) => {
-          //     console.error(chalk.red('Unable to load sources.'), chalk.red(err));
-          //     return prompt(this.getFinalQuestions([]));
-          //   });
+          console.log('fetching sources from org');
+          const org = new Organization(ans[InteractiveQuestion.ORIGIN_ORG_ID], ans[InteractiveQuestion.MASTER_API_KEY]);
+          if (
+            ans[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE &&
+            ans[InteractiveQuestion.OBJECT_TO_MANIPULATE] === SourceController.CONTROLLER_NAME
+          ) {
+            return this.loadSourceList(org)
+              .then(sources => {
+                console.log('done fetching sources');
+                return prompt(this.getFinalQuestions({ sourcesToIgnore: sources }));
+              })
+              .catch((err: any) => {
+                console.error(chalk.red('Unable to load sources.'), chalk.red(err));
+                return prompt(this.getFinalQuestions([]));
+              });
+          } else {
+            return prompt(this.getFinalQuestions());
+          }
         });
       })
       .catch((err: any) => {
         console.error('Unable to load Field model.', err);
         return prompt(this.getInitialQuestions({})).then((ans: Answers) => {
           InteractiveQuestion.PREVIOUS_ANSWERS = ans;
-          return prompt(this.getFinalQuestions([]));
+          return prompt(this.getFinalQuestions());
         });
       });
   }
@@ -234,19 +238,40 @@ export class InteractiveQuestion {
     };
   }
 
-  selectSources(sources: string[]): Question {
+  selectExtensionsToIgnore(extensions: string[]): Question {
+    return {
+      type: 'checkbox',
+      name: InteractiveQuestion.IGNORE_EXTENSIONS,
+      message: `Select extensions to ${chalk.bold('ignore')}.`,
+      choices: extensions,
+      when: (answer: Answers) => {
+        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        return (
+          answer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE &&
+          (answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === SourceController.CONTROLLER_NAME ||
+            answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === ExtensionController.CONTROLLER_NAME) &&
+          extensions.length > 0
+        );
+      }
+    };
+  }
+
+  selectSourcesToIgnore(sources: string[]): Question {
     return {
       type: 'checkbox',
       name: InteractiveQuestion.IGNORE_SOURCES,
-      message: `Select the sources to diff. Selecting nothing will diff all sources`,
+      message: `Select sources to ${chalk.bold('ignore')}. Selecting nothing will diff all sources`,
       choices: sources,
       when: (answer: Answers) => {
-        const panswer: Answers = InteractiveQuestion.PREVIOUS_ANSWERS;
+        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
         return (
-          panswer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE &&
-          panswer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === SourceController.CONTROLLER_NAME &&
+          answer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE &&
+          answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === SourceController.CONTROLLER_NAME &&
           sources.length > 0
         );
+      },
+      filter: (input: string) => {
+        return `"${input}"`;
       }
     };
   }
@@ -301,13 +326,17 @@ export class InteractiveQuestion {
     ];
   }
 
-  getFinalQuestions(data: any): Question[] {
-    return [
-      // this.selectSources(data), // only execute when in advanced option
-      this.setLogLevel(),
-      this.getFileNameForLogs(),
-      this.getFileNameForSettings()
-    ];
+  getFinalQuestions(data?: any): Question[] {
+    const questions = [];
+
+    if (data && data.sourcesToIgnore) {
+      questions.push(this.selectSourcesToIgnore(data.sourcesToIgnore)); // only execute when in advanced option
+    }
+
+    if (data && data.extensionsToIgnore) {
+      questions.push(this.selectExtensionsToIgnore(data.extensionsToIgnore)); // only execute when in advanced option
+    }
+    return _.union(questions, [this.setLogLevel(), this.getFileNameForLogs(), this.getFileNameForSettings()]);
   }
 
   private getGraduateOperation(): Question {
