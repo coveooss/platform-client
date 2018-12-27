@@ -14,7 +14,7 @@ export const GraduateExtensionsCommand = (program: any, commanderUtils: Commande
       'name'
     ])
     .option(
-      '-e, --ignoreExtensions []',
+      '-E, --ignoreExtensions []',
       'Extensions to ignore. String separated by ",". By default, the diff will ignore the : "All metadata values" extension',
       commanderUtils.list
     )
