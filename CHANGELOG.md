@@ -7,15 +7,15 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-<a name="2.3.0"></a>
-# [2.3.0](https://github.com/coveo/platform-client/compare/v1.3.1...v2.3.0) (2018-12-27)
+<!-- <a name="2.3.0"></a>
+# [2.3.0](https://github.com/coveo/platform-client/compare/v2.2.0...v2.3.0) (2018-12-27)
 
 
 
 <a name="2.2.0"></a>
-# [2.2.0](https://github.com/coveo/platform-client/compare/v1.3.1...v2.2.0) (2018-12-27)
+# [2.2.0](https://github.com/coveo/platform-client/compare/v2.1.0...v2.2.0) (2018-12-27)
 
-
+ -->
 
 <a name="2.1.0"></a>
 # [2.1.0](https://github.com/coveo/platform-client/compare/v2.0.0...v2.1.0) (2018-12-27)
@@ -65,9 +65,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-<a name="1.5.0"></a>
+<!-- <a name="1.5.0"></a>
 # [1.5.0](https://github.com/coveo/platform-client/compare/v1.4.0...v1.5.0) (2018-12-05)
-
+ -->
 
 
 <a name="1.4.0"></a>
