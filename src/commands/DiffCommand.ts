@@ -26,10 +26,6 @@ export interface IDiffOptions {
    * Prevent the diff result to be opened in a file once the operation has complete
    */
   silent?: boolean;
-  /**
-   * Specify which source to take into account for the Diff action.
-   */
-  sources?: string[];
 }
 
 export class DiffCommand {

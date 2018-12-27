@@ -14,7 +14,7 @@ export const DiffExtensionsCommand = (program: any, commanderUtils: CommanderUti
       commanderUtils.list
     )
     .option(
-      '-e, --ignoreExtensions []',
+      '-E, --ignoreExtensions []',
       'Extensions to ignore. String separated by ",". By default, the diff will ignore the : "All metadata values" extension.',
       commanderUtils.list
     )

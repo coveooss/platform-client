@@ -13,6 +13,8 @@ import { FieldController } from '../controllers/FieldController';
 import { SourceAPI } from '../commons/rest/SourceAPI';
 import { Organization } from '../coveoObjects/Organization';
 import { SourceController } from '../controllers/SourceController';
+import { ExtensionAPI } from '../commons/rest/ExtensionAPI';
+import { StringUtil } from '../commons/utils/StringUtils';
 
 export class InteractiveQuestion {
   // Required parameters
@@ -26,7 +28,8 @@ export class InteractiveQuestion {
   static OBJECT_TO_MANIPULATE: string = 'objecttToManipulate';
   static SETTING_FILENAME: string = 'settingFilename';
   static LOG_FILENAME: string = 'logFilename';
-  static SOURCES: string = 'sources';
+  static IGNORE_SOURCES: string = 'ignoreSources';
+  static IGNORE_EXTENSIONS: string = 'ignoreExtensions';
   static LOG_LEVEL: string = 'logLevel';
   static KEY_TO_IGNORE: string = 'keyToIgnore';
   static KEY_TO_INCLUDE_ONLY: string = 'keyToIncludeOnly';
@@ -44,29 +47,25 @@ export class InteractiveQuestion {
       .then((model: {}) => {
         return prompt(this.getInitialQuestions({ fieldModel: model })).then((ans: Answers) => {
           InteractiveQuestion.PREVIOUS_ANSWERS = ans;
+          const org = new Organization(ans[InteractiveQuestion.ORIGIN_ORG_ID], ans[InteractiveQuestion.MASTER_API_KEY]);
 
-          return prompt(this.getFinalQuestions([]));
-
-          // TODO: uncomment when sources option is working
-          // Getting sources from origin Organization
-          // console.log('fetching sources from org');
-          // const org = new Organization(ans[InteractiveQuestion.ORIGIN_ORG_ID], ans[InteractiveQuestion.ORIGIN_ORG_KEY]);
-          // return this.loadSourceList(org)
-          //   .then(sources => {
-          //     console.log('done fetching sources');
-          //     return prompt(this.getFinalQuestions(sources));
-          //   })
-          //   .catch((err: any) => {
-          //     console.error(chalk.red('Unable to load sources.'), chalk.red(err));
-          //     return prompt(this.getFinalQuestions([]));
-          //   });
+          return Promise.all([this.loadSourceList(org), this.loadExtensionList(org)])
+            .then(values => {
+              const sources = values[0];
+              const extensions = values[1];
+              return prompt(this.getFinalQuestions({ sourcesToIgnore: sources, extensionsToIgnore: extensions }));
+            })
+            .catch((err: any) => {
+              console.error(chalk.red('Unable to load sources and extensions.'), chalk.red(err));
+              return prompt(this.getFinalQuestions([]));
+            });
         });
       })
       .catch((err: any) => {
-        console.error('Unable to load Field model.', err);
+        console.error('Unable to load Field model.', chalk.red(err));
         return prompt(this.getInitialQuestions({})).then((ans: Answers) => {
           InteractiveQuestion.PREVIOUS_ANSWERS = ans;
-          return prompt(this.getFinalQuestions([]));
+          return prompt(this.getFinalQuestions());
         });
       });
   }
@@ -84,6 +83,23 @@ export class InteractiveQuestion {
         })
         .catch((err: any) => {
           reject('Unable to fetch field model');
+        });
+    });
+  }
+
+  loadExtensionList(org: Organization) {
+    // tslint:disable-next-line:typedef
+    return new Promise((resolve, reject) => {
+      ExtensionAPI.getAllExtensions(org)
+        .then((resp: RequestResponse) => {
+          if (resp.body.length > 0) {
+            resolve(_.pluck(resp.body, 'name'));
+          } else {
+            reject('No extension available in this organization');
+          }
+        })
+        .catch((err: any) => {
+          reject(err);
         });
     });
   }
@@ -233,19 +249,51 @@ export class InteractiveQuestion {
     };
   }
 
-  selectSources(sources: string[]): Question {
+  selectExtensionsToIgnore(extensions: string[]): Question {
     return {
       type: 'checkbox',
-      name: InteractiveQuestion.SOURCES,
-      message: `Select the sources to diff. Selecting nothing will diff all sources`,
+      name: InteractiveQuestion.IGNORE_EXTENSIONS,
+      message: `Select extensions to ${chalk.bold('ignore')}.`,
+      choices: _.map(extensions, (extension: string) => {
+        const isAllMetadataValue =
+          ['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'].indexOf(
+            StringUtil.lowerAndStripSpaces(extension)
+          ) > -1;
+        const choice: inquirer.objects.ChoiceOption = {
+          name: extension
+          // checked: isAllMetadataValue
+        };
+        if (isAllMetadataValue) {
+          choice.disabled = 'Ignored by default';
+        }
+        return choice;
+      }),
+      when: (answer: Answers) => {
+        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        return (
+          (answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === SourceController.CONTROLLER_NAME ||
+            answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === ExtensionController.CONTROLLER_NAME) &&
+          extensions.length > 0
+        );
+      },
+      filter: (input: string) => {
+        return `"${input}"`;
+      }
+    };
+  }
+
+  selectSourcesToIgnore(sources: string[]): Question {
+    return {
+      type: 'checkbox',
+      name: InteractiveQuestion.IGNORE_SOURCES,
+      message: `Select sources to ${chalk.bold('ignore')}. Selecting nothing will diff all sources`,
       choices: sources,
       when: (answer: Answers) => {
-        const panswer: Answers = InteractiveQuestion.PREVIOUS_ANSWERS;
-        return (
-          panswer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE &&
-          panswer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === SourceController.CONTROLLER_NAME &&
-          sources.length > 0
-        );
+        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        return answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === SourceController.CONTROLLER_NAME && sources.length > 0;
+      },
+      filter: (input: string) => {
+        return `"${input}"`;
       }
     };
   }
@@ -300,13 +348,17 @@ export class InteractiveQuestion {
     ];
   }
 
-  getFinalQuestions(data: any): Question[] {
-    return [
-      // this.selectSources(data), // only execute when in advanced option
-      this.setLogLevel(),
-      this.getFileNameForLogs(),
-      this.getFileNameForSettings()
-    ];
+  getFinalQuestions(data?: any): Question[] {
+    const questions = [];
+
+    if (data && data.sourcesToIgnore) {
+      questions.push(this.selectSourcesToIgnore(data.sourcesToIgnore)); // only execute when in advanced option
+    }
+
+    if (data && data.extensionsToIgnore) {
+      questions.push(this.selectExtensionsToIgnore(data.extensionsToIgnore)); // only execute when in advanced option
+    }
+    return _.union(questions, [this.setLogLevel(), this.getFileNameForLogs(), this.getFileNameForSettings()]);
   }
 
   private getGraduateOperation(): Question {

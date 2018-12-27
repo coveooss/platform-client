@@ -19,7 +19,7 @@ export interface IHTTPGraduateOptions {
 }
 
 export interface IGraduateOptions extends IHTTPGraduateOptions {
-  rebuild?: boolean; // Only available for sources
+  rebuild?: boolean;
   diffOptions: IDiffOptions;
   /**
    * Specify which key to strip before graduating the Object.
@@ -76,7 +76,8 @@ export class GraduateCommand {
     const questions: inquirer.Questions = [];
     const allowedMethods: string[] = _.compact([options.POST ? 'CREATE' : '', options.PUT ? 'UPDATE' : '', options.DELETE ? 'DELETE' : '']);
 
-    let phrase = allowedMethods[0];
+    let phrase = allowedMethods.length === 1 ? 'only ' : '';
+    phrase += allowedMethods[0];
     for (let i = 1; i < allowedMethods.length; i++) {
       if (i === allowedMethods.length - 1) {
         phrase += ` and ${allowedMethods[i]}`;

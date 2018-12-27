@@ -1,8 +1,9 @@
+import * as _ from 'underscore';
 import { Logger } from '../commons/logger';
 
 export class CommanderUtils {
   list(val: string) {
-    return val.split(',');
+    return _.compact(val.split(','));
   }
 
   setLogger(options: any, command: string) {
