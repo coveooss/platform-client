@@ -112,11 +112,6 @@
     "printWidth": 140,
     "singleQuote": true
   },
-  "standard-version": {
-    "skip": {
-      "tag": true
-    }
-  },
   "lint-staged": {
     "*.ts": [
       "tslint --fix",
