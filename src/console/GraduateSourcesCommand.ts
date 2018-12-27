@@ -2,14 +2,19 @@ import * as _ from 'underscore';
 import { Logger } from '../commons/logger';
 import { GraduateCommand, IGraduateOptions } from '../commands/GraduateCommand';
 import { CommanderUtils } from './CommanderUtils';
+import { IBlacklistObjects } from '../coveoObjects/Organization';
 
 export const GraduateSourcesCommand = (program: any, commanderUtils: CommanderUtils) => {
   program
     .command('graduate-sources <origin> <destination> <apiKey>')
     .description([`Graduate the sources of 2 organizations`])
     // .option('-r, --rebuild', 'Rebuild the source once created. Default is false', false)
-    // TODO: sources options not implemented yet
-    // .option('-S, --sources []', 'List of sources to diff. String separated by ",". If no specified, all the sources will be diffed', list)
+    .option(
+      '-S, --ignoreSources []',
+      'List of sources to diff. String separated by ",". If no specified, all the sources will be diffed',
+      commanderUtils.list,
+      []
+    )
     // Maybe we can use one of these options
     // .option('-M, --skipMappings', 'Keys to ignore. String separated by ",".', false)
     // .option('-E, --skipExtensions', 'Keys to ignore. String separated by ",".', false)
@@ -19,7 +24,7 @@ export const GraduateSourcesCommand = (program: any, commanderUtils: CommanderUt
     // TODO: provide option to rebuild
     // .option('-r, --rebuild', 'Rebuild source after graduation')
     .option(
-      '-e, --ignoreExtensions []',
+      '-E, --ignoreExtensions []',
       'Extensions to ignore. String separated by ",". By default, the diff will ignore the : "All metadata values" extension',
       commanderUtils.list
     )
@@ -41,7 +46,6 @@ export const GraduateSourcesCommand = (program: any, commanderUtils: CommanderUt
 
       const graduateOptions: IGraduateOptions = {
         diffOptions: {
-          sources: options.sources,
           silent: options.silent,
           keysToIgnore: ['information', 'resourceId', 'id', 'owner', 'securityProviderReferences']
         },
@@ -52,11 +56,12 @@ export const GraduateSourcesCommand = (program: any, commanderUtils: CommanderUt
         DELETE: options.methods.indexOf('DELETE') > -1
       };
 
-      const blacklistOptions = {
+      const blacklistOptions: IBlacklistObjects = {
         extensions: _.union(
           ['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues', 'capturemetadata'],
           options.ignoreExtensions
-        )
+        ),
+        sources: options.ignoreSources
       };
       const command = new GraduateCommand(origin, destination, apiKey, apiKey, blacklistOptions);
       // if (options.skipExtensions) {

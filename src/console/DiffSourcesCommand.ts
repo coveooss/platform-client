@@ -2,6 +2,7 @@ import * as _ from 'underscore';
 import { Logger } from '../commons/logger';
 import { CommanderUtils } from './CommanderUtils';
 import { IDiffOptions, DiffCommand } from '../commands/DiffCommand';
+import { IBlacklistObjects } from '../coveoObjects/Organization';
 
 export const DiffSourcesCommand = (program: any, commanderUtils: CommanderUtils) => {
   program
@@ -9,14 +10,19 @@ export const DiffSourcesCommand = (program: any, commanderUtils: CommanderUtils)
     .description(['Diff the sources of 2 organizations'])
     .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
     // .option('-r, --rebuild', 'Rebuild the source once created. Default is false', false)
-    // .option('-S, --sources []', 'List of sources to diff. String separated by ",". If no specified, all the sources will be diffed', list)
+    .option(
+      '-S, --ignoreSources []',
+      'List of sources to diff. String separated by ",". If no specified, all the sources will be diffed',
+      commanderUtils.list,
+      []
+    )
     // Maybe we can use one of these options
     // .option('-M, --skipMappings', 'Keys to ignore. String separated by ",".', false)
     // .option('-E, --skipExtensions', 'Keys to ignore. String separated by ",".', false)
 
     // Not sure ignore keys are relavant here
     .option(
-      '-e, --ignoreExtensions []',
+      '-E, --ignoreExtensions []',
       'Extensions to ignore. String separated by ",". By default, the diff will ignore the : "All metadata values" extension',
       commanderUtils.list
     )
@@ -32,12 +38,12 @@ export const DiffSourcesCommand = (program: any, commanderUtils: CommanderUtils)
 
       // Set diff options
       const diffOptions: IDiffOptions = {
-        silent: options.silent,
-        sources: options.sources
+        silent: options.silent
       };
 
-      const blacklistOptions = {
-        extensions: _.union(['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'], options.ignoreExtensions)
+      const blacklistOptions: IBlacklistObjects = {
+        extensions: _.union(['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'], options.ignoreExtensions),
+        sources: options.ignoreSources
       };
       const command = new DiffCommand(origin, destination, apiKey, apiKey, blacklistOptions);
       diffOptions.keysToIgnore = ['information', 'resourceId', 'id', 'owner', 'securityProviderReferences'];

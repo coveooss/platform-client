@@ -26,7 +26,8 @@ export class InteractiveQuestion {
   static OBJECT_TO_MANIPULATE: string = 'objecttToManipulate';
   static SETTING_FILENAME: string = 'settingFilename';
   static LOG_FILENAME: string = 'logFilename';
-  static SOURCES: string = 'sources';
+  static IGNORE_SOURCES: string = 'ignoreSources';
+  static IGNORE_EXTENSIONS: string = 'ignoreExtensions';
   static LOG_LEVEL: string = 'logLevel';
   static KEY_TO_IGNORE: string = 'keyToIgnore';
   static KEY_TO_INCLUDE_ONLY: string = 'keyToIncludeOnly';
@@ -236,7 +237,7 @@ export class InteractiveQuestion {
   selectSources(sources: string[]): Question {
     return {
       type: 'checkbox',
-      name: InteractiveQuestion.SOURCES,
+      name: InteractiveQuestion.IGNORE_SOURCES,
       message: `Select the sources to diff. Selecting nothing will diff all sources`,
       choices: sources,
       when: (answer: Answers) => {
