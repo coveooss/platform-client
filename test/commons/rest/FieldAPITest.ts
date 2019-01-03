@@ -128,8 +128,8 @@ export const FieldAPITest = () => {
       const organization: Organization = new Organization('qwerty123', 'secret');
 
       scope = nock(UrlService.getDefaultUrl())
-        .get('/rest/organizations/qwerty123/indexes/page/fields')
-        .query({ page: 0, perPage: 1000, origin: 'USER' })
+        .get('/rest/organizations/qwerty123/sources/page/fields')
+        .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
         .reply(RequestUtils.OK);
 
       FieldAPI.getFieldsPage(organization, 0)
@@ -146,8 +146,8 @@ export const FieldAPITest = () => {
       const organization: Organization = new Organization('qwerty456', 'secret');
 
       scope = nock(UrlService.getDefaultUrl())
-        .get('/rest/organizations/qwerty456/indexes/page/fields')
-        .query({ page: 1, perPage: 1000, origin: 'USER' })
+        .get('/rest/organizations/qwerty456/sources/page/fields')
+        .query({ page: 1, perPage: 1000, origin: 'USER', includeMappings: false })
         .reply(RequestUtils.OK);
 
       FieldAPI.getFieldsPage(organization, 1)
@@ -467,8 +467,8 @@ export const FieldAPITest = () => {
 
       scope = nock(UrlService.getDefaultUrl())
         // First expected request
-        .get('/rest/organizations/theorg/indexes/page/fields')
-        .query({ page: 1, perPage: 1000, origin: 'USER' })
+        .get('/rest/organizations/theorg/sources/page/fields')
+        .query({ page: 1, perPage: 1000, origin: 'USER', includeMappings: false })
         .reply(RequestUtils.OK, {
           items: [
             {
@@ -479,8 +479,8 @@ export const FieldAPITest = () => {
           ]
         })
         // Second expected request
-        .get('/rest/organizations/theorg/indexes/page/fields')
-        .query({ page: 2, perPage: 1000, origin: 'USER' })
+        .get('/rest/organizations/theorg/sources/page/fields')
+        .query({ page: 2, perPage: 1000, origin: 'USER', includeMappings: false })
         .reply(RequestUtils.OK, {
           items: [
             {
@@ -512,8 +512,8 @@ export const FieldAPITest = () => {
     it('Should throw an "Unexpected Response" error ', (done: MochaDone) => {
       const organization: Organization = new Organization('67ujnbgh', 'xxx-xxx');
       scope = nock(UrlService.getDefaultUrl())
-        .get('/rest/organizations/67ujnbgh/indexes/page/fields')
-        .query({ page: 0, perPage: 1000, origin: 'USER' })
+        .get('/rest/organizations/67ujnbgh/sources/page/fields')
+        .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
         .reply(RequestUtils.OK, { invalidKey: 'random value' });
 
       FieldAPI.loadFields(organization)
@@ -532,8 +532,8 @@ export const FieldAPITest = () => {
       const organization: Organization = new Organization('hjkmnbfjhj3gfde45', 'xxx-xxx');
       scope = nock(UrlService.getDefaultUrl())
         // First expected request
-        .get('/rest/organizations/hjkmnbfjhj3gfde45/indexes/page/fields')
-        .query({ page: 0, perPage: 1000, origin: 'USER' })
+        .get('/rest/organizations/hjkmnbfjhj3gfde45/sources/page/fields')
+        .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
         .reply(RequestUtils.OK, {
           items: [
             {
@@ -570,8 +570,8 @@ export const FieldAPITest = () => {
       const organization: Organization = new Organization('hello', 'xxx-xxx');
       scope = nock(UrlService.getDefaultUrl())
         // First expected request
-        .get('/rest/organizations/hello/indexes/page/fields')
-        .query({ page: 0, perPage: 1000, origin: 'USER' })
+        .get('/rest/organizations/hello/sources/page/fields')
+        .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
         .reply(RequestUtils.OK, {
           items: [
             {
@@ -594,8 +594,8 @@ export const FieldAPITest = () => {
           totalEntries: 8
         })
         // Second expected request
-        .get('/rest/organizations/hello/indexes/page/fields')
-        .query({ page: 1, perPage: 1000, origin: 'USER' })
+        .get('/rest/organizations/hello/sources/page/fields')
+        .query({ page: 1, perPage: 1000, origin: 'USER', includeMappings: false })
         .reply(RequestUtils.OK, {
           items: [
             {
@@ -618,8 +618,8 @@ export const FieldAPITest = () => {
           totalEntries: 8
         })
         // Third expected request
-        .get('/rest/organizations/hello/indexes/page/fields')
-        .query({ page: 2, perPage: 1000, origin: 'USER' })
+        .get('/rest/organizations/hello/sources/page/fields')
+        .query({ page: 2, perPage: 1000, origin: 'USER', includeMappings: false })
         .reply(RequestUtils.OK, {
           items: [
             {

@@ -15,6 +15,7 @@ import { Field } from '../coveoObjects/Field';
 import { Organization } from '../coveoObjects/Organization';
 import { BaseController } from './BaseController';
 import { IGraduateOptions } from '../commands/GraduateCommand';
+import { Dictionary } from '../commons/collections/Dictionary';
 
 export class FieldController extends BaseController {
   /**
@@ -41,7 +42,16 @@ export class FieldController extends BaseController {
     return this.loadFieldForBothOrganizations(this.organization1, this.organization2)
 
       .then(() => {
-        const diffResultArray = DiffUtils.getDiffResult(this.organization1.getFields(), this.organization2.getFields(), diffOptions);
+        let org1Fields = this.organization1.getFields();
+        let org2Fields = this.organization2.getFields();
+
+        // Get only fields associated to specific sources if specified
+        if (diffOptions && diffOptions.sources && diffOptions.sources.length > 0) {
+          org1Fields = this.returnOnlyFieldsForDesiredSources(org1Fields, diffOptions.sources);
+          org2Fields = this.returnOnlyFieldsForDesiredSources(org2Fields, diffOptions.sources, org1Fields);
+        }
+
+        const diffResultArray = DiffUtils.getDiffResult(org1Fields, org2Fields, diffOptions);
         if (diffResultArray.containsItems()) {
           Logger.verbose('Diff Summary:');
           Logger.verbose(`${diffResultArray.TO_CREATE.length} new field${diffResultArray.TO_CREATE.length > 1 ? 's' : ''} found`);
@@ -56,6 +66,20 @@ export class FieldController extends BaseController {
         this.errorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_FIELDS);
         return Promise.reject(err);
       });
+  }
+
+  private returnOnlyFieldsForDesiredSources(
+    fieldDict: Dictionary<Field>,
+    sources: string[],
+    extraFields?: Dictionary<Field>
+  ): Dictionary<Field> {
+    _.each(fieldDict.values(), field => {
+      if (!field.isPartOfTheSources(sources) && !(extraFields && extraFields.containsKey(field.getName()))) {
+        fieldDict.remove(field.getName());
+      }
+    });
+
+    return fieldDict;
   }
 
   /**
@@ -92,6 +116,14 @@ export class FieldController extends BaseController {
   graduate(diffResultArray: DiffResultArray<Field>, options: IGraduateOptions): Promise<any[]> {
     if (diffResultArray.containsItems()) {
       Logger.loadingTask('Graduating fields');
+
+      _.each(_.union(diffResultArray.TO_CREATE, diffResultArray.TO_DELETE, diffResultArray.TO_UPDATE), field => {
+        // Strip parameters that should not be graduated
+        if (options.keysToStrip && options.keysToStrip.length > 0) {
+          field.removeParameters(options.keysToStrip);
+        }
+      });
+
       return Promise.all(
         _.map(
           this.getAuthorizedOperations(diffResultArray, this.graduateNew, this.graduateUpdated, this.graduateDeleted, options),
@@ -177,7 +209,7 @@ export class FieldController extends BaseController {
         const oldFieldModel = oldField.getFieldModel();
 
         const updatedFieldModel: IStringMap<any> = _.mapObject(newFieldModel, (val, key) => {
-          if (!_.isEqual(oldFieldModel[key], val)) {
+          if (!_.isEqual(oldFieldModel[key], val) && (!diffOptions.keysToIgnore || diffOptions.keysToIgnore.indexOf(key) === -1)) {
             return { newValue: val, oldValue: oldFieldModel[key] };
           } else {
             return val;

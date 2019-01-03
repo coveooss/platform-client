@@ -1,3 +1,4 @@
+// import * as _ from 'underscore';
 import { Logger } from '../commons/logger';
 import { CommanderUtils } from './CommanderUtils';
 import { IDiffOptions, DiffCommand } from '../commands/DiffCommand';
@@ -7,8 +8,14 @@ export const DiffFieldsCommand = (program: any, commanderUtils: CommanderUtils) 
     .command('diff-fields <origin> <destination> <apiKey>')
     .description(['Diff the user defined fields of 2 organizations'])
     .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
-    .option('-i, --ignoreKeys []', 'Keys to ignore. String separated by ","', commanderUtils.list)
-    .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', commanderUtils.list)
+    .option(
+      '-S, --sources []',
+      'Load fields that are associated to specific sources. Leaving this parameter empty will diff all fields.',
+      commanderUtils.list,
+      []
+    )
+    .option('-i, --ignoreKeys []', 'Keys to ignore.', commanderUtils.list, [])
+    .option('-o, --onlyKeys []', 'Diff only the specified keys.', commanderUtils.list, [])
     .option(
       '-l, --logLevel <level>',
       'Possible values are: insane, verbose, info, error, nothing',
@@ -21,9 +28,11 @@ export const DiffFieldsCommand = (program: any, commanderUtils: CommanderUtils) 
 
       // Set diff options
       const diffOptions: IDiffOptions = {
-        keysToIgnore: options.ignoreKeys,
+        // keysToIgnore: _.union(options.ignoreKeys, ['sources']),
+        keysToIgnore: ['sources'],
         includeOnly: options.onlyKeys,
-        silent: options.silent
+        silent: options.silent,
+        sources: options.sources
       };
 
       const command = new DiffCommand(origin, destination, apiKey, apiKey);

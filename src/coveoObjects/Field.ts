@@ -1,7 +1,9 @@
+import * as _ from 'underscore';
 import { IField } from '../commons/interfaces/IField';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 import { BaseCoveoObject } from './BaseCoveoObject';
+import { StringUtil } from '../commons/utils/StringUtils';
 
 export class Field extends BaseCoveoObject implements IField {
   constructor(private fieldModel: IStringMap<any>) {
@@ -15,6 +17,22 @@ export class Field extends BaseCoveoObject implements IField {
    */
   getName(): string {
     return this.getId();
+  }
+
+  removeParameters(parameterKeys: string[]) {
+    this.fieldModel = _.omit(this.fieldModel, parameterKeys);
+  }
+
+  isPartOfTheSources(sources: string[]): boolean {
+    sources = _.map(sources, source => StringUtil.lowerAndStripSpaces(source));
+
+    for (let i = 0; i < (this.fieldModel.sources || []).length; i++) {
+      const fieldSource: { name: string } = this.fieldModel.sources[i];
+      if (fieldSource.name && sources.indexOf(StringUtil.lowerAndStripSpaces(fieldSource.name)) > -1) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
