@@ -28,7 +28,7 @@ export class InteractiveQuestion {
   static OBJECT_TO_MANIPULATE: string = 'objecttToManipulate';
   static SETTING_FILENAME: string = 'settingFilename';
   static LOG_FILENAME: string = 'logFilename';
-  static IGNORE_SOURCES: string = 'ignoreSources';
+  static SOURCES: string = 'sources';
   static IGNORE_EXTENSIONS: string = 'ignoreExtensions';
   static LOG_LEVEL: string = 'logLevel';
   static KEY_TO_IGNORE: string = 'keyToIgnore';
@@ -53,7 +53,7 @@ export class InteractiveQuestion {
             .then(values => {
               const sources = values[0];
               const extensions = values[1];
-              return prompt(this.getFinalQuestions({ sourcesToIgnore: sources, extensionsToIgnore: extensions }));
+              return prompt(this.getFinalQuestions({ sources: sources, extensionsToIgnore: extensions }));
             })
             .catch((err: any) => {
               console.error(chalk.red('Unable to load sources and extensions.'), chalk.red(err));
@@ -282,10 +282,26 @@ export class InteractiveQuestion {
     };
   }
 
+  selectSourcesForFields(sources: string[]): Question {
+    return {
+      type: 'checkbox',
+      name: InteractiveQuestion.SOURCES,
+      message: `Select sources from which to load fields. Selecting nothing will load all fields.`,
+      choices: sources,
+      when: (answer: Answers) => {
+        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        return answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === FieldController.CONTROLLER_NAME && sources.length > 0;
+      },
+      filter: (input: string) => {
+        return `"${input}"`;
+      }
+    };
+  }
+
   selectSourcesToIgnore(sources: string[]): Question {
     return {
       type: 'checkbox',
-      name: InteractiveQuestion.IGNORE_SOURCES,
+      name: InteractiveQuestion.SOURCES,
       message: `Select sources to ${chalk.bold('ignore')}. Selecting nothing will diff all sources`,
       choices: sources,
       when: (answer: Answers) => {
@@ -351,8 +367,9 @@ export class InteractiveQuestion {
   getFinalQuestions(data?: any): Question[] {
     const questions = [];
 
-    if (data && data.sourcesToIgnore) {
-      questions.push(this.selectSourcesToIgnore(data.sourcesToIgnore)); // only execute when in advanced option
+    if (data && data.sources) {
+      questions.push(this.selectSourcesForFields(data.sources));
+      questions.push(this.selectSourcesToIgnore(data.sources));
     }
 
     if (data && data.extensionsToIgnore) {
