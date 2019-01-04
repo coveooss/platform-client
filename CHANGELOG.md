@@ -2,8 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.4.0"></a>
+# [2.4.0](https://github.com/coveo/platform-client/compare/v2.3.1...v2.4.0) (2019-01-04)
+
+
+### Features
+
+* Add question to manually select sources for field operations ([cb60f39](https://github.com/coveo/platform-client/commit/cb60f39))
+* Specify to which sources fields are associated ([ef09198](https://github.com/coveo/platform-client/commit/ef09198))
+
+
+
 <a name="2.3.1"></a>
-## [2.3.1](https://github.com/coveo/platform-client/compare/v2.3.0...v2.3.1) (2018-12-27)
+## [2.3.1](https://github.com/coveo/platform-client/compare/v2.3.0...v2.3.1) (2018-12-27) -->
 
 
 
