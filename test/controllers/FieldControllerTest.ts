@@ -11,6 +11,7 @@ import { Utils } from '../../src/commons/utils/Utils';
 import { Field } from '../../src/coveoObjects/Field';
 import { FieldController } from './../../src/controllers/FieldController';
 import { Organization } from './../../src/coveoObjects/Organization';
+import { IDiffOptions } from '../../src/commands/DiffCommand';
 
 export const FieldControllerTest = () => {
   describe('Field Controller', () => {
@@ -30,6 +31,20 @@ export const FieldControllerTest = () => {
       description: 'Day of birth',
       type: 'Date',
       includeInQuery: false
+    });
+    const field1WithSource: Field = new Field({
+      name: 'firstname',
+      description: 'The first name of a person',
+      type: 'STRING',
+      includeInQuery: true,
+      sources: [{ name: 'source1', id: 'x001' }, { name: 'source2', id: 'x002' }]
+    });
+    const field2WithSource: Field = new Field({
+      name: 'birth',
+      description: 'Day of birth',
+      type: 'Date',
+      includeInQuery: false,
+      sources: [{ name: 'source3', id: 'y003' }]
     });
     const field2Old: Field = new Field({
       name: 'birth',
@@ -67,11 +82,14 @@ export const FieldControllerTest = () => {
 
       it('Should return the clean diff version', () => {
         const diffResultArray: DiffResultArray<Field> = new DiffResultArray();
-        diffResultArray.TO_CREATE.push(field1);
-        diffResultArray.TO_UPDATE.push(field2);
+        diffResultArray.TO_CREATE.push(field1WithSource);
+        diffResultArray.TO_UPDATE.push(field2WithSource);
         diffResultArray.TO_UPDATE_OLD.push(field2Old);
 
-        const cleanVersion = fieldController.getCleanVersion(diffResultArray);
+        const diffOptions: IDiffOptions = {
+          keysToIgnore: ['sources']
+        };
+        const cleanVersion = fieldController.getCleanVersion(diffResultArray, diffOptions);
         expect(cleanVersion).to.eql({
           summary: { TO_CREATE: 1, TO_UPDATE: 1, TO_DELETE: 0 },
           TO_CREATE: [
@@ -79,7 +97,8 @@ export const FieldControllerTest = () => {
               name: 'firstname',
               description: 'The first name of a person',
               type: 'STRING',
-              includeInQuery: true
+              includeInQuery: true,
+              sources: ['source1', 'source2']
             }
           ],
           TO_UPDATE: [
@@ -93,7 +112,8 @@ export const FieldControllerTest = () => {
               includeInQuery: {
                 newValue: false,
                 oldValue: true
-              }
+              },
+              sources: ['source3']
             }
           ],
           TO_DELETE: []
@@ -105,8 +125,8 @@ export const FieldControllerTest = () => {
       it('Should return an empty diff result', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
-          .get('/rest/organizations/dev/indexes/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER' })
+          .get('/rest/organizations/dev/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -121,8 +141,8 @@ export const FieldControllerTest = () => {
               }
             ]
           })
-          .get('/rest/organizations/prod/indexes/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER' })
+          .get('/rest/organizations/prod/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -149,14 +169,166 @@ export const FieldControllerTest = () => {
           });
       });
 
+      it('Should return an empty diff result - even if sources are different', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          // First expected request
+          .get('/rest/organizations/dev/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'allmetadatavalues',
+                description: 'new description',
+                type: 'STRING',
+                sources: [{ name: 'source1', id: 'zxcv' }]
+              },
+              {
+                name: 'new field',
+                description: 'The attachment depth.',
+                type: 'STRING',
+                sources: [{ name: 'source1', id: 'zxcv' }, { name: 'source2', id: 'wert' }]
+              }
+            ]
+          })
+          .get('/rest/organizations/prod/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'allmetadatavalues',
+                description: 'new description',
+                type: 'STRING',
+                sources: []
+              },
+              {
+                name: 'new field',
+                description: 'The attachment depth.',
+                type: 'STRING',
+                sources: [{ name: 'source1', id: 'zxcv-prod' }, { name: 'source2', id: 'wert-prod' }]
+              }
+            ]
+          });
+
+        const diffOptions: IDiffOptions = {
+          keysToIgnore: ['sources']
+        };
+        fieldController
+          .diff(diffOptions)
+          .then((diff: DiffResultArray<Field>) => {
+            expect(diff.containsItems()).to.be.false;
+            done();
+          })
+          .catch((err: any) => {
+            done(err);
+          });
+      });
+
+      it('Should return fields for specified sources', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          // First expected request
+          .get('/rest/organizations/dev/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                // we don't want to diff this field
+                name: 'genericfield',
+                description: '',
+                type: 'STRING',
+                sources: []
+              },
+              {
+                // we don't want to diff this field
+                name: 'field1',
+                description: 'new description',
+                type: 'STRING',
+                sources: [{ name: 'source1', id: 'zxcv' }]
+              },
+              {
+                name: 'field2',
+                description: 'new description',
+                type: 'STRING',
+                sources: [{ name: 'source1', id: 'zxcv' }, { name: 'source2', id: 'wert' }]
+              },
+              {
+                name: 'field3',
+                description: 'should upadte this field event if sources attribute is different.',
+                type: 'STRING',
+                sources: [{ name: 'source3', id: 'asdfg' }, { name: 'source2', id: 'wert' }]
+              },
+              {
+                // we don't want to diff this field
+                name: 'newfield',
+                description: 'new field to create.',
+                type: 'STRING',
+                sources: [{ name: 'source3', id: 'jgfdk' }, { name: 'source6', id: 'fosjd' }]
+              }
+            ]
+          })
+          .get('/rest/organizations/prod/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'genericfield',
+                description: 'changed description',
+                type: 'STRING',
+                sources: []
+              },
+              {
+                name: 'field1',
+                description: 'old description',
+                type: 'STRING',
+                sources: [{ name: 'source1', id: 'zxcv-prod' }]
+              },
+              {
+                name: 'field2',
+                description: '',
+                type: 'STRING',
+                sources: [{ name: 'source1', id: 'zxcv-prod' }, { name: 'source2', id: 'wert-prod' }]
+              },
+              {
+                name: 'field3',
+                description: '',
+                type: 'STRING',
+                sources: [{ name: 'sourceX', id: 'asdfg' }, { name: 'sourceY', id: 'wert' }]
+              },
+              {
+                name: 'fieldtodelete',
+                description: '',
+                type: 'STRING',
+                sources: [{ name: 'source2', id: 'asdfg' }, { name: 'sourceY', id: 'wert' }]
+              }
+            ]
+          });
+
+        const diffOptions: IDiffOptions = {
+          keysToIgnore: ['sources'],
+          sources: ['source2', 'source3']
+        };
+        fieldController
+          .diff(diffOptions)
+          .then((diff: DiffResultArray<Field>) => {
+            expect(diff.TO_UPDATE.length).to.eql(2);
+            expect(_.map(diff.TO_UPDATE, f => f.getName())).to.contain('field2');
+            expect(_.map(diff.TO_UPDATE, f => f.getName())).to.contain('field3');
+            expect(diff.TO_CREATE.length).to.eql(1);
+            expect(diff.TO_DELETE.length).to.eql(1);
+            done();
+          })
+          .catch((err: any) => {
+            done(err);
+          });
+      });
+
       it('Should not return the diff result', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
-          .get('/rest/organizations/dev/indexes/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER' })
+          .get('/rest/organizations/dev/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
           .reply(RequestUtils.ACCESS_DENIED, { message: 'Access is denied.', errorCode: 'ACCESS_DENIED' })
-          .get('/rest/organizations/prod/indexes/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER' })
+          .get('/rest/organizations/prod/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
           .reply(RequestUtils.ACCESS_DENIED, { message: 'Access is denied.', errorCode: 'ACCESS_DENIED' });
 
         fieldController
@@ -175,8 +347,8 @@ export const FieldControllerTest = () => {
       it('Should return the diff result', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
-          .get('/rest/organizations/dev/indexes/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER' })
+          .get('/rest/organizations/dev/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -199,8 +371,8 @@ export const FieldControllerTest = () => {
             totalEntries: 3
           })
           // Second expected request
-          .get('/rest/organizations/prod/indexes/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER' })
+          .get('/rest/organizations/prod/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -234,8 +406,8 @@ export const FieldControllerTest = () => {
     describe('Graduate Method', () => {
       it('Should graduate fields (POST, PUT, DELETE)', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
-          .get('/rest/organizations/dev/indexes/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER' })
+          .get('/rest/organizations/dev/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -257,8 +429,8 @@ export const FieldControllerTest = () => {
             totalPages: 1,
             totalEntries: 3
           })
-          .get('/rest/organizations/prod/indexes/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER' })
+          .get('/rest/organizations/prod/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -331,8 +503,8 @@ export const FieldControllerTest = () => {
 
       it('Should not graduate fields: Graduation error', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
-          .get('/rest/organizations/dev/indexes/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER' })
+          .get('/rest/organizations/dev/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -354,8 +526,8 @@ export const FieldControllerTest = () => {
             totalPages: 1,
             totalEntries: 3
           })
-          .get('/rest/organizations/prod/indexes/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER' })
+          .get('/rest/organizations/prod/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -425,8 +597,8 @@ export const FieldControllerTest = () => {
 
       it('Should have nothing to graduate: Similar orgs', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
-          .get('/rest/organizations/dev/indexes/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER' })
+          .get('/rest/organizations/dev/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -448,8 +620,8 @@ export const FieldControllerTest = () => {
             totalPages: 1,
             totalEntries: 3
           })
-          .get('/rest/organizations/prod/indexes/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER' })
+          .get('/rest/organizations/prod/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -497,11 +669,11 @@ export const FieldControllerTest = () => {
 
       it('Should not graduate: failed diff', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
-          .get('/rest/organizations/dev/indexes/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER' })
+          .get('/rest/organizations/dev/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
           .reply(RequestUtils.ACCESS_DENIED, 'some message')
-          .get('/rest/organizations/prod/indexes/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER' })
+          .get('/rest/organizations/prod/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -554,8 +726,8 @@ export const FieldControllerTest = () => {
 
       it('Should have nothing to graduate: No HTTP verbe selected', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
-          .get('/rest/organizations/dev/indexes/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER' })
+          .get('/rest/organizations/dev/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -577,8 +749,8 @@ export const FieldControllerTest = () => {
             totalPages: 1,
             totalEntries: 3
           })
-          .get('/rest/organizations/prod/indexes/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER' })
+          .get('/rest/organizations/prod/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -629,8 +801,8 @@ export const FieldControllerTest = () => {
     describe('Download Method', () => {
       it('Should return an empty diff result', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
-          .get('/rest/organizations/dev/indexes/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER' })
+          .get('/rest/organizations/dev/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {

@@ -26,6 +26,10 @@ export interface IDiffOptions {
    * Prevent the diff result to be opened in a file once the operation has complete
    */
   silent?: boolean;
+  /**
+   * Specify the sources from which to load the data
+   */
+  sources?: string[];
 }
 
 export class DiffCommand {

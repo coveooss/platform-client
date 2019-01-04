@@ -2,20 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.5.0"></a>
+# [2.5.0](https://github.com/coveo/platform-client/compare/v2.4.0...v2.5.0) (2019-01-04)
+
+
+### Features
+
+* make field diff more readable ([88b9da7](https://github.com/coveo/platform-client/commit/88b9da7))
+
+
+
+<a name="2.4.0"></a>
+# [2.4.0](https://github.com/coveo/platform-client/compare/v2.3.1...v2.4.0) (2019-01-04)
+
+
+### Features
+
+* Add question to manually select sources for field operations ([cb60f39](https://github.com/coveo/platform-client/commit/cb60f39))
+* Specify to which sources fields are associated ([ef09198](https://github.com/coveo/platform-client/commit/ef09198))
+
+
+
 <a name="2.3.1"></a>
-## [2.3.1](https://github.com/coveo/platform-client/compare/v2.3.0...v2.3.1) (2018-12-27)
+## [2.3.1](https://github.com/coveo/platform-client/compare/v2.3.0...v2.3.1) (2018-12-27) -->
 
 
 
-<a name="2.3.0"></a>
-# [2.3.0](https://github.com/coveo/platform-client/compare/v1.3.1...v2.3.0) (2018-12-27)
+<!-- <a name="2.3.0"></a>
+# [2.3.0](https://github.com/coveo/platform-client/compare/v2.2.0...v2.3.0) (2018-12-27)
 
 
 
 <a name="2.2.0"></a>
-# [2.2.0](https://github.com/coveo/platform-client/compare/v1.3.1...v2.2.0) (2018-12-27)
+# [2.2.0](https://github.com/coveo/platform-client/compare/v2.1.0...v2.2.0) (2018-12-27)
 
-
+ -->
 
 <a name="2.1.0"></a>
 # [2.1.0](https://github.com/coveo/platform-client/compare/v2.0.0...v2.1.0) (2018-12-27)
@@ -65,9 +86,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-<a name="1.5.0"></a>
+<!-- <a name="1.5.0"></a>
 # [1.5.0](https://github.com/coveo/platform-client/compare/v1.4.0...v1.5.0) (2018-12-05)
-
+ -->
 
 
 <a name="1.4.0"></a>

@@ -84,5 +84,29 @@ export const FieldTest = () => {
         system: false
       });
     });
+
+    it('Should return true if the field is associated to a source', () => {
+      const cloneFieldModel = JSON.parse(JSON.stringify(fieldModel));
+      cloneFieldModel.sources = [{ name: 'source1', id: 'dummyID' }, { name: 'source2', id: 'dummyID' }];
+
+      const field: Field = new Field(cloneFieldModel);
+      expect(field.isPartOfTheSources(['source1'])).to.be.true;
+    });
+
+    it('Should return true if the field is associated to at least one source', () => {
+      const cloneFieldModel = JSON.parse(JSON.stringify(fieldModel));
+      cloneFieldModel.sources = [{ name: 'source1', id: 'dummyID' }, { name: 'source2', id: 'dummyID' }];
+
+      const field: Field = new Field(cloneFieldModel);
+      expect(field.isPartOfTheSources(['source1', 'source3'])).to.be.true;
+    });
+
+    it('Should return false if the field is not associated to a source', () => {
+      const cloneFieldModel = JSON.parse(JSON.stringify(fieldModel));
+      cloneFieldModel.sources = [{ name: 'source1', id: 'dummyID' }];
+
+      const field: Field = new Field(cloneFieldModel);
+      expect(field.isPartOfTheSources(['sourceX'])).to.be.false;
+    });
   });
 };

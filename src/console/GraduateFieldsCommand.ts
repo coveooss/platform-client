@@ -1,3 +1,4 @@
+import * as _ from 'underscore';
 import { Logger } from '../commons/logger';
 import { GraduateCommand, IGraduateOptions } from '../commands/GraduateCommand';
 import { CommanderUtils } from './CommanderUtils';
@@ -6,8 +7,14 @@ export const GraduateFieldsCommand = (program: any, commanderUtils: CommanderUti
   program
     .command('graduate-fields <origin> <destination> <apiKey>')
     .description('Graduate one organization to an other')
-    .option('-i, --ignoreKeys []', 'Keys to ignore. String separated by ","', commanderUtils.list)
-    .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', commanderUtils.list)
+    .option('-i, --ignoreKeys []', 'Keys to ignore. String separated by ","', commanderUtils.list, [])
+    .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', commanderUtils.list, [])
+    .option(
+      '-S, --sources []',
+      'Load fields that are associated to specific sources. Leaving this parameter empty will diff all fields.',
+      commanderUtils.list,
+      []
+    )
     .option(
       '-m, --methods []',
       'HTTP method authorized by the Graduation. Should be a comma separated list (no spaces)',
@@ -27,10 +34,11 @@ export const GraduateFieldsCommand = (program: any, commanderUtils: CommanderUti
       // Set graduation options
       const graduateOptions: IGraduateOptions = {
         diffOptions: {
-          keysToIgnore: options.ignoreKeys,
+          keysToIgnore: _.union(options.ignoreKeys, ['sources']),
           includeOnly: options.onlyKeys,
           silent: options.silent
         },
+        keysToStrip: ['sources'], // Do not graduate the source to which the field is associated.
         POST: options.methods.indexOf('POST') > -1,
         PUT: options.methods.indexOf('PUT') > -1,
         DELETE: options.methods.indexOf('DELETE') > -1
