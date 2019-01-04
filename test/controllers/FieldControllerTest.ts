@@ -32,6 +32,20 @@ export const FieldControllerTest = () => {
       type: 'Date',
       includeInQuery: false
     });
+    const field1WithSource: Field = new Field({
+      name: 'firstname',
+      description: 'The first name of a person',
+      type: 'STRING',
+      includeInQuery: true,
+      sources: [{ name: 'source1', id: 'x001' }, { name: 'source2', id: 'x002' }]
+    });
+    const field2WithSource: Field = new Field({
+      name: 'birth',
+      description: 'Day of birth',
+      type: 'Date',
+      includeInQuery: false,
+      sources: [{ name: 'source3', id: 'y003' }]
+    });
     const field2Old: Field = new Field({
       name: 'birth',
       description: 'Birthday',
@@ -68,11 +82,14 @@ export const FieldControllerTest = () => {
 
       it('Should return the clean diff version', () => {
         const diffResultArray: DiffResultArray<Field> = new DiffResultArray();
-        diffResultArray.TO_CREATE.push(field1);
-        diffResultArray.TO_UPDATE.push(field2);
+        diffResultArray.TO_CREATE.push(field1WithSource);
+        diffResultArray.TO_UPDATE.push(field2WithSource);
         diffResultArray.TO_UPDATE_OLD.push(field2Old);
 
-        const cleanVersion = fieldController.getCleanVersion(diffResultArray);
+        const diffOptions: IDiffOptions = {
+          keysToIgnore: ['sources']
+        };
+        const cleanVersion = fieldController.getCleanVersion(diffResultArray, diffOptions);
         expect(cleanVersion).to.eql({
           summary: { TO_CREATE: 1, TO_UPDATE: 1, TO_DELETE: 0 },
           TO_CREATE: [
@@ -80,7 +97,8 @@ export const FieldControllerTest = () => {
               name: 'firstname',
               description: 'The first name of a person',
               type: 'STRING',
-              includeInQuery: true
+              includeInQuery: true,
+              sources: ['source1', 'source2']
             }
           ],
           TO_UPDATE: [
@@ -94,7 +112,8 @@ export const FieldControllerTest = () => {
               includeInQuery: {
                 newValue: false,
                 oldValue: true
-              }
+              },
+              sources: ['source3']
             }
           ],
           TO_DELETE: []

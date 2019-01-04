@@ -197,8 +197,17 @@ export class FieldController extends BaseController {
   }
 
   extractionMethod(object: any[], diffOptions: IDiffOptions, oldVersion?: any[]): any[] {
+    const stripIdFromSourceParameter = (obj: IStringMap<any>) => {
+      if (obj['sources']) {
+        obj['sources'] = _.pluck(obj['sources'], 'name');
+      }
+      return obj;
+    };
     if (oldVersion === undefined) {
-      return _.map(object, (f: Field) => f.getFieldModel());
+      return _.map(object, (f: Field) => {
+        const fieldModel = f.getFieldModel();
+        return stripIdFromSourceParameter(fieldModel);
+      });
     } else {
       return _.map(oldVersion, (oldField: Field) => {
         const newField: Field = _.find(object, (f: Field) => {
@@ -215,7 +224,7 @@ export class FieldController extends BaseController {
             return val;
           }
         });
-        return updatedFieldModel;
+        return stripIdFromSourceParameter(updatedFieldModel);
       });
     }
   }
