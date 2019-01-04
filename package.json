@@ -1,6 +1,6 @@
 {
   "name": "coveo-platform-client",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "A client to manage organizations in the Coveo Cloud Platform",
   "main": "./bin/index.js",
   "types": "./bin/ts/index.d.ts",
