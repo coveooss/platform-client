@@ -20,18 +20,6 @@ export const FieldControllerTest = () => {
     const org2: Organization = new Organization('prod', 'yyy');
 
     // Fields
-    const field1: Field = new Field({
-      name: 'firstname',
-      description: 'The first name of a person',
-      type: 'STRING',
-      includeInQuery: true
-    });
-    const field2: Field = new Field({
-      name: 'birth',
-      description: 'Day of birth',
-      type: 'Date',
-      includeInQuery: false
-    });
     const field1WithSource: Field = new Field({
       name: 'firstname',
       description: 'The first name of a person',

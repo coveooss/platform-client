@@ -15,7 +15,7 @@ before_script:
 script:
   - source read.version.sh
   - echo "$TRAVIS_TAG"
-  - npm run minimize
+  - npm run build
   - npm test
 after_success:
   - npm run zipForGitReleases

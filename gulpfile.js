@@ -1,35 +1,17 @@
+'use strict';
+
 const gulp = require('gulp');
 const del = require('del');
 const requireDir = require('require-dir');
-const runsequence = require('run-sequence');
-const gutil = require('gulp-util');
-
-process.env.NODE_ENV = gutil.env.config || 'production';
 
 requireDir('./gulpTasks');
 
-gulp.task('default', ['build']);
-
-gulp.task('build:prod', function(done) {
-  runsequence('build', 'zip', done);
-});
-
-gulp.task('build', function(done) {
-  runsequence('clean', 'setup', 'compile', 'definitions', done);
-});
-
-gulp.task('watch', ['watchTS']);
-
-// Watches the typescript files.
-gulp.task('watchTS', ['build'], () => {
-  gulp.watch('src/**/*.ts', ['src']);
-});
-
-gulp.task('watchTest', () => {
-  gulp.watch(['test/**/*.ts', 'src/**/*.ts'], ['test']);
-});
-
-// Remove bin and all zip folders.
 gulp.task('clean', function() {
   return del(['./bin', './zip/**.zip', '*.log']);
 });
+
+gulp.task('build', gulp.series('clean', 'setup', 'compile'));
+
+gulp.task('default', gulp.series('build'));
+
+// export default build;

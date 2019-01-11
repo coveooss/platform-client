@@ -36,9 +36,9 @@ export const FieldTest = () => {
       expect(() => new Field({ random: 'field' })).to.throw();
     });
 
-    it('Should throw an error if invalid field body', () => {
-      expect(() => new Field(undefined)).to.throw();
-    });
+    // it('Should throw an error if invalid field body', () => {
+    //   expect(() => new Field(undefined)).to.throw();
+    // });
 
     it('Should create a clone of the field object', () => {
       const simpleFieldModel = {

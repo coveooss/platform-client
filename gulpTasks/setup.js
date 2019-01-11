@@ -1,13 +1,8 @@
+'use strict';
+
 const gulp = require('gulp');
 
-gulp.task('setup', ['copy']);
+const copyEnv = () => gulp.src('environments/**/*.js').pipe(gulp.dest('./bin/environments'));
+const copyGlobal = () => gulp.src('client-global.js').pipe(gulp.dest('./bin'));
 
-gulp.task('copy', ['copyEnv', 'copyGlobal']);
-
-gulp.task('copyEnv', function() {
-  return gulp.src('environments/**/*.js').pipe(gulp.dest('./bin/environments'));
-});
-
-gulp.task('copyGlobal', function() {
-  return gulp.src('client-global.js').pipe(gulp.dest('./bin'));
-});
+gulp.task('setup', gulp.series(copyEnv, copyGlobal));

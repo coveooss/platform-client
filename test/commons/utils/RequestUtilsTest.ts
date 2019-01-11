@@ -34,7 +34,7 @@ export const RequestUtilsTest = () => {
         .then(() => {
           done('This function should not resolve');
         })
-        .catch((err: {}) => {
+        .catch((err: any) => {
           assert.throws(() => {
             throw Error(err['message']);
           }, 'something awful happened');
@@ -51,7 +51,7 @@ export const RequestUtilsTest = () => {
         .then(() => {
           done('This function should not resolve');
         })
-        .catch((err: {}) => {
+        .catch((err: any) => {
           assert.throws(() => {
             throw Error(err['message']);
           }, 'something awful happened');
@@ -68,7 +68,7 @@ export const RequestUtilsTest = () => {
         .then(() => {
           done('This function should not resolve');
         })
-        .catch((err: {}) => {
+        .catch((err: any) => {
           assert.throws(() => {
             throw Error(err['message']);
           }, 'something awful happened');
@@ -85,7 +85,7 @@ export const RequestUtilsTest = () => {
         .then(() => {
           done('This function should not resolve');
         })
-        .catch((err: {}) => {
+        .catch((err: any) => {
           assert.throws(() => {
             throw Error(err['message']);
           }, 'something awful happened');

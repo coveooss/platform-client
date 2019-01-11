@@ -1,8 +1,7 @@
 // tslint:disable:no-magic-numbers
-import { assert, expect } from 'chai';
+import { expect } from 'chai';
 import * as nock from 'nock';
-import * as _ from 'underscore';
-import { IHTTPGraduateOptions, IGraduateOptions } from '../../src/commands/GraduateCommand';
+import { IGraduateOptions } from '../../src/commands/GraduateCommand';
 import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
 import { IGenericError } from '../../src/commons/errors';
 import { UrlService } from '../../src/commons/rest/UrlService';
@@ -12,7 +11,6 @@ import { Source } from '../../src/coveoObjects/Source';
 import { Organization } from '../../src/coveoObjects/Organization';
 import { SourceController } from './../../src/controllers/SourceController';
 import { Dictionary } from '../../src/commons/collections/Dictionary';
-import { Extension } from '../../src/coveoObjects/Extension';
 
 const rawExtension1 = {
   content: 'random content',
@@ -85,13 +83,6 @@ const rawDummyExtension3 = {
   name: 'dummyExtension 3',
   requiredDataStreams: []
 };
-
-const extension1: Extension = new Extension(rawExtension1);
-const extension2: Extension = new Extension(rawExtension2);
-const extension3: Extension = new Extension(rawExtension3);
-const dummyExtension1: Extension = new Extension(rawDummyExtension1);
-const dummyExtension2: Extension = new Extension(rawDummyExtension2);
-const dummyExtension3: Extension = new Extension(rawDummyExtension3);
 
 const source1: Source = new Source({
   id: 'rdsajkldjsakjdklsajh-sadsa9f',
@@ -871,8 +862,6 @@ export const SourceControllerTest = () => {
       });
 
       it('Should remove any obejct from the source configuration', () => {
-        const org3 = new Organization('dev', 'xxx', { extensions: ['URL Parsing to extract metadata'] });
-        const sourceController = new SourceController(org3, org2);
         const sampleSource = new Source({
           sourceType: 'SITEMAP',
           id: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4',
