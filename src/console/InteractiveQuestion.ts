@@ -324,7 +324,7 @@ export class InteractiveQuestion {
   }
 
   getFileNameForLogs(): Question {
-    return this.getGenericFilename(InteractiveQuestion.LOG_FILENAME, 'logs.txt', 'Enter the filename to output logs: ');
+    return this.getGenericFilename(InteractiveQuestion.LOG_FILENAME, 'logs.json', 'Enter the filename to output logs: ');
   }
 
   confirmGraduationAction(mes: string = 'Are you sure you want to perform this action?', variable: string): Question {
