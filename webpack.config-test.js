@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const path = require('path');
 const WebpackNotifierPlugin = require('webpack-notifier');
+const buildCoverage = ['coverage', 'test'].indexOf(process.env.NODE_ENV) != -1;
 
 const plugins = [];
 
@@ -26,7 +27,16 @@ module.exports = {
   },
   module: {
     noParse: /update-notifier/,
-    rules: [{ test: /\.ts$/, loader: 'ts-loader', exclude: /node_modules/ }]
+    rules: [].concat(
+      buildCoverage
+        ? {
+            test: /\.ts/,
+            include: path.resolve('src'), // instrument only testing sources with Istanbul, after ts-loader runs
+            loader: 'istanbul-instrumenter-loader'
+          }
+        : [],
+      { test: /\.ts$/, loader: 'ts-loader', exclude: /node_modules/ }
+    )
   },
   plugins: plugins,
   bail: true

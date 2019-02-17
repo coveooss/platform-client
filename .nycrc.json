@@ -1,9 +1,4 @@
 {
   "include": ["src/**/*.ts"],
-  "exclude": ["**/*.d.ts", "**/*.js", "src/commons/interfaces/**/*.ts", "src/client.ts", "src/console/*.ts"],
-  "extension": [".ts"],
-  "require": ["ts-node/register"],
-  "reporter": ["html"],
-  "all": true,
-  "cache": true
+  "reporter": ["html"]
 }

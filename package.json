@@ -52,6 +52,7 @@
     "gulp-shell": "^0.6.5",
     "gulp-zip": "^4.2.0",
     "husky": "^1.3.1",
+    "istanbul-instrumenter-loader": "^3.0.1",
     "lint-staged": "^8.1.0",
     "mocha": "^5.2.0",
     "mocha-webpack": "2.0.0-beta.0",
@@ -71,6 +72,8 @@
     "webpack-notifier": "^1.7.0"
   },
   "scripts": {
+    "test-ci": "mocha-webpack test/test.ts --webpack-config webpack.config-test.js",
+    "cover": "cross-env NODE_ENV=coverage nyc npm run test-ci",
     "precommit": "lint-staged",
     "test": "gulp test",
     "standard-version": "standard-version",

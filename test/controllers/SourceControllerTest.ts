@@ -1194,6 +1194,85 @@ export const SourceControllerTest = () => {
           });
       });
 
+      it('Should take into account new and missing parameters in the source configuration', (done: MochaDone) => {
+        const orgx: Organization = new Organization('dev', 'xxx');
+        const orgy: Organization = new Organization('prod', 'yyy');
+        const controllerxy = new SourceController(orgx, orgy);
+
+        const localDevSource = {
+          sourceType: 'SITEMAP',
+          id: 'dev-source',
+          name: 'sitemap test',
+          mappings: [
+            {
+              id: 'q4qripnnvztvqempxtkvdb2cqa',
+              kind: 'COMMON',
+              fieldName: 'printableuri',
+              extractionMethod: 'METADATA',
+              content: '%[printableuri]'
+            }
+          ],
+          preConversionExtensions: [],
+          postConversionExtensions: [],
+          parameterNotInProduction: 'dsa',
+          resourceId: 'dev-source4'
+        };
+
+        const localProdSource = {
+          sourceType: 'SITEMAP',
+          id: 'prod-source',
+          name: 'sitemap test',
+          mappings: [
+            {
+              id: 'q4qripnnvztvqempxtkvdb2cqa',
+              kind: 'COMMON',
+              fieldName: 'printableuri',
+              extractionMethod: 'METADATA',
+              content: '%[printableuri]'
+            }
+          ],
+          preConversionExtensions: [],
+          postConversionExtensions: [],
+          resourceId: 'prod-source',
+          enableJavaScript: false,
+          javaScriptLoadingDelayInMilliseconds: 0,
+          requestsTimeoutInSeconds: 100
+        };
+
+        scope = nock(UrlService.getDefaultUrl())
+          // First expected request
+          .get('/rest/organizations/dev/sources')
+          .reply(RequestUtils.OK, [localDevSource])
+          // Fecth extensions from dev
+          .get('/rest/organizations/dev/extensions')
+          .reply(RequestUtils.OK, [])
+          // Fecth extensions from Prod
+          .get('/rest/organizations/prod/extensions')
+          // Rename extension Ids
+          .reply(RequestUtils.OK, [])
+          // Fetching dev sources one by one
+          .get('/rest/organizations/dev/sources/dev-source')
+          .reply(RequestUtils.OK, localDevSource)
+          // Fecthing all prod sources
+          .get('/rest/organizations/prod/sources')
+          .reply(RequestUtils.OK, [localProdSource])
+          .get('/rest/organizations/prod/sources/prod-source')
+          .reply(RequestUtils.OK, localProdSource);
+
+        const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner'] };
+        controllerxy
+          .diff(diffOptions)
+          .then((diff: DiffResultArray<Source>) => {
+            expect(diff.TO_CREATE.length).to.eql(0);
+            expect(diff.TO_UPDATE.length).to.eql(1);
+            expect(diff.TO_DELETE.length).to.eql(0);
+            done();
+          })
+          .catch((err: IGenericError) => {
+            done(err);
+          });
+      });
+
       it('Should not have updated source in the diff', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           // First expected request

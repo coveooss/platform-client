@@ -14,3 +14,4 @@ package-lock.json
 testScripts
 release.sh
 .zip
+yarn.lock
