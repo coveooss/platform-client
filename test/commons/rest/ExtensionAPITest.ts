@@ -136,9 +136,9 @@ export const ExtensionAPITest = () => {
           .catch((err: any) => done(err));
       });
 
-      it('Should throw an error because of an invalid organization', () => {
-        expect(() => ExtensionAPI.getAllExtensions(undefined)).to.throw();
-      });
+      // it('Should throw an error because of an invalid organization', () => {
+      //   expect(() => ExtensionAPI.getAllExtensions(undefined)).to.throw();
+      // });
     });
 
     describe('Get Single Extension', () => {
@@ -154,10 +154,10 @@ export const ExtensionAPITest = () => {
           .catch((err: any) => done(err));
       });
 
-      it('Should throw an error because of an undefined extension id', () => {
-        const organization: Organization = new Organization('qwerty123', 'secret');
-        expect(() => ExtensionAPI.getSingleExtension(organization, undefined)).to.throw();
-      });
+      // it('Should throw an error because of an undefined extension id', () => {
+      //   const organization: Organization = new Organization('qwerty123', 'secret');
+      //   expect(() => ExtensionAPI.getSingleExtension(organization, undefined)).to.throw();
+      // });
     });
 
     it('Should prepare the request to create an extension', (done: MochaDone) => {

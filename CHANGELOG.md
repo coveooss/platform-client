@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.5.1"></a>
+## [2.5.1](https://github.com/coveo/platform-client/compare/v2.5.0...v2.5.1) (2019-02-17)
+
+
+### Bug Fixes
+
+* Change log file default file extension (fixes [#27](https://github.com/coveo/platform-client/issues/27)) ([77f885e](https://github.com/coveo/platform-client/commit/77f885e))
+
+
+
 <a name="2.5.0"></a>
 # [2.5.0](https://github.com/coveo/platform-client/compare/v2.4.0...v2.5.0) (2019-01-04)
 
@@ -22,13 +32,13 @@ All notable changes to this project will be documented in this file. See [standa
 * Specify to which sources fields are associated ([ef09198](https://github.com/coveo/platform-client/commit/ef09198))
 
 
-
+<!--
 <a name="2.3.1"></a>
-## [2.3.1](https://github.com/coveo/platform-client/compare/v2.3.0...v2.3.1) (2018-12-27) -->
+## [2.3.1](https://github.com/coveo/platform-client/compare/v2.3.0...v2.3.1) (2018-12-27) 
 
 
 
-<!-- <a name="2.3.0"></a>
+<a name="2.3.0"></a>
 # [2.3.0](https://github.com/coveo/platform-client/compare/v2.2.0...v2.3.0) (2018-12-27)
 
 

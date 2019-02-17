@@ -74,7 +74,7 @@ export const JsonUtilsTest = () => {
 
         // Manipulating initial object
         obj1.b.c++;
-        obj1.b.d = undefined;
+        obj1.b.d = [1, 2, 3];
         expect(clone).to.eql({
           a: 1,
           b: { c: 2, d: [3, 4] }

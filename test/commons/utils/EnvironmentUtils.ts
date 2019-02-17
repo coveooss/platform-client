@@ -9,12 +9,12 @@ export const EnvironmentUtilsTest = () => {
 
     it('Should set the current environment', () => {
       EnvironmentUtils.setNodeEnvironment('superTest');
-      expect(process.env.NODE_ENV).to.eql('superTest');
+      expect(EnvironmentUtils.getNodeEnvironment()).to.eql('superTest');
     });
 
     it('Should set the current environment to production', () => {
       EnvironmentUtils.setDefaultNodeEnvironment();
-      expect(process.env.NODE_ENV).to.eql('production');
+      expect(EnvironmentUtils.getNodeEnvironment()).to.eql('production');
     });
   });
 };

@@ -1,8 +1,7 @@
 // tslint:disable:no-magic-numbers
-import { assert, expect } from 'chai';
+import { expect } from 'chai';
 import * as nock from 'nock';
-import * as _ from 'underscore';
-import { IHTTPGraduateOptions, IGraduateOptions } from '../../src/commands/GraduateCommand';
+import { IGraduateOptions } from '../../src/commands/GraduateCommand';
 import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
 import { IGenericError } from '../../src/commons/errors';
 import { UrlService } from '../../src/commons/rest/UrlService';
@@ -12,7 +11,6 @@ import { Source } from '../../src/coveoObjects/Source';
 import { Organization } from '../../src/coveoObjects/Organization';
 import { SourceController } from './../../src/controllers/SourceController';
 import { Dictionary } from '../../src/commons/collections/Dictionary';
-import { Extension } from '../../src/coveoObjects/Extension';
 
 const rawExtension1 = {
   content: 'random content',
@@ -85,13 +83,6 @@ const rawDummyExtension3 = {
   name: 'dummyExtension 3',
   requiredDataStreams: []
 };
-
-const extension1: Extension = new Extension(rawExtension1);
-const extension2: Extension = new Extension(rawExtension2);
-const extension3: Extension = new Extension(rawExtension3);
-const dummyExtension1: Extension = new Extension(rawDummyExtension1);
-const dummyExtension2: Extension = new Extension(rawDummyExtension2);
-const dummyExtension3: Extension = new Extension(rawDummyExtension3);
 
 const source1: Source = new Source({
   id: 'rdsajkldjsakjdklsajh-sadsa9f',
@@ -871,8 +862,6 @@ export const SourceControllerTest = () => {
       });
 
       it('Should remove any obejct from the source configuration', () => {
-        const org3 = new Organization('dev', 'xxx', { extensions: ['URL Parsing to extract metadata'] });
-        const sourceController = new SourceController(org3, org2);
         const sampleSource = new Source({
           sourceType: 'SITEMAP',
           id: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4',
@@ -1178,6 +1167,85 @@ export const SourceControllerTest = () => {
           // Fecth extensions from dev
           .get('/rest/organizations/dev/extensions')
           .reply(RequestUtils.OK, [rawExtension1])
+          // Fecth extensions from Prod
+          .get('/rest/organizations/prod/extensions')
+          // Rename extension Ids
+          .reply(RequestUtils.OK, [])
+          // Fetching dev sources one by one
+          .get('/rest/organizations/dev/sources/dev-source')
+          .reply(RequestUtils.OK, localDevSource)
+          // Fecthing all prod sources
+          .get('/rest/organizations/prod/sources')
+          .reply(RequestUtils.OK, [localProdSource])
+          .get('/rest/organizations/prod/sources/prod-source')
+          .reply(RequestUtils.OK, localProdSource);
+
+        const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner'] };
+        controllerxy
+          .diff(diffOptions)
+          .then((diff: DiffResultArray<Source>) => {
+            expect(diff.TO_CREATE.length).to.eql(0);
+            expect(diff.TO_UPDATE.length).to.eql(1);
+            expect(diff.TO_DELETE.length).to.eql(0);
+            done();
+          })
+          .catch((err: IGenericError) => {
+            done(err);
+          });
+      });
+
+      it('Should take into account new and missing parameters in the source configuration', (done: MochaDone) => {
+        const orgx: Organization = new Organization('dev', 'xxx');
+        const orgy: Organization = new Organization('prod', 'yyy');
+        const controllerxy = new SourceController(orgx, orgy);
+
+        const localDevSource = {
+          sourceType: 'SITEMAP',
+          id: 'dev-source',
+          name: 'sitemap test',
+          mappings: [
+            {
+              id: 'q4qripnnvztvqempxtkvdb2cqa',
+              kind: 'COMMON',
+              fieldName: 'printableuri',
+              extractionMethod: 'METADATA',
+              content: '%[printableuri]'
+            }
+          ],
+          preConversionExtensions: [],
+          postConversionExtensions: [],
+          parameterNotInProduction: 'dsa',
+          resourceId: 'dev-source4'
+        };
+
+        const localProdSource = {
+          sourceType: 'SITEMAP',
+          id: 'prod-source',
+          name: 'sitemap test',
+          mappings: [
+            {
+              id: 'q4qripnnvztvqempxtkvdb2cqa',
+              kind: 'COMMON',
+              fieldName: 'printableuri',
+              extractionMethod: 'METADATA',
+              content: '%[printableuri]'
+            }
+          ],
+          preConversionExtensions: [],
+          postConversionExtensions: [],
+          resourceId: 'prod-source',
+          enableJavaScript: false,
+          javaScriptLoadingDelayInMilliseconds: 0,
+          requestsTimeoutInSeconds: 100
+        };
+
+        scope = nock(UrlService.getDefaultUrl())
+          // First expected request
+          .get('/rest/organizations/dev/sources')
+          .reply(RequestUtils.OK, [localDevSource])
+          // Fecth extensions from dev
+          .get('/rest/organizations/dev/extensions')
+          .reply(RequestUtils.OK, [])
           // Fecth extensions from Prod
           .get('/rest/organizations/prod/extensions')
           // Rename extension Ids

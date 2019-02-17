@@ -29,7 +29,7 @@ export const DiffFieldsCommand = (program: any, commanderUtils: CommanderUtils) 
       // Set diff options
       const diffOptions: IDiffOptions = {
         // keysToIgnore: _.union(options.ignoreKeys, ['sources']),
-        keysToIgnore: ['sources'],
+        keysToIgnore: ['sources'], // TODO: have presence over includeOnly. Remove includeOnly!
         includeOnly: options.onlyKeys,
         silent: options.silent,
         sources: options.sources

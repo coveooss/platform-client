@@ -8,7 +8,7 @@ export const ErrorTest = () => {
       const keys: string[] = Object.keys(StaticErrorMessage);
 
       _.each(keys, (key: string) => {
-        expect(StaticErrorMessage[key]).to.not.be.empty.string;
+        expect((StaticErrorMessage as any)[key]).to.not.be.empty.string;
       });
     });
   });

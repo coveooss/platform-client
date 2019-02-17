@@ -2,7 +2,7 @@ import { Question } from 'inquirer';
 import { Answers } from 'inquirer';
 import { RequestResponse } from 'request';
 import * as inquirer from 'inquirer';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import * as _ from 'underscore';
 import { DiffCommand } from '../commands/DiffCommand';
 import { GraduateCommand } from '../commands/GraduateCommand';
@@ -324,7 +324,7 @@ export class InteractiveQuestion {
   }
 
   getFileNameForLogs(): Question {
-    return this.getGenericFilename(InteractiveQuestion.LOG_FILENAME, 'logs.txt', 'Enter the filename to output logs: ');
+    return this.getGenericFilename(InteractiveQuestion.LOG_FILENAME, 'logs.json', 'Enter the filename to output logs: ');
   }
 
   confirmGraduationAction(mes: string = 'Are you sure you want to perform this action?', variable: string): Question {

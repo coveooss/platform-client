@@ -1,6 +1,7 @@
 import { EnvironmentUtils } from './commons/utils/EnvironmentUtils';
 setEnvironmentIfNecessary();
 
+import * as program from 'commander';
 import * as _ from 'underscore';
 import { CommanderUtils } from './console/CommanderUtils';
 import { GraduateExtensionsCommand } from './console/GraduateExtensionsCommand';
@@ -12,7 +13,6 @@ import { GraduateFieldsCommand } from './console/GraduateFieldsCommand';
 import { DiffExtensionsCommand } from './console/DiffExtensionsCommand';
 import { DiffFieldsCommand } from './console/DiffFieldsCommand';
 
-const program = require('commander');
 const pkg: any = require('./../package.json');
 const updateNotifier = require('update-notifier');
 updateNotifier({ pkg }).notify();
