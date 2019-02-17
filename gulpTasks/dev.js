@@ -1,30 +1,10 @@
 'use strict';
-const nodemon = require('gulp-nodemon');
 const gulp = require('gulp');
+const shell = require('gulp-shell');
 
-gulp.task('setupDevEnv', done => {
-  gulp.src('environments/**/*.js').pipe(gulp.dest('./bin/config/env'));
-  done();
-});
+// gulp.task('dev', shell.task(['node node_modules/webpack/bin/webpack.js --config webpack.config.js --process --colors --watch true --mode development']));
 
-gulp.task('dev', ['build'], () => {
-  gulp.watch('src/**/*.ts', ['compileForDev']);
-});
-
-gulp.task('devTest', ['watchTest'], () => {
-  let stream = nodemon({
-    exec: 'gulp test',
-    watch: 'test',
-    env: { NODE_ENV: process.env.NODE_ENV }
-  });
-  return stream;
-});
-
-gulp.task('devTest-nyan', ['watchTest'], () => {
-  let stream = nodemon({
-    exec: 'gulp test-nyan',
-    watch: 'test',
-    env: { NODE_ENV: process.env.NODE_ENV }
-  });
-  return stream;
-});
+gulp.task(
+  'dev',
+  shell.task(['cross-env NODE_ENV=test nyc mocha-webpack test/test.ts --watch src/**/*.ts --webpack-config webpack.config-test.js --recursive --require ts-node/register --mode development'])
+);

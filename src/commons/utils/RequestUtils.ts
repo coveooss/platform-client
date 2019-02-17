@@ -1,5 +1,5 @@
 import * as request from 'request';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import { JsonUtils } from './JsonUtils';
 import { Logger } from '../logger';
 export class RequestUtils {
@@ -11,7 +11,7 @@ export class RequestUtils {
 
   static get(uri: string, apiKey: string): Promise<request.RequestResponse> {
     Logger.verbose(`${chalk.bgCyan.bold('GET')} ${chalk.underline(uri)}`);
-    return new Promise((resolve: (value?: any | Thenable<{}>) => void, reject: (error: any) => void) => {
+    return new Promise((resolve: (value?: any) => void, reject: (error: any) => void) => {
       request(
         uri,
         {
@@ -35,7 +35,7 @@ export class RequestUtils {
 
   static post(uri: string, apiKey: string, data: any): Promise<request.RequestResponse> {
     Logger.verbose(`${chalk.bgGreen.bold('POST')} ${chalk.underline(uri)}`);
-    return new Promise((resolve: (value?: any | Thenable<{}>) => void, reject: (error: any) => void) => {
+    return new Promise((resolve: (value?: any) => void, reject: (error: any) => void) => {
       request(
         uri,
         {
@@ -61,7 +61,7 @@ export class RequestUtils {
 
   static put(uri: string, apiKey: string, data: any): Promise<request.RequestResponse> {
     Logger.verbose(`${chalk.bgYellow.bold('PUT')} ${chalk.underline(uri)}`);
-    return new Promise((resolve: (value?: any | Thenable<{}>) => void, reject: (error: any) => void) => {
+    return new Promise((resolve: (value?: any) => void, reject: (error: any) => void) => {
       request(
         uri,
         {
@@ -91,7 +91,7 @@ export class RequestUtils {
 
   static delete(uri: string, apiKey: string): Promise<request.RequestResponse> {
     Logger.verbose(`${chalk.bgRed.bold('DELETE')} ${chalk.underline(uri)}`);
-    return new Promise((resolve: (value?: any | Thenable<{}>) => void, reject: (error: any) => void) => {
+    return new Promise((resolve: (value?: any) => void, reject: (error: any) => void) => {
       request(
         uri,
         {

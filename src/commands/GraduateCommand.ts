@@ -73,7 +73,7 @@ export class GraduateCommand {
   private graduate(controller: BaseController, objectName: string, opts?: IGraduateOptions) {
     const options = _.extend(GraduateCommand.DEFAULT_OPTIONS, opts) as IGraduateOptions;
 
-    const questions: inquirer.Questions = [];
+    const questions = [];
     const allowedMethods: string[] = _.compact([options.POST ? 'CREATE' : '', options.PUT ? 'UPDATE' : '', options.DELETE ? 'DELETE' : '']);
 
     let phrase = allowedMethods.length === 1 ? 'only ' : '';

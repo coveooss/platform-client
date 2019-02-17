@@ -2,7 +2,7 @@ import { Question } from 'inquirer';
 import { Answers } from 'inquirer';
 import { RequestResponse } from 'request';
 import * as inquirer from 'inquirer';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import * as _ from 'underscore';
 import { DiffCommand } from '../commands/DiffCommand';
 import { GraduateCommand } from '../commands/GraduateCommand';

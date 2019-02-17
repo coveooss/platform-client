@@ -1,4 +1,4 @@
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 /**
  * The purpose of this class is to have specific colors for an object type.

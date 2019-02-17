@@ -86,8 +86,7 @@ platformclient diff-extensions devEnv prodEnv myApiKey --ignoreExtensions "my fi
 ### Important Gulp Tasks
 
 * `gulp default`: Builds the entire project
-* `gulp dev`: Starts a nodemon dev server for the project.
-* `gulp devTest`: Starts a nodemon dev server for the tests.
+* `gulp dev`: Starts a nodemon dev server as well as the tests.
 * `gulp test`: Builds and runs the unit tests and saves the coverage.
 
 ### Dev server
@@ -95,18 +94,12 @@ platformclient diff-extensions devEnv prodEnv myApiKey --ignoreExtensions "my fi
 gulp dev
 ```
 This will start nodemon dev server instance.
-Any time you hit Save in a source file, the bundle will be recompiled to the bin folder.
+Any time you hit **Save** in a source file or in a test file, the dev server will reload and re-run your tests.
 
 
 ### Tests
 
-Tests are written using [MochaJS](https://mochajs.org/). You can use `npm run test` to run the tests.
-
-If you wish to write new unit tests, you can do so by starting a new nodemon dev instance.
-
-To start the server, run `gulp devTest`.
-
-Every time you hit **Save** in a source file or in a test file, the dev server will reload and re-run your tests.
+Tests are written using [MochaJS](https://mochajs.org/). You can use `gulp test` to run the tests.
 
 Code coverage will be reported in `./coverage`
 

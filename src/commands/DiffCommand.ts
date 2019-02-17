@@ -1,5 +1,5 @@
 import * as fs from 'fs-extra';
-import * as opn from 'opn';
+import opn = require('opn');
 import * as _ from 'underscore';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { Colors } from '../commons/colors';
@@ -101,14 +101,13 @@ export class DiffCommand {
     options.includeOnly && options.includeOnly.length > 0
       ? Logger.verbose(`Diff will be applied exclusively to the following keys: ${JSON.stringify(options.includeOnly)}`)
       : options.keysToIgnore
-        ? Logger.verbose(`Diff will not be applied to the following keys: ${JSON.stringify(options.keysToIgnore)}`)
-        : void 0;
+      ? Logger.verbose(`Diff will not be applied to the following keys: ${JSON.stringify(options.keysToIgnore)}`)
+      : void 0;
 
     controller
       .diff(options)
       .then((diffResultArray: DiffResultArray<BaseCoveoObject>) => {
-        fs
-          .writeJSON(`${objectName}Diff.json`, controller.getCleanVersion(diffResultArray, options), { spaces: 2 })
+        fs.writeJSON(`${objectName}Diff.json`, controller.getCleanVersion(diffResultArray, options), { spaces: 2 })
           .then(() => {
             Logger.info('Diff operation completed');
             Logger.info(`File saved as ${Colors.filename(objectName + 'Diff.json')}`);

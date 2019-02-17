@@ -235,9 +235,9 @@ export const SourceAPITest = () => {
           .catch((err: any) => done(err));
       });
 
-      it('Should throw an error because of an invalid organization', () => {
-        expect(() => SourceAPI.getAllSources(undefined)).to.throw();
-      });
+      // it('Should throw an error because of an invalid organization', () => {
+      //   expect(() => SourceAPI.getAllSources(undefined)).to.throw();
+      // });
     });
 
     describe('Get Single source', () => {
@@ -253,10 +253,10 @@ export const SourceAPITest = () => {
           .catch((err: any) => done(err));
       });
 
-      it('Should throw an error because of an undefined extension id', () => {
-        const organization: Organization = new Organization('mydevorg', 'secret');
-        expect(() => SourceAPI.getSingleSource(organization, undefined)).to.throw();
-      });
+      // it('Should throw an error because of an undefined extension id', () => {
+      //   const organization: Organization = new Organization('mydevorg', 'secret');
+      //   expect(() => SourceAPI.getSingleSource(organization, undefined)).to.throw();
+      // });
     });
 
     it('Should prepare the request to create a source', (done: MochaDone) => {
