@@ -3,7 +3,7 @@ import { Logger } from '../commons/logger';
 
 export class CommanderUtils {
   list(val: string) {
-    return _.compact(val.split(','));
+    return _.map(_.compact(val.split(',')), v => v.trim());
   }
 
   setLogger(options: any, command: string) {
