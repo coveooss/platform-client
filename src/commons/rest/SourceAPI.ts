@@ -34,7 +34,7 @@ export class SourceAPI {
 
   static getSingleSource(organization: Organization, sourceId: string): Promise<RequestResponse> {
     Assert.isNotUndefined(sourceId, 'Cannot load undefined source');
-    return RequestUtils.get(UrlService.getSingleSourceUrl(organization.getId(), sourceId), organization.getApiKey());
+    return RequestUtils.get(UrlService.getSingleRawSourceUrl(organization.getId(), sourceId), organization.getApiKey());
   }
 
   static loadSources(org: Organization): Promise<{}> {

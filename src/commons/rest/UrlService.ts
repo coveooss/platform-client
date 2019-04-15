@@ -53,11 +53,15 @@ export class UrlService {
     return `${this.getOrganizationUrl(organizationId)}/sources/${sourceId}`;
   }
 
+  static getSingleRawSourceUrl(organizationId: string, sourceId: string): string {
+    return `${this.getSingleSourceUrl(organizationId, sourceId)}/raw`;
+  }
+
   static updateSource(organizationId: string, sourceId: string, rebuild = false): string {
-    return `${this.getOrganizationUrl(organizationId)}/sources/${sourceId}?rebuild=${rebuild}`;
+    return `${this.getOrganizationUrl(organizationId)}/sources/${sourceId}/raw?rebuild=${rebuild}`;
   }
 
   static createSource(organizationId: string, rebuild = false): string {
-    return `${this.getOrganizationUrl(organizationId)}/sources?rebuild=${rebuild}`;
+    return `${this.getOrganizationUrl(organizationId)}/sources/raw?rebuild=${rebuild}`;
   }
 }
