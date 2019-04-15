@@ -1,0 +1,25 @@
+{
+  "content": "#Video Filtering\nimport re\nimport json\n\ntrace_level = 0 #default level: warning\n\nvideo_mapping = {\n    'can',\n    'can accessories',\n}\n\ndef main():\n    log_trace('ENTER: main')\n\n    rejectdocument('ytvideotags',video_mapping)\n\n    log_trace('EXIT: main')\n\n#rejectdocument\n# input: inputField, mapping\ndef rejectdocument(metainput,mapping):\n    original_meta = safe_get_meta_data_value(metainput)\n    log_trace('original_meta: ' + original_meta)\n\n    lowercase_meta = original_meta.lower()\n    log_trace('lowercase_meta: ' + lowercase_meta)\n\n    meta_list = lowercase_meta.split(';')\n\n    normalized_list = [] #default use empty\n\n    flag = 0\n\n    for meta_value in meta_list:\n        log_trace('meta_value: ' + meta_value)\n        if meta_value in mapping:\n            flag = 1\n            log_trace('flag: ' + str(flag))\n#        else:\n#            flag = 0\n\n    log_trace('flag: ' + str(flag))\n\n    if flag==0: document.reject()\n    return 1\n\n#safe_get_parameter\n#  returns value from Indexing Pipeline Extension \"Parameter\"\n#  returns a string type by default\n#  returns a value of same tyep as defaultValue param, if cast is possible\n#    if case impossible, returns defaultValue\ndef safe_get_parameter(paramName, defaultValue=None):\n    def func_get(p_name):\n        return parameters[p_name]\n        \n    return safe_get_data(func_get, paramName, defaultValue)\n\ndef safe_get_meta_data_value(metadataName, defaultValue=None):\n    def func_get(p_name):\n        return document.get_meta_data_value(p_name)[-1]\n\n    log_trace('ENTER  safe_get_meta_data_value:' + metadataName)\n    retval =  safe_get_data(func_get, metadataName, defaultValue)\n    log_trace('EXIT safe_get_meta_data_value:' + retval)\n    return retval\n\ndef safe_get_data(func, paramName, defaultValue=None):\n    try:\n        if defaultValue is None:\n            defaultValue = ''\n\n        value = func(paramName)\n        neededType = type(defaultValue)\n        log_trace('{0} {1}: {2}'.format(paramName, type(value), value))\n        \n        return neededType(value)\n    except Exception as e:\n        #log_trace('except in safe_get_data: ' + str(e))\n        return defaultValue #return the default on any error\n\ndef log_trace(msg):\n    global trace_level\n    if trace_level < 1:\n        log(msg, 'debug')\n\ndef log_info(msg):\n    global trace_level\n    if trace_level < 2:\n        log(msg, 'normal')\n        \ndef log_warn(msg):\n    global trace_level\n    if trace_level < 3:\n        log(msg, 'warning')\n\ndef log_error(msg):\n    log(msg, 'error')        \n\nlog_trace('ENTER VideoFiltering')\ntrace_level = safe_get_parameter('trace_level', trace_level)\n\ntry:\n    main()\nexcept Exception as e:\n    log_error('UNEXPECTED: ' + str(e))\nlog_trace('EXIT VideoFiltering')\n\n\n#brands = document.get_meta_data_value(\"sfdcbrand\")\n#log(document.get_meta_data_value(\"sfdcbrand\"))\n\n\n#if not 'dummy' in brands:\n#    document.reject()\n\n\n#keyword_list = ['dummy', 'masterBetty']\n\n#if not(any(word in brand for word in keyword_list)):\n#    document.reject()\n\n\n\n#if not brand in (\"dummy;masterBetty\"):\n#    document.reject()\n#if not brand in (\"dummy;masterBetty\", \"dummy\", \"masterBetty\", \"Elite\", \"Clicker\"):\n#    document.reject()\n\n#if  brand.find(\"dummy\") = -1:\n#    document.reject()\n",
+  "createdDate": 1523375789000,
+  "description": "",
+  "enabled": true,
+  "id": "dummygroupk5f2dpwl-ukjs6nvyjvqdn4vozf3ugjkdqe",
+  "lastModified": 1523453823000,
+  "name": "FilterVideos",
+  "requiredDataStreams": [],
+  "versionId": "B3n55oghoiRMFQCimHNv_VpxjVHIUgXf",
+  "usedBy": [{ "sourceId": "qtngyd2gvxjxrrkftndaepcngu-dummygroupk5f2dpwl", "sourceName": "SupportVideos" }],
+  "status": {
+    "durationHealth": { "healthIndicator": "UNKNOWN" },
+    "dailyStatistics": {
+      "averageDurationInSeconds": 0.0,
+      "numberOfErrors": 0,
+      "numberOfExecutions": 0,
+      "numberOfSkips": 0,
+      "numberOfTimeouts": 0
+    },
+    "disabledStatus": {},
+    "timeoutHealth": { "healthIndicator": "UNKNOWN" },
+    "timeoutLikeliness": "NONE"
+  }
+}

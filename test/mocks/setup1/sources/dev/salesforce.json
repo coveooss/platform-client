@@ -1,0 +1,1310 @@
+{
+  "id": "wyowilfyrpf2qogxm45uhgskri-dummygroupk5f2dpwl",
+  "name": "Salesforce",
+  "owner": "dmcchristie@dummy.com-salesforce",
+  "sourceType": "SALESFORCE",
+  "crawlerInstanceType": "Connector.Salesforce2",
+  "additionalInfos": {
+    "salesforceOrg": "00DA0000000gjoEMAQ",
+    "schemaVersion": "LEGACY",
+    "salesforceOrgName": "The dummy Group",
+    "salesforceUser": "integration.user@random.com"
+  },
+  "configuration": {
+    "sourceSecurityOption": "Specified",
+    "startingAddresses": ["http://www.salesforce.com"],
+    "addressPatterns": [{ "expression": "*", "patternType": "Wildcard", "allowed": true }],
+    "permissions": [
+      {
+        "permissionSets": [
+          {
+            "allowedPermissions": [{ "identityType": "Group", "securityProvider": "Email Security Provider", "identity": "*@*" }],
+            "name": "Shared"
+          }
+        ],
+        "name": "Source Specified Permissions"
+      }
+    ],
+    "parameters": {
+      "PauseOnError": { "sensitive": false, "value": "true" },
+      "SchemaVersion": { "sensitive": false, "value": "LEGACY" },
+      "ClientSecret": { "sensitive": true },
+      "ClientId": { "sensitive": false, "value": "3MVG9y6x0357Hlee9u16V.Hjv9lwotQIYX.aXwcI9l7i.qJooX7k1ey71qdqLS52k24hamNYfJhhZwTdIjyAU" },
+      "IsSandbox": { "sensitive": false, "value": "false" },
+      "UseRefreshToken": { "sensitive": false, "value": "true" },
+      "OrganizationId": { "sensitive": false, "value": "dummygroupk5f2dpwl" },
+      "SourceId": { "sensitive": false, "value": "wyowilfyrpf2qogxm45uhgskri-dummygroupk5f2dpwl" }
+    },
+    "securityProviders": {},
+    "userIdentities": { "UserIdentity": { "name": "sdeysuy5agvxdmkqagvob3cfli", "userName": "unused" } },
+    "dataFiles": {},
+    "documentConfig": {
+      "documentProcessorConfig": {
+        "extensionSettings": {
+          "noExtension": {
+            "action": "Retrieve",
+            "actionOnError": "Ignore",
+            "converter": "Detect",
+            "useContentType": true,
+            "indexContainer": true,
+            "generateThumbnail": true,
+            "useExternalHTMLGenerator": false,
+            "convertDirectlyToHtml": false
+          },
+          "other": {
+            "action": "Retrieve",
+            "actionOnError": "Ignore",
+            "converter": "Detect",
+            "useContentType": true,
+            "indexContainer": true,
+            "generateThumbnail": true,
+            "useExternalHTMLGenerator": false,
+            "convertDirectlyToHtml": false
+          },
+          "byExtensions": [
+            {
+              "extensions": [
+                ".html",
+                ".htm",
+                ".shtml",
+                ".shtm",
+                ".asp",
+                ".aspx",
+                ".cgi",
+                ".php",
+                ".hta",
+                ".col",
+                ".fphtml",
+                ".ppthtml",
+                ".pothtml",
+                ".dochtml",
+                ".dothtml",
+                ".xlshtml",
+                ".jsp"
+              ],
+              "extensionSetting": {
+                "action": "Retrieve",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [".doc", ".dot", ".docx", ".docm", ".dotx", ".dotm"],
+              "extensionSetting": {
+                "action": "Retrieve",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [".xls", ".xlb", ".xlm", ".xlsx", ".xlsm", ".xltx", ".xltm", ".xlam"],
+              "extensionSetting": {
+                "action": "Retrieve",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [".ppt", ".pot", ".pps", ".pptx", ".pptm", ".potx", ".potm", ".ppsx", ".ppsm", ".ppam"],
+              "extensionSetting": {
+                "action": "Retrieve",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [".mpp"],
+              "extensionSetting": {
+                "action": "Reference",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [".mdb"],
+              "extensionSetting": {
+                "action": "Reference",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [".pub"],
+              "extensionSetting": {
+                "action": "Reference",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [
+                ".jpg",
+                ".jpeg",
+                ".jpe",
+                ".bmp",
+                ".gif",
+                ".pcx",
+                ".tif",
+                ".tiff",
+                ".jfif",
+                ".wpg",
+                ".tub",
+                ".tga",
+                ".sgi",
+                ".rle",
+                ".rgba",
+                ".rgb",
+                ".raw",
+                ".ras",
+                ".psp",
+                ".psd",
+                ".ppm",
+                ".pic",
+                ".pgm",
+                ".pgl",
+                ".pfr",
+                ".pct",
+                ".pbm",
+                ".mac",
+                ".lbm",
+                ".kdc",
+                ".img",
+                ".iff",
+                ".hpg",
+                ".hgl",
+                ".gem",
+                ".fpx",
+                ".dxf",
+                ".drw",
+                ".dcx",
+                ".cut",
+                ".cmx",
+                ".cdr",
+                ".bw",
+                ".dib",
+                ".pdc",
+                ".png",
+                ".ai",
+                ".wmf"
+              ],
+              "extensionSetting": {
+                "action": "Retrieve",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "Image",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [".pdf"],
+              "extensionSetting": {
+                "action": "Retrieve",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [
+                ".txt",
+                ".bat",
+                ".vbs",
+                ".ascx",
+                ".ini",
+                ".sln",
+                ".nfo",
+                ".inf",
+                ".wtx",
+                ".scp",
+                ".log",
+                ".exc",
+                ".dic",
+                ".vbdproj",
+                ".vjsproj",
+                ".vjsprojdata",
+                ".jsl",
+                ".vjp",
+                ".vdp",
+                ".vdproj",
+                ".config",
+                ".sdl",
+                ".wsdl",
+                ".cmd",
+                ".wsf",
+                ".csv",
+                ".js",
+                ".xsd"
+              ],
+              "extensionSetting": {
+                "action": "Retrieve",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [".rtf"],
+              "extensionSetting": {
+                "action": "Retrieve",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [".vsd"],
+              "extensionSetting": {
+                "action": "Reference",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [".wp", ".wpf", ".wpd"],
+              "extensionSetting": {
+                "action": "Retrieve",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [".xml"],
+              "extensionSetting": {
+                "action": "Reference",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [".7z"],
+              "extensionSetting": {
+                "action": "Reference",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [".zip"],
+              "extensionSetting": {
+                "action": "Reference",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [
+                ".aif",
+                ".aiff",
+                ".aifc",
+                ".snd",
+                ".au",
+                ".cda",
+                ".rmi",
+                ".mid",
+                ".midi",
+                ".mp1",
+                ".mp3",
+                ".mpga",
+                ".wav",
+                ".wma",
+                ".asf"
+              ],
+              "extensionSetting": {
+                "action": "Reference",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [
+                ".wm",
+                ".wmv",
+                ".mpv2",
+                ".mpg",
+                ".mpeg",
+                ".mpa",
+                ".mp2",
+                ".mp2v",
+                ".m1v",
+                ".qt",
+                ".rm",
+                ".rnx",
+                ".rec",
+                ".avi",
+                ".mov",
+                ".mp4"
+              ],
+              "extensionSetting": {
+                "action": "Reference",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [".wri"],
+              "extensionSetting": {
+                "action": "Reference",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [".swf", ".spl"],
+              "extensionSetting": {
+                "action": "Reference",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [".chm", ".hlp"],
+              "extensionSetting": {
+                "action": "Reference",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [".ncs"],
+              "extensionSetting": {
+                "action": "Reference",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [".email", ".eml", ".ews", ".mime", ".mht", ".mhtml"],
+              "extensionSetting": {
+                "action": "Retrieve",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": true,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [".exe", ".dll"],
+              "extensionSetting": {
+                "action": "Reference",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [".xsl", ".xslt"],
+              "extensionSetting": {
+                "action": "Ignore",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [".msg", ".oft"],
+              "extensionSetting": {
+                "action": "Retrieve",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            }
+          ],
+          "byContentTypes": [
+            {
+              "extensions": ["binarydata"],
+              "extensionSetting": {
+                "action": "Retrieve",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": [
+                "application/coveo-exchange-urn:content-classes:message",
+                "application/coveo-exchange-urn:content-classes:note",
+                "application/coveo-exchange-urn:content-classes:activity",
+                "application/coveo-exchange-urn:content-classes:appointment",
+                "application/coveo-exchange-urn:content-classes:calendarmessage",
+                "application/coveo-exchange-urn:content-classes:document",
+                "application/coveo-exchange-urn:content-classes:dsn",
+                "application/coveo-exchange-urn:content-classes:freebusy",
+                "application/coveo-exchange-urn:content-classes:group",
+                "application/coveo-exchange-urn:content-classes:mdn",
+                "application/coveo-exchange-urn:content-classes:object",
+                "application/coveo-exchange-urn:content-classes:person",
+                "application/coveo-exchange-urn:content-classes:recallmessage",
+                "application/coveo-exchange-urn:content-classes:recallreport",
+                "application/coveo-exchange-urn:content-classes:task",
+                "application/coveo-exchange-rssfeed",
+                "application/coveo-exchange-urn:content-classes:contentclassdef",
+                "application/coveo-exchange-urn:content-classes:organization",
+                "application/coveo-exchange-urn:content-classes:propertydef",
+                "application/coveo-exchange-urn:content-classes:reportmessage",
+                "application/coveo-exchange-activedirperson",
+                "application/coveo-exchange-officecom"
+              ],
+              "extensionSetting": {
+                "action": "Retrieve",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": false,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": ["text/html"],
+              "extensionSetting": {
+                "action": "Retrieve",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": true,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": ["text/xml"],
+              "extensionSetting": {
+                "action": "Retrieve",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": true,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            },
+            {
+              "extensions": ["message/rfc822"],
+              "extensionSetting": {
+                "action": "Retrieve",
+                "actionOnError": "Reference",
+                "converter": "Detect",
+                "useContentType": true,
+                "indexContainer": true,
+                "fileTypeValue": "",
+                "generateThumbnail": true,
+                "useExternalHTMLGenerator": false,
+                "convertDirectlyToHtml": false
+              }
+            }
+          ]
+        }
+      }
+    },
+    "extendedDataFiles": {
+      "ObjectsToGet": {
+        "sensitive": false,
+        "extendedData": {
+          "serializationType": "SALESFORCE",
+          "Query": [
+            {
+              "ObjectName": "How_To__kav",
+              "Fields": {
+                "string": [
+                  "ArchivedDate",
+                  "ArticleArchivedDate",
+                  "ArticleCaseAttachCount",
+                  "ArticleCreatedDate",
+                  "ArticleMasterLanguage",
+                  "ArticleNumber",
+                  "ArticleTotalViewCount",
+                  "ArticleType",
+                  "Article_Locked_for_Edit__c",
+                  "Attachment__ContentType__s",
+                  "Attachment__Length__s",
+                  "Attachment__Name__s",
+                  "Content__c",
+                  "CreatedDate",
+                  "FirstPublishedDate",
+                  "Id",
+                  "IsDeleted",
+                  "IsLatestVersion",
+                  "IsVisibleInApp",
+                  "IsVisibleInCsp",
+                  "IsVisibleInPkb",
+                  "IsVisibleInPrm",
+                  "Is_Approved__c",
+                  "KnowledgeArticleId",
+                  "Language",
+                  "LastModifiedDate",
+                  "LastPublishedDate",
+                  "Locked_By_User__c",
+                  "Promoted__c",
+                  "PublishStatus",
+                  "Rightnow_ID__c",
+                  "SourceId",
+                  "Status__c",
+                  "Summary",
+                  "SystemModstamp",
+                  "Title",
+                  "Top_Articles__c",
+                  "Under_Approval_Process__c",
+                  "UrlName",
+                  "VersionNumber",
+                  "dc_Brand",
+                  "dc_Brand2",
+                  "dc_Internal_Information",
+                  "dc_Product_Line",
+                  "dc_expanded_Brand",
+                  "dc_expanded_Internal_Information",
+                  "dc_expanded_Product_Line"
+                ]
+              },
+              "Conditions": {
+                "queryConditionOrQueryCondition2OrInCondition": [
+                  { "QueryCondition": { "Field": "IsVisibleInPkb", "Operator": "=", "Value": "true" } },
+                  {
+                    "InCondition": {
+                      "Field": "PublishStatus",
+                      "InConditionValue": {
+                        "name": "AllowedValues",
+                        "declaredType": "com.coveo.cloud.source.model.sourceconfig.salesforce.generator.AllowedValues",
+                        "scope": "javax.xml.bind.JAXBElement$GlobalScope",
+                        "value": {
+                          "ConditionValue": [
+                            {
+                              "name": "SoqlString",
+                              "declaredType": "java.lang.String",
+                              "scope": "javax.xml.bind.JAXBElement$GlobalScope",
+                              "value": "Online",
+                              "nil": false
+                            }
+                          ]
+                        },
+                        "nil": false
+                      }
+                    }
+                  }
+                ]
+              },
+              "ParentRelationships": {
+                "ParentRelationship": [
+                  { "RelationshipName": "ArchivedBy", "Fields": { "string": ["Id", "Name"] } },
+                  { "RelationshipName": "ArticleArchivedBy", "Fields": { "string": ["Id", "Name"] } },
+                  { "RelationshipName": "ArticleCreatedBy", "Fields": { "string": ["Id", "Name"] } },
+                  { "RelationshipName": "CreatedBy", "Fields": { "string": ["Id", "Name"] } },
+                  { "RelationshipName": "LastModifiedBy", "Fields": { "string": ["Id", "Name"] } },
+                  { "RelationshipName": "Locked_By__r", "Fields": { "string": ["Id", "Name"] } },
+                  { "RelationshipName": "Owner", "Fields": { "string": ["Id", "Name"] } }
+                ]
+              }
+            },
+            {
+              "ObjectName": "How_To__ka",
+              "Fields": {
+                "string": [
+                  "ArchivedById",
+                  "ArchivedDate",
+                  "ArticleNumber",
+                  "CaseAssociationCount",
+                  "CreatedDate",
+                  "FirstPublishedDate",
+                  "Id",
+                  "IsDeleted",
+                  "LastModifiedDate",
+                  "LastPublishedDate",
+                  "LastReferencedDate",
+                  "LastViewedDate",
+                  "SystemModstamp",
+                  "TotalViewCount"
+                ]
+              },
+              "ParentRelationships": {
+                "ParentRelationship": [
+                  { "RelationshipName": "CreatedBy", "Fields": { "string": ["Id", "Name"] } },
+                  { "RelationshipName": "LastModifiedBy", "Fields": { "string": ["Id", "Name"] } }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "preConversionExtensions": [],
+  "postConversionExtensions": [
+    {
+      "actionOnError": "SKIP_EXTENSION",
+      "condition": "",
+      "extensionId": "dummygroupk5f2dpwl-sr3jny7s5ekuwuyaak45awcaku",
+      "parameters": {},
+      "versionId": ""
+    },
+    {
+      "actionOnError": "SKIP_EXTENSION",
+      "condition": "",
+      "extensionId": "dummygroupk5f2dpwl-xnnutbu2n6kiwm243iossdsjha",
+      "parameters": {},
+      "versionId": ""
+    }
+  ],
+  "mappings": [
+    {
+      "id": "q2565xe4euxfxxtroaz3disb2i",
+      "kind": "COMMON",
+      "fieldName": "workphone",
+      "extractionMethod": "METADATA",
+      "content": "%[workphone]"
+    },
+    {
+      "id": "q36pfpzdfai43mrg4ghjr4chpy",
+      "kind": "COMMON",
+      "fieldName": "language",
+      "extractionMethod": "METADATA",
+      "content": "%[language]"
+    },
+    {
+      "id": "q725vp7orbe5qdwwswwfgucdlm",
+      "kind": "COMMON",
+      "fieldName": "cc",
+      "extractionMethod": "METADATA",
+      "content": "%[cc]"
+    },
+    {
+      "id": "q7a75cbxpcsm4wd3q5xw6i2mxu",
+      "kind": "COMMON",
+      "fieldName": "location",
+      "extractionMethod": "METADATA",
+      "content": "%[location]"
+    },
+    {
+      "id": "qb45tugrr2fev4fof6tdkgkoza",
+      "kind": "COMMON",
+      "fieldName": "permanentid",
+      "extractionMethod": "METADATA",
+      "content": "%[permanentid]"
+    },
+    {
+      "id": "qcet3s6up7kghrmqmesagacdce",
+      "kind": "COMMON",
+      "fieldName": "clickableuri",
+      "extractionMethod": "METADATA",
+      "content": "%[clickableuri]"
+    },
+    {
+      "id": "qeki3jm64fhqw64yxngduj2fku",
+      "kind": "COMMON",
+      "fieldName": "company",
+      "extractionMethod": "METADATA",
+      "content": "%[o]"
+    },
+    {
+      "id": "qeoh35m72zvnrxycjqwa37cfhy",
+      "kind": "COMMON",
+      "fieldName": "printableuri",
+      "extractionMethod": "METADATA",
+      "content": "%[printableuri]"
+    },
+    {
+      "id": "qk63tzepcjqt6mo4hb3aozse6m",
+      "kind": "COMMON",
+      "fieldName": "ytvideodimension",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_VideoDimension]"
+    },
+    {
+      "id": "qr5ubcnl63qdyq5ccep3cbkliu",
+      "kind": "COMMON",
+      "fieldName": "site",
+      "extractionMethod": "METADATA",
+      "content": "%[site]"
+    },
+    {
+      "id": "qs2n7obkr373yvg4wthc6a2aai",
+      "kind": "COMMON",
+      "fieldName": "ytviewcount",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_ViewCount]"
+    },
+    {
+      "id": "qspyrwse7mdbu7ymgygeyl2kua",
+      "kind": "COMMON",
+      "fieldName": "ytplaylistid",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_PlaylistId]"
+    },
+    {
+      "id": "qw4k2jwve3n556c2ywoy4bkavu",
+      "kind": "COMMON",
+      "fieldName": "manager",
+      "extractionMethod": "METADATA",
+      "content": "%[manager]"
+    },
+    {
+      "id": "qwh7t6qk3c4a2qzsxqmd7isja4",
+      "kind": "COMMON",
+      "fieldName": "year",
+      "extractionMethod": "METADATA",
+      "content": "%[year]"
+    },
+    {
+      "id": "qyaofezmysgbzh3x5aycdrkl6e",
+      "kind": "COMMON",
+      "fieldName": "worktitle",
+      "extractionMethod": "METADATA",
+      "content": "%[worktitle]"
+    },
+    {
+      "id": "r2oae5vyaweeowhesgy2ggklva",
+      "kind": "MAPPING",
+      "type": "Video",
+      "fieldName": "body",
+      "extractionMethod": "LITERAL",
+      "content": "\r\n                            <html><body>\r\n                              <div style=\"margin: 20px auto; width: 640px\">\r\n                                <div>\r\n                                  <!--Embedded Youtube video player-->\r\n                                  <iframe type='text/html' src='https://www.youtube.com/embed/%[coveo_VideoId]'\r\n                                          width='640' height='360' frameborder='0' allowfullscreen='true'></iframe>\r\n                                </div>\r\n                                <div style=\"border: 1px solid #CCC; padding:10px; font-family: Helvetica\">\r\n                                  <p style=\"text-align: justify;\">%[coveo_Description]</p>\r\n                                </div>\r\n                              </div>\r\n                            </body></html>"
+    },
+    {
+      "id": "r67lzgmulv455fmrk3a33pspce",
+      "kind": "COMMON",
+      "fieldName": "fileextension",
+      "extractionMethod": "METADATA",
+      "content": "%[fileextension]"
+    },
+    {
+      "id": "rb6irii7qbsystjobzn3262ema",
+      "kind": "COMMON",
+      "fieldName": "ytvideoid",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_VideoId]"
+    },
+    {
+      "id": "rcfazf3vexvjg7j4kbqkmt2b24",
+      "kind": "COMMON",
+      "fieldName": "ytcategory",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_Category]"
+    },
+    {
+      "id": "rcjhq3cywg5bnu64gmwwpt2dge",
+      "kind": "COMMON",
+      "fieldName": "ytvideoduration",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_VideoDuration]"
+    },
+    {
+      "id": "rdtfp6fvsbjffjr3y2mryicf2m",
+      "kind": "COMMON",
+      "fieldName": "bcc",
+      "extractionMethod": "METADATA",
+      "content": "%[bcc]"
+    },
+    {
+      "id": "rjragrco5stw2rqxr4bs46kl6q",
+      "kind": "COMMON",
+      "fieldName": "connectortype",
+      "extractionMethod": "METADATA",
+      "content": "%[connectortype]"
+    },
+    {
+      "id": "rkm6w2qz53kasnncppdm4y2bkm",
+      "kind": "COMMON",
+      "fieldName": "documenttype",
+      "extractionMethod": "METADATA",
+      "content": "%[documenttype]"
+    },
+    {
+      "id": "rnjh3ut6hhfvdceqm2fxq4klei",
+      "kind": "COMMON",
+      "fieldName": "filetype",
+      "extractionMethod": "METADATA",
+      "content": "%[filetype]"
+    },
+    {
+      "id": "romdfd7ryuivpp3mqtzmss2ccq",
+      "kind": "COMMON",
+      "fieldName": "firstname",
+      "extractionMethod": "METADATA",
+      "content": "%[firstname]"
+    },
+    {
+      "id": "rq3wiga6j5skzpcytpospokegm",
+      "kind": "COMMON",
+      "fieldName": "homephone",
+      "extractionMethod": "METADATA",
+      "content": "%[homephone]"
+    },
+    {
+      "id": "ru6r6kxo6oug6qlyyi2ardcnfq",
+      "kind": "COMMON",
+      "fieldName": "ytlikecount",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_LikeCount]"
+    },
+    {
+      "id": "rwba34acywljbh7va7ciz4sjwq",
+      "kind": "COMMON",
+      "fieldName": "ytvideotags",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_Tags]"
+    },
+    {
+      "id": "scormizncpywwnn7vswojkkppq",
+      "kind": "COMMON",
+      "fieldName": "relatedlink",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_externalurl]"
+    },
+    {
+      "id": "sg3h6dynw3i4dl6su5ygwwspju",
+      "kind": "COMMON",
+      "fieldName": "datebucket",
+      "extractionMethod": "METADATA",
+      "content": "%[datebucket]"
+    },
+    {
+      "id": "sgtuoldf37hndaj3ovxgjfcd5a",
+      "kind": "COMMON",
+      "fieldName": "company",
+      "extractionMethod": "METADATA",
+      "content": "%[company]"
+    },
+    {
+      "id": "sjcsvzuldawvv6xvbnaakvsdyy",
+      "kind": "COMMON",
+      "fieldName": "ytdescription",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_Description]"
+    },
+    {
+      "id": "svypw2fft2if4nq6pm6rc32csq",
+      "kind": "COMMON",
+      "fieldName": "author",
+      "extractionMethod": "METADATA",
+      "content": "%[author:crawler]"
+    },
+    {
+      "id": "tajshffhflnzn7byp6ts762gny",
+      "kind": "COMMON",
+      "fieldName": "ytembedplayerhtml",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_EmbedPlayerHtml]"
+    },
+    {
+      "id": "tbnn2bwcpjn6wfjuklgdma2c2a",
+      "kind": "COMMON",
+      "fieldName": "mobilephone",
+      "extractionMethod": "METADATA",
+      "content": "%[mobile]"
+    },
+    {
+      "id": "tbuewjn444riwssfuet33akix4",
+      "kind": "COMMON",
+      "fieldName": "foldingchild",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_foldingchild]"
+    },
+    {
+      "id": "tjaor2cqugkvsipwmudu6ncjsy",
+      "kind": "COMMON",
+      "fieldName": "ytitemcount",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_ItemCount]"
+    },
+    {
+      "id": "tk2sgoppncbbi4nxjqkrhe2fhu",
+      "kind": "COMMON",
+      "fieldName": "title",
+      "extractionMethod": "METADATA",
+      "content": "%[title:crawler]"
+    },
+    {
+      "id": "tkr2rw2dk2d6f5v7ouqjqdki5q",
+      "kind": "COMMON",
+      "fieldName": "ytthumbnailurl",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_ThumbnailUrl]"
+    },
+    {
+      "id": "trdfp76mrl54krcbcusqgf2etu",
+      "kind": "COMMON",
+      "fieldName": "ytfavoritecount",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_FavoriteCount]"
+    },
+    {
+      "id": "ttriqjj32wihayhows564dcps4",
+      "kind": "COMMON",
+      "fieldName": "mobilephone",
+      "extractionMethod": "METADATA",
+      "content": "%[mobilephone]"
+    },
+    {
+      "id": "ug3pc37t4lgmx2zo57crc5soyq",
+      "kind": "COMMON",
+      "fieldName": "ytdislikecount",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_DislikeCount]"
+    },
+    {
+      "id": "uj5xut3slvw4qfdnafr5qr2ntu",
+      "kind": "COMMON",
+      "fieldName": "ytfoldingparentid",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_foldingparentid]"
+    },
+    {
+      "id": "umlwxk25qlqb5vfipttmr32kfe",
+      "kind": "COMMON",
+      "fieldName": "subject",
+      "extractionMethod": "METADATA",
+      "content": "%[subject]"
+    },
+    {
+      "id": "upsbydwhxzvwnp4hqviq57se6u",
+      "kind": "COMMON",
+      "fieldName": "date",
+      "extractionMethod": "METADATA",
+      "content": "%[date]"
+    },
+    {
+      "id": "uwi62neh35i4h6q3dgyhrrcjlq",
+      "kind": "COMMON",
+      "fieldName": "foldingparent",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_foldingparent]"
+    },
+    {
+      "id": "uzqfl3dqb2dipford4a6recnum",
+      "kind": "COMMON",
+      "fieldName": "filename",
+      "extractionMethod": "METADATA",
+      "content": "%[filename]"
+    },
+    {
+      "id": "v3kqrfgyp3vx3ibwgjg6qt2caa",
+      "kind": "COMMON",
+      "fieldName": "office",
+      "extractionMethod": "METADATA",
+      "content": "%[office]"
+    },
+    {
+      "id": "vnjjavdkbwpinpwduj3akfsfxi",
+      "kind": "COMMON",
+      "fieldName": "fax",
+      "extractionMethod": "METADATA",
+      "content": "%[fax]"
+    },
+    {
+      "id": "vqapvmcwxsi5epbfctsrh32d44",
+      "kind": "COMMON",
+      "fieldName": "sourcetype",
+      "extractionMethod": "METADATA",
+      "content": "%[sourcetype]"
+    },
+    {
+      "id": "vvwso4eanha6zh7lz5knjpcoru",
+      "kind": "COMMON",
+      "fieldName": "lastname",
+      "extractionMethod": "METADATA",
+      "content": "%[lastname]"
+    },
+    {
+      "id": "vyc3vd6m6wkjqjctwt57mrkgam",
+      "kind": "COMMON",
+      "fieldName": "ytchanneltitle",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_ChannelTitle]"
+    },
+    {
+      "id": "weg7j7dymavkdocag5ivehkj2e",
+      "kind": "COMMON",
+      "fieldName": "ytvideodefinition",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_VideoDefinition]"
+    },
+    {
+      "id": "whebpjdwyipylckwqyzgcmcd4i",
+      "kind": "COMMON",
+      "fieldName": "month",
+      "extractionMethod": "METADATA",
+      "content": "%[month]"
+    },
+    {
+      "id": "wlw5k7l7dsjmdzqhahz3pmkfzu",
+      "kind": "COMMON",
+      "fieldName": "mobileuri",
+      "extractionMethod": "METADATA",
+      "content": "%[mobileuri]"
+    },
+    {
+      "id": "wn3z3ahwlf3zeepp64sd3w2lju",
+      "kind": "COMMON",
+      "fieldName": "mobilephone",
+      "extractionMethod": "METADATA",
+      "content": "%[cellphone]"
+    },
+    {
+      "id": "wsbciizqeduizoejhdkcl3clt4",
+      "kind": "COMMON",
+      "fieldName": "size",
+      "extractionMethod": "METADATA",
+      "content": "%[size]"
+    },
+    {
+      "id": "wtdtp3cmscej5osl2eg2f42g5q",
+      "kind": "COMMON",
+      "fieldName": "yttopfoldingparentid",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_topfoldingparentid]"
+    },
+    {
+      "id": "wtsc6pjp27pcqq7bm7rakasjea",
+      "kind": "MAPPING",
+      "type": "Playlist",
+      "fieldName": "body",
+      "extractionMethod": "LITERAL",
+      "content": "\r\n                            <html><body>\r\n                              <div style=\"margin: 20px auto; width: 640px\">\r\n                                <div>\r\n                                  <!--Embedded Youtube video player-->\r\n                                  <iframe type='text/html' src='http://www.youtube.com/embed/videoseries?list=%[coveo_PlaylistId]'\r\n                                          width='640' height='360' frameborder='0' allowfullscreen='true'></iframe>\r\n                                </div>\r\n                              <div style=\"border: 1px solid #CCC; padding:10px; font-family: Helvetica\">\r\n                                <p style=\"text-align: justify;\">%[coveo_Description]</p>\r\n                              </div>\r\n                            </div>\r\n                          </body></html>"
+    },
+    {
+      "id": "wwaetvshncoc33lngd4je5snd4",
+      "kind": "COMMON",
+      "fieldName": "fullname",
+      "extractionMethod": "METADATA",
+      "content": "%[fullname]"
+    },
+    {
+      "id": "x3ob2bv7gdc76ed6bvxur6clny",
+      "kind": "COMMON",
+      "fieldName": "workemail",
+      "extractionMethod": "METADATA",
+      "content": "%[workemail]"
+    },
+    {
+      "id": "x4hnqitekrre5ywb5mcj3r2nqy",
+      "kind": "COMMON",
+      "fieldName": "ytcommentcount",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_CommentCount]"
+    },
+    {
+      "id": "x6ycmvgmb4ma6bylftbc2zklsq",
+      "kind": "COMMON",
+      "fieldName": "ytplaylistmodifiedid",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_PlaylistModifiedId]"
+    },
+    {
+      "id": "xe3ubm6zkio55cwjkbilhjsdte",
+      "kind": "COMMON",
+      "fieldName": "folders",
+      "extractionMethod": "METADATA",
+      "content": "%[folders]"
+    },
+    {
+      "id": "xfxhkdtedhio5jjkakupvdkieu",
+      "kind": "COMMON",
+      "fieldName": "to",
+      "extractionMethod": "METADATA",
+      "content": "%[to]"
+    },
+    {
+      "id": "xhaoxds3rwl7r6in2r2cktsl4a",
+      "kind": "COMMON",
+      "fieldName": "middlename",
+      "extractionMethod": "METADATA",
+      "content": "%[middlename]"
+    },
+    {
+      "id": "xhyp6omssahd6gwfeeobg7sfam",
+      "kind": "COMMON",
+      "fieldName": "from",
+      "extractionMethod": "METADATA",
+      "content": "%[from]"
+    },
+    {
+      "id": "xjj4maitqdsvod6xpfjwldcnve",
+      "kind": "COMMON",
+      "fieldName": "parents",
+      "extractionMethod": "METADATA",
+      "content": "%[parents]"
+    },
+    {
+      "id": "xmvne6zapamb6rqlowecgyscge",
+      "kind": "COMMON",
+      "fieldName": "ytplaylistitemstitle",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_PlaylistItemsTitle]"
+    },
+    {
+      "id": "xovbifc75mekjb6jkko3nfsfaq",
+      "kind": "COMMON",
+      "fieldName": "authorloginname",
+      "extractionMethod": "METADATA",
+      "content": "%[authorloginname]"
+    },
+    {
+      "id": "xv27jbrc6jsm4lghoxzldrsgnu",
+      "kind": "COMMON",
+      "fieldName": "foldingcollection",
+      "extractionMethod": "METADATA",
+      "content": "%[coveo_foldingcollection]"
+    }
+  ],
+  "additionalComments": "",
+  "pushEnabled": false,
+  "onPremisesEnabled": false,
+  "logicalIndex": "default",
+  "resourceId": "wyowilfyrpf2qogxm45uhgskri-dummygroupk5f2dpwl"
+}

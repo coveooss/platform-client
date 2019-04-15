@@ -1,0 +1,163 @@
+[
+  {
+    "createdDate": 1523375780000,
+    "description": "This is to reject manuals which don't have dsadsa, dummy or masterBetty as a brand",
+    "enabled": true,
+    "id": "dummygroupk5f2dpwl-q32rkqp2fzuz2b3rbw5d53kc2q",
+    "lastModified": 1523375780000,
+    "name": "FilterManuals",
+    "requiredDataStreams": [],
+    "versionId": "LEGeoTTXFM4RZS9Vx7i5HUwE9aolc0Dw",
+    "status": {
+      "durationHealth": { "healthIndicator": "UNKNOWN" },
+      "dailyStatistics": {
+        "averageDurationInSeconds": 0.0,
+        "numberOfErrors": 0,
+        "numberOfExecutions": 0,
+        "numberOfSkips": 0,
+        "numberOfTimeouts": 0
+      },
+      "disabledStatus": {},
+      "timeoutHealth": { "healthIndicator": "UNKNOWN" },
+      "timeoutLikeliness": "NONE"
+    }
+  },
+  {
+    "createdDate": 1523375756000,
+    "description": "Exposes all available metadata for discovery/troubleshooting purpose; requires a mapping to a field that can likely be named AllMetadataValues",
+    "enabled": true,
+    "id": "dummygroupk5f2dpwl-qww6e7om4rommwdba5nk3ykc4e",
+    "lastModified": 1523375756000,
+    "name": "AllMetadataValues",
+    "requiredDataStreams": [],
+    "versionId": ".Hvd.k9RniKVoYMvCSHBvdr7TSHD.oyc",
+    "status": {
+      "durationHealth": { "healthIndicator": "UNKNOWN" },
+      "dailyStatistics": {
+        "averageDurationInSeconds": 0.0,
+        "numberOfErrors": 0,
+        "numberOfExecutions": 0,
+        "numberOfSkips": 0,
+        "numberOfTimeouts": 0
+      },
+      "disabledStatus": {},
+      "timeoutHealth": { "healthIndicator": "UNKNOWN" },
+      "timeoutLikeliness": "NONE"
+    }
+  },
+  {
+    "createdDate": 1523375855000,
+    "description": "Genereates @commonbrand and @commonproducttype  from @ytvideotags",
+    "enabled": true,
+    "id": "dummygroupk5f2dpwl-sfm7yvhqtiftmfuasrqtpfkio4",
+    "lastModified": 1523375855000,
+    "name": "SharedVideosNormalization",
+    "requiredDataStreams": [],
+    "versionId": "vL7K_qhcf4Z4xigKVm_zmqlWCyyErwxn",
+    "status": {
+      "durationHealth": { "healthIndicator": "UNKNOWN" },
+      "dailyStatistics": {
+        "averageDurationInSeconds": 0.0,
+        "numberOfErrors": 0,
+        "numberOfExecutions": 0,
+        "numberOfSkips": 0,
+        "numberOfTimeouts": 0
+      },
+      "disabledStatus": {},
+      "timeoutHealth": { "healthIndicator": "UNKNOWN" },
+      "timeoutLikeliness": "NONE"
+    }
+  },
+  {
+    "createdDate": 1523375812000,
+    "description": "",
+    "enabled": true,
+    "id": "dummygroupk5f2dpwl-sr3jny7s5ekuwuyaak45awcaku",
+    "lastModified": 1550864778000,
+    "name": "SalesforceNormalization",
+    "requiredDataStreams": [],
+    "versionId": "_FLA4i6AFy7YVGy3fNEks4eYb4da2Tw8",
+    "status": {
+      "durationHealth": { "healthIndicator": "GOOD" },
+      "dailyStatistics": {
+        "averageDurationInSeconds": 0.007007432398712982,
+        "numberOfErrors": 0,
+        "numberOfExecutions": 15229,
+        "numberOfSkips": 0,
+        "numberOfTimeouts": 0
+      },
+      "disabledStatus": {},
+      "timeoutHealth": { "healthIndicator": "GOOD" },
+      "timeoutLikeliness": "NONE"
+    }
+  },
+  {
+    "createdDate": 1523375789000,
+    "description": "",
+    "enabled": true,
+    "id": "dummygroupk5f2dpwl-ukjs6nvyjvqdn4vozf3ugjkdqe",
+    "lastModified": 1523453823000,
+    "name": "FilterVideos",
+    "requiredDataStreams": [],
+    "versionId": "B3n55oghoiRMFQCimHNv_VpxjVHIUgXf",
+    "status": {
+      "durationHealth": { "healthIndicator": "UNKNOWN" },
+      "dailyStatistics": {
+        "averageDurationInSeconds": 0.0,
+        "numberOfErrors": 0,
+        "numberOfExecutions": 0,
+        "numberOfSkips": 0,
+        "numberOfTimeouts": 0
+      },
+      "disabledStatus": {},
+      "timeoutHealth": { "healthIndicator": "UNKNOWN" },
+      "timeoutLikeliness": "NONE"
+    }
+  },
+  {
+    "createdDate": 1523375766000,
+    "description": "",
+    "enabled": true,
+    "id": "dummygroupk5f2dpwl-xnnutbu2n6kiwm243iossdsjha",
+    "lastModified": 1523885136000,
+    "name": "FilterArticles",
+    "requiredDataStreams": [],
+    "versionId": "VF6V8RhO0auMyfaEZFZEUDq.cjd7JGs0",
+    "status": {
+      "durationHealth": { "healthIndicator": "GOOD" },
+      "dailyStatistics": {
+        "averageDurationInSeconds": 0.007592896119246175,
+        "numberOfErrors": 0,
+        "numberOfExecutions": 15229,
+        "numberOfSkips": 0,
+        "numberOfTimeouts": 0
+      },
+      "disabledStatus": {},
+      "timeoutHealth": { "healthIndicator": "GOOD" },
+      "timeoutLikeliness": "NONE"
+    }
+  },
+  {
+    "createdDate": 1523375802000,
+    "description": "",
+    "enabled": true,
+    "id": "dummygroupk5f2dpwl-xukldsadsaaujg3gj2ivcynor2adq",
+    "lastModified": 1523375802000,
+    "name": "ManualsNormalization",
+    "requiredDataStreams": [],
+    "versionId": "XufRKiqPLkXcpR4Q0WAiYOhEoWMtoBvv",
+    "status": {
+      "durationHealth": { "healthIndicator": "UNKNOWN" },
+      "dailyStatistics": {
+        "averageDurationInSeconds": 0.0,
+        "numberOfErrors": 0,
+        "numberOfExecutions": 0,
+        "numberOfSkips": 0,
+        "numberOfTimeouts": 0
+      },
+      "disabledStatus": {},
+      "timeoutHealth": { "healthIndicator": "UNKNOWN" },
+      "timeoutLikeliness": "NONE"
+    }
+  }
+]

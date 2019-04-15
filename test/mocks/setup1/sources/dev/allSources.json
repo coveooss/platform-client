@@ -1,0 +1,173 @@
+[
+  {
+    "sourceType": "WEB2",
+    "id": "rrbbidfxa2ri4usxhzzmhq2hge-dummygroupk5f2dpwl",
+    "name": "My web source",
+    "owner": "john@coveo.com-google",
+    "sourceVisibility": "SHARED",
+    "information": {
+      "sourceStatus": { "type": "IDLE", "timestamp": 1550810907000, "allowedOperations": ["DELETE", "REBUILD", "FULL_REFRESH"] },
+      "lastOperation": {
+        "id": "cca99e67520b4111989569b800aa9dc9",
+        "operationType": "FULL_REFRESH",
+        "timestamp": 1550810907000,
+        "result": "SUCCESS",
+        "initialBuild": false,
+        "numberOfDocuments": 2447
+      },
+      "nextOperation": { "operationType": "FULL_REFRESH", "timestamp": 1550890800000 },
+      "rebuildRequired": true,
+      "numberOfDocuments": 383,
+      "documentsTotalSize": 24738758
+    },
+    "pushEnabled": false,
+    "onPremisesEnabled": false,
+    "logicalIndex": "default",
+    "preConversionExtensions": [],
+    "postConversionExtensions": [],
+    "urlFilters": [
+      { "filter": "*", "includeFilter": true, "filterType": "WILDCARD" },
+      { "filter": "https://www.dummy.com/search*", "includeFilter": false, "filterType": "REGEX" },
+      { "filter": "https://www.dummy.com/CatalogResourcesV3*", "includeFilter": false, "filterType": "REGEX" }
+    ],
+    "resourceId": "rrbbidfxa2ri4usxhzzmhq2hge-dummygroupk5f2dpwl"
+  },
+  {
+    "sourceType": "SITEMAP",
+    "id": "tcytrppteddiqkmboszu4skdoe-dummygroupk5f2dpwl",
+    "name": "My Sitemap Source",
+    "owner": "john@coveo.com-google",
+    "sourceVisibility": "SHARED",
+    "information": {
+      "sourceStatus": {
+        "type": "IDLE",
+        "timestamp": 1550867254000,
+        "allowedOperations": ["DELETE", "REBUILD", "FULL_REFRESH", "INCREMENTAL_REFRESH"]
+      },
+      "lastOperation": {
+        "id": "8f4cfcc2b72040d188fc07335085cc8a",
+        "operationType": "INCREMENTAL_REFRESH",
+        "timestamp": 1550867254000,
+        "result": "SUCCESS",
+        "initialBuild": false,
+        "numberOfDocuments": 0
+      },
+      "nextOperation": { "operationType": "INCREMENTAL_REFRESH", "timestamp": 1550881800000 },
+      "rebuildRequired": true,
+      "numberOfDocuments": 1227,
+      "documentsTotalSize": 3479398032
+    },
+    "pushEnabled": false,
+    "onPremisesEnabled": false,
+    "logicalIndex": "default",
+    "preConversionExtensions": [],
+    "postConversionExtensions": [
+      {
+        "actionOnError": "SKIP_EXTENSION",
+        "condition": "",
+        "extensionId": "dummygroupk5f2dpwl-xuklmyqaujg3gj2ivcynor2adq",
+        "parameters": {},
+        "versionId": ""
+      }
+    ],
+    "urlFilters": [{ "filter": "*", "includeFilter": true, "filterType": "WILDCARD" }],
+    "resourceId": "tcytrppteddiqkmboszu4skdoe-dummygroupk5f2dpwl"
+  },
+  {
+    "sourceType": "SALESFORCE",
+    "id": "wyowilfyrpf2qogxm45uhgskri-dummygroupk5f2dpwl",
+    "name": "Salesforce",
+    "owner": "dmcchristie@dummy.com-salesforce",
+    "sourceVisibility": "SHARED",
+    "information": {
+      "sourceStatus": {
+        "type": "IDLE",
+        "timestamp": 1550870077000,
+        "allowedOperations": ["DELETE", "REBUILD", "FULL_REFRESH", "INCREMENTAL_REFRESH"]
+      },
+      "lastOperation": {
+        "id": "0fe789a2ab134490b2506909b3352d48",
+        "operationType": "INCREMENTAL_REFRESH",
+        "timestamp": 1550870077000,
+        "result": "SUCCESS",
+        "initialBuild": false,
+        "numberOfDocuments": 81
+      },
+      "nextOperation": { "operationType": "INCREMENTAL_REFRESH", "timestamp": 1550880780000 },
+      "rebuildRequired": false,
+      "numberOfDocuments": 1652,
+      "documentsTotalSize": 12043509
+    },
+    "pushEnabled": false,
+    "onPremisesEnabled": false,
+    "logicalIndex": "default",
+    "securityProviderReferences": [],
+    "preConversionExtensions": [],
+    "postConversionExtensions": [
+      {
+        "actionOnError": "SKIP_EXTENSION",
+        "condition": "",
+        "extensionId": "dummygroupk5f2dpwl-sr3jny7s5ekuwuyaak45awcaku",
+        "parameters": {},
+        "versionId": ""
+      },
+      {
+        "actionOnError": "SKIP_EXTENSION",
+        "condition": "",
+        "extensionId": "dummygroupk5f2dpwl-xnnutbu2n6kiwm243iossdsjha",
+        "parameters": {},
+        "versionId": ""
+      }
+    ],
+    "urlFilters": [{ "filter": "*", "includeFilter": true, "filterType": "WILDCARD" }],
+    "resourceId": "wyowilfyrpf2qogxm45uhgskri-dummygroupk5f2dpwl"
+  },
+  {
+    "sourceType": "YOUTUBE",
+    "id": "qtngyd2gvxjxrrkftndaepcngu-dummygroupk5f2dpwl",
+    "name": "SupportVideos",
+    "owner": "john@coveo.com-google",
+    "sourceVisibility": "SHARED",
+    "information": {
+      "sourceStatus": {
+        "type": "IDLE",
+        "timestamp": 1550866015000,
+        "allowedOperations": ["DELETE", "REBUILD", "FULL_REFRESH", "INCREMENTAL_REFRESH"]
+      },
+      "lastOperation": {
+        "id": "b424734183b342a396c1e4fd1fb1d117",
+        "operationType": "INCREMENTAL_REFRESH",
+        "timestamp": 1550866015000,
+        "result": "SUCCESS",
+        "initialBuild": false,
+        "numberOfDocuments": 0
+      },
+      "nextOperation": { "operationType": "INCREMENTAL_REFRESH", "timestamp": 1550880120000 },
+      "rebuildRequired": true,
+      "numberOfDocuments": 89,
+      "documentsTotalSize": 148345
+    },
+    "pushEnabled": false,
+    "onPremisesEnabled": false,
+    "logicalIndex": "default",
+    "preConversionExtensions": [],
+    "postConversionExtensions": [
+      {
+        "actionOnError": "SKIP_EXTENSION",
+        "condition": "",
+        "extensionId": "dummygroupk5f2dpwl-sfm7yvhqtiftmfuasrqtpfkio4",
+        "parameters": {},
+        "versionId": ""
+      },
+      {
+        "actionOnError": "SKIP_EXTENSION",
+        "condition": "",
+        "extensionId": "dummygroupk5f2dpwl-ukjs6nvyjvqdn4vozf3ugjkdqe",
+        "parameters": {},
+        "versionId": ""
+      }
+    ],
+    "urlFilters": [{ "filter": "*", "includeFilter": true, "filterType": "WILDCARD" }],
+    "resourceId": "qtngyd2gvxjxrrkftndaepcngu-dummygroupk5f2dpwl"
+  }
+]

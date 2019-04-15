@@ -1,0 +1,25 @@
+{
+  "content": "brand = document.get_meta_data_value(\"brand\")\n\nif not brand in (\"dsadsa\", \"dummy\", \"masterBetty\", \"Elite\", \"Clicker\"):\n    document.reject()",
+  "createdDate": 1523375780000,
+  "description": "This is to reject manuals which don't have dsadsa, dummy or masterBetty as a brand",
+  "enabled": true,
+  "id": "dummygroupk5f2dpwl-q32rkqp2fzuz2b3rbw5d53kc2q",
+  "lastModified": 1523375780000,
+  "name": "FilterManuals",
+  "requiredDataStreams": [],
+  "versionId": "LEGeoTTXFM4RZS9Vx7i5HUwE9aolc0Dw",
+  "usedBy": [],
+  "status": {
+    "durationHealth": { "healthIndicator": "UNKNOWN" },
+    "dailyStatistics": {
+      "averageDurationInSeconds": 0.0,
+      "numberOfErrors": 0,
+      "numberOfExecutions": 0,
+      "numberOfSkips": 0,
+      "numberOfTimeouts": 0
+    },
+    "disabledStatus": {},
+    "timeoutHealth": { "healthIndicator": "UNKNOWN" },
+    "timeoutLikeliness": "NONE"
+  }
+}
