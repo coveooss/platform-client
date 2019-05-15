@@ -1,5 +1,5 @@
 import * as fs from 'fs-extra';
-import opn = require('opn');
+import opn = require('open');
 import * as _ from 'underscore';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { Colors } from '../commons/colors';
