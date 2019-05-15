@@ -1,6 +1,6 @@
 class EnvironmentUtilsSingleton {
   private static logger: EnvironmentUtilsSingleton = new EnvironmentUtilsSingleton();
-  private env: string = 'production';
+  private env: string = process.env.NODE_ENV || 'production';
 
   static getInstance(): EnvironmentUtilsSingleton {
     return this.logger;

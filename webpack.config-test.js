@@ -11,7 +11,7 @@ module.exports = {
   name: 'client',
   target: 'node',
   entry: './src/client.ts',
-  mode: 'development',
+  mode: 'none',
   output: {
     path: path.resolve(__dirname, 'bin'),
     filename: 'test.js',
@@ -39,5 +39,8 @@ module.exports = {
     )
   },
   plugins: plugins,
-  bail: true
+  bail: true,
+  optimization: {
+    nodeEnv: false
+  }
 };
