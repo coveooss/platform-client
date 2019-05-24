@@ -60,4 +60,17 @@ export class UrlService {
   static createSource(organizationId: string, rebuild = false): string {
     return `${this.getOrganizationUrl(organizationId)}/sources?rebuild=${rebuild}`;
   }
+
+  /*** Pipeline API ***/
+  static getPipelineBaseUrl() {
+    return `${config.coveo.platformUrl}/rest/search/v1/admin/pipelines`;
+  }
+
+  static getPipelinesUrl(organizationId: string, page: number = 0, perPage: number = 1000): string {
+    return `${this.getPipelineBaseUrl()}?page=${page}&perPage=${perPage}&organizationId=${organizationId}`;
+  }
+
+  static getPipelineStatementsUrl(pipelineId: string, organizationId: string): string {
+    return `${this.getPipelineBaseUrl()}/${pipelineId}/statements?organizationId=${organizationId}`;
+  }
 }

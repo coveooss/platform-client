@@ -19,6 +19,10 @@ export class Colors {
     return chalk.cyan(value);
   }
 
+  static pipelines(value: string): string {
+    return chalk.cyan(value);
+  }
+
   static number(value: string): string {
     return chalk.yellow(value);
   }

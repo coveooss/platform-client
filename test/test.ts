@@ -7,6 +7,7 @@ import { ErrorTest } from './commons/errorTest';
 import { LoggerTest } from './commons/loggerTest';
 import { ExtensionAPITest } from './commons/rest/ExtensionAPITest';
 import { FieldAPITest } from './commons/rest/FieldAPITest';
+import { PipelineAPITest } from './commons/rest/PipelineAPITest';
 import { UrlServiceTest } from './commons/rest/UrlServiceTest';
 import { ArrayUtilTest } from './commons/utils/ArrayUtilsTest';
 import { DiffUtilsTest } from './commons/utils/DiffUtilsTest';
@@ -54,6 +55,7 @@ ErrorTest();
 FieldAPITest();
 ExtensionAPITest();
 SourceAPITest();
+PipelineAPITest();
 UrlServiceTest();
 
 // Utils
