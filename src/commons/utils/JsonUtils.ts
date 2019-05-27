@@ -3,6 +3,7 @@ import * as _ from 'underscore';
 import { isObject } from 'util';
 import { Logger } from '../logger';
 import { Assert } from '../misc/Assert';
+import { StringUtil } from './StringUtils';
 
 export class JsonUtils {
   static stringify(obj: any, space: number = 2): string {
@@ -23,7 +24,7 @@ export class JsonUtils {
    * @param {string[]} [exclusiveKeys=[]]
    * @returns {*} any
    */
-  static removeKeyValuePairsFromJson(obj: {}, keysToRemove: string[] = [], exclusiveKeys: string[] = []): {} {
+  static removeKeyValuePairsFromJson(obj: {}, keysToRemove: string[] = [], exclusiveKeys: string[] = [], regexKeys: string[] = []): {} {
     Assert.isNotUndefined(obj, 'Cannot apply flatten method to undefined object');
     if (keysToRemove.length + exclusiveKeys.length === 0) {
       // Do not waste time for nothing
@@ -40,6 +41,15 @@ export class JsonUtils {
       } else {
         // Blacklist strategy
         return _.intersection(keys, keysToRemove).length > 0;
+      }
+    });
+
+    map = _.omit(map, (value: any, key: string) => {
+      if (regexKeys.length > 0) {
+        // Regex strategy
+        return StringUtil.matchesAny(key, regexKeys);
+      } else {
+        return false;
       }
     });
 

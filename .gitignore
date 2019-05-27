@@ -15,3 +15,6 @@ testScripts
 release.sh
 .zip
 yarn.lock
+pipelinesDiff.json
+logs.json
+command_dev.sh

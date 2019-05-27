@@ -7,6 +7,7 @@ import { CommanderUtils } from './console/CommanderUtils';
 import { GraduateExtensionsCommand } from './console/GraduateExtensionsCommand';
 import { GraduateSourcesCommand } from './console/GraduateSourcesCommand';
 import { DiffSourcesCommand } from './console/DiffSourcesCommand';
+import { DiffPipelinesCommand } from './console/DiffPipelinesCommand';
 import { InteractiveCommand } from './console/InteractiveCommand';
 import { DownloadFieldsCommand } from './console/DownloadFieldsCommand';
 import { GraduateFieldsCommand } from './console/GraduateFieldsCommand';
@@ -38,6 +39,7 @@ GraduateSourcesCommand(program, commanderUtils);
 DiffFieldsCommand(program, commanderUtils);
 DiffExtensionsCommand(program, commanderUtils);
 DiffSourcesCommand(program, commanderUtils);
+DiffPipelinesCommand(program, commanderUtils);
 
 /**************************************************/
 /* Download Commands

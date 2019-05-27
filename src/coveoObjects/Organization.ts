@@ -7,6 +7,7 @@ import { BaseCoveoObject } from './BaseCoveoObject';
 import { Extension } from './Extension';
 import { Field } from './Field';
 import { Source } from './Source';
+import { Pipeline } from './Pipeline';
 import { StringUtil } from '../commons/utils/StringUtils';
 
 // Blacklist all the objects that we do not want to add to the organization.
@@ -14,6 +15,7 @@ export interface IBlacklistObjects {
   fields?: string[];
   extensions?: string[];
   sources?: string[];
+  pipelines?: string[];
 }
 
 /**
@@ -25,6 +27,7 @@ export class Organization extends BaseCoveoObject implements IOrganization {
   private fields: Dictionary<Field> = new Dictionary<Field>();
   private sources: Dictionary<Source> = new Dictionary<Source>();
   private extensions: Dictionary<Extension> = new Dictionary<Extension>();
+  private pipelines: Dictionary<Pipeline> = new Dictionary<Pipeline>();
 
   constructor(id: string, private apiKey: string, private blacklist: IBlacklistObjects = {}) {
     super(id);
@@ -33,6 +36,7 @@ export class Organization extends BaseCoveoObject implements IOrganization {
     this.blacklist.extensions = _.map(this.blacklist.extensions || [], e => StringUtil.lowerAndStripSpaces(e));
     this.blacklist.fields = _.map(this.blacklist.fields || [], f => StringUtil.lowerAndStripSpaces(f));
     this.blacklist.sources = _.map(this.blacklist.sources || [], s => StringUtil.lowerAndStripSpaces(s));
+    this.blacklist.pipelines = _.map(this.blacklist.pipelines || [], p => StringUtil.lowerAndStripSpaces(p));
   }
 
   getExtensionBlacklist(): string[] {
@@ -45,6 +49,10 @@ export class Organization extends BaseCoveoObject implements IOrganization {
 
   getSourceBlacklist(): string[] {
     return this.blacklist.sources || [];
+  }
+
+  getPipelineBlacklist(): string[] {
+    return this.blacklist.pipelines || [];
   }
 
   /**
@@ -149,6 +157,54 @@ export class Organization extends BaseCoveoObject implements IOrganization {
 
   clearExtensions() {
     this.extensions.clear();
+  }
+
+  /**
+   * Return a copy of the Organization pipelines
+   *
+   * @returns {Dictionary<Pipeline>}
+   */
+  getPipelines(): Dictionary<Pipeline> {
+    return this.pipelines.clone();
+  }
+
+  /**
+   * Add a new pipeline to the Organzation
+   *
+   * @param {Pipeline} pipeline Pipeline to be added
+   */
+  addPipeline(pipeline: Pipeline) {
+    if (!_.contains(this.getPipelineBlacklist(), StringUtil.lowerAndStripSpaces(pipeline.getName()))) {
+      this.pipelines.add(pipeline.getName(), pipeline);
+    }
+  }
+
+  /**
+   * Takes a pipeline list and, for each item of the list, create a pipeline that will be added to the Organization
+   *
+   * @param {IStringMap<any>[]} pipelines pipeline list
+   */
+  addPipelineList(pipelines: Array<IStringMap<any>>) {
+    pipelines.forEach((p: IStringMap<any>) => {
+      const pipeline = new Pipeline(p);
+      if (!_.contains(this.getPipelineBlacklist() || [], StringUtil.lowerAndStripSpaces(pipeline.getName()))) {
+        this.addPipeline(pipeline);
+      }
+    });
+  }
+
+  /**
+   * Updates the pipeline with its statements
+   *
+   * @param {Pipeline} pipeline updated pipeline
+   */
+  updatePipeline(pipeline: Pipeline) {
+    this.getPipelines().remove(pipeline.getName());
+    this.addPipeline(pipeline);
+  }
+
+  clearPipelines() {
+    this.pipelines.clear();
   }
 
   clearAll() {

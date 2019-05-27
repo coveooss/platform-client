@@ -31,13 +31,19 @@ export class DiffUtils {
 
     dict1Copy.keys().forEach((key: string) => {
       const value: T = dict1Copy.getItem(key);
-      const dict1CopyCleanedItem = JsonUtils.removeKeyValuePairsFromJson(value, options.keysToIgnore, options.includeOnly);
+      const dict1CopyCleanedItem = JsonUtils.removeKeyValuePairsFromJson(
+        value,
+        options.keysToIgnore,
+        options.includeOnly,
+        options.regexKeys
+      );
 
       if (dict2Copy.containsKey(key)) {
         const dict2CopyCleanedItem = JsonUtils.removeKeyValuePairsFromJson(
           dict2Copy.getItem(key),
           options.keysToIgnore,
-          options.includeOnly
+          options.includeOnly,
+          options.regexKeys
         );
         if (!_.isEqual(dict1CopyCleanedItem, dict2CopyCleanedItem)) {
           diffResult.TO_UPDATE.push(value);

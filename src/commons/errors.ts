@@ -38,4 +38,12 @@ export class StaticErrorMessage {
   static UNABLE_TO_CREATE_SOURCE: string = 'Unable to create source';
   static UNABLE_TO_UPDATE_SOURCE: string = 'Unable to update source';
   static UNABLE_TO_DELETE_SOURCE: string = 'Unable to delete source';
+
+  // Pipelines
+  static UNABLE_TO_LOAD_PIPELINES: string = 'Unable to load pipelines';
+  static UNABLE_TO_LOAD_SINGLE_PIPELINES: string = 'Unable to load single pipeline';
+  static UNABLE_TO_CREATE_PIPELINES: string = 'Unable to create pipelines';
+  static UNABLE_TO_UPDATE_PIPELINES: string = 'Unable to update pipelines';
+  static UNABLE_TO_DELETE_PIPELINES: string = 'Unable to delete pipelines';
+  static DUPLICATE_PIPELINES: string = 'There is already a pipeline with that name in the Organizaton';
 }

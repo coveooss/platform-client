@@ -14,6 +14,8 @@ import { SourceAPI } from '../commons/rest/SourceAPI';
 import { Organization } from '../coveoObjects/Organization';
 import { SourceController } from '../controllers/SourceController';
 import { ExtensionAPI } from '../commons/rest/ExtensionAPI';
+import { PipelineAPI } from '../commons/rest/PipelineAPI';
+import { PipelineController } from '../controllers/PipelineController';
 import { StringUtil } from '../commons/utils/StringUtils';
 
 export class InteractiveQuestion {
@@ -49,14 +51,16 @@ export class InteractiveQuestion {
           InteractiveQuestion.PREVIOUS_ANSWERS = ans;
           const org = new Organization(ans[InteractiveQuestion.ORIGIN_ORG_ID], ans[InteractiveQuestion.MASTER_API_KEY]);
 
-          return Promise.all([this.loadSourceList(org), this.loadExtensionList(org)])
+          return Promise.all([this.loadSourceList(org), this.loadExtensionList(org), this.loadPipelineList(org)])
             .then(values => {
               const sources = values[0];
               const extensions = values[1];
+              // const pipelines = values[2];
+
               return prompt(this.getFinalQuestions({ sources: sources, extensionsToIgnore: extensions }));
             })
             .catch((err: any) => {
-              console.error(chalk.red('Unable to load sources and extensions.'), chalk.red(err));
+              console.error(chalk.red('Unable to load sources, extensions and pipelines.'), chalk.red(err));
               return prompt(this.getFinalQuestions([]));
             });
         });
@@ -113,6 +117,23 @@ export class InteractiveQuestion {
             resolve(_.pluck(resp.body, 'name'));
           } else {
             reject('No source available in this organization');
+          }
+        })
+        .catch((err: any) => {
+          reject(err);
+        });
+    });
+  }
+
+  loadPipelineList(org: Organization) {
+    // tslint:disable-next-line:typedef
+    return new Promise((resolve, reject) => {
+      PipelineAPI.getAllPipelines(org)
+        .then((resp: RequestResponse) => {
+          if (resp.body.length > 0) {
+            resolve(_.pluck(resp.body, 'name'));
+          } else {
+            reject('No query pipelines in this organization');
           }
         })
         .catch((err: any) => {
@@ -179,7 +200,8 @@ export class InteractiveQuestion {
       choices: [
         { name: FieldController.CONTROLLER_NAME },
         { name: ExtensionController.CONTROLLER_NAME },
-        { name: SourceController.CONTROLLER_NAME }
+        { name: SourceController.CONTROLLER_NAME },
+        { name: PipelineController.CONTROLLER_NAME }
       ],
       when: (answer: Answers) => {
         answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);

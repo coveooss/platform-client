@@ -11,6 +11,7 @@ import { FieldController } from '../controllers/FieldController';
 import { SourceController } from '../controllers/SourceController';
 import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
 import { Organization, IBlacklistObjects } from '../coveoObjects/Organization';
+import { PipelineController } from '../controllers/PipelineController';
 
 export interface IDiffOptions {
   /**
@@ -22,6 +23,10 @@ export interface IDiffOptions {
    * Specify which key to use for the Diff action. When defined, this option override the "keysToIgnore" option
    */
   includeOnly?: string[];
+  /**
+   * Specify which key in regex fromat to use for the Diff action. When defined, this option removes all keys matching the regex
+   */
+  regexKeys?: string[];
   /**
    * Prevent the diff result to be opened in a file once the operation has complete
    */
@@ -80,6 +85,15 @@ export class DiffCommand {
   diffSources(options?: IDiffOptions) {
     const sourceController: SourceController = new SourceController(this.organization1, this.organization2);
     this.diff(sourceController, 'Source', options);
+  }
+
+  /**
+   * Diff the pipelines of both organizations passed in parameter
+   *
+   */
+  diffPipelines(options?: IDiffOptions) {
+    const pipelineController: PipelineController = new PipelineController(this.organization1, this.organization2);
+    this.diff(pipelineController, 'Pipelines', options);
   }
 
   // FIXME: Enable command to diff to objects without exiting the application first
