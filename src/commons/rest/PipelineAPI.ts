@@ -73,8 +73,6 @@ export class PipelineAPI {
           organization.updatePipeline(pipeline);
 
           Logger.verbose(`Pipeline ${pipeline.getName()} statements loaded`);
-
-          resolve();
         })
       );
     });
