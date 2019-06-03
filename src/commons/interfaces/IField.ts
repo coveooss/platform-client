@@ -1,5 +1,4 @@
-import { IStringMap } from './IStringMap';
+import { ICoveoObject } from './ICoveoObject';
+import { Field } from '../../coveoObjects/Field';
 
-export interface IField {
-  getFieldModel(): IStringMap<any>;
-}
+export interface IField extends ICoveoObject<Field> {}

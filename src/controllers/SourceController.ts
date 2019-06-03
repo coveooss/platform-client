@@ -5,7 +5,7 @@ import { IDownloadResultArray } from '../commons/collections/DownloadResultArray
 import { Organization } from '../coveoObjects/Organization';
 import { Source } from '../coveoObjects/Source';
 import { IDiffOptions } from './../commands/DiffCommand';
-import { BaseController } from './BaseController';
+import { BaseController, IDiffResultArrayClean } from './BaseController';
 import { IGenericError, StaticErrorMessage } from '../commons/errors';
 import { DiffUtils } from '../commons/utils/DiffUtils';
 import { Logger } from '../commons/logger';
@@ -17,6 +17,13 @@ import { ExtensionAPI } from '../commons/rest/ExtensionAPI';
 import { RequestResponse } from 'request';
 import { IGraduateOptions } from '../commands/GraduateCommand';
 import { Colors } from '../commons/colors';
+import { JsonUtils } from '../commons/utils/JsonUtils';
+import { Utils } from '../commons/utils/Utils';
+
+interface ITraverseOptions {
+  uniqueCombinaisonKeys?: IStringMap<string[]>;
+  keysToOmit?: IStringMap<string[]>;
+}
 
 export class SourceController extends BaseController {
   private extensionList: Array<Array<{}>> = [];
@@ -26,15 +33,6 @@ export class SourceController extends BaseController {
   }
 
   static CONTROLLER_NAME: string = 'sources';
-
-  // private shouldSkipExtension(diffOptions?: IDiffOptions): boolean {
-  //   return (
-  //     diffOptions !== undefined &&
-  //     diffOptions.keysToIgnore !== undefined &&
-  //     _.contains(diffOptions.keysToIgnore, 'postConversionExtensions') &&
-  //     _.contains(diffOptions.keysToIgnore, 'preConversionExtensions')
-  //   );
-  // }
 
   diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Source>> {
     // Do not load extensions if --skipExtension option is present
@@ -75,6 +73,17 @@ export class SourceController extends BaseController {
       });
     });
   }
+
+  // stripIdFromMapping(sourceList: Dictionary<Source>) {
+  //   _.each(sourceList.values(), (source: Source) => {
+  //     _.each(source.getMappings(), mapping => {
+  //       console.log('--');
+  //       console.log(mapping.id);
+  //       mapping = {};
+  //       console.log(mapping.id);
+  //     });
+  //   });
+  // }
 
   replaceExtensionIdWithName(sourceList: Dictionary<Source>, extensionList: Array<{}>) {
     // TODO: Can be optimized
@@ -157,10 +166,10 @@ export class SourceController extends BaseController {
         // 1. Replacing extensions with destination id
         this.replaceExtensionNameWithId(source, this.extensionList[1]);
 
-        // 2. Strip source from keys that should not be graduated
-        if (options.keysToStrip && options.keysToStrip.length > 0) {
-          source.removeParameters(options.keysToStrip);
-        }
+        // 2. Whitelist only keys that should be graduated
+        // 3. Strip source from keys that should not be graduated
+        source.removeParameters(options.keyBlacklist || [], options.keyWhitelist || []);
+        // TODO: 4 strip ids from mappings
       });
 
       return Promise.all(
@@ -266,33 +275,204 @@ export class SourceController extends BaseController {
     });
   }
 
+  private getCleanArrayDiff(newList: any[], oldList: any[], options: { uniqueKeyCombinaison?: string[]; keysToOmit?: string[] } = {}) {
+    const diffList: IDiffResultArrayClean = {
+      TO_CREATE: [],
+      TO_UPDATE: [],
+      TO_DELETE: []
+    };
+    let temp: any[] = [];
+
+    if (typeof newList[0] === 'object') {
+      // We are comparing Objects
+      // TODO: compare objetcs
+      _.each(newList, (newEntry: any, idx: number) => {
+        const condition = options.uniqueKeyCombinaison
+          ? (oldEntry: any) =>
+              _.reduce(options.uniqueKeyCombinaison || [], (memo, key) => memo && (newEntry as any)[key] === (oldEntry as any)[key], true)
+          : (oldEntry: any) => _.isEqual(newEntry, oldEntry);
+
+        const oldEntriesMatches = _.filter(oldList, (oldEntry: any) => condition(oldEntry));
+        // const matches = _.filter(oldList, (oldEntry: T) => newEntry.fieldName === oldEntry.fieldName && newEntry.type === oldEntry.type);
+        temp = temp.concat(oldEntriesMatches);
+        const multipleCombinaisonValue = _.compact(_.map(options.uniqueKeyCombinaison || [], (val: string) => (newEntry as any)[val])).join(
+          ' - '
+        );
+        if (oldEntriesMatches.length > 1) {
+          Logger.warn(`Multiple mapping rules with the same type found: ${multipleCombinaisonValue}. Taking the last one.`);
+        }
+        let oldEntryMatch = _.last(oldEntriesMatches);
+
+        _.each(options.keysToOmit || [], key => {
+          newEntry = _.omit(newEntry, key); // Can convert undefined {} to {}
+          oldEntryMatch = _.omit(oldEntryMatch, key); // Can convert undefined {} to {}
+        });
+        // if (options.keysToOmit) {
+        //   newEntry = JsonUtils.removeKeyValuePairsFromJson(newEntry, options.keysToOmit);
+        //   match = JsonUtils.removeKeyValuePairsFromJson(match, options.keysToOmit);
+        // }
+        if (!_.isEqual(newEntry, oldEntryMatch)) {
+          // First condition is required because of the _.omit function
+          if (_.isEqual(oldEntryMatch, {}) || oldEntryMatch === undefined) {
+            diffList.TO_CREATE.push(newEntry);
+          } else {
+            diffList.TO_UPDATE.push({ newValue: newEntry, oldValue: oldEntryMatch });
+          }
+        }
+      });
+
+      const difference = _.difference(oldList, temp);
+      diffList.TO_DELETE = difference;
+    } else {
+      // We are comparing simple types (string, Number, boolean, ...)
+      diffList.TO_DELETE = _.difference(oldList, newList);
+      diffList.TO_CREATE = _.difference(newList, oldList);
+    }
+    return diffList;
+  }
+
+  traverse(newObject: any, oldObject: any, diffObject: any, options: ITraverseOptions, parentKey?: string): void {
+    // console.log(`--> ${parentKey}`);
+
+    // ?3. new undefined and old not undefined (to delete???)
+
+    // 1. new not undefined and old undefined (new property)
+    if (newObject && Utils.isNullOrUndefined(oldObject)) {
+      // throw Error('an old parameter is undefined.');
+      // diffObject['TO_CREATE'] = newObject;
+      // _.extend(diffObject, { TO_CREATE: newObject });
+    }
+
+    // 2. new and old not undefined (match or parent to difference)
+    if (oldObject && Utils.isNullOrUndefined(newObject)) {
+      throw Error('a new parameter is undefined');
+      // _.extend(diffObject, { TO_DELETE: oldObject });
+      // diffObject['TO_DELETE'] = oldObject;
+    }
+
+    if (Utils.isNullOrUndefined(oldObject) && Utils.isNullOrUndefined(newObject)) {
+      throw Error('Something went wrong during the diff.');
+    }
+
+    if (newObject && typeof newObject === 'object') {
+      if (Array.isArray(newObject)) {
+        // Using a different logic to compare arrays
+        const diffArrayOptions: { uniqueKeyCombinaison?: string[]; keysToOmit?: string[] } = {};
+        if (parentKey) {
+          if (options.uniqueCombinaisonKeys && options.uniqueCombinaisonKeys[parentKey]) {
+            diffArrayOptions.uniqueKeyCombinaison = options.uniqueCombinaisonKeys[parentKey];
+          }
+          if (options.keysToOmit && options.keysToOmit[parentKey]) {
+            diffArrayOptions.keysToOmit = options.keysToOmit[parentKey];
+          }
+        }
+
+        _.extend(diffObject, this.getCleanArrayDiff(newObject, oldObject, diffArrayOptions));
+      } else {
+        // Check for parameters to delete
+        _.mapObject(oldObject, (value, key) => {
+          if (newObject[key] === undefined) {
+            diffObject[key] = { TO_DELETE: oldObject[key] };
+          }
+        });
+
+        // Check for parameters to create or update
+        _.mapObject(newObject, (value, key) => {
+          diffObject[key] = {};
+          if (oldObject === undefined) {
+            _.extend(diffObject, { TO_CREATE: newObject });
+          } else {
+            this.traverse(value, oldObject[key], diffObject[key], options, key);
+          }
+        });
+      }
+    } else {
+      // Comparing tree leaves
+      if (!_.isEqual(newObject, oldObject)) {
+        _.extend(diffObject, { newValue: newObject, oldValue: oldObject });
+      }
+    }
+  }
+
   extractionMethod(object: any[], diffOptions: IDiffOptions, oldVersion?: any[]): any[] {
     if (oldVersion === undefined) {
-      return _.map(object, (e: Source) => e.getConfiguration());
+      return _.map(object, (e: Source) => e.getName());
     } else {
       return _.map(oldVersion, (oldSource: Source) => {
         const newSource: Source = _.find(object, (e: Source) => {
           return e.getName() === oldSource.getName();
         });
 
-        const newSourceModel = newSource.getConfiguration();
-        const oldSourceModel = oldSource.getConfiguration();
+        // Make sure to ignore keys that were not part of the diff
+        const cleanedNewVersion = JsonUtils.removeKeyValuePairsFromJson(
+          newSource.getConfiguration(),
+          diffOptions.keysToIgnore,
+          diffOptions.includeOnly
+        );
+        const cleanedOldVersion = JsonUtils.removeKeyValuePairsFromJson(
+          oldSource.getConfiguration(),
+          diffOptions.keysToIgnore,
+          diffOptions.includeOnly
+        );
 
-        const updatedSourceModel: IStringMap<any> = _.mapObject(newSourceModel, (val, key) => {
-          // TODO: this only parses the first level keys. It would be nice to drill down the nested object
-          if (!_.isEqual(oldSourceModel[key], val) && (!diffOptions.keysToIgnore || diffOptions.keysToIgnore.indexOf(key) === -1)) {
-            return { newValue: val, oldValue: oldSourceModel[key] };
-          } else {
-            return val;
+        // const flattenedNewSourceModel = JsonUtils.flatten(cleanedNewVersion);
+        // const flattenedOldSourceModel = JsonUtils.flatten(cleanedOldVersion);
+
+        // const updatedSourceModel: IStringMap<any> = {};
+
+        // _.each(_.keys(flattenedNewSourceModel), key => {
+        //   // const splited = key.split('.');
+        //   // if (splited[0] === 'mappings') {
+        //   //   // Skipping mapping as this will be handled after
+        //   // } else if (splited[0] === 'configuration' && splited[1] === 'extendedDataFiles') {
+        //   //   // TODO: Only print OTG that have changed
+        //   //   // updatedSourceModel[key] = 'Only print OTG that have changed';
+
+        //   if (Array.isArray(flattenedOldSourceModel[key])) {
+        //     if (!_.isEqual(flattenedOldSourceModel[key], flattenedNewSourceModel[key])) {
+        //       updatedSourceModel[`${key}.newValue`] = flattenedNewSourceModel[key];
+        //       updatedSourceModel[`${key}.oldValue`] = flattenedOldSourceModel[key];
+        //     }
+        //     // } else {
+        //   }
+        // });
+
+        // const unflattenedConfig = JsonUtils.unflatten(updatedSourceModel);
+        // diff mappings
+        // Traverse the 2 sources to do a indepth diff
+        let diffResult: any = {};
+        this.traverse(
+          cleanedNewVersion,
+          cleanedOldVersion,
+          diffResult,
+          // TODO: remove and replace mapping id with name above!!!!
+          {
+            uniqueCombinaisonKeys: {
+              mappings: ['fieldName', 'type']
+            },
+            keysToOmit: { mappings: ['id'] }
+          }
+        );
+
+        // Remove all unchanged parameters
+        diffResult = JsonUtils.flatten(diffResult);
+        _.each(_.allKeys(diffResult), key => {
+          if (_.isEqual(diffResult[key], {}) || _.isEqual(diffResult[key], [])) {
+            delete diffResult[key];
           }
         });
-        return updatedSourceModel;
+        diffResult = JsonUtils.unflatten(diffResult);
+        console.log('*********************');
+        console.log(diffResult.configuration.parameters);
+        console.log('*********************');
+
+        return diffResult;
       });
     }
   }
 
   /**
-   * Returns a 2 dimension table: extensions per sources
+   * Returns a 2 dimensions table: extensions per sources
    *
    * @returns {Promise<Array<Array<{}>>>}
    */

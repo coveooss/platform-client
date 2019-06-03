@@ -22,9 +22,15 @@ export interface IGraduateOptions extends IHTTPGraduateOptions {
   rebuild?: boolean;
   diffOptions: IDiffOptions;
   /**
+   * Specify which key to include before graduating the Object.
+   * This option has precedence over keyblacklist option.
+   * keyWhitelist is evaluated before the keyBlacklist
+   */
+  keyWhitelist?: string[];
+  /**
    * Specify which key to strip before graduating the Object.
    */
-  keysToStrip?: string[];
+  keyBlacklist?: string[];
 }
 
 export class GraduateCommand {
@@ -46,7 +52,8 @@ export class GraduateCommand {
 
   static DEFAULT_OPTIONS: IGraduateOptions = {
     diffOptions: DiffCommand.DEFAULT_OPTIONS,
-    keysToStrip: [],
+    keyWhitelist: [],
+    keyBlacklist: [],
     rebuild: false,
     POST: true,
     PUT: true,

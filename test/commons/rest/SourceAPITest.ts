@@ -11,213 +11,12 @@ export const SourceAPITest = () => {
   describe('Source API', () => {
     let scope: nock.Scope;
 
-    const allSources = [
-      {
-        sourceType: 'SITEMAP',
-        id: 'cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74',
-        name: 'sitemaptest',
-        owner: 'user@coveo.com-google',
-        sourceVisibility: 'PRIVATE',
-        information: {
-          sourceStatus: {
-            type: 'DISABLED',
-            allowedOperations: ['DELETE', 'REBUILD']
-          },
-          rebuildRequired: true,
-          numberOfDocuments: 0,
-          documentsTotalSize: 0
-        },
-        pushEnabled: false,
-        onPremisesEnabled: false,
-        preConversionExtensions: [],
-        postConversionExtensions: [
-          {
-            actionOnError: 'SKIP_EXTENSION',
-            condition: '',
-            extensionId: 'cclidev2l78wr0o-syolr7vxllz44qe6l4lcfpsklu',
-            parameters: {},
-            versionId: ''
-          }
-        ],
-        permissions: {
-          permissionLevels: [
-            {
-              name: 'Source Specified Permissions',
-              permissionSets: [
-                {
-                  name: 'Private',
-                  permissions: [
-                    {
-                      allowed: true,
-                      identityType: 'USER',
-                      identity: 'user@coveo.com',
-                      securityProvider: 'Email Security Provider'
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        urlFilters: [
-          {
-            filter: '*',
-            includeFilter: true,
-            filterType: 'WILDCARD'
-          }
-        ],
-        resourceId: 'cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74'
-      },
-      {
-        sourceType: 'YOUTUBE',
-        id: 'cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq',
-        name: 'youtube test',
-        owner: 'user@coveo.com-google',
-        sourceVisibility: 'SHARED',
-        information: {
-          sourceStatus: {
-            type: 'DISABLED',
-            allowedOperations: ['DELETE', 'REBUILD']
-          },
-          rebuildRequired: true,
-          numberOfDocuments: 0,
-          documentsTotalSize: 0
-        },
-        pushEnabled: false,
-        onPremisesEnabled: false,
-        preConversionExtensions: [],
-        postConversionExtensions: [],
-        urlFilters: [
-          {
-            filter: '*',
-            includeFilter: true,
-            filterType: 'WILDCARD'
-          }
-        ],
-        resourceId: 'cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq'
-      }
-    ];
+    const allSources: {} = require('./../../mocks/setup1/sources/dev/allSources.json');
+    const rrbbidfxa2ri4usxhzzmhq2hge: {} = require('./../../mocks/setup1/sources/dev/web.json');
+    const tcytrppteddiqkmboszu4skdoe: {} = require('./../../mocks/setup1/sources/dev/sitemap.json');
+    const wyowilfyrpf2qogxm45uhgskri: {} = require('./../../mocks/setup1/sources/dev/salesforce.json');
+    const qtngyd2gvxjxrrkftndaepcngu: {} = require('./../../mocks/setup1/sources/dev/youtube.json');
 
-    const ur4el4nwejfvpghipsvvs32m74 = {
-      sourceType: 'SITEMAP',
-      id: 'cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74',
-      name: 'sitemaptest',
-      owner: 'user@coveo.com-google',
-      sourceVisibility: 'PRIVATE',
-      mappings: [
-        {
-          id: 'vec6n33ff6b2jx7pdzosw6sbve',
-          kind: 'COMMON',
-          fieldName: 'mobilephone',
-          extractionMethod: 'METADATA',
-          content: '%[mobile]'
-        }
-      ],
-      information: {
-        sourceStatus: {
-          type: 'DISABLED',
-          allowedOperations: ['DELETE', 'REBUILD']
-        },
-        rebuildRequired: true,
-        numberOfDocuments: 0,
-        documentsTotalSize: 0
-      },
-      pushEnabled: false,
-      onPremisesEnabled: false,
-      preConversionExtensions: [],
-      postConversionExtensions: [
-        {
-          actionOnError: 'SKIP_EXTENSION',
-          condition: '',
-          extensionId: 'cclidev2l78wr0o-syolr7vxllz44qe6l4lcfpsklu',
-          parameters: {},
-          versionId: ''
-        }
-      ],
-      permissions: {
-        permissionLevels: [
-          {
-            name: 'Source Specified Permissions',
-            permissionSets: [
-              {
-                name: 'Private',
-                permissions: [
-                  {
-                    allowed: true,
-                    identityType: 'USER',
-                    identity: 'user@coveo.com',
-                    securityProvider: 'Email Security Provider'
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      urlFilters: [
-        {
-          filter: '*',
-          includeFilter: true,
-          filterType: 'WILDCARD'
-        }
-      ],
-      username: 'megatron',
-      urls: ['http://test.com'],
-      userAgent: 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko) (compatible; Coveobot/2.0;+http://www.coveo.com/bot.html)',
-      enableJavaScript: true,
-      javaScriptLoadingDelayInMilliseconds: 0,
-      requestsTimeoutInSeconds: 100,
-      scrapingConfiguration:
-        '[\n  {\n    "for": {\n    "urls": [".*"]\n    },\n    "exclude": [\n      {\n        "type": "CSS",\n        "path": "body header"\n      },\n      {\n        "type": "CSS",\n        "path": "#herobox"\n      },\n      {\n        "type": "CSS",\n        "path": "#mainbar .everyonelovesstackoverflow"\n      },\n      {\n        "type": "CSS",\n        "path": "#sidebar"\n      },\n      {\n        "type": "CSS",\n        "path": "#footer"\n      },\n      {\n        "type": "CSS",\n        "path": "#answers"\n      }\n    ],\n    "metadata": {\n      "askeddate":{\n        "type": "CSS",\n        "path": "div#sidebar table#qinfo p::attr(title)"\n      },\n      "upvotecount": {\n        "type": "XPATH",\n        "path": "//div[@id=\'question\'] //span[@itemprop=\'upvoteCount\']/text()"\n      },\n      "author":{\n        "type": "CSS",\n        "path": "td.post-signature.owner div.user-details a::text"\n      }\n    },\n    "subItems": {\n      "answer": {\n        "type": "css",\n        "path": "#answers div.answer"\n      }\n    }\n  }, {\n    "for": {\n      "types": ["answer"]\n    },\n    "metadata": {\n      "upvotecount": {\n        "type": "XPATH",\n        "path": "//span[@itemprop=\'upvoteCount\']/text()"\n      },\n      "author": {\n        "type": "CSS",\n        "path": "td.post-signature:last-of-type div.user-details a::text"\n      }\n    }\n  }\n]',
-      resourceId: 'cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74'
-    };
-
-    const uwfuop2jp2hdvo5ao7abjlsgyq = {
-      sourceType: 'YOUTUBE',
-      id: 'cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq',
-      name: 'youtube test',
-      owner: 'user@coveo.com-google',
-      sourceVisibility: 'SHARED',
-      mappings: [
-        {
-          id: 'vxmnzryqjok5thqalcyyyekpsa',
-          kind: 'COMMON',
-          fieldName: 'ytplaylistitemstitle',
-          extractionMethod: 'METADATA',
-          content: '%[coveo_PlaylistItemsTitle]'
-        },
-        {
-          id: 'w2j6ztwrrdu7aun6inmjce2nvu',
-          kind: 'COMMON',
-          fieldName: 'ytvideodefinition',
-          extractionMethod: 'METADATA',
-          content: '%[coveo_VideoDefinition]'
-        }
-      ],
-      information: {
-        sourceStatus: {
-          type: 'DISABLED',
-          allowedOperations: ['DELETE', 'REBUILD']
-        },
-        rebuildRequired: true,
-        numberOfDocuments: 0,
-        documentsTotalSize: 0
-      },
-      pushEnabled: false,
-      onPremisesEnabled: false,
-      preConversionExtensions: [],
-      postConversionExtensions: [],
-      urlFilters: [
-        {
-          filter: '*',
-          includeFilter: true,
-          filterType: 'WILDCARD'
-        }
-      ],
-      urls: ['https://www.youtube.com/dummy'],
-      indexPlaylists: false,
-      resourceId: 'cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq'
-    };
     afterEach(() => {
       expect(scope.pendingMocks(), scope.pendingMocks().toString()).to.be.empty;
     });
@@ -243,12 +42,11 @@ export const SourceAPITest = () => {
     describe('Get Single source', () => {
       it('Should prepare the request to get a specific source of an organization', (done: MochaDone) => {
         const organization: Organization = new Organization('mydevorg', 'secret');
-
         scope = nock(UrlService.getDefaultUrl())
-          .get('/rest/organizations/mydevorg/sources/mysitemapsource')
+          .get('/rest/organizations/mydevorg/sources/tcytrppteddiqkmboszu4skdoe/raw')
           .reply(RequestUtils.OK);
 
-        SourceAPI.getSingleSource(organization, 'mysitemapsource')
+        SourceAPI.getSingleSource(organization, 'tcytrppteddiqkmboszu4skdoe')
           .then(() => done())
           .catch((err: any) => done(err));
       });
@@ -263,7 +61,7 @@ export const SourceAPITest = () => {
       const organization: Organization = new Organization('qwerty123', 'secret');
 
       scope = nock(UrlService.getDefaultUrl())
-        .post('/rest/organizations/qwerty123/sources?rebuild=false', {
+        .post('/rest/organizations/qwerty123/sources/raw?rebuild=false', {
           sourceType: 'YOUTUBE',
           id: 'cclidevwcty5v1g-tl2nzqb76il5y3zlsgp4r72aey',
           name: 'Coffee Chat',
@@ -339,7 +137,7 @@ export const SourceAPITest = () => {
       const organization: Organization = new Organization('qwerty123', 'secret');
 
       scope = nock(UrlService.getDefaultUrl())
-        .put('/rest/organizations/qwerty123/sources/cclidevwcty5v1g-tl2nzqb76il5y3zlsgp4r72aey?rebuild=false', {
+        .put('/rest/organizations/qwerty123/sources/cclidevwcty5v1g-tl2nzqb76il5y3zlsgp4r72aey/raw?rebuild=false', {
           sourceType: 'YOUTUBE',
           id: 'cclidevwcty5v1g-tl2nzqb76il5y3zlsgp4r72aey',
           name: 'Coffee Chat',
@@ -349,6 +147,7 @@ export const SourceAPITest = () => {
             {
               id: 'q6q72sozl73yjobkrl64cusemq',
               kind: 'COMMON',
+              extractionMethod: 'METADATA',
               fieldName: 'workemail',
               content: '%[workemail]'
             }
@@ -366,6 +165,7 @@ export const SourceAPITest = () => {
           {
             id: 'q6q72sozl73yjobkrl64cusemq',
             kind: 'COMMON',
+            extractionMethod: 'METADATA',
             fieldName: 'workemail',
             content: '%[workemail]'
           }
@@ -396,10 +196,14 @@ export const SourceAPITest = () => {
           .get('/rest/organizations/qwerty123/sources')
           .reply(RequestUtils.OK, allSources)
           // Second expected request
-          .get('/rest/organizations/qwerty123/sources/cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74')
-          .reply(RequestUtils.OK, ur4el4nwejfvpghipsvvs32m74)
-          .get('/rest/organizations/qwerty123/sources/cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq')
-          .reply(RequestUtils.OK, uwfuop2jp2hdvo5ao7abjlsgyq);
+          .get('/rest/organizations/qwerty123/sources/rrbbidfxa2ri4usxhzzmhq2hge-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, rrbbidfxa2ri4usxhzzmhq2hge)
+          .get('/rest/organizations/qwerty123/sources/tcytrppteddiqkmboszu4skdoe-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, tcytrppteddiqkmboszu4skdoe)
+          .get('/rest/organizations/qwerty123/sources/wyowilfyrpf2qogxm45uhgskri-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, wyowilfyrpf2qogxm45uhgskri)
+          .get('/rest/organizations/qwerty123/sources/qtngyd2gvxjxrrkftndaepcngu-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, qtngyd2gvxjxrrkftndaepcngu);
 
         SourceAPI.loadSources(organization)
           .then(() => done())
@@ -414,9 +218,9 @@ export const SourceAPITest = () => {
           .get('/rest/organizations/qwerty123/sources')
           .reply(RequestUtils.OK, allSources)
           // Second expected request
-          .get('/rest/organizations/qwerty123/sources/cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74')
-          .reply(RequestUtils.OK, ur4el4nwejfvpghipsvvs32m74)
-          .get('/rest/organizations/qwerty123/sources/cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq')
+          .get('/rest/organizations/qwerty123/sources/rrbbidfxa2ri4usxhzzmhq2hge-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, rrbbidfxa2ri4usxhzzmhq2hge)
+          .get('/rest/organizations/qwerty123/sources/tcytrppteddiqkmboszu4skdoe-dummygroupk5f2dpwl/raw')
           .reply(RequestUtils.OK, { dsa: 'random object' });
 
         SourceAPI.loadSources(organization)

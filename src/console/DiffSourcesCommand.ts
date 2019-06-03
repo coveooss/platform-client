@@ -36,9 +36,34 @@ export const DiffSourcesCommand = (program: any, commanderUtils: CommanderUtils)
     .action((origin: string, destination: string, apiKey: string, options: any) => {
       commanderUtils.setLogger(options, 'diff-sources');
 
+      const includeOnly = [
+        'logicalIndex',
+        'mappings',
+        'postConversionExtensions',
+        'preConversionExtensions',
+        'configuration.addressPatterns',
+        'configuration.documentConfig',
+        'configuration.extendedDataFiles',
+        'configuration.parameters',
+        'configuration.startingAddresses',
+        'configuration.sourceSecurityOption',
+        'configuration.permissions',
+        'additionalInfos'
+      ];
+
+      const keysToIgnore = [
+        'configuration.parameters.SourceId',
+        'configuration.parameters.OrganizationId',
+        'configuration.parameters.ClientSecret',
+        'configuration.parameters.ClientId',
+        'configuration.parameters.IsSandbox'
+      ];
+
       // Set diff options
       const diffOptions: IDiffOptions = {
-        silent: options.silent
+        silent: options.silent,
+        includeOnly: includeOnly,
+        keysToIgnore: keysToIgnore
       };
 
       const blacklistOptions: IBlacklistObjects = {
@@ -46,7 +71,6 @@ export const DiffSourcesCommand = (program: any, commanderUtils: CommanderUtils)
         sources: options.ignoreSources
       };
       const command = new DiffCommand(origin, destination, apiKey, apiKey, blacklistOptions);
-      diffOptions.keysToIgnore = ['information', 'resourceId', 'id', 'owner', 'securityProviderReferences'];
       command.diffSources(diffOptions);
     });
 };

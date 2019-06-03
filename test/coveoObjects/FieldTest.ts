@@ -53,7 +53,7 @@ export const FieldTest = () => {
       // Messing around with the original object
       simpleFieldModel.name = 'new name';
 
-      expect(clone.getFieldModel()).to.eql({
+      expect(clone.getConfiguration()).to.eql({
         name: 'newfield',
         description: 'New field in prod only',
         type: 'STRING'
@@ -62,7 +62,7 @@ export const FieldTest = () => {
 
     it('Should define field model in the constructor', () => {
       const field: Field = new Field(fieldModel);
-      expect(field.getFieldModel()).to.be.eql({
+      expect(field.getConfiguration()).to.be.eql({
         name: 'newfield',
         description: 'New field in prod only',
         type: 'STRING',

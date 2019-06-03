@@ -7,6 +7,10 @@ export interface IClonable<T> {
   clone: () => T;
 }
 
+export interface IConfigurable<T> {
+  getConfiguration: () => {};
+}
+
 /**
  * Dictionary template class. This class is really
  */

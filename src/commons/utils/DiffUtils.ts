@@ -1,8 +1,9 @@
 import * as _ from 'underscore';
 import { IDiffOptions } from '../../commands/DiffCommand';
-import { Dictionary, IClonable } from '../collections/Dictionary';
+import { Dictionary } from '../collections/Dictionary';
 import { DiffResultArray } from '../collections/DiffResultArray';
 import { JsonUtils } from './JsonUtils';
+import { ICoveoObject } from '../interfaces/ICoveoObject';
 
 export class DiffUtils {
   static defaultOptions: IDiffOptions = {
@@ -20,7 +21,11 @@ export class DiffUtils {
    * @returns {IDiffResultArray<T>} Result between dictionnaries
    */
 
-  static getDiffResult<T extends IClonable<T>>(dict1: Dictionary<T>, dict2: Dictionary<T>, diffOptions?: IDiffOptions): DiffResultArray<T> {
+  static getDiffResult<T extends ICoveoObject<T>>(
+    dict1: Dictionary<T>,
+    dict2: Dictionary<T>,
+    diffOptions?: IDiffOptions
+  ): DiffResultArray<T> {
     const options: IDiffOptions = _.extend({}, DiffUtils.defaultOptions, diffOptions);
 
     // Make sure we don't alter the initial Dictionaries
@@ -31,11 +36,15 @@ export class DiffUtils {
 
     dict1Copy.keys().forEach((key: string) => {
       const value: T = dict1Copy.getItem(key);
-      const dict1CopyCleanedItem = JsonUtils.removeKeyValuePairsFromJson(value, options.keysToIgnore, options.includeOnly);
+      const dict1CopyCleanedItem = JsonUtils.removeKeyValuePairsFromJson(
+        value.getConfiguration(),
+        options.keysToIgnore,
+        options.includeOnly
+      );
 
       if (dict2Copy.containsKey(key)) {
         const dict2CopyCleanedItem = JsonUtils.removeKeyValuePairsFromJson(
-          dict2Copy.getItem(key),
+          dict2Copy.getItem(key).getConfiguration(),
           options.keysToIgnore,
           options.includeOnly
         );

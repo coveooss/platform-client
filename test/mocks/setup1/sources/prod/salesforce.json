@@ -803,6 +803,30 @@
   ],
   "mappings": [
     {
+      "id": "qfkdwpahhnnnd6437dupshkc5m",
+      "kind": "MAPPING",
+      "type": "PROCESS",
+      "fieldName": "commonproduct",
+      "extractionMethod": "METADATA",
+      "content": "%[Kav_Products__c]"
+    },
+    {
+      "id": "qfkdwpahhnnnd6437dupshkc5m",
+      "kind": "MAPPING",
+      "type": "KB_ARTICLE",
+      "fieldName": "commonproduct",
+      "extractionMethod": "METADATA",
+      "content": "%[Kav_KB_Products_custom__c]"
+    },
+    {
+      "id": "qfkdwpahhnnnd6437dupshkc5m",
+      "kind": "MAPPING",
+      "type": "CUSTOM",
+      "fieldName": "commonproduct",
+      "extractionMethod": "METADATA",
+      "content": "%[Kav_KB_Products_custom__c]"
+    },
+    {
       "id": "q547zpy4op4z4ko5koq3gvkm3e",
       "kind": "COMMON",
       "fieldName": "documenttype",

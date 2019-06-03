@@ -11,7 +11,7 @@ import { JsonUtils } from '../commons/utils/JsonUtils';
 import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
 
 export interface IDiffResultArrayClean {
-  summary: {
+  summary?: {
     TO_CREATE: number;
     TO_UPDATE: number;
     TO_DELETE: number;
