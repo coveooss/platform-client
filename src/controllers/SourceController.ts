@@ -74,17 +74,6 @@ export class SourceController extends BaseController {
     });
   }
 
-  // stripIdFromMapping(sourceList: Dictionary<Source>) {
-  //   _.each(sourceList.values(), (source: Source) => {
-  //     _.each(source.getMappings(), mapping => {
-  //       console.log('--');
-  //       console.log(mapping.id);
-  //       mapping = {};
-  //       console.log(mapping.id);
-  //     });
-  //   });
-  // }
-
   replaceExtensionIdWithName(sourceList: Dictionary<Source>, extensionList: Array<{}>) {
     // TODO: Can be optimized
     _.each(sourceList.values(), (source: Source) => {
@@ -332,24 +321,6 @@ export class SourceController extends BaseController {
   }
 
   traverse(newObject: any, oldObject: any, diffObject: any, options: ITraverseOptions, parentKey?: string): void {
-    // console.log(`--> ${parentKey}`);
-
-    // ?3. new undefined and old not undefined (to delete???)
-
-    // 1. new not undefined and old undefined (new property)
-    if (newObject && Utils.isNullOrUndefined(oldObject)) {
-      // throw Error('an old parameter is undefined.');
-      // diffObject['TO_CREATE'] = newObject;
-      // _.extend(diffObject, { TO_CREATE: newObject });
-    }
-
-    // 2. new and old not undefined (match or parent to difference)
-    if (oldObject && Utils.isNullOrUndefined(newObject)) {
-      throw Error('a new parameter is undefined');
-      // _.extend(diffObject, { TO_DELETE: oldObject });
-      // diffObject['TO_DELETE'] = oldObject;
-    }
-
     if (Utils.isNullOrUndefined(oldObject) && Utils.isNullOrUndefined(newObject)) {
       throw Error('Something went wrong during the diff.');
     }
@@ -415,44 +386,14 @@ export class SourceController extends BaseController {
           diffOptions.includeOnly
         );
 
-        // const flattenedNewSourceModel = JsonUtils.flatten(cleanedNewVersion);
-        // const flattenedOldSourceModel = JsonUtils.flatten(cleanedOldVersion);
-
-        // const updatedSourceModel: IStringMap<any> = {};
-
-        // _.each(_.keys(flattenedNewSourceModel), key => {
-        //   // const splited = key.split('.');
-        //   // if (splited[0] === 'mappings') {
-        //   //   // Skipping mapping as this will be handled after
-        //   // } else if (splited[0] === 'configuration' && splited[1] === 'extendedDataFiles') {
-        //   //   // TODO: Only print OTG that have changed
-        //   //   // updatedSourceModel[key] = 'Only print OTG that have changed';
-
-        //   if (Array.isArray(flattenedOldSourceModel[key])) {
-        //     if (!_.isEqual(flattenedOldSourceModel[key], flattenedNewSourceModel[key])) {
-        //       updatedSourceModel[`${key}.newValue`] = flattenedNewSourceModel[key];
-        //       updatedSourceModel[`${key}.oldValue`] = flattenedOldSourceModel[key];
-        //     }
-        //     // } else {
-        //   }
-        // });
-
-        // const unflattenedConfig = JsonUtils.unflatten(updatedSourceModel);
-        // diff mappings
         // Traverse the 2 sources to do a indepth diff
         let diffResult: any = {};
-        this.traverse(
-          cleanedNewVersion,
-          cleanedOldVersion,
-          diffResult,
-          // TODO: remove and replace mapping id with name above!!!!
-          {
-            uniqueCombinaisonKeys: {
-              mappings: ['fieldName', 'type']
-            },
-            keysToOmit: { mappings: ['id'] }
-          }
-        );
+        this.traverse(cleanedNewVersion, cleanedOldVersion, diffResult, {
+          uniqueCombinaisonKeys: {
+            mappings: ['fieldName', 'type']
+          },
+          keysToOmit: { mappings: ['id'] }
+        });
 
         // Remove all unchanged parameters
         diffResult = JsonUtils.flatten(diffResult);
@@ -462,9 +403,6 @@ export class SourceController extends BaseController {
           }
         });
         diffResult = JsonUtils.unflatten(diffResult);
-        console.log('*********************');
-        console.log(diffResult.configuration.parameters);
-        console.log('*********************');
 
         return diffResult;
       });

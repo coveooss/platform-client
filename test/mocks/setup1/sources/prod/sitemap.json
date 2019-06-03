@@ -5,6 +5,7 @@
   "sourceType": "WEB2",
   "crawlerInstanceType": "Connector.Web2",
   "additionalInfos": {},
+  "VeryOldParameter": {},
   "configuration": {
     "sourceSecurityOption": "Specified",
     "startingAddresses": [
@@ -33,7 +34,7 @@
       "MaxRequestsRetryCount": { "sensitive": false, "value": "3" },
       "JavaScriptLoadingDelayInMilliseconds": { "sensitive": false, "value": "0" },
       "MinCrawlDelayPerDomainInMilliseconds": { "sensitive": false, "value": "1000" },
-      "MaxCrawlDepth": { "sensitive": false, "value": "100" },
+      "DepreactedValueToDELETE": { "sensitive": false, "value": "1000" },
       "RequestsRetryDelayInMilliseconds": { "sensitive": false, "value": "1000" },
       "RespectAnchorRelNoFollow": { "sensitive": false, "value": "true" },
       "QueryStringParametersToIgnore": { "sensitive": false, "value": "[]" },
@@ -677,32 +678,53 @@
   ],
   "mappings": [
     {
-      "id": "xgkh2vve6tamudrpjznh5xkffu",
+      "id": "xgkhdsada9fdsnh5xkffu",
       "kind": "COMMON",
       "fieldName": "title",
       "extractionMethod": "METADATA",
       "content": "%[title:crawler]"
     },
     {
-      "id": "xovpsty65gp7wiag3zfhcwcl3a",
+      "id": "xovpdsasp7wiag3zfhcwcl3a",
       "kind": "COMMON",
       "fieldName": "printableuri",
       "extractionMethod": "METADATA",
       "content": "%[printableuri]"
     },
     {
-      "id": "xta7lflq33kh2kn54irctske74",
+      "id": "xta7l8y7f8dh954irctske74",
       "kind": "COMMON",
       "fieldName": "workemail",
       "extractionMethod": "METADATA",
       "content": "%[workemail]"
     },
     {
-      "id": "xtztkj6bknovd4eqsvzkfkcofq",
+      "id": "xd9s0ajd9sk9dDsszkfkcofq",
       "kind": "COMMON",
       "fieldName": "homephone",
       "extractionMethod": "METADATA",
       "content": "%[homephone]"
+    },
+    {
+      "id": "xd9s0ajd9dsdssk9dDsszkfkcofq",
+      "kind": "COMMON",
+      "fieldName": "homephone",
+      "extractionMethod": "METADATA",
+      "content": "%[homephone2]"
+    },
+    {
+      "id": "todelete",
+      "kind": "COMMON",
+      "fieldName": "todelete",
+      "extractionMethod": "METADATA",
+      "content": "%[todelete]"
+    },
+    {
+      "id": "xta7ldsadsd54irctske74",
+      "kind": "COMMON",
+      "fieldName": "custom",
+      "extractionMethod": "METADATA",
+      "content": "%[customfield]"
     }
   ],
   "pushEnabled": false,
