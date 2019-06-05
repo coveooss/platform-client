@@ -16,7 +16,8 @@
 
     <!-- Custom CSS -->
     <style>
-      del, ins {
+      del,
+      ins {
         text-decoration: none;
       }
 
@@ -33,17 +34,19 @@
       }
 
       .palette div {
-          padding: .5rem
+        padding: 0.5rem;
       }
 
-      .navigation,.page-content {
-          max-height: 100vh
+      .navigation,
+      .page-content {
+        max-height: 100vh;
       }
-
     </style>
   </head>
 
   <script>
+    window.sourcesToCreate = SOURCES_TO_CREATE
+    window.sourcesToDelete = SOURES_TO_DELETE
     window.sources = DIFF_OBJECT </script>
 
     <body>
@@ -53,13 +56,9 @@
             <div class="navigation-menu" style="max-height: 300px">
               <ul class="navigation-menu-sections">
                 <li class="block navigation-menu-section">
-                  <header class="navigation-menu-section-header">
-                    <svg class="navigation-menu-section-header-icon icon fill-white mod-lg" viewBox="0 0 512 512">
-                      <path
-                        d="M0 80v80h512V80H0zM64 0L0 64h512L448 0H64zm128 288v32h128v-32H192zM32 192v320h448V192H32zm128 64h192v96H160v-96z"
-                      ></path>
-                    </svg>
-                    Sources
+                  <header class="navigation-menu-section-header ml3">
+                    <!-- SVG to update here -->
+                    General <span class="text-tan-hide ml2" style="font-weight: normal"></span>
                     <span class="collapsible-arrow icon fill-white open">
                       <svg viewbox="0 0 12.6 7.2">
                         <path
@@ -68,7 +67,25 @@
                       </svg>
                     </span>
                   </header>
-                  <ul id="source-list" class="navigation-menu-section-items"></ul>
+                  <ul id="summary-menu-section" class="navigation-menu-section-items">
+                    <a class="block navigation-menu-section-item" href="#" onclick="javascript:showSummary()"
+                      ><span class="navigation-menu-section-item-link">Summary</span></a
+                    >
+                  </ul>
+                </li>
+                <li class="block navigation-menu-section">
+                  <header class="navigation-menu-section-header ml3">
+                    <!-- SVG to update here -->
+                    Sources to update <span id="source-list-to-update-count" class="text-tan-hide ml2" style="font-weight: normal"></span>
+                    <span class="collapsible-arrow icon fill-white open">
+                      <svg viewbox="0 0 12.6 7.2">
+                        <path
+                          d="M.945.046c.3 0 .5.1.7.3l4.6 4.6 4.6-4.6c.4-.4 1-.4 1.4 0s.4 1 0 1.4l-5.2 5.2c-.4.4-1.2.4-1.6 0l-5.2-5.2c-.4-.4-.4-1 0-1.4.2-.2.4-.3.7-.3"
+                        />
+                      </svg>
+                    </span>
+                  </header>
+                  <ul id="source-list-to-update" class="navigation-menu-section-items"></ul>
                 </li>
               </ul>
             </div>
@@ -78,10 +95,72 @@
         <div class="page-content application-container">
           <div class="material-card m4">
             <div class="p2">
-              <h4 class="mb2"><span id="addition-count" class="text-green"> </span> &nbsp; <span id="deletion-count" class="text-red"> </span></h4>
-              <figure class="highlight">
-                <pre id="result"></pre>
-              </figure>
+              <div id="diff-summary">
+                <label class="form-control-label">Sources</label>
+                <div class="tab-navigation">
+                  <div id="tab1" class="tab enabled active">To Create</div>
+                  <div id="tab2" class="tab enabled">To Delete</div>
+                  <!-- <div id="tab3" class="tab enabled">Update</div> -->
+                </div>
+                <div class="tab-content">
+                  <div data-tab="tab1" class="tab-pane active">
+                    <ul class="mod-header-padding mod-form-top-bottom-padding" id="sources-to-create-list"></ul>
+                  </div>
+                  <div data-tab="tab2" class="tab-pane">
+                    <ul class="mod-header-padding mod-form-top-bottom-padding" id="sources-to-delete-list"></ul>
+                  </div>
+                  <!-- <div data-tab="tab3" class="tab-pane">
+                  <div class="mod-header-padding mod-form-top-bottom-padding">
+                    More details in the <b>Sources to Update</b> section.
+                  </div>
+                </div> -->
+                </div>
+
+                <script type="text/javascript">
+                  var tab1 = $('#tab1');
+                  var tab2 = $('#tab2');
+                  // var tab3 = $('#tab3');
+                  var tabpane1 = $('[data-tab=tab1]');
+                  var tabpane2 = $('[data-tab=tab2]');
+                  // var tabpane3 = $('[data-tab=tab3]');
+
+                  tab1.on('click', function() {
+                    tab1.addClass('active');
+                    tab2.removeClass('active');
+                    // tab3.removeClass('active');
+                    tabpane1.addClass('active');
+                    tabpane2.removeClass('active');
+                    // tabpane3.removeClass('active');
+                  });
+
+                  tab2.on('click', function() {
+                    tab1.removeClass('active');
+                    tab2.addClass('active');
+                    // tab3.removeClass('active');
+                    tabpane1.removeClass('active');
+                    tabpane2.addClass('active');
+                    // tabpane3.removeClass('active');
+                  });
+
+                  // tab3.on('click', function() {
+                  //   tab1.removeClass('active');
+                  //   tab2.removeClass('active');
+                  //   tab3.addClass('active');
+                  //   tabpane1.removeClass('active');
+                  //   tabpane2.removeClass('active');
+                  //   tabpane3.addClass('active');
+                  // });
+                </script>
+              </div>
+
+              <div id="diff-source-section" class="hidden">
+                <h4 class="mb2">
+                  <span id="addition-count" class="text-green"> </span> &nbsp; <span id="deletion-count" class="text-red"> </span>
+                </h4>
+                <figure class="highlight">
+                  <pre id="result"></pre>
+                </figure>
+              </div>
             </div>
           </div>
         </div>
@@ -101,19 +180,59 @@
           return count;
         }
 
-        function handleSourceChange(sourceDiff) {
+        function showSummary() {
+          $(`.navigation-menu-section-item`).removeClass('state-active');
+          const summaryItem = document.querySelector('#summary-menu-section .navigation-menu-section-item');
+          summaryItem.classList.add('state-active');
+
+          $(`#diff-summary`).removeClass('hidden');
+          $(`#diff-source-section`).addClass('hidden');
+
+          let sourcesToCreate = document.getElementById('sources-to-create-list');
+          sourcesToCreate.innerHTML = '';
+
+          let sourcesToDelete = document.getElementById('sources-to-delete-list');
+          sourcesToDelete.innerHTML = '';
+
+          window.sourcesToCreate.forEach(sourceName => {
+            let li = document.createElement('li');
+
+            let element = document.createElement('h4');
+            element.className = 'title-text mt1';
+            element.textContent = sourceName;
+
+            li.appendChild(element);
+            sourcesToCreate.appendChild(li);
+          });
+
+          window.sourcesToDelete.forEach(sourceName => {
+            let li = document.createElement('li');
+
+            let element = document.createElement('h4');
+            element.className = 'title-text mt1';
+            element.textContent = sourceName;
+
+            li.appendChild(element);
+            sourcesToDelete.appendChild(li);
+          });
+        }
+
+        function handleUpdatedSourceChange(sourceDiff) {
           console.log('source change');
           const sourceName = _.keys(sourceDiff)[0];
           const jsonDiff = sourceDiff[sourceName];
 
           // Select the source tab
-          $(`li.navigation-menu-section-item`).removeClass('state-active');
+          $(`.navigation-menu-section-item`).removeClass('state-active');
+          $(`#diff-source-section`).removeClass('hidden');
+          $(`#diff-summary`).addClass('hidden');
+
           const sourceTab = document.querySelector(`li[data-source-name="${sourceName}"]`);
           sourceTab.classList.add('state-active');
 
           const modificationsCount = getModificationCount(jsonDiff);
-          document.getElementById('addition-count').textContent = modificationsCount[0] > 0? `+ ${modificationsCount[0]}`: '';
-          document.getElementById('deletion-count').textContent = modificationsCount[1] > 0? `- ${modificationsCount[1]}`: '';
+          document.getElementById('addition-count').textContent = modificationsCount[0] > 0 ? `+ ${modificationsCount[0]}` : '';
+          document.getElementById('deletion-count').textContent = modificationsCount[1] > 0 ? `- ${modificationsCount[1]}` : '';
 
           changed(jsonDiff);
         }
@@ -130,11 +249,11 @@
             var node;
             if (diff[i].removed) {
               node = document.createElement('div');
-              node.classList.add('bg-soft-red')
+              node.classList.add('bg-soft-red');
               node.appendChild(document.createTextNode(diff[i].value.replace(/^./gm, '-')));
             } else if (diff[i].added) {
               node = document.createElement('div');
-              node.classList.add('bg-soft-green')
+              node.classList.add('bg-soft-green');
               node.appendChild(document.createTextNode(diff[i].value.replace(/^./gm, '+')));
             } else {
               node = document.createTextNode(diff[i].value);
@@ -146,10 +265,10 @@
           result.appendChild(fragment);
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-          const sources = window.sources;
+        function buildSourcesToUpdateTabs(source) {
+          const sources = window.sourcesToUpdate;
 
-          let sourceList = document.getElementById('source-list');
+          let sourceList = document.getElementById('source-list-to-update');
           sources.forEach(source => {
             const sourceName = _.keys(source)[0];
             let li = document.createElement('li');
@@ -159,15 +278,23 @@
             let anchor = document.createElement('a');
             anchor.className = 'block navigation-menu-section-item-link';
             anchor.href = '#';
-            anchor.onclick = () => handleSourceChange(source);
+            anchor.onclick = () => handleUpdatedSourceChange(source);
             anchor.textContent = sourceName;
 
             li.appendChild(anchor);
             sourceList.appendChild(li);
           });
 
+          // Add updated source count
+          sourceList = document.getElementById('source-list-to-update-count');
+          sourceList.textContent = `(${sources.length})`;
           // Show first source form the list
-          handleSourceChange(_.values(sources)[0]);
+          //handleUpdatedSourceChange(_.values(sources)[0]);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+          showSummary();
+          buildSourcesToUpdateTabs();
         });
       </script>
 

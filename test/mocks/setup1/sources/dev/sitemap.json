@@ -2,6 +2,7 @@
   "id": "rrbbidfxa2ri4usxhzzmhq2hge-dummygroupk5f2dpwl",
   "name": "My Sitemap Source",
   "owner": "john@coveo.com-google",
+  "NewParameter": "allo",
   "sourceType": "WEB2",
   "crawlerInstanceType": "Connector.Web2",
   "additionalInfos": {},
@@ -35,6 +36,7 @@
       "MaxRequestsRetryCount": { "sensitive": false, "value": "3" },
       "JavaScriptLoadingDelayInMilliseconds": { "sensitive": false, "value": "0" },
       "MinCrawlDelayPerDomainInMilliseconds": { "sensitive": false, "value": "1000" },
+      "NewCustomParameter": { "sensitive": false, "value": "100" },
       "MaxCrawlDepth": { "sensitive": false, "value": "100" },
       "RequestsRetryDelayInMilliseconds": { "sensitive": false, "value": "1000" },
       "RespectAnchorRelNoFollow": { "sensitive": false, "value": "true" },
@@ -684,6 +686,7 @@
       "versionId": ""
     }
   ],
+  "anotherNewParameter": { "random": "param" },
   "mappings": [
     {
       "id": "xgkh2vve6tamudrpjznh5xkffu",

@@ -1,3 +1,5 @@
+import * as jsDiff from 'diff';
+// import chalk from 'chalk';
 // tslint:disable:no-magic-numbers
 import { expect } from 'chai';
 import * as _ from 'underscore';
@@ -13,6 +15,7 @@ import { Organization } from '../../src/coveoObjects/Organization';
 import { SourceController } from './../../src/controllers/SourceController';
 import { IDiffOptions } from '../../src/commands/DiffCommand';
 import { Dictionary } from '../../src/commons/collections/Dictionary';
+import { JsonUtils } from '../../src/commons/utils/JsonUtils';
 // import { JsonUtils } from '../../src/commons/utils/JsonUtils';
 // import { Dictionary } from '../../src/commons/collections/Dictionary';
 
@@ -213,25 +216,186 @@ export const SourceControllerTest = () => {
     });
 
     describe('Diff Method', () => {
-      // it('Should support item types mapping', (done: MochaDone) => {
-      //   throw new Error('To implement');
-      // });
+      it('Should support item types mapping', (done: MochaDone) => {
+        const devMappings = [
+          {
+            id: 'rasdf33sgh2evy',
+            kind: 'MAPPING',
+            type: 'Playlist',
+            fieldName: 'videotype',
+            extractionMethod: 'LITERAL',
+            content: 'playlist'
+          },
+          {
+            id: 'rasdfgh2evy',
+            kind: 'MAPPING',
+            type: 'Playlist',
+            fieldName: 'body',
+            extractionMethod: 'LITERAL',
+            content: 'New body value'
+          },
+          {
+            id: 'fdkjslfkdsf',
+            kind: 'COMMON',
+            fieldName: 'body',
+            extractionMethod: 'METADATA',
+            content: '%[description]'
+          }
+        ];
+        const prodMapping = [
+          {
+            id: 'fd345yujkmjnhgfdd',
+            kind: 'COMMON',
+            fieldName: 'body',
+            extractionMethod: 'METADATA',
+            content: '%[description]'
+          },
+          {
+            id: 'dsadsdsad',
+            kind: 'MAPPING',
+            type: 'Playlist',
+            fieldName: 'videotype',
+            extractionMethod: 'LITERAL',
+            content: 'playlist'
+          },
+          {
+            id: 'wertghj',
+            kind: 'MAPPING',
+            type: 'Playlist',
+            fieldName: 'body',
+            extractionMethod: 'LITERAL',
+            content: 'New body value'
+          }
+        ];
 
-      // it('Should ignore id when diffing mappings', (done: MochaDone) => {
-      //   throw new Error('To implement');
-      // });
+        const devSource = JsonUtils.clone(DEVtcytrppteddiqkmboszu4skdoe);
+        devSource.mappings = devMappings;
 
-      // it('Should ignore order when diffing mapping', (done: MochaDone) => {
-      //   throw new Error('To implement');
-      // });
+        const prodSource = JsonUtils.clone(PRODtcytrppteddiqkmboszu4skdoe);
+        prodSource.mappings = prodMapping;
 
-      // it('Should ignore id when diffing object to get', (done: MochaDone) => {
-      //   throw new Error('To implement');
-      // });
+        scope = nock(UrlService.getDefaultUrl())
+          // First expected request
+          .get('/rest/organizations/dev/sources')
+          .reply(RequestUtils.OK, _.where(allDevSources, { name: 'My Sitemap Source' })) // Just picking the sitemap for this test
+          // Fecth extensions from dev
+          .get('/rest/organizations/dev/extensions')
+          .reply(RequestUtils.OK, [sfm7yvhqtiftmfuasrqtpfkio4, ukjs6nvyjvqdn4vozf3ugjkdqe])
+          // Fecth extensions from Prod
+          .get('/rest/organizations/prod/extensions')
+          // Rename extension Ids
+          .reply(RequestUtils.OK, [ukjs6nvyjvqdn4vozf3ugjkdqe])
+          // Fetching dev sources one by one
+          .get('/rest/organizations/dev/sources/tcytrppteddiqkmboszu4skdoe-dummygroupk5f2dpwl/raw')
+          // Replace mappings
+          .reply(RequestUtils.OK, devSource)
+          // Fecthing all prod sources
+          .get('/rest/organizations/prod/sources')
+          .reply(RequestUtils.OK, _.where(allProdSources, { name: 'My Sitemap Source' }))
+          .get('/rest/organizations/prod/sources/tcytrppteddiqkmboszu4skdoe-dummygroupproduction/raw')
+          // Replace mappings
+          .reply(RequestUtils.OK, prodSource);
 
-      // it('Should ignore order when diffing object to get', (done: MochaDone) => {
-      //   throw new Error('To implement');
-      // });
+        // Set diff options
+        const diffOptions: IDiffOptions = {
+          includeOnly: ['mappings']
+        };
+
+        controller
+          .diff(diffOptions)
+          .then((diffResultArray: DiffResultArray<Source>) => {
+            expect(diffResultArray.TO_CREATE.length).to.eql(0);
+            expect(diffResultArray.TO_UPDATE.length).to.eql(0);
+            expect(diffResultArray.TO_DELETE.length).to.eql(0);
+
+            done();
+          })
+          .catch((err: IGenericError) => {
+            done(err);
+          });
+      });
+
+      it('Extraction method should ignore id when diffing mappings and the mapping order', () => {
+        const devSource = new Source({
+          id: 'dev',
+          name: 'mysource',
+          mappings: [
+            {
+              id: 'rasdf33sgh2evy',
+              kind: 'MAPPING',
+              type: 'Playlist',
+              fieldName: 'videotype',
+              extractionMethod: 'LITERAL',
+              content: 'playlist'
+            },
+            {
+              id: 'rasdfgh2evy',
+              kind: 'MAPPING',
+              type: 'Playlist',
+              fieldName: 'body',
+              extractionMethod: 'LITERAL',
+              content: 'New body value'
+            },
+            {
+              id: 'fdkjslfkdsf',
+              kind: 'COMMON',
+              fieldName: 'body',
+              extractionMethod: 'METADATA',
+              content: '%[description]'
+            }
+          ],
+          sourceType: 'Dummy',
+          preConversionExtensions: [],
+          postConversionExtensions: []
+        });
+
+        const prodSource = new Source({
+          id: 'prod',
+          name: 'mysource',
+          mappings: [
+            {
+              id: 'fd345yujkmjnhgfdd',
+              kind: 'COMMON',
+              fieldName: 'body',
+              extractionMethod: 'METADATA',
+              content: '%[description]'
+            },
+            {
+              id: 'dsadsdsad',
+              kind: 'MAPPING',
+              type: 'Playlist',
+              fieldName: 'videotype',
+              extractionMethod: 'LITERAL',
+              content: 'playlist'
+            },
+            {
+              id: 'wertghj',
+              kind: 'MAPPING',
+              type: 'Playlist',
+              fieldName: 'body',
+              extractionMethod: 'LITERAL',
+              content: 'New body value'
+            }
+          ],
+          sourceType: 'Dummy',
+          preConversionExtensions: [],
+          postConversionExtensions: []
+        });
+
+        const diffOptions: IDiffOptions = {
+          includeOnly: ['mappings']
+        };
+
+        const cleanVersion: any = controller.extractionMethod([devSource], diffOptions, [prodSource]);
+
+        const diff: jsDiff.Change[] = cleanVersion[0].newSource;
+        // The mapping arrays should be similar
+        expect(diff.length).to.eq(1);
+        expect(diff[0].added).to.not.exist;
+        expect(diff[0].removed).to.not.exist;
+        // expect(updatedSource['configuration.parameters.OrganizationId.value.oldValue']).to.be.undefined;
+        // expect(updatedSource['resourceId.oldValue']).to.be.undefined;
+      });
 
       it('Should diff sources (updated)', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
@@ -262,6 +426,8 @@ export const SourceControllerTest = () => {
           'configuration.documentConfig',
           'configuration.extendedDataFiles',
           'configuration.parameters',
+          'veryOldParameter',
+          'NewParameter',
           'configuration.startingAddresses'
         ];
 
@@ -298,30 +464,6 @@ export const SourceControllerTest = () => {
             expect(updatedSource['configuration.parameters.OrganizationId.value.oldValue']).to.be.undefined;
             expect(updatedSource['resourceId.oldValue']).to.be.undefined;
             expect(updatedSource['resourceId.newValue']).to.be.undefined;
-
-            // console.log('*********************');
-            // console.log(JsonUtils.stringify(cleanVersion));
-            // console.log('*********************');
-
-            // expect(cleanVersion).to.eql({
-            //   configuration: {
-            //     startingAddresses: {
-            //       newValue: [
-            //         'http://www.dummy.com/support/parts',
-            //         'https://www.dummy.com/remote-controls',
-            //         'https://www.dummy.com/accessories',
-            //         'https://www.dummy.com/smartphone-control-products'
-            //       ],
-            //       oldValue: [
-            //         'https://www.dummy.com/remote-controls',
-            //         'https://www.dummy.com/accessories',
-            //         'https://www.dummy.com/smartphone-control-products'
-            //       ]
-            //     }
-            //   },
-            //   postConversionExtensions: { newValue: [[Object], [Object]], oldValue: [[Object]] },
-            //   mappings: 'Only print mappings that have changed'
-            // });
 
             done();
           })
@@ -694,10 +836,6 @@ export const SourceControllerTest = () => {
     });
 
     describe('GetCleanVersion Method', () => {
-      it('Should only return what have changed in the source', () => {
-        throw new Error('To implement');
-      });
-
       it('Should return the clean diff version - empty', () => {
         const diffResultArray: DiffResultArray<Source> = new DiffResultArray();
         const cleanVersion = controller.getCleanVersion(diffResultArray, {});

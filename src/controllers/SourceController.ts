@@ -1,3 +1,4 @@
+import * as jsDiff from 'diff';
 import * as _ from 'underscore';
 import { series } from 'async';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
@@ -5,7 +6,7 @@ import { IDownloadResultArray } from '../commons/collections/DownloadResultArray
 import { Organization } from '../coveoObjects/Organization';
 import { Source } from '../coveoObjects/Source';
 import { IDiffOptions } from './../commands/DiffCommand';
-import { BaseController, IDiffResultArrayClean } from './BaseController';
+import { BaseController } from './BaseController';
 import { IGenericError, StaticErrorMessage } from '../commons/errors';
 import { DiffUtils } from '../commons/utils/DiffUtils';
 import { Logger } from '../commons/logger';
@@ -18,12 +19,6 @@ import { RequestResponse } from 'request';
 import { IGraduateOptions } from '../commands/GraduateCommand';
 import { Colors } from '../commons/colors';
 import { JsonUtils } from '../commons/utils/JsonUtils';
-import { Utils } from '../commons/utils/Utils';
-
-interface ITraverseOptions {
-  uniqueCombinaisonKeys?: IStringMap<string[]>;
-  keysToOmit?: IStringMap<string[]>;
-}
 
 export class SourceController extends BaseController {
   private extensionList: Array<Array<{}>> = [];
@@ -50,6 +45,14 @@ export class SourceController extends BaseController {
         // Do not diff extensions that have been blacklisted
         // Only applies to the organization of origin
         this.removeExtensionFromOriginSource(source1);
+
+        _.each(source1.values(), source => {
+          source.sortMappingsAndStripIds();
+        });
+
+        _.each(source2.values(), source => {
+          source.sortMappingsAndStripIds();
+        });
 
         const diffResultArray = DiffUtils.getDiffResult(source1, source2, diffOptions);
         if (diffResultArray.containsItems()) {
@@ -264,148 +267,159 @@ export class SourceController extends BaseController {
     });
   }
 
-  private getCleanArrayDiff(newList: any[], oldList: any[], options: { uniqueKeyCombinaison?: string[]; keysToOmit?: string[] } = {}) {
-    const diffList: IDiffResultArrayClean = {
-      TO_CREATE: [],
-      TO_UPDATE: [],
-      TO_DELETE: []
-    };
-    let temp: any[] = [];
+  // private partitionMappings(newList: any[], oldList: any[]): IDiffResultArrayClean {
+  //   const diffList: IDiffResultArrayClean = {
+  //     TO_CREATE: [],
+  //     TO_DELETE: [],
+  //     TO_UPDATE: [],
+  //     UNCHANGED: []
+  //   };
+  //   // const diffList: jsDiff.Change[] = [];
 
-    if (typeof newList[0] === 'object') {
-      // We are comparing Objects
-      // TODO: compare objetcs
-      _.each(newList, (newEntry: any, idx: number) => {
-        const condition = options.uniqueKeyCombinaison
-          ? (oldEntry: any) =>
-              _.reduce(options.uniqueKeyCombinaison || [], (memo, key) => memo && (newEntry as any)[key] === (oldEntry as any)[key], true)
-          : (oldEntry: any) => _.isEqual(newEntry, oldEntry);
+  //   const uniqueMappingKeyCombinaison = ['fieldName', 'type'];
+  //   let temp: any[] = [];
 
-        const oldEntriesMatches = _.filter(oldList, (oldEntry: any) => condition(oldEntry));
-        // const matches = _.filter(oldList, (oldEntry: T) => newEntry.fieldName === oldEntry.fieldName && newEntry.type === oldEntry.type);
-        temp = temp.concat(oldEntriesMatches);
-        const multipleCombinaisonValue = _.compact(_.map(options.uniqueKeyCombinaison || [], (val: string) => (newEntry as any)[val])).join(
-          ' - '
-        );
-        if (oldEntriesMatches.length > 1) {
-          Logger.warn(`Multiple mapping rules with the same type found: ${multipleCombinaisonValue}. Taking the last one.`);
-        }
-        let oldEntryMatch = _.last(oldEntriesMatches);
+  //   // First, retrieve the to_create, to_delete and to_update. This is required before feeding the diff to jsDiff.
+  //   _.each(newList, (newEntry: any, idx: number) => {
+  //     const condition = (oldEntry: any) =>
+  //       _.reduce(uniqueMappingKeyCombinaison || [], (memo, key) => memo && (newEntry as any)[key] === (oldEntry as any)[key], true);
 
-        _.each(options.keysToOmit || [], key => {
-          newEntry = _.omit(newEntry, key); // Can convert undefined {} to {}
-          oldEntryMatch = _.omit(oldEntryMatch, key); // Can convert undefined {} to {}
-        });
-        // if (options.keysToOmit) {
-        //   newEntry = JsonUtils.removeKeyValuePairsFromJson(newEntry, options.keysToOmit);
-        //   match = JsonUtils.removeKeyValuePairsFromJson(match, options.keysToOmit);
-        // }
-        if (!_.isEqual(newEntry, oldEntryMatch)) {
-          // First condition is required because of the _.omit function
-          if (_.isEqual(oldEntryMatch, {}) || oldEntryMatch === undefined) {
-            diffList.TO_CREATE.push(newEntry);
-          } else {
-            diffList.TO_UPDATE.push({ newValue: newEntry, oldValue: oldEntryMatch });
-          }
-        }
-      });
+  //     const oldEntriesMatches = _.filter(oldList, (oldEntry: any) => condition(oldEntry));
+  //     temp = temp.concat(oldEntriesMatches);
+  //     const multipleCombinaisonValue = _.compact(_.map(uniqueMappingKeyCombinaison || [], (val: string) => (newEntry as any)[val])).join(
+  //       ' - '
+  //     );
+  //     if (oldEntriesMatches.length > 1) {
+  //       Logger.warn(`Multiple mapping rules with the same type found: ${multipleCombinaisonValue}. Taking the last one.`);
+  //     }
+  //     let oldEntryMatch = _.last(oldEntriesMatches);
 
-      const difference = _.difference(oldList, temp);
-      diffList.TO_DELETE = difference;
-    } else {
-      // We are comparing simple types (string, Number, boolean, ...)
-      diffList.TO_DELETE = _.difference(oldList, newList);
-      diffList.TO_CREATE = _.difference(newList, oldList);
-    }
-    return diffList;
+  //     newEntry = _.omit(newEntry, 'id'); // Can convert undefined {} to {}
+  //     oldEntryMatch = _.omit(oldEntryMatch, 'id'); // Can convert undefined {} to {}
+  //     if (!_.isEqual(newEntry, oldEntryMatch)) {
+  //       if (_.isEqual(oldEntryMatch, {}) || oldEntryMatch === undefined) {
+  //         diffList.TO_CREATE.push(newEntry);
+  //       } else {
+  //         diffList.TO_UPDATE.push({ newValue: newEntry, oldValue: oldEntryMatch });
+  //       }
+  //     } else {
+  //       if (diffList.UNCHANGED) {
+  //         diffList.UNCHANGED.push(newEntry);
+  //       }
+  //     }
+  //   });
+
+  //   const difference = _.difference(oldList, temp);
+  //   diffList.TO_DELETE = difference;
+
+  //   return diffList;
+  // }
+
+  // // TODO: DEPRECATED to remove!!
+  // traverse(newObject: any, oldObject: any, diffObject: any, options: ITraverseOptions, parentKey?: string): void {
+  //   if (Utils.isNullOrUndefined(oldObject) && Utils.isNullOrUndefined(newObject)) {
+  //     throw Error('Something went wrong during the diff.');
+  //   }
+
+  //   if (newObject && typeof newObject === 'object') {
+  //     if (Array.isArray(newObject)) {
+  //       // Using a different logic to compare arrays
+  //       const diffArrayOptions: { uniqueKeyCombinaison?: string[]; keysToOmit?: string[] } = {};
+  //       if (parentKey) {
+  //         if (options.uniqueCombinaisonKeys && options.uniqueCombinaisonKeys[parentKey]) {
+  //           diffArrayOptions.uniqueKeyCombinaison = options.uniqueCombinaisonKeys[parentKey];
+  //         }
+  //         if (options.keysToOmit && options.keysToOmit[parentKey]) {
+  //           diffArrayOptions.keysToOmit = options.keysToOmit[parentKey];
+  //         }
+  //       }
+
+  //       _.extend(diffObject, this.getMappingDiff(newObject, oldObject, diffArrayOptions));
+  //     } else {
+  //       // Check for parameters to delete
+  //       _.mapObject(oldObject, (value, key) => {
+  //         if (newObject[key] === undefined) {
+  //           // diffObject[key] = { TO_DELETE: oldObject[key] };
+  //           // _.extend(diffObject, { TO_DELETE: { [key]: oldObject[key] } });
+  //           if (diffObject['TO_DELETE'] === undefined) {
+  //             diffObject['TO_DELETE'] = {};
+  //           }
+  //           diffObject['TO_DELETE'][key] = oldObject[key];
+  //         }
+  //       });
+
+  //       // Check for parameters to create or update
+  //       _.mapObject(newObject, (value, key) => {
+  //         if (oldObject[key] === undefined) {
+  //           // _.extend(diffObject, { TO_CREATE: newObject });
+  //           if (diffObject['TO_CREATE'] === undefined) {
+  //             diffObject['TO_CREATE'] = {};
+  //           }
+  //           diffObject['TO_CREATE'][key] = newObject[key];
+  //         } else {
+  //           diffObject[key] = {};
+  //           this.traverse(value, oldObject[key], diffObject[key], options, key);
+  //         }
+  //       });
+  //     }
+  //   } else {
+  //     // Comparing tree leaves
+  //     if (!_.isEqual(newObject, oldObject)) {
+  //       _.extend(diffObject, { newValue: newObject, oldValue: oldObject });
+  //     }
+  //   }
+  // }
+
+  sortMappingsAndStripIds(mappings: Array<IStringMap<string>>): Array<IStringMap<string>> {
+    // Sort mappings
+    let cleanedMappings: Array<IStringMap<string>> = _.sortBy(mappings, (mapping: IStringMap<string>) =>
+      _.compact([mapping.fieldName, mapping.type]).join('-')
+    );
+
+    // Remove id from mappings
+    cleanedMappings = _.map(cleanedMappings, (mapping: IStringMap<string>) => _.omit(mapping, 'id'));
+
+    return cleanedMappings;
   }
 
-  traverse(newObject: any, oldObject: any, diffObject: any, options: ITraverseOptions, parentKey?: string): void {
-    if (Utils.isNullOrUndefined(oldObject) && Utils.isNullOrUndefined(newObject)) {
-      throw Error('Something went wrong during the diff.');
-    }
-
-    if (newObject && typeof newObject === 'object') {
-      if (Array.isArray(newObject)) {
-        // Using a different logic to compare arrays
-        const diffArrayOptions: { uniqueKeyCombinaison?: string[]; keysToOmit?: string[] } = {};
-        if (parentKey) {
-          if (options.uniqueCombinaisonKeys && options.uniqueCombinaisonKeys[parentKey]) {
-            diffArrayOptions.uniqueKeyCombinaison = options.uniqueCombinaisonKeys[parentKey];
-          }
-          if (options.keysToOmit && options.keysToOmit[parentKey]) {
-            diffArrayOptions.keysToOmit = options.keysToOmit[parentKey];
-          }
-        }
-
-        _.extend(diffObject, this.getCleanArrayDiff(newObject, oldObject, diffArrayOptions));
-      } else {
-        // Check for parameters to delete
-        _.mapObject(oldObject, (value, key) => {
-          if (newObject[key] === undefined) {
-            diffObject[key] = { TO_DELETE: oldObject[key] };
-          }
-        });
-
-        // Check for parameters to create or update
-        _.mapObject(newObject, (value, key) => {
-          diffObject[key] = {};
-          if (oldObject === undefined) {
-            _.extend(diffObject, { TO_CREATE: newObject });
-          } else {
-            this.traverse(value, oldObject[key], diffObject[key], options, key);
-          }
-        });
-      }
-    } else {
-      // Comparing tree leaves
-      if (!_.isEqual(newObject, oldObject)) {
-        _.extend(diffObject, { newValue: newObject, oldValue: oldObject });
-      }
-    }
-  }
-
-  extractionMethod(object: any[], diffOptions: IDiffOptions, oldVersion?: any[]): any[] {
+  /**
+   * Returns a string or 2 dimensions table: jsDiff per sources.
+   * If the source should be created or deleted, then the function just return the source name. Returning the entire source configueration is not necessary here.
+   * If the source has been updated, the function returns a 2 dimension table using the jsDiff package.
+   */
+  extractionMethod(
+    object: Source[],
+    diffOptions: IDiffOptions,
+    oldVersion?: Source[]
+  ): string[] | Array<{ [sourceName: string]: jsDiff.Change[] }> {
     if (oldVersion === undefined) {
+      // returning sources to create and to delete
       return _.map(object, (e: Source) => e.getName());
     } else {
-      return _.map(oldVersion, (oldSource: Source) => {
-        const newSource: Source = _.find(object, (e: Source) => {
+      const sourceDiff: Array<{ [sourceName: string]: jsDiff.Change[] }> = [];
+      _.map(oldVersion, (oldSource: Source) => {
+        const newSource: Source | undefined = _.find(object, (e: Source) => {
           return e.getName() === oldSource.getName();
         });
-
+        Assert.isNotUndefined(newSource, `Something went wrong in the source diff. Unable to find ${oldSource.getName()}`);
         // Make sure to ignore keys that were not part of the diff
-        const cleanedNewVersion = JsonUtils.removeKeyValuePairsFromJson(
-          newSource.getConfiguration(),
+        const cleanedNewVersion: any = JsonUtils.removeKeyValuePairsFromJson(
+          (newSource as Source).getConfiguration(),
           diffOptions.keysToIgnore,
           diffOptions.includeOnly
         );
-        const cleanedOldVersion = JsonUtils.removeKeyValuePairsFromJson(
+        const cleanedOldVersion: any = JsonUtils.removeKeyValuePairsFromJson(
           oldSource.getConfiguration(),
           diffOptions.keysToIgnore,
           diffOptions.includeOnly
         );
 
-        // Traverse the 2 sources to do a indepth diff
-        let diffResult: any = {};
-        this.traverse(cleanedNewVersion, cleanedOldVersion, diffResult, {
-          uniqueCombinaisonKeys: {
-            mappings: ['fieldName', 'type']
-          },
-          keysToOmit: { mappings: ['id'] }
-        });
+        cleanedNewVersion.mappings = this.sortMappingsAndStripIds(cleanedNewVersion.mappings);
+        cleanedOldVersion.mappings = this.sortMappingsAndStripIds(cleanedOldVersion.mappings);
 
-        // Remove all unchanged parameters
-        diffResult = JsonUtils.flatten(diffResult);
-        _.each(_.allKeys(diffResult), key => {
-          if (_.isEqual(diffResult[key], {}) || _.isEqual(diffResult[key], [])) {
-            delete diffResult[key];
-          }
-        });
-        diffResult = JsonUtils.unflatten(diffResult);
-
-        return diffResult;
+        sourceDiff.push({ newSource: jsDiff.diffJson(cleanedOldVersion, cleanedNewVersion) });
       });
+      return sourceDiff;
     }
   }
 

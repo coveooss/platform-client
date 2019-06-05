@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Source Diff</title>
+    <meta about="Where would you like to go?" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, height=device-height" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="https://coveo.github.io/vapor/dist/js/CoveoStyleGuide.Dependencies.js"></script>
+
+    <link rel="stylesheet" href="https://coveo.github.io/vapor/dist/css/CoveoStyleGuide.css" />
+
+    <!-- Custom CSS -->
+    <style>
+      del {
+        text-decoration: none;
+        color: #b30000;
+        background: #fadad7;
+      }
+
+      ins {
+        background: #eaf2c2;
+        color: #406619;
+        text-decoration: none;
+      }
+
+      .highlight {
+        font-size: 13px;
+        font-family: monospace;
+        line-height: 20px;
+        margin: 1em 0;
+        padding: 1em;
+        background: #f6f6f6;
+        border: 1px solid #eeeeee;
+        border-radius: 0.15em;
+        overflow: auto;
+      }
+
+      .palette div {
+          padding: .5rem
+      }
+
+      .navigation,.page-content {
+          max-height: 100vh
+      }
+
+    </style>
+  </head>
+
+  <script>
+    window.sources = [{"newSource":[{"count":14,"value":"{\n  \"additionalInfos\": {},\n  \"configuration\": {\n    \"addressPatterns\": [\n      {\n        \"allowed\": true,\n        \"expression\": \"*\",\n        \"patternType\": \"Wildcard\"\n      },\n      {\n        \"allowed\": false,\n        \"expression\": \"https://www.dummy.com/search*\",\n        \"patternType\": \"RegEx\"\n      },\n"},{"count":5,"added":true,"value":"      {\n        \"allowed\": false,\n        \"expression\": \"https://www.dummy.com/CatalogResourcesV3*\",\n        \"patternType\": \"RegEx\"\n      }\n"},{"count":705,"value":"    ],\n    \"documentConfig\": {\n      \"documentProcessorConfig\": {\n        \"extensionSettings\": {\n          \"byContentTypes\": [\n            {\n              \"extensionSetting\": {\n                \"action\": \"Retrieve\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \"binarydata\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Retrieve\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \"application/coveo-exchange-urn:content-classes:message\",\n                \"application/coveo-exchange-urn:content-classes:note\",\n                \"application/coveo-exchange-urn:content-classes:activity\",\n                \"application/coveo-exchange-urn:content-classes:appointment\",\n                \"application/coveo-exchange-urn:content-classes:calendarmessage\",\n                \"application/coveo-exchange-urn:content-classes:document\",\n                \"application/coveo-exchange-urn:content-classes:dsn\",\n                \"application/coveo-exchange-urn:content-classes:freebusy\",\n                \"application/coveo-exchange-urn:content-classes:group\",\n                \"application/coveo-exchange-urn:content-classes:mdn\",\n                \"application/coveo-exchange-urn:content-classes:object\",\n                \"application/coveo-exchange-urn:content-classes:person\",\n                \"application/coveo-exchange-urn:content-classes:recallmessage\",\n                \"application/coveo-exchange-urn:content-classes:recallreport\",\n                \"application/coveo-exchange-urn:content-classes:task\",\n                \"application/coveo-exchange-rssfeed\",\n                \"application/coveo-exchange-urn:content-classes:contentclassdef\",\n                \"application/coveo-exchange-urn:content-classes:organization\",\n                \"application/coveo-exchange-urn:content-classes:propertydef\",\n                \"application/coveo-exchange-urn:content-classes:reportmessage\",\n                \"application/coveo-exchange-activedirperson\",\n                \"application/coveo-exchange-officecom\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Retrieve\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": true,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \"text/html\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Retrieve\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": true,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \"text/xml\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Retrieve\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": true,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \"message/rfc822\"\n              ]\n            }\n          ],\n          \"byExtensions\": [\n            {\n              \"extensionSetting\": {\n                \"action\": \"Retrieve\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".html\",\n                \".htm\",\n                \".shtml\",\n                \".shtm\",\n                \".asp\",\n                \".aspx\",\n                \".cgi\",\n                \".php\",\n                \".hta\",\n                \".col\",\n                \".fphtml\",\n                \".ppthtml\",\n                \".pothtml\",\n                \".dochtml\",\n                \".dothtml\",\n                \".xlshtml\",\n                \".jsp\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Retrieve\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".doc\",\n                \".dot\",\n                \".docx\",\n                \".docm\",\n                \".dotx\",\n                \".dotm\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Retrieve\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".xls\",\n                \".xlb\",\n                \".xlm\",\n                \".xlsx\",\n                \".xlsm\",\n                \".xltx\",\n                \".xltm\",\n                \".xlam\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Retrieve\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".ppt\",\n                \".pot\",\n                \".pps\",\n                \".pptx\",\n                \".pptm\",\n                \".potx\",\n                \".potm\",\n                \".ppsx\",\n                \".ppsm\",\n                \".ppam\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Reference\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".mpp\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Reference\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".mdb\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Reference\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".pub\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Retrieve\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"Image\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".jpg\",\n                \".jpeg\",\n                \".jpe\",\n                \".bmp\",\n                \".gif\",\n                \".pcx\",\n                \".tif\",\n                \".tiff\",\n                \".jfif\",\n                \".wpg\",\n                \".tub\",\n                \".tga\",\n                \".sgi\",\n                \".rle\",\n                \".rgba\",\n                \".rgb\",\n                \".raw\",\n                \".ras\",\n                \".psp\",\n                \".psd\",\n                \".ppm\",\n                \".pic\",\n                \".pgm\",\n                \".pgl\",\n                \".pfr\",\n                \".pct\",\n                \".pbm\",\n                \".mac\",\n                \".lbm\",\n                \".kdc\",\n                \".img\",\n                \".iff\",\n                \".hpg\",\n                \".hgl\",\n                \".gem\",\n                \".fpx\",\n                \".dxf\",\n                \".drw\",\n                \".dcx\",\n                \".cut\",\n                \".cmx\",\n                \".cdr\",\n                \".bw\",\n                \".dib\",\n                \".pdc\",\n                \".png\",\n                \".ai\",\n                \".wmf\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Retrieve\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".pdf\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Retrieve\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".txt\",\n                \".bat\",\n                \".vbs\",\n                \".ascx\",\n                \".ini\",\n                \".sln\",\n                \".nfo\",\n                \".inf\",\n                \".wtx\",\n                \".scp\",\n                \".log\",\n                \".exc\",\n                \".dic\",\n                \".vbdproj\",\n                \".vjsproj\",\n                \".vjsprojdata\",\n                \".jsl\",\n                \".vjp\",\n                \".vdp\",\n                \".vdproj\",\n                \".config\",\n                \".sdl\",\n                \".wsdl\",\n                \".cmd\",\n                \".wsf\",\n                \".csv\",\n                \".js\",\n                \".xsd\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Retrieve\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".rtf\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Reference\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".vsd\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Retrieve\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".wp\",\n                \".wpf\",\n                \".wpd\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Reference\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".xml\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Reference\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".7z\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Reference\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".zip\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Reference\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".aif\",\n                \".aiff\",\n                \".aifc\",\n                \".snd\",\n                \".au\",\n                \".cda\",\n                \".rmi\",\n                \".mid\",\n                \".midi\",\n                \".mp1\",\n                \".mp3\",\n                \".mpga\",\n                \".wav\",\n                \".wma\",\n                \".asf\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Reference\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".wm\",\n                \".wmv\",\n                \".mpv2\",\n                \".mpg\",\n                \".mpeg\",\n                \".mpa\",\n                \".mp2\",\n                \".mp2v\",\n                \".m1v\",\n                \".qt\",\n                \".rm\",\n                \".rnx\",\n                \".rec\",\n                \".avi\",\n                \".mov\",\n                \".mp4\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Reference\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".wri\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Reference\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".swf\",\n                \".spl\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Reference\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".chm\",\n                \".hlp\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Reference\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".ncs\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Retrieve\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": true,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".email\",\n                \".eml\",\n                \".ews\",\n                \".mime\",\n                \".mht\",\n                \".mhtml\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Reference\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".exe\",\n                \".dll\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Ignore\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".xsl\",\n                \".xslt\"\n              ]\n            },\n            {\n              \"extensionSetting\": {\n                \"action\": \"Retrieve\",\n                \"actionOnError\": \"Reference\",\n                \"convertDirectlyToHtml\": false,\n                \"converter\": \"Detect\",\n                \"fileTypeValue\": \"\",\n                \"generateThumbnail\": true,\n                \"indexContainer\": true,\n                \"useContentType\": false,\n                \"useExternalHTMLGenerator\": false\n              },\n              \"extensions\": [\n                \".msg\",\n                \".oft\"\n              ]\n            }\n          ],\n          \"noExtension\": {\n            \"action\": \"Retrieve\",\n            \"actionOnError\": \"Ignore\",\n            \"convertDirectlyToHtml\": false,\n            \"converter\": \"Detect\",\n            \"generateThumbnail\": true,\n            \"indexContainer\": true,\n            \"useContentType\": true,\n            \"useExternalHTMLGenerator\": false\n          },\n          \"other\": {\n            \"action\": \"Retrieve\",\n            \"actionOnError\": \"Ignore\",\n            \"convertDirectlyToHtml\": false,\n            \"converter\": \"Detect\",\n            \"generateThumbnail\": true,\n            \"indexContainer\": true,\n            \"useContentType\": true,\n            \"useExternalHTMLGenerator\": false\n          }\n        }\n      }\n    },\n    \"parameters\": {\n      \"AlwaysTrustCertificates\": {\n        \"sensitive\": false,\n        \"value\": \"false\"\n      },\n"},{"count":4,"removed":true,"value":"      \"DepreactedValueToDelete\": {\n        \"sensitive\": false,\n        \"value\": \"1000\"\n      },\n"},{"count":20,"value":"      \"EnableJavaScript\": {\n        \"sensitive\": false,\n        \"value\": \"false\"\n      },\n      \"IndexExternalPages\": {\n        \"sensitive\": false,\n        \"value\": \"false\"\n      },\n      \"IndexExternalPagesLinks\": {\n        \"sensitive\": false,\n        \"value\": \"false\"\n      },\n      \"JavaScriptLoadingDelayInMilliseconds\": {\n        \"sensitive\": false,\n        \"value\": \"0\"\n      },\n      \"MaxAutoRedirects\": {\n        \"sensitive\": false,\n        \"value\": \"7\"\n      },\n"},{"count":4,"added":true,"value":"      \"MaxCrawlDepth\": {\n        \"sensitive\": false,\n        \"value\": \"100\"\n      },\n"},{"count":12,"value":"      \"MaxPageSizeInBytes\": {\n        \"sensitive\": false,\n        \"value\": \"0\"\n      },\n      \"MaxRequestsRetryCount\": {\n        \"sensitive\": false,\n        \"value\": \"3\"\n      },\n      \"MinCrawlDelayPerDomainInMilliseconds\": {\n        \"sensitive\": false,\n        \"value\": \"1000\"\n      },\n"},{"count":4,"added":true,"value":"      \"NewCustomParameter\": {\n        \"sensitive\": false,\n        \"value\": \"100\"\n      },\n"},{"count":14,"value":"      \"PauseOnError\": {\n        \"sensitive\": false,\n        \"value\": \"true\"\n      },\n      \"QueryStringParametersToIgnore\": {\n        \"sensitive\": false,\n        \"value\": \"[]\"\n      },\n      \"RequestsRetryDelayInMilliseconds\": {\n        \"sensitive\": false,\n        \"value\": \"1000\"\n      },\n      \"RequestsTimeoutInSeconds\": {\n        \"sensitive\": false,\n"},{"count":1,"removed":true,"value":"        \"value\": \"600\"\n"},{"count":1,"added":true,"value":"        \"value\": \"60\"\n"},{"count":11,"value":"      },\n      \"RespectAnchorRelNoFollow\": {\n        \"sensitive\": false,\n        \"value\": \"true\"\n      },\n      \"RespectMetaNoFollow\": {\n        \"sensitive\": false,\n        \"value\": \"true\"\n      },\n      \"RespectRobotsDotTxt\": {\n        \"sensitive\": false,\n"},{"count":1,"removed":true,"value":"        \"value\": \"false\"\n"},{"count":1,"added":true,"value":"        \"value\": \"true\"\n"},{"count":9,"value":"      },\n      \"RespectUrlCasing\": {\n        \"sensitive\": false,\n        \"value\": \"true\"\n      },\n      \"UserAgentString\": {\n        \"sensitive\": false,\n        \"value\": \"Mozilla/5.0 (compatible; Coveobot/2.0;+http://www.coveo.com/bot.html)\"\n      },\n"},{"count":4,"removed":true,"value":"      \"secondValueToDelete\": {\n        \"sensitive\": false,\n        \"value\": \"[]\"\n      }\n"},{"count":18,"value":"    },\n    \"permissions\": [\n      {\n        \"permissionSets\": [\n          {\n            \"allowedPermissions\": [\n              {\n                \"identity\": \"*@*\",\n                \"identityType\": \"Group\",\n                \"securityProvider\": \"Email Security Provider\"\n              }\n            ]\n          }\n        ]\n      }\n    ],\n    \"sourceSecurityOption\": \"Specified\",\n    \"startingAddresses\": [\n"},{"count":1,"added":true,"value":"      \"http://www.dummy.com/support/parts\",\n"},{"count":8,"value":"      \"https://www.dummy.com/remote-controls\",\n      \"https://www.dummy.com/accessories\",\n      \"https://www.dummy.com/smartphone-control-products\"\n    ]\n  },\n  \"logicalIndex\": \"default\",\n  \"mappings\": [\n    {\n"},{"count":4,"removed":true,"value":"      \"content\": \"%[customfield]\",\n      \"extractionMethod\": \"METADATA\",\n      \"fieldName\": \"custom\",\n      \"kind\": \"COMMON\"\n"},{"count":5,"added":true,"value":"      \"content\": \"Value for playlist item\",\n      \"extractionMethod\": \"LITERAL\",\n      \"fieldName\": \"body\",\n      \"kind\": \"MAPPING\",\n      \"type\": \"Playlist\"\n"},{"count":2,"value":"    },\n    {\n"},{"count":7,"added":true,"value":"      \"content\": \"Value for video item\",\n      \"extractionMethod\": \"LITERAL\",\n      \"fieldName\": \"body\",\n      \"kind\": \"MAPPING\",\n      \"type\": \"Video\"\n    },\n    {\n"},{"count":6,"value":"      \"content\": \"%[homephone]\",\n      \"extractionMethod\": \"METADATA\",\n      \"fieldName\": \"homephone\",\n      \"kind\": \"COMMON\"\n    },\n    {\n"},{"count":1,"removed":true,"value":"      \"content\": \"%[homephone2]\",\n"},{"count":1,"added":true,"value":"      \"content\": \"%[printableuri]\",\n"},{"count":1,"value":"      \"extractionMethod\": \"METADATA\",\n"},{"count":1,"removed":true,"value":"      \"fieldName\": \"homephone\",\n"},{"count":1,"added":true,"value":"      \"fieldName\": \"printableuri\",\n"},{"count":3,"value":"      \"kind\": \"COMMON\"\n    },\n    {\n"},{"count":1,"removed":true,"value":"      \"content\": \"%[printableuri]\",\n"},{"count":1,"added":true,"value":"      \"content\": \"%[coveo_externalurl]\",\n"},{"count":1,"value":"      \"extractionMethod\": \"METADATA\",\n"},{"count":1,"removed":true,"value":"      \"fieldName\": \"printableuri\",\n"},{"count":1,"added":true,"value":"      \"fieldName\": \"relatedlink\",\n"},{"count":3,"value":"      \"kind\": \"COMMON\"\n    },\n    {\n"},{"count":1,"removed":true,"value":"      \"content\": \"%[title:crawler]\",\n"},{"count":4,"added":true,"value":"      \"content\": [\n        \"%[sourcetype]\",\n        \"%[sourcetype2]\"\n      ],\n"},{"count":1,"value":"      \"extractionMethod\": \"METADATA\",\n"},{"count":1,"removed":true,"value":"      \"fieldName\": \"title\",\n"},{"count":1,"added":true,"value":"      \"fieldName\": \"sourcetype\",\n"},{"count":3,"value":"      \"kind\": \"COMMON\"\n    },\n    {\n"},{"count":1,"removed":true,"value":"      \"content\": \"%[todelete]\",\n"},{"count":1,"added":true,"value":"      \"content\": \"%[title]\",\n"},{"count":1,"value":"      \"extractionMethod\": \"METADATA\",\n"},{"count":1,"removed":true,"value":"      \"fieldName\": \"todelete\",\n"},{"count":1,"added":true,"value":"      \"fieldName\": \"title\",\n"},{"count":12,"value":"      \"kind\": \"COMMON\"\n    },\n    {\n      \"content\": \"%[workemail]\",\n      \"extractionMethod\": \"METADATA\",\n      \"fieldName\": \"workemail\",\n      \"kind\": \"COMMON\"\n    }\n  ],\n  \"postConversionExtensions\": [],\n  \"preConversionExtensions\": []\n}"}]}] </script>
+
+  <body class="coveo-styleguide">
+    <div class="flex flex-row application-wrapper">
+      <div class="flex navigation-wrapper navigation-wrapper-opened">
+        <nav class="navigation">
+          <div class="navigation-menu" style="max-height: 300px">
+            <ul class="navigation-menu-sections">
+              <li class="block navigation-menu-section">
+                <header class="navigation-menu-section-header">
+                  <svg class="navigation-menu-section-header-icon icon fill-white mod-lg" viewBox="0 0 512 512">
+                    <path
+                      d="M0 80v80h512V80H0zM64 0L0 64h512L448 0H64zm128 288v32h128v-32H192zM32 192v320h448V192H32zm128 64h192v96H160v-96z"
+                    ></path>
+                  </svg>
+                  Sources
+                  <span class="collapsible-arrow icon fill-white open">
+                    <svg viewbox="0 0 12.6 7.2">
+                      <path
+                        d="M.945.046c.3 0 .5.1.7.3l4.6 4.6 4.6-4.6c.4-.4 1-.4 1.4 0s.4 1 0 1.4l-5.2 5.2c-.4.4-1.2.4-1.6 0l-5.2-5.2c-.4-.4-.4-1 0-1.4.2-.2.4-.3.7-.3"
+                      />
+                    </svg>
+                  </span>
+                </header>
+                <ul id="source-list" class="navigation-menu-section-items"></ul>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+
+      <div class="page-content application-container">
+        <div class="material-card m4">
+          <div class="p2">
+            <h2 class="mb2"><span id="modification-count"> </span> changes found</h2>
+            <figure class="highlight">
+              <pre id="result"></pre>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function getModificationCount(jsonDiff) {
+        let count = 0;
+        _.each(jsonDiff, part => {
+          if (part.added || part.removed) {
+            count++;
+          }
+        });
+        return count;
+      }
+
+      function handleSourceChange(sourceDiff) {
+        console.log('source change');
+        const sourceName = _.keys(sourceDiff)[0];
+        const jsonDiff = sourceDiff[sourceName];
+
+        // Select the source tab
+        $(`li.navigation-menu-section-item`).removeClass('state-active');
+        const sourceTab = document.querySelector(`li[data-source-name="${sourceName}"]`);
+        sourceTab.classList.add('state-active');
+
+        document.getElementById('modification-count').textContent = getModificationCount(jsonDiff);
+
+        changed(jsonDiff);
+      }
+
+      function changed(diff) {
+        var fragment = document.createDocumentFragment();
+        for (var i = 0; i < diff.length; i++) {
+          if (diff[i].added && diff[i + 1] && diff[i + 1].removed) {
+            var swap = diff[i];
+            diff[i] = diff[i + 1];
+            diff[i + 1] = swap;
+          }
+
+          var node;
+          if (diff[i].removed) {
+            node = document.createElement('del');
+            node.appendChild(document.createTextNode(diff[i].value));
+          } else if (diff[i].added) {
+            node = document.createElement('ins');
+            node.appendChild(document.createTextNode(diff[i].value));
+          } else {
+            node = document.createTextNode(diff[i].value);
+          }
+          fragment.appendChild(node);
+        }
+        var result = document.getElementById('result');
+        result.textContent = '';
+        result.appendChild(fragment);
+      }
+
+      document.addEventListener('DOMContentLoaded', function() {
+        const sources = window.sources;
+
+        let sourceList = document.getElementById('source-list');
+        sources.forEach(source => {
+          const sourceName = _.keys(source)[0];
+          let li = document.createElement('li');
+          li.className = 'navigation-menu-section-item';
+          li.setAttribute('data-source-name', sourceName);
+
+          let anchor = document.createElement('a');
+          anchor.className = 'block navigation-menu-section-item-link';
+          anchor.href = '#';
+          anchor.onclick = () => handleSourceChange(source);
+          anchor.textContent = sourceName;
+
+          li.appendChild(anchor);
+          sourceList.appendChild(li);
+        });
+
+        // Show first source form the list
+        handleSourceChange(_.values(sources)[0]);
+      });
+    </script>
+
+    <script>
+      $(document).ready(function() {
+        // manually reset the hash to force the browser to go to the selected menu item on page refresh
+        var hash = window.location.hash;
+        window.location.hash = '';
+        window.location.hash = hash;
+
+        $('.coveo-slider-input').slider();
+        $('.coveo-datepicker').DatePicker({
+          mode: 'single',
+          inline: true,
+          date: new Date()
+        });
+        $('[title]').tooltip({
+          container: 'body'
+        });
+
+        var selectedTab;
+        if (window.location.hash) {
+          var selectedTabChild = $('.navigation-menu-section-item-link[href="' + window.location.pathname + window.location.hash + '"]');
+          selectedTab = selectedTabChild.parent().addClass('state-active');
+        } else {
+          var selectedTabParend = $('.navigation-menu-section-item-link[href*="' + window.location.pathname + '"]');
+          selectedTab = $(selectedTabParend[0])
+            .parent()
+            .addClass('state-active');
+        }
+
+        $('.navigation-menu-section-item').click(function() {
+          if (selectedTab) {
+            selectedTab.removeClass('state-active');
+          }
+          $(this).addClass('state-active');
+          selectedTab = $(this);
+        });
+
+        $('.navigation-menu-section-header').click(function(event) {
+          $(this)
+            .find('.collapsible-arrow')
+            .toggleClass('open');
+          $(this)
+            .next('.navigation-menu-section-items')
+            .slideToggle();
+        });
+
+        // Simple script to handle opening/closing modals
+        function modalHandler() {
+          var backdrop = $('.modal-backdrop');
+
+          $('.js-modal-trigger').each(function(i, modalTrigger) {
+            var modal = $('#' + modalTrigger.getAttribute('data-modal'));
+            var modalPrompt = $('#' + modalTrigger.getAttribute('data-modal') + 'Prompt');
+
+            var closeButton = modal.find('.js-modal-close');
+            var promptCloseButton = modalPrompt.find('.js-modal-close');
+
+            function removeModal() {
+              modal.removeClass('opened');
+
+              backdrop.addClass('closed');
+
+              backdrop.off('click', removeModal);
+            }
+
+            function removePrompt() {
+              modalPrompt.removeClass('opened');
+
+              modal.find('.prompt-backdrop').addClass('closed');
+
+              backdrop.off('click', removePrompt);
+
+              backdrop.on('click', removeModal);
+            }
+
+            $(modalTrigger).on('click', function() {
+              modal.addClass('opened');
+
+              backdrop.removeClass('closed');
+
+              if (modalPrompt.length > 0) {
+                modalPrompt.addClass('opened');
+
+                backdrop.on('click', removePrompt);
+              } else {
+                backdrop.on('click', removeModal);
+              }
+            });
+
+            closeButton.on('click', function(event) {
+              event.stopPropagation();
+              removeModal();
+            });
+
+            promptCloseButton.on('click', function(event) {
+              event.stopPropagation();
+              removePrompt();
+            });
+          });
+        }
+
+        modalHandler();
+
+        function expandRowView($el) {
+          $el.find('tr.heading-row').addClass('opened');
+          $el.find('tr.collapsible-row').addClass('in');
+          $el.find('tr.collapsible-row .container').slideDown(400);
+          $el.find('[data-collapse-state]').attr('data-collapse-state', 'expanded');
+        }
+
+        function collapseRowView($el) {
+          $el.find('tr.heading-row').removeClass('opened');
+          $el.find('tr.collapsible-row').removeClass('in');
+          $el.find('tr.collapsible-row .container').slideUp(400);
+          $el.find('[data-collapse-state]').attr('data-collapse-state', 'collapsed');
+        }
+
+        $('tr.heading-row').click(function(jQueryEventObject) {
+          var $el = $(jQueryEventObject.currentTarget);
+          if ($el.hasClass('opened')) {
+            collapseRowView($el.parent());
+          } else {
+            expandRowView($el.parent());
+          }
+        });
+
+        // Handle open/close dropdown
+        $('button.dropdown-toggle').click(function(event) {
+          var dropdownEl = $(event.currentTarget).parent();
+          dropdownEl.toggleClass('open', !dropdownEl.hasClass('open'));
+        });
+
+        // Handle open/close dropdown search
+        $('.mod-search button.dropdown-toggle').click(function(event) {
+          var buttonEl = $(event.currentTarget);
+          var dropdownEl = $(event.currentTarget).parent();
+          buttonEl.toggleClass('open', !dropdownEl.hasClass('open'));
+          buttonEl.toggleClass('hidden', !dropdownEl.hasClass('hidden'));
+
+          dropdownEl.find('.coveo-filter-container').toggleClass('hidden');
+          dropdownEl.find('.filter-box').focus();
+        });
+
+        $('.mod-search .filter-box').blur(function(event) {
+          var filterElement = $(event.currentTarget).parent();
+          var dropdownEl = filterElement.parent();
+          filterElement.find('filter-box').context.value = '';
+          filterElement.addClass('hidden');
+
+          dropdownEl.removeClass('open');
+          dropdownEl.find('button.dropdown-button-search-container').removeClass('hidden');
+        });
+
+        // Handle selection in flat-select
+        $('.flat-select-option').click(function(event) {
+          var optionEl = $(event.currentTarget);
+          var flatSelectEl = optionEl.parent();
+
+          flatSelectEl.find('.flat-select-option:not(.selectable)').addClass('selectable');
+          optionEl.removeClass('selectable');
+        });
+
+        // Handle flippable flip/unflip
+        $('.flippable').click(function() {
+          $(this)
+            .find('.flipper')
+            .toggleClass('show-back')
+            .toggleClass('show-front');
+        });
+
+        // handle side nav toggle
+        /* document.querySelector('.header-hamburger').addEventListener('click', () => {
+          document.querySelector('.navigation-wrapper').classList.toggle('navigation-wrapper-opened');
+          document.querySelector('.header-hamburger').classList.toggle('header-hamburger-opened');
+        }); */
+      });
+    </script>
+  </body>
+</html>
