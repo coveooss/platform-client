@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html class="coveo-styleguide">
+  <head>
+    <title>Source Diff</title>
+    <meta about="Where would you like to go?" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, height=device-height" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <!-- <script src="https://coveo.github.io/vapor/dist/js/CoveoStyleGuide.Dependencies.js"></script> -->
+
+    <script src="http://react-vapor.surge.sh/assets/bundle.js"></script>
+    <!-- <link rel="stylesheet" href="https://coveo.github.io/vapor/dist/css/CoveoStyleGuide.css" /> -->
+
+    <!-- Custom CSS -->
+    <style>
+      del, ins {
+        text-decoration: none;
+      }
+
+      .highlight {
+        font-size: 13px;
+        font-family: monospace;
+        line-height: 20px;
+        margin: 1em 0;
+        padding: 1em;
+        background: #f6f6f6;
+        border: 1px solid #eeeeee;
+        border-radius: 0.15em;
+        overflow: auto;
+      }
+
+      .palette div {
+          padding: .5rem
+      }
+
+      .navigation,.page-content {
+          max-height: 100vh
+      }
+
+    </style>
+  </head>
+
+  <script>
+    window.sources = DIFF_OBJECT </script>
+
+    <body>
+      <div class="flex flex-row application-wrapper">
+        <div class="flex navigation-wrapper navigation-wrapper-opened">
+          <nav class="navigation">
+            <div class="navigation-menu" style="max-height: 300px">
+              <ul class="navigation-menu-sections">
+                <li class="block navigation-menu-section">
+                  <header class="navigation-menu-section-header">
+                    <svg class="navigation-menu-section-header-icon icon fill-white mod-lg" viewBox="0 0 512 512">
+                      <path
+                        d="M0 80v80h512V80H0zM64 0L0 64h512L448 0H64zm128 288v32h128v-32H192zM32 192v320h448V192H32zm128 64h192v96H160v-96z"
+                      ></path>
+                    </svg>
+                    Sources
+                    <span class="collapsible-arrow icon fill-white open">
+                      <svg viewbox="0 0 12.6 7.2">
+                        <path
+                          d="M.945.046c.3 0 .5.1.7.3l4.6 4.6 4.6-4.6c.4-.4 1-.4 1.4 0s.4 1 0 1.4l-5.2 5.2c-.4.4-1.2.4-1.6 0l-5.2-5.2c-.4-.4-.4-1 0-1.4.2-.2.4-.3.7-.3"
+                        />
+                      </svg>
+                    </span>
+                  </header>
+                  <ul id="source-list" class="navigation-menu-section-items"></ul>
+                </li>
+              </ul>
+            </div>
+          </nav>
+        </div>
+
+        <div class="page-content application-container">
+          <div class="material-card m4">
+            <div class="p2">
+              <h4 class="mb2"><span id="addition-count" class="text-green"> </span> &nbsp; <span id="deletion-count" class="text-red"> </span></h4>
+              <figure class="highlight">
+                <pre id="result"></pre>
+              </figure>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        function getModificationCount(jsonDiff) {
+          let count = [0, 0];
+          _.each(jsonDiff, part => {
+            if (part.added) {
+              count[0]++;
+            }
+            if (part.removed) {
+              count[1]++;
+            }
+          });
+          return count;
+        }
+
+        function handleSourceChange(sourceDiff) {
+          console.log('source change');
+          const sourceName = _.keys(sourceDiff)[0];
+          const jsonDiff = sourceDiff[sourceName];
+
+          // Select the source tab
+          $(`li.navigation-menu-section-item`).removeClass('state-active');
+          const sourceTab = document.querySelector(`li[data-source-name="${sourceName}"]`);
+          sourceTab.classList.add('state-active');
+
+          const modificationsCount = getModificationCount(jsonDiff);
+          document.getElementById('addition-count').textContent = modificationsCount[0] > 0? `+ ${modificationsCount[0]}`: '';
+          document.getElementById('deletion-count').textContent = modificationsCount[1] > 0? `- ${modificationsCount[1]}`: '';
+
+          changed(jsonDiff);
+        }
+
+        function changed(diff) {
+          var fragment = document.createDocumentFragment();
+          for (var i = 0; i < diff.length; i++) {
+            if (diff[i].added && diff[i + 1] && diff[i + 1].removed) {
+              var swap = diff[i];
+              diff[i] = diff[i + 1];
+              diff[i + 1] = swap;
+            }
+
+            var node;
+            if (diff[i].removed) {
+              node = document.createElement('div');
+              node.classList.add('bg-soft-red')
+              node.appendChild(document.createTextNode(diff[i].value.replace(/^./gm, '-')));
+            } else if (diff[i].added) {
+              node = document.createElement('div');
+              node.classList.add('bg-soft-green')
+              node.appendChild(document.createTextNode(diff[i].value.replace(/^./gm, '+')));
+            } else {
+              node = document.createTextNode(diff[i].value);
+            }
+            fragment.appendChild(node);
+          }
+          var result = document.getElementById('result');
+          result.textContent = '';
+          result.appendChild(fragment);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+          const sources = window.sources;
+
+          let sourceList = document.getElementById('source-list');
+          sources.forEach(source => {
+            const sourceName = _.keys(source)[0];
+            let li = document.createElement('li');
+            li.className = 'navigation-menu-section-item';
+            li.setAttribute('data-source-name', sourceName);
+
+            let anchor = document.createElement('a');
+            anchor.className = 'block navigation-menu-section-item-link';
+            anchor.href = '#';
+            anchor.onclick = () => handleSourceChange(source);
+            anchor.textContent = sourceName;
+
+            li.appendChild(anchor);
+            sourceList.appendChild(li);
+          });
+
+          // Show first source form the list
+          handleSourceChange(_.values(sources)[0]);
+        });
+      </script>
+
+      <script>
+        $(document).ready(function() {
+          // manually reset the hash to force the browser to go to the selected menu item on page refresh
+          var hash = window.location.hash;
+          window.location.hash = '';
+          window.location.hash = hash;
+
+          var selectedTab;
+          if (window.location.hash) {
+            var selectedTabChild = $('.navigation-menu-section-item-link[href="' + window.location.pathname + window.location.hash + '"]');
+            selectedTab = selectedTabChild.parent().addClass('state-active');
+          } else {
+            var selectedTabParend = $('.navigation-menu-section-item-link[href*="' + window.location.pathname + '"]');
+            selectedTab = $(selectedTabParend[0])
+              .parent()
+              .addClass('state-active');
+          }
+
+          $('.navigation-menu-section-item').click(function() {
+            if (selectedTab) {
+              selectedTab.removeClass('state-active');
+            }
+            $(this).addClass('state-active');
+            selectedTab = $(this);
+          });
+
+          $('.navigation-menu-section-header').click(function(event) {
+            $(this)
+              .find('.collapsible-arrow')
+              .toggleClass('open');
+            $(this)
+              .next('.navigation-menu-section-items')
+              .slideToggle();
+          });
+
+          // Simple script to handle opening/closing modals
+          function modalHandler() {
+            var backdrop = $('.modal-backdrop');
+
+            $('.js-modal-trigger').each(function(i, modalTrigger) {
+              var modal = $('#' + modalTrigger.getAttribute('data-modal'));
+              var modalPrompt = $('#' + modalTrigger.getAttribute('data-modal') + 'Prompt');
+
+              var closeButton = modal.find('.js-modal-close');
+              var promptCloseButton = modalPrompt.find('.js-modal-close');
+
+              function removeModal() {
+                modal.removeClass('opened');
+
+                backdrop.addClass('closed');
+
+                backdrop.off('click', removeModal);
+              }
+
+              function removePrompt() {
+                modalPrompt.removeClass('opened');
+
+                modal.find('.prompt-backdrop').addClass('closed');
+
+                backdrop.off('click', removePrompt);
+
+                backdrop.on('click', removeModal);
+              }
+
+              $(modalTrigger).on('click', function() {
+                modal.addClass('opened');
+
+                backdrop.removeClass('closed');
+
+                if (modalPrompt.length > 0) {
+                  modalPrompt.addClass('opened');
+
+                  backdrop.on('click', removePrompt);
+                } else {
+                  backdrop.on('click', removeModal);
+                }
+              });
+
+              closeButton.on('click', function(event) {
+                event.stopPropagation();
+                removeModal();
+              });
+
+              promptCloseButton.on('click', function(event) {
+                event.stopPropagation();
+                removePrompt();
+              });
+            });
+          }
+
+          modalHandler();
+
+          function expandRowView($el) {
+            $el.find('tr.heading-row').addClass('opened');
+            $el.find('tr.collapsible-row').addClass('in');
+            $el.find('tr.collapsible-row .container').slideDown(400);
+            $el.find('[data-collapse-state]').attr('data-collapse-state', 'expanded');
+          }
+
+          function collapseRowView($el) {
+            $el.find('tr.heading-row').removeClass('opened');
+            $el.find('tr.collapsible-row').removeClass('in');
+            $el.find('tr.collapsible-row .container').slideUp(400);
+            $el.find('[data-collapse-state]').attr('data-collapse-state', 'collapsed');
+          }
+
+          $('tr.heading-row').click(function(jQueryEventObject) {
+            var $el = $(jQueryEventObject.currentTarget);
+            if ($el.hasClass('opened')) {
+              collapseRowView($el.parent());
+            } else {
+              expandRowView($el.parent());
+            }
+          });
+
+          // Handle open/close dropdown
+          $('button.dropdown-toggle').click(function(event) {
+            var dropdownEl = $(event.currentTarget).parent();
+            dropdownEl.toggleClass('open', !dropdownEl.hasClass('open'));
+          });
+
+          // Handle open/close dropdown search
+          $('.mod-search button.dropdown-toggle').click(function(event) {
+            var buttonEl = $(event.currentTarget);
+            var dropdownEl = $(event.currentTarget).parent();
+            buttonEl.toggleClass('open', !dropdownEl.hasClass('open'));
+            buttonEl.toggleClass('hidden', !dropdownEl.hasClass('hidden'));
+
+            dropdownEl.find('.coveo-filter-container').toggleClass('hidden');
+            dropdownEl.find('.filter-box').focus();
+          });
+
+          $('.mod-search .filter-box').blur(function(event) {
+            var filterElement = $(event.currentTarget).parent();
+            var dropdownEl = filterElement.parent();
+            filterElement.find('filter-box').context.value = '';
+            filterElement.addClass('hidden');
+
+            dropdownEl.removeClass('open');
+            dropdownEl.find('button.dropdown-button-search-container').removeClass('hidden');
+          });
+
+          // Handle selection in flat-select
+          $('.flat-select-option').click(function(event) {
+            var optionEl = $(event.currentTarget);
+            var flatSelectEl = optionEl.parent();
+
+            flatSelectEl.find('.flat-select-option:not(.selectable)').addClass('selectable');
+            optionEl.removeClass('selectable');
+          });
+
+          // Handle flippable flip/unflip
+          $('.flippable').click(function() {
+            $(this)
+              .find('.flipper')
+              .toggleClass('show-back')
+              .toggleClass('show-front');
+          });
+
+          // handle side nav toggle
+          /* document.querySelector('.header-hamburger').addEventListener('click', () => {
+            document.querySelector('.navigation-wrapper').classList.toggle('navigation-wrapper-opened');
+            document.querySelector('.header-hamburger').classList.toggle('header-hamburger-opened');
+          }); */
+        });
+      </script>
+    </body>
+  </html>
