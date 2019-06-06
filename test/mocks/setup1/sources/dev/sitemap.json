@@ -1,5 +1,5 @@
 {
-  "id": "rrbbidfxa2ri4usxhzzmhq2hge-dummygroupk5f2dpwl",
+  "id": "tcytrppteddiqkmboszu4skdoe-dummygroupk5f2dpwl",
   "name": "My Sitemap Source",
   "owner": "john@coveo.com-google",
   "NewParameter": "allo",
@@ -48,7 +48,7 @@
       "UserAgentString": { "sensitive": false, "value": "Mozilla/5.0 (compatible; Coveobot/2.0;+http://www.coveo.com/bot.html)" },
       "MaxAutoRedirects": { "sensitive": false, "value": "7" },
       "OrganizationId": { "sensitive": false, "value": "dummygroupk5f2dpwl" },
-      "SourceId": { "sensitive": false, "value": "rrbbidfxa2ri4usxhzzmhq2hge-dummygroupk5f2dpwl" }
+      "SourceId": { "sensitive": false, "value": "tcytrppteddiqkmboszu4skdoe-dummygroupk5f2dpwl" }
     },
     "userIdentities": {},
     "caseSensitivePatterns": true,
@@ -750,5 +750,5 @@
   "pushEnabled": false,
   "onPremisesEnabled": false,
   "logicalIndex": "default",
-  "resourceId": "rrbbidfxa2ri4usxhzzmhq2hge-dummygroupk5f2dpwl"
+  "resourceId": "tcytrppteddiqkmboszu4skdoe-dummygroupk5f2dpwl"
 }

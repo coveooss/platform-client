@@ -1,10 +1,8 @@
 import * as jsDiff from 'diff';
-// import chalk from 'chalk';
 // tslint:disable:no-magic-numbers
 import { expect } from 'chai';
 import * as _ from 'underscore';
 import * as nock from 'nock';
-// import { IGraduateOptions } from '../../src/commands/GraduateCommand';
 import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
 import { IGenericError } from '../../src/commons/errors';
 import { UrlService } from '../../src/commons/rest/UrlService';
@@ -16,14 +14,13 @@ import { SourceController } from './../../src/controllers/SourceController';
 import { IDiffOptions } from '../../src/commands/DiffCommand';
 import { Dictionary } from '../../src/commons/collections/Dictionary';
 import { JsonUtils } from '../../src/commons/utils/JsonUtils';
-// import { JsonUtils } from '../../src/commons/utils/JsonUtils';
-// import { Dictionary } from '../../src/commons/collections/Dictionary';
+import { IGraduateOptions } from '../../src/commands/GraduateCommand';
 
 const allDevSources: Array<{}> = require('./../mocks/setup1/sources/dev/allSources.json');
 // const DEVrrbbidfxa2ri4usxhzzmhq2hge: {} = require('./../mocks/setup1/sources/dev/web.json');
 const DEVtcytrppteddiqkmboszu4skdoe: {} = require('./../mocks/setup1/sources/dev/sitemap.json');
 const DEVwyowilfyrpf2qogxm45uhgskri: {} = require('./../mocks/setup1/sources/dev/salesforce.json');
-// const DEVqtngyd2gvxjxrrkftndaepcngu: {} = require('./../mocks/setup1/sources/dev/youtube.json');
+const DEVqtngyd2gvxjxrrkftndaepcngu: {} = require('./../mocks/setup1/sources/dev/youtube.json');
 
 const allProdSources: Array<{}> = require('./../mocks/setup1/sources/prod/allSources.json');
 const PRODrrbbidfxa2ri4usxhzzmhq2hge: {} = require('./../mocks/setup1/sources/prod/web.json');
@@ -33,11 +30,16 @@ const PRODwyowilfyrpf2qogxm45uhgskri: {} = require('./../mocks/setup1/sources/pr
 // const allDevExtensions: {} = require('./../mocks/setup1/extensions/dev/allExtensions.json');
 // const q32rkqp2fzuz2b3rbw5d53kc2q: {} = require('./../mocks/setup1/extensions/dev/q32rkqp2fzuz2b3rbw5d53kc2q.json'); // used by no sources
 // const qww6e7om4rommwdba5nk3ykc4e: {} = require('./../mocks/setup1/extensions/dev/qww6e7om4rommwdba5nk3ykc4e.json'); // used by no sources
-const sfm7yvhqtiftmfuasrqtpfkio4: {} = require('./../mocks/setup1/extensions/dev/sfm7yvhqtiftmfuasrqtpfkio4.json');
-const sr3jny7s5ekuwuyaak45awcaku: {} = require('./../mocks/setup1/extensions/dev/sr3jny7s5ekuwuyaak45awcaku.json');
-const ukjs6nvyjvqdn4vozf3ugjkdqe: {} = require('./../mocks/setup1/extensions/dev/ukjs6nvyjvqdn4vozf3ugjkdqe.json');
-const xnnutbu2n6kiwm243iossdsjha: {} = require('./../mocks/setup1/extensions/dev/xnnutbu2n6kiwm243iossdsjha.json');
-// const xuklmyqaujg3gj2ivcynor2adq: {} = require('./../mocks/setup1/extensions/dev/xuklmyqaujg3gj2ivcynor2adq.json');
+// DEV Exensions
+const DEVsfm7yvhqtiftmfuasrqtpfkio4: {} = require('./../mocks/setup1/extensions/dev/sfm7yvhqtiftmfuasrqtpfkio4.json');
+const DEVsr3jny7s5ekuwuyaak45awcaku: {} = require('./../mocks/setup1/extensions/dev/sr3jny7s5ekuwuyaak45awcaku.json');
+const DEVukjs6nvyjvqdn4vozf3ugjkdqe: {} = require('./../mocks/setup1/extensions/dev/ukjs6nvyjvqdn4vozf3ugjkdqe.json');
+const DEVxnnutbu2n6kiwm243iossdsjha: {} = require('./../mocks/setup1/extensions/dev/xnnutbu2n6kiwm243iossdsjha.json');
+const DEVxuklmyqaujg3gj2ivcynor2adq: {} = require('./../mocks/setup1/extensions/dev/xuklmyqaujg3gj2ivcynor2adq.json');
+
+// Prod Exensions
+const PRODsr3jny7s5ekuwuyaak45awcaku: {} = require('./../mocks/setup1/extensions/prod/sr3jny7s5ekuwuyaak45awcaku.json');
+const PRODxnnutbu2n6kiwm243iossdsjha: {} = require('./../mocks/setup1/extensions/prod/xnnutbu2n6kiwm243iossdsjha.json');
 
 // This is a copy of a dev source without any updates expect for some keys to ignore
 // xze6hjeidrpcborfhqk4vxkgy4Copy
@@ -78,10 +80,10 @@ export const SourceControllerTest = () => {
           Salesforce: source2.clone() // Make a copy of the source
         });
         const extensionList = [
-          ukjs6nvyjvqdn4vozf3ugjkdqe,
-          sfm7yvhqtiftmfuasrqtpfkio4,
-          xnnutbu2n6kiwm243iossdsjha,
-          sr3jny7s5ekuwuyaak45awcaku
+          DEVukjs6nvyjvqdn4vozf3ugjkdqe,
+          DEVsfm7yvhqtiftmfuasrqtpfkio4,
+          DEVxnnutbu2n6kiwm243iossdsjha,
+          DEVsr3jny7s5ekuwuyaak45awcaku
         ];
 
         sourceController.replaceExtensionIdWithName(sourceDict, extensionList);
@@ -104,10 +106,10 @@ export const SourceControllerTest = () => {
           Salesforce: source2.clone() // Make a copy of the source
         });
         const extensionList = [
-          ukjs6nvyjvqdn4vozf3ugjkdqe,
-          sfm7yvhqtiftmfuasrqtpfkio4,
-          xnnutbu2n6kiwm243iossdsjha,
-          sr3jny7s5ekuwuyaak45awcaku
+          DEVukjs6nvyjvqdn4vozf3ugjkdqe,
+          DEVsfm7yvhqtiftmfuasrqtpfkio4,
+          DEVxnnutbu2n6kiwm243iossdsjha,
+          DEVsr3jny7s5ekuwuyaak45awcaku
         ];
 
         expect(sourceDict.getItem('Sitemap Source').getPostConversionExtensions().length).to.eql(2);
@@ -183,10 +185,10 @@ export const SourceControllerTest = () => {
           Salesforce: source2Clone
         });
         const extensionList = [
-          ukjs6nvyjvqdn4vozf3ugjkdqe,
-          sfm7yvhqtiftmfuasrqtpfkio4,
-          xnnutbu2n6kiwm243iossdsjha,
-          sr3jny7s5ekuwuyaak45awcaku
+          DEVukjs6nvyjvqdn4vozf3ugjkdqe,
+          DEVsfm7yvhqtiftmfuasrqtpfkio4,
+          DEVxnnutbu2n6kiwm243iossdsjha,
+          DEVsr3jny7s5ekuwuyaak45awcaku
         ];
 
         sourceController.replaceExtensionIdWithName(sourceDict, extensionList);
@@ -280,11 +282,11 @@ export const SourceControllerTest = () => {
           .reply(RequestUtils.OK, _.where(allDevSources, { name: 'My Sitemap Source' })) // Just picking the sitemap for this test
           // Fecth extensions from dev
           .get('/rest/organizations/dev/extensions')
-          .reply(RequestUtils.OK, [sfm7yvhqtiftmfuasrqtpfkio4, ukjs6nvyjvqdn4vozf3ugjkdqe])
+          .reply(RequestUtils.OK, [DEVsfm7yvhqtiftmfuasrqtpfkio4, DEVukjs6nvyjvqdn4vozf3ugjkdqe])
           // Fecth extensions from Prod
           .get('/rest/organizations/prod/extensions')
           // Rename extension Ids
-          .reply(RequestUtils.OK, [ukjs6nvyjvqdn4vozf3ugjkdqe])
+          .reply(RequestUtils.OK, [DEVukjs6nvyjvqdn4vozf3ugjkdqe])
           // Fetching dev sources one by one
           .get('/rest/organizations/dev/sources/tcytrppteddiqkmboszu4skdoe-dummygroupk5f2dpwl/raw')
           // Replace mappings
@@ -386,15 +388,18 @@ export const SourceControllerTest = () => {
           includeOnly: ['mappings']
         };
 
+        // These 2 function are being called in the source diff
+        devSource.sortMappingsAndStripIds();
+        prodSource.sortMappingsAndStripIds();
+
         const cleanVersion: any = controller.extractionMethod([devSource], diffOptions, [prodSource]);
 
         const diff: jsDiff.Change[] = cleanVersion[0].newSource;
+
         // The mapping arrays should be similar
         expect(diff.length).to.eq(1);
         expect(diff[0].added).to.not.exist;
         expect(diff[0].removed).to.not.exist;
-        // expect(updatedSource['configuration.parameters.OrganizationId.value.oldValue']).to.be.undefined;
-        // expect(updatedSource['resourceId.oldValue']).to.be.undefined;
       });
 
       it('Should diff sources (updated)', (done: MochaDone) => {
@@ -404,11 +409,11 @@ export const SourceControllerTest = () => {
           .reply(RequestUtils.OK, _.where(allDevSources, { name: 'My Sitemap Source' })) // Just picking the sitemap for this test
           // Fecth extensions from dev
           .get('/rest/organizations/dev/extensions')
-          .reply(RequestUtils.OK, [sfm7yvhqtiftmfuasrqtpfkio4, ukjs6nvyjvqdn4vozf3ugjkdqe])
+          .reply(RequestUtils.OK, [DEVsfm7yvhqtiftmfuasrqtpfkio4, DEVukjs6nvyjvqdn4vozf3ugjkdqe])
           // Fecth extensions from Prod
           .get('/rest/organizations/prod/extensions')
           // Rename extension Ids
-          .reply(RequestUtils.OK, [ukjs6nvyjvqdn4vozf3ugjkdqe])
+          .reply(RequestUtils.OK, [DEVukjs6nvyjvqdn4vozf3ugjkdqe])
           // Fetching dev sources one by one
           .get('/rest/organizations/dev/sources/tcytrppteddiqkmboszu4skdoe-dummygroupk5f2dpwl/raw')
           .reply(RequestUtils.OK, DEVtcytrppteddiqkmboszu4skdoe)
@@ -479,7 +484,7 @@ export const SourceControllerTest = () => {
           .reply(RequestUtils.OK, _.where(allDevSources, { name: 'My Sitemap Source' })) // Just picking the sitemap for this test
           // Fecth extensions from dev
           .get('/rest/organizations/dev/extensions')
-          .reply(RequestUtils.OK, [sfm7yvhqtiftmfuasrqtpfkio4, ukjs6nvyjvqdn4vozf3ugjkdqe])
+          .reply(RequestUtils.OK, [DEVsfm7yvhqtiftmfuasrqtpfkio4, DEVukjs6nvyjvqdn4vozf3ugjkdqe])
           // Fecth extensions from Prod
           .get('/rest/organizations/prod/extensions')
           // Rename extension Ids
@@ -536,103 +541,37 @@ export const SourceControllerTest = () => {
           });
       });
 
-      // it('Should diff sources', (done: MochaDone) => {
-      //   scope = nock(UrlService.getDefaultUrl())
-      //     // First expected request
-      //     .get('/rest/organizations/dev/sources')
-      //     .reply(RequestUtils.OK, allDevSources)
-      //     // Fecth extensions from dev
-      //     .get('/rest/organizations/dev/extensions')
-      //     .reply(RequestUtils.OK, [rawExtension1, rawExtension2, rawExtension3])
-      //     // Fecth extensions from Prod
-      //     .get('/rest/organizations/prod/extensions')
-      //     // Rename extension Ids
-      //     .reply(RequestUtils.OK, [rawExtension4])
-      //     // Fetching dev sources one by one
-      //     .get('/rest/organizations/dev/sources/cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74')
-      //     .reply(RequestUtils.OK, ur4el4nwejfvpghipsvvs32m74)
-      //     .get('/rest/organizations/dev/sources/cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq')
-      //     .reply(RequestUtils.OK, uwfuop2jp2hdvo5ao7abjlsgyq)
-      //     // Fecthing all prod sources
-      //     .get('/rest/organizations/prod/sources')
-      //     .reply(RequestUtils.OK, allProdSources)
-      //     .get('/rest/organizations/prod/sources/ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4')
-      //     .reply(RequestUtils.OK, xze6hjeidrpcborfhqk4vxkgy4);
-
-      //   const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner'] };
-      //   controller
-      //     .diff(diffOptions)
-      //     .then((diff: DiffResultArray<Source>) => {
-      //       expect(diff.TO_CREATE.length).to.eql(1);
-      //       expect(diff.TO_UPDATE.length).to.eql(1);
-      //       expect(diff.TO_DELETE.length).to.eql(0);
-      //       done();
-      //     })
-      //     .catch((err: IGenericError) => {
-      //       done(err);
-      //     });
-      // });
-
-      /*
       it('Should not load extensions that have been blacklisted on the source diff', (done: MochaDone) => {
-        const orgx: Organization = new Organization('dev', 'xxx', { extensions: ['URL Parsing to extract metadata'] });
+        const orgx: Organization = new Organization('dev', 'xxx', { extensions: ['SharedVideosNormalization', 'FilterVideos'] });
         const orgy: Organization = new Organization('prod', 'yyy');
         const controllerxy = new SourceController(orgx, orgy);
-
-        const localDevSource = {
-          sourceType: 'SITEMAP',
-          id: 'dev-source',
-          name: 'sitemaptest',
-          mappings: [],
-          preConversionExtensions: [],
-          postConversionExtensions: [
-            {
-              actionOnError: 'SKIP_EXTENSION',
-              condition: '',
-              extensionId: 'ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu',
-              parameters: {},
-              versionId: ''
-            }
-          ],
-          resourceId: 'dev-source4'
-        };
-
-        const localProdSource = {
-          sourceType: 'SITEMAP',
-          id: 'prod-source',
-          name: 'sitemaptest',
-          mappings: [],
-          preConversionExtensions: [],
-          postConversionExtensions: [],
-          resourceId: 'prod-source'
-        };
 
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources')
-          .reply(RequestUtils.OK, [localDevSource])
+          .reply(RequestUtils.OK, _.where(allDevSources, { name: 'My Sitemap Source' })) // Just picking the sitemap for this test
           // Fecth extensions from dev
           .get('/rest/organizations/dev/extensions')
-          .reply(RequestUtils.OK, [rawExtension1])
+          .reply(RequestUtils.OK, [DEVsfm7yvhqtiftmfuasrqtpfkio4, DEVukjs6nvyjvqdn4vozf3ugjkdqe])
           // Fecth extensions from Prod
           .get('/rest/organizations/prod/extensions')
           // Rename extension Ids
           .reply(RequestUtils.OK, [])
           // Fetching dev sources one by one
-          .get('/rest/organizations/dev/sources/dev-source')
-          .reply(RequestUtils.OK, localDevSource)
+          .get('/rest/organizations/dev/sources/tcytrppteddiqkmboszu4skdoe-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, DEVtcytrppteddiqkmboszu4skdoe)
           // Fecthing all prod sources
           .get('/rest/organizations/prod/sources')
-          .reply(RequestUtils.OK, [localProdSource])
-          .get('/rest/organizations/prod/sources/prod-source')
-          .reply(RequestUtils.OK, localProdSource);
+          .reply(RequestUtils.OK, _.where(allProdSources, { name: 'My Sitemap Source' })) // Just picking the sitemap for this test
+          .get('/rest/organizations/prod/sources/tcytrppteddiqkmboszu4skdoe-dummygroupproduction/raw')
+          .reply(RequestUtils.OK, PRODtcytrppteddiqkmboszu4skdoe);
 
-        const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner'] };
+        const diffOptions: IDiffOptions = { includeOnly: ['postConversionExtensions'] };
         controllerxy
           .diff(diffOptions)
           .then((diff: DiffResultArray<Source>) => {
+            // No change detected because the extensions were blacklisted
             expect(diff.TO_CREATE.length).to.eql(0);
-
             expect(diff.TO_UPDATE.length).to.eql(0);
             expect(diff.TO_DELETE.length).to.eql(0);
             done();
@@ -643,75 +582,46 @@ export const SourceControllerTest = () => {
       });
 
       it('Should not load sources that have been blacklisted for the diff', (done: MochaDone) => {
-        const orgx: Organization = new Organization('dev', 'xxx', { sources: ['web test'] });
-        const orgy: Organization = new Organization('prod', 'yyy');
+        const orgx: Organization = new Organization('dev', 'xxx', { sources: ['My web source'] });
+        const orgy: Organization = new Organization('prod', 'yyy', { sources: ['My web source'] });
         const controllerxy = new SourceController(orgx, orgy);
-
-        const localDevSource = {
-          sourceType: 'SITEMAP',
-          id: 'dev-source',
-          name: 'sitemap test',
-          mappings: [
-            {
-              id: 'q4qripnnvztvqempxtkvdb2cqa',
-              kind: 'COMMON',
-              fieldName: 'printableuri',
-              extractionMethod: 'METADATA',
-              content: '%[printableuri]'
-            }
-          ],
-          preConversionExtensions: [],
-          postConversionExtensions: [],
-          resourceId: 'dev-source4'
-        };
-
-        const localDevSource2 = {
-          sourceType: 'WEB',
-          id: 'web-dev-source',
-          name: 'web test',
-          mappings: [],
-          preConversionExtensions: [],
-          postConversionExtensions: [],
-          resourceId: 'dev-source4'
-        };
-
-        const localProdSource = {
-          sourceType: 'SITEMAP',
-          id: 'prod-source',
-          name: 'sitemap test',
-          mappings: [],
-          preConversionExtensions: [],
-          postConversionExtensions: [],
-          resourceId: 'prod-source'
-        };
 
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources')
-          .reply(RequestUtils.OK, [localDevSource, localDevSource2])
+          .reply(RequestUtils.OK, allDevSources)
           // Fecth extensions from dev
           .get('/rest/organizations/dev/extensions')
-          .reply(RequestUtils.OK, [rawExtension1])
+          .reply(RequestUtils.OK, [
+            DEVxuklmyqaujg3gj2ivcynor2adq,
+            DEVsr3jny7s5ekuwuyaak45awcaku,
+            DEVxnnutbu2n6kiwm243iossdsjha,
+            DEVsfm7yvhqtiftmfuasrqtpfkio4,
+            DEVukjs6nvyjvqdn4vozf3ugjkdqe
+          ])
           // Fecth extensions from Prod
           .get('/rest/organizations/prod/extensions')
-          // Rename extension Ids
-          .reply(RequestUtils.OK, [])
+          .reply(RequestUtils.OK, [PRODsr3jny7s5ekuwuyaak45awcaku, PRODxnnutbu2n6kiwm243iossdsjha])
           // Fetching dev sources one by one
-          .get('/rest/organizations/dev/sources/dev-source')
-          .reply(RequestUtils.OK, localDevSource)
+          .get('/rest/organizations/dev/sources/tcytrppteddiqkmboszu4skdoe-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, DEVtcytrppteddiqkmboszu4skdoe)
+          .get('/rest/organizations/dev/sources/wyowilfyrpf2qogxm45uhgskri-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, DEVwyowilfyrpf2qogxm45uhgskri)
+          .get('/rest/organizations/dev/sources/qtngyd2gvxjxrrkftndaepcngu-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, DEVqtngyd2gvxjxrrkftndaepcngu)
           // Fecthing all prod sources
           .get('/rest/organizations/prod/sources')
-          .reply(RequestUtils.OK, [localProdSource])
-          .get('/rest/organizations/prod/sources/prod-source')
-          .reply(RequestUtils.OK, localProdSource);
+          .reply(RequestUtils.OK, allProdSources)
+          .get('/rest/organizations/prod/sources/tcytrppteddiqkmboszu4skdoe-dummygroupproduction/raw')
+          .reply(RequestUtils.OK, PRODtcytrppteddiqkmboszu4skdoe)
+          .get('/rest/organizations/prod/sources/wyowilfyrpf2qogxm45uhgskri-dummygroupproduction/raw')
+          .reply(RequestUtils.OK, PRODwyowilfyrpf2qogxm45uhgskri);
 
         const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner'] };
         controllerxy
           .diff(diffOptions)
           .then((diff: DiffResultArray<Source>) => {
-            expect(diff.TO_CREATE.length).to.eql(0);
-            expect(diff.TO_UPDATE.length).to.eql(1);
-            expect(diff.TO_DELETE.length).to.eql(0);
+            // We don't care about the diff result here. We just wan to make sure the Diff command ignored the blacklisted sources
             done();
           })
           .catch((err: IGenericError) => {
@@ -776,12 +686,12 @@ export const SourceControllerTest = () => {
           // Rename extension Ids
           .reply(RequestUtils.OK, [])
           // Fetching dev sources one by one
-          .get('/rest/organizations/dev/sources/dev-source')
+          .get('/rest/organizations/dev/sources/dev-source/raw')
           .reply(RequestUtils.OK, localDevSource)
           // Fecthing all prod sources
           .get('/rest/organizations/prod/sources')
           .reply(RequestUtils.OK, [localProdSource])
-          .get('/rest/organizations/prod/sources/prod-source')
+          .get('/rest/organizations/prod/sources/prod-source/raw')
           .reply(RequestUtils.OK, localProdSource);
 
         const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner'] };
@@ -797,42 +707,6 @@ export const SourceControllerTest = () => {
             done(err);
           });
       });
-
-      it('Should not have updated source in the diff', (done: MochaDone) => {
-        scope = nock(UrlService.getDefaultUrl())
-          // First expected request
-          .get('/rest/organizations/dev/sources')
-          .reply(RequestUtils.OK, allDevSources2)
-          // Fecth extensions from dev
-          .get('/rest/organizations/dev/extensions')
-          .reply(RequestUtils.OK, [])
-          // Fecth extensions from Prod
-          .get('/rest/organizations/prod/extensions')
-          // Rename extension Ids
-          .reply(RequestUtils.OK, [])
-          // Fetching dev sources one by one
-          .get('/rest/organizations/dev/sources/cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74')
-          .reply(RequestUtils.OK, ur4el4nwejfvpghipsvvs32m74Copy)
-          // Fecthing all prod sources
-          .get('/rest/organizations/prod/sources')
-          .reply(RequestUtils.OK, allProdSources2)
-          .get('/rest/organizations/prod/sources/ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4')
-          .reply(RequestUtils.OK, xze6hjeidrpcborfhqk4vxkgy4Copy);
-
-        const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner'] };
-        controller
-          .diff(diffOptions)
-          .then((diff: DiffResultArray<Source>) => {
-            expect(diff.TO_CREATE.length).to.eql(0);
-            expect(diff.TO_UPDATE.length).to.eql(0);
-            expect(diff.TO_DELETE.length).to.eql(0);
-            done();
-          })
-          .catch((err: IGenericError) => {
-            done(err);
-          });
-      });
-      */
     });
 
     describe('GetCleanVersion Method', () => {
@@ -846,35 +720,12 @@ export const SourceControllerTest = () => {
           TO_DELETE: []
         });
       });
-
-      // it('Should return the clean diff version', () => {
-      //   const diffResultArray: DiffResultArray<Source> = new DiffResultArray();
-      //   diffResultArray.TO_CREATE.push(new Source(uwfuop2jp2hdvo5ao7abjlsgyq));
-      //   diffResultArray.TO_UPDATE.push(new Source(ur4el4nwejfvpghipsvvs32m74));
-      //   diffResultArray.TO_UPDATE_OLD.push(new Source(xze6hjeidrpcborfhqk4vxkgy4));
-
-      //   const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner'] };
-      //   const cleanVersion = controller.getCleanVersion(diffResultArray, diffOptions);
-
-      //   const updatedSource = cleanVersion.TO_UPDATE[0];
-      //   expect(updatedSource.id, 'Should not include the source id in the diff').to.not.have.keys('newValue', 'oldValue');
-      //   expect(updatedSource.owner, 'Should not include the `owner` property in the diff').to.not.have.keys('newValue', 'oldValue');
-      //   expect(updatedSource.resourceId, 'Should not include the `resourceId` property in the diff').to.not.have.keys(
-      //     'newValue',
-      //     'oldValue'
-      //   );
-      //   expect(updatedSource.information, 'Should not include the `information` property in the diff').to.not.have.keys(
-      //     'newValue',
-      //     'oldValue'
-      //   );
-      // });
     });
 
-    /*
     describe('Graduate Method', () => {
       it('Should graduate using the blacklist strategy', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
-          .post('/rest/organizations/prod/sources?rebuild=false', {
+          .post('/rest/organizations/prod/sources/raw?rebuild=false', {
             sourceType: 'SITEMAP',
             name: 'sitemaptest',
             mappings: [],
@@ -882,7 +733,7 @@ export const SourceControllerTest = () => {
             postConversionExtensions: []
           })
           .reply(RequestUtils.OK)
-          .put('/rest/organizations/prod/sources/web-source-prod?rebuild=false', {
+          .put('/rest/organizations/prod/sources/web-source-prod/raw?rebuild=false', {
             sourceType: 'WEB',
             name: 'My web source',
             mappings: [
@@ -1001,10 +852,9 @@ export const SourceControllerTest = () => {
           });
       });
 
-      it('Should graduate using the whitelist strategy', (done: MochaDone) => {
-        throw new Error('To implement');
-      });
+      // it('Should graduate using the whitelist strategy', (done: MochaDone) => {
+      //   throw new Error('To implement');
+      // });
     });
-    */
   });
 };

@@ -3,12 +3,12 @@
   "createdDate": 1523375802000,
   "description": "",
   "enabled": true,
-  "id": "dummygroupk5f2dpwl-sr3jny7s5ekuwuyaak45awcaku",
-  "lastModified": 1523375803000,
+  "id": "dummygroupproduction-sr3jny7s5ekuwuyaak45awcaku",
+  "lastModified": 1523375203000,
   "name": "dummy extension",
   "requiredDataStreams": [],
-  "versionId": "XufRKiqPLkXcpR4Q0WAiYOhEoWMtoBvv",
-  "usedBy": [{ "sourceId": "wyowilfyrpf2qogxm45uhgskri-dummygroupk5f2dpwl", "sourceName": "Manuals" }],
+  "versionId": "XufRKiqPLkXsdfgfds2WMtoBvv",
+  "usedBy": [{ "sourceId": "wyowilfyrpf2qogxm45uhgskri-dummygroupproduction", "sourceName": "Manuals" }],
   "status": {
     "durationHealth": { "healthIndicator": "UNKNOWN" },
     "dailyStatistics": {

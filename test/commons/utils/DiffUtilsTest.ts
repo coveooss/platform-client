@@ -182,110 +182,106 @@ export const DiffUtilsTest = () => {
       'URL Parsing to extract metadata': extension2
     });
 
-    const source1Dict: Dictionary<Source> = new Dictionary({
-      'youtube test': new Source({
-        sourceType: 'YOUTUBE',
-        id: 'cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq',
-        name: 'youtube test',
-        owner: 'user@coveo.com-google',
-        sourceVisibility: 'SHARED',
-        mappings: [
-          {
-            id: 'q36h22bp2oqbogq3wwjlcbkj3e',
-            kind: 'COMMON',
-            fieldName: 'yttopfoldingparentid',
-            extractionMethod: 'METADATA',
-            content: '%[coveo_topfoldingparentid]'
-          },
-          {
-            id: 'qbmbpszcawiid7pyfjcaracboi',
-            kind: 'COMMON',
-            fieldName: 'year',
-            extractionMethod: 'METADATA',
-            content: '%[year]'
-          }
-        ],
-        information: {
-          sourceStatus: {
-            type: 'DISABLED',
-            allowedOperations: ['DELETE', 'REBUILD']
-          },
-          nextOperation: {
-            operationType: 'INCREMENTAL_REFRESH',
-            timestamp: 1543537560000
-          },
-          rebuildRequired: true,
-          numberOfDocuments: 0,
-          documentsTotalSize: 0
+    const youtubeSource1 = new Source({
+      sourceType: 'YOUTUBE',
+      id: 'cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq',
+      name: 'youtube test',
+      owner: 'user@coveo.com-google',
+      sourceVisibility: 'SHARED',
+      mappings: [
+        {
+          id: 'q36h22bp2oqbogq3wwjlcbkj3e',
+          kind: 'COMMON',
+          fieldName: 'yttopfoldingparentid',
+          extractionMethod: 'METADATA',
+          content: '%[coveo_topfoldingparentid]'
         },
-        pushEnabled: false,
-        onPremisesEnabled: false,
-        preConversionExtensions: [],
-        postConversionExtensions: [],
-        urlFilters: [
-          {
-            filter: '*',
-            includeFilter: true,
-            filterType: 'WILDCARD'
-          }
-        ],
-        urls: ['https://www.youtube.com/dummy'],
-        indexPlaylists: false,
-        resourceId: 'cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq'
-      })
+        {
+          id: 'qbmbpszcawiid7pyfjcaracboi',
+          kind: 'COMMON',
+          fieldName: 'year',
+          extractionMethod: 'METADATA',
+          content: '%[year]'
+        }
+      ],
+      information: {
+        sourceStatus: {
+          type: 'DISABLED',
+          allowedOperations: ['DELETE', 'REBUILD']
+        },
+        nextOperation: {
+          operationType: 'INCREMENTAL_REFRESH',
+          timestamp: 1543537560000
+        },
+        rebuildRequired: true,
+        numberOfDocuments: 0,
+        documentsTotalSize: 0
+      },
+      pushEnabled: false,
+      onPremisesEnabled: false,
+      preConversionExtensions: [],
+      postConversionExtensions: [],
+      urlFilters: [
+        {
+          filter: '*',
+          includeFilter: true,
+          filterType: 'WILDCARD'
+        }
+      ],
+      urls: ['https://www.youtube.com/dummy'],
+      indexPlaylists: false,
+      resourceId: 'cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq'
     });
 
-    const source2Dict: Dictionary<Source> = new Dictionary({
-      'youtube test': new Source({
-        sourceType: 'YOUTUBE',
-        id: 'ccliprod2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq',
-        name: 'youtube test',
-        owner: 'user2@coveo.com-google',
-        sourceVisibility: 'SHARED',
-        mappings: [
-          {
-            id: '95io43fjr3joijifodjskfjkds',
-            kind: 'COMMON',
-            fieldName: 'yttopfoldingparentid',
-            extractionMethod: 'METADATA',
-            content: '%[coveo_topfoldingparentid]'
-          },
-          {
-            id: 'qbmbpsdsadsadsasdsdsaracboi',
-            kind: 'COMMON',
-            fieldName: 'year',
-            extractionMethod: 'METADATA',
-            content: '%[year]'
-          }
-        ],
-        information: {
-          sourceStatus: {
-            type: 'DISABLED',
-            allowedOperations: ['DELETE', 'REBUILD']
-          },
-          nextOperation: {
-            operationType: 'INCREMENTAL_REFRESH',
-            timestamp: 1543237560000
-          },
-          rebuildRequired: false,
-          numberOfDocuments: 0,
-          documentsTotalSize: 0
+    const youtubeSource2 = new Source({
+      sourceType: 'YOUTUBE',
+      id: 'ccliprod2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq',
+      name: 'youtube test',
+      owner: 'user2@coveo.com-google',
+      sourceVisibility: 'SHARED',
+      mappings: [
+        {
+          id: '95io43fjr3joijifodjskfjkds',
+          kind: 'COMMON',
+          fieldName: 'yttopfoldingparentid',
+          extractionMethod: 'METADATA',
+          content: '%[coveo_topfoldingparentid]'
         },
-        pushEnabled: false,
-        onPremisesEnabled: false,
-        preConversionExtensions: [],
-        postConversionExtensions: [],
-        urlFilters: [
-          {
-            filter: '*',
-            includeFilter: true,
-            filterType: 'WILDCARD'
-          }
-        ],
-        urls: ['https://www.youtube.com/dummy'],
-        indexPlaylists: false,
-        resourceId: 'ccliprod2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq'
-      })
+        {
+          id: 'qbmbpsdsadsadsasdsdsaracboi',
+          kind: 'COMMON',
+          fieldName: 'year',
+          extractionMethod: 'METADATA',
+          content: '%[year]'
+        }
+      ],
+      information: {
+        sourceStatus: {
+          type: 'DISABLED',
+          allowedOperations: ['DELETE', 'REBUILD']
+        },
+        nextOperation: {
+          operationType: 'INCREMENTAL_REFRESH',
+          timestamp: 1543237560000
+        },
+        rebuildRequired: false,
+        numberOfDocuments: 0,
+        documentsTotalSize: 0
+      },
+      pushEnabled: false,
+      onPremisesEnabled: false,
+      preConversionExtensions: [],
+      postConversionExtensions: [],
+      urlFilters: [
+        {
+          filter: '*',
+          includeFilter: true,
+          filterType: 'WILDCARD'
+        }
+      ],
+      urls: ['https://www.youtube.com/dummy'],
+      indexPlaylists: false,
+      resourceId: 'ccliprod2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq'
     });
 
     describe('Source Diff', () => {
@@ -298,7 +294,18 @@ export const DiffUtilsTest = () => {
         const options: IDiffOptions = {
           keysToIgnore: ['information', 'resourceId', 'id', 'owner']
         };
-        const diff: DiffResultArray<Source> = DiffUtils.getDiffResult(source1Dict, source2Dict, options);
+        const sourceClone1 = youtubeSource1.clone();
+        const sourceClone2 = youtubeSource2.clone();
+
+        // Make sure to sort and strip id from mappings. Otherwise the diff will think the mapping have changed
+        sourceClone1.sortMappingsAndStripIds();
+        sourceClone2.sortMappingsAndStripIds();
+
+        const diff: DiffResultArray<Source> = DiffUtils.getDiffResult(
+          new Dictionary({ y: sourceClone1 }),
+          new Dictionary({ y: sourceClone2 }),
+          options
+        );
         expect(diff.TO_UPDATE.length).to.equal(0);
         expect(diff.TO_UPDATE_OLD.length).to.equal(0);
         expect(diff.TO_CREATE.length).to.equal(0);

@@ -1,5 +1,5 @@
 {
-  "id": "rrbbidfxa2ri4usxhzzmhq2hge-dummygroupproduction",
+  "id": "tcytrppteddiqkmboszu4skdoe-dummygroupproduction",
   "name": "My Sitemap Source",
   "owner": "mike@coveo.com-google",
   "sourceType": "WEB2",
@@ -14,39 +14,121 @@
       "https://www.dummy.com/smartphone-control-products"
     ],
     "addressPatterns": [
-      { "expression": "*", "patternType": "Wildcard", "allowed": true },
-      { "expression": "https://www.dummy.com/search*", "patternType": "RegEx", "allowed": false }
+      {
+        "expression": "*",
+        "patternType": "Wildcard",
+        "allowed": true
+      },
+      {
+        "expression": "https://www.dummy.com/search*",
+        "patternType": "RegEx",
+        "allowed": false
+      }
     ],
     "permissions": [
       {
         "permissionSets": [
-          { "allowedPermissions": [{ "identityType": "Group", "securityProvider": "Email Security Provider", "identity": "*@*" }] }
+          {
+            "allowedPermissions": [
+              {
+                "identityType": "Group",
+                "securityProvider": "Email Security Provider",
+                "identity": "*@*"
+              }
+            ]
+          }
         ]
       }
     ],
     "parameters": {
-      "PauseOnError": { "sensitive": false, "value": "true" },
-      "EnableJavaScript": { "sensitive": false, "value": "false" },
-      "IndexExternalPagesLinks": { "sensitive": false, "value": "false" },
-      "MaxPageSizeInBytes": { "sensitive": false, "value": "0" },
-      "IndexExternalPages": { "sensitive": false, "value": "false" },
-      "AlwaysTrustCertificates": { "sensitive": false, "value": "false" },
-      "MaxRequestsRetryCount": { "sensitive": false, "value": "3" },
-      "JavaScriptLoadingDelayInMilliseconds": { "sensitive": false, "value": "0" },
-      "MinCrawlDelayPerDomainInMilliseconds": { "sensitive": false, "value": "1000" },
-      "DepreactedValueToDelete": { "sensitive": false, "value": "1000" },
-      "RequestsRetryDelayInMilliseconds": { "sensitive": false, "value": "1000" },
-      "RespectAnchorRelNoFollow": { "sensitive": false, "value": "true" },
-      "QueryStringParametersToIgnore": { "sensitive": false, "value": "[]" },
-      "secondValueToDelete": { "sensitive": false, "value": "[]" },
-      "RespectRobotsDotTxt": { "sensitive": false, "value": "false" },
-      "RespectUrlCasing": { "sensitive": false, "value": "true" },
-      "RequestsTimeoutInSeconds": { "sensitive": false, "value": "600" },
-      "RespectMetaNoFollow": { "sensitive": false, "value": "true" },
-      "UserAgentString": { "sensitive": false, "value": "Mozilla/5.0 (compatible; Coveobot/2.0;+http://www.coveo.com/bot.html)" },
-      "MaxAutoRedirects": { "sensitive": false, "value": "7" },
-      "OrganizationId": { "sensitive": false, "value": "dummygroupproduction" },
-      "SourceId": { "sensitive": false, "value": "rrbbidfxa2ri4usxhzzmhq2hge-dummygroupproduction" }
+      "PauseOnError": {
+        "sensitive": false,
+        "value": "true"
+      },
+      "EnableJavaScript": {
+        "sensitive": false,
+        "value": "false"
+      },
+      "IndexExternalPagesLinks": {
+        "sensitive": false,
+        "value": "false"
+      },
+      "MaxPageSizeInBytes": {
+        "sensitive": false,
+        "value": "0"
+      },
+      "IndexExternalPages": {
+        "sensitive": false,
+        "value": "false"
+      },
+      "AlwaysTrustCertificates": {
+        "sensitive": false,
+        "value": "false"
+      },
+      "MaxRequestsRetryCount": {
+        "sensitive": false,
+        "value": "3"
+      },
+      "JavaScriptLoadingDelayInMilliseconds": {
+        "sensitive": false,
+        "value": "0"
+      },
+      "MinCrawlDelayPerDomainInMilliseconds": {
+        "sensitive": false,
+        "value": "1000"
+      },
+      "DepreactedValueToDelete": {
+        "sensitive": false,
+        "value": "1000"
+      },
+      "RequestsRetryDelayInMilliseconds": {
+        "sensitive": false,
+        "value": "1000"
+      },
+      "RespectAnchorRelNoFollow": {
+        "sensitive": false,
+        "value": "true"
+      },
+      "QueryStringParametersToIgnore": {
+        "sensitive": false,
+        "value": "[]"
+      },
+      "secondValueToDelete": {
+        "sensitive": false,
+        "value": "[]"
+      },
+      "RespectRobotsDotTxt": {
+        "sensitive": false,
+        "value": "false"
+      },
+      "RespectUrlCasing": {
+        "sensitive": false,
+        "value": "true"
+      },
+      "RequestsTimeoutInSeconds": {
+        "sensitive": false,
+        "value": "600"
+      },
+      "RespectMetaNoFollow": {
+        "sensitive": false,
+        "value": "true"
+      },
+      "UserAgentString": {
+        "sensitive": false,
+        "value": "Mozilla/5.0 (compatible; Coveobot/2.0;+http://www.coveo.com/bot.html)"
+      },
+      "MaxAutoRedirects": {
+        "sensitive": false,
+        "value": "7"
+      },
+      "OrganizationId": {
+        "sensitive": false,
+        "value": "dummygroupproduction"
+      },
+      "SourceId": {
+        "sensitive": false,
+        "value": "tcytrppteddiqkmboszu4skdoe-dummygroupproduction"
+      }
     },
     "userIdentities": {},
     "caseSensitivePatterns": true,
@@ -107,7 +189,14 @@
               }
             },
             {
-              "extensions": [".doc", ".dot", ".docx", ".docm", ".dotx", ".dotm"],
+              "extensions": [
+                ".doc",
+                ".dot",
+                ".docx",
+                ".docm",
+                ".dotx",
+                ".dotm"
+              ],
               "extensionSetting": {
                 "action": "Retrieve",
                 "actionOnError": "Reference",
@@ -121,7 +210,16 @@
               }
             },
             {
-              "extensions": [".xls", ".xlb", ".xlm", ".xlsx", ".xlsm", ".xltx", ".xltm", ".xlam"],
+              "extensions": [
+                ".xls",
+                ".xlb",
+                ".xlm",
+                ".xlsx",
+                ".xlsm",
+                ".xltx",
+                ".xltm",
+                ".xlam"
+              ],
               "extensionSetting": {
                 "action": "Retrieve",
                 "actionOnError": "Reference",
@@ -135,7 +233,18 @@
               }
             },
             {
-              "extensions": [".ppt", ".pot", ".pps", ".pptx", ".pptm", ".potx", ".potm", ".ppsx", ".ppsm", ".ppam"],
+              "extensions": [
+                ".ppt",
+                ".pot",
+                ".pps",
+                ".pptx",
+                ".pptm",
+                ".potx",
+                ".potm",
+                ".ppsx",
+                ".ppsm",
+                ".ppam"
+              ],
               "extensionSetting": {
                 "action": "Retrieve",
                 "actionOnError": "Reference",
@@ -149,7 +258,9 @@
               }
             },
             {
-              "extensions": [".mpp"],
+              "extensions": [
+                ".mpp"
+              ],
               "extensionSetting": {
                 "action": "Reference",
                 "actionOnError": "Reference",
@@ -163,7 +274,9 @@
               }
             },
             {
-              "extensions": [".mdb"],
+              "extensions": [
+                ".mdb"
+              ],
               "extensionSetting": {
                 "action": "Reference",
                 "actionOnError": "Reference",
@@ -177,7 +290,9 @@
               }
             },
             {
-              "extensions": [".pub"],
+              "extensions": [
+                ".pub"
+              ],
               "extensionSetting": {
                 "action": "Reference",
                 "actionOnError": "Reference",
@@ -254,7 +369,9 @@
               }
             },
             {
-              "extensions": [".pdf"],
+              "extensions": [
+                ".pdf"
+              ],
               "extensionSetting": {
                 "action": "Retrieve",
                 "actionOnError": "Reference",
@@ -311,7 +428,9 @@
               }
             },
             {
-              "extensions": [".rtf"],
+              "extensions": [
+                ".rtf"
+              ],
               "extensionSetting": {
                 "action": "Retrieve",
                 "actionOnError": "Reference",
@@ -325,7 +444,9 @@
               }
             },
             {
-              "extensions": [".vsd"],
+              "extensions": [
+                ".vsd"
+              ],
               "extensionSetting": {
                 "action": "Reference",
                 "actionOnError": "Reference",
@@ -339,7 +460,11 @@
               }
             },
             {
-              "extensions": [".wp", ".wpf", ".wpd"],
+              "extensions": [
+                ".wp",
+                ".wpf",
+                ".wpd"
+              ],
               "extensionSetting": {
                 "action": "Retrieve",
                 "actionOnError": "Reference",
@@ -353,7 +478,9 @@
               }
             },
             {
-              "extensions": [".xml"],
+              "extensions": [
+                ".xml"
+              ],
               "extensionSetting": {
                 "action": "Reference",
                 "actionOnError": "Reference",
@@ -367,7 +494,9 @@
               }
             },
             {
-              "extensions": [".7z"],
+              "extensions": [
+                ".7z"
+              ],
               "extensionSetting": {
                 "action": "Reference",
                 "actionOnError": "Reference",
@@ -381,7 +510,9 @@
               }
             },
             {
-              "extensions": [".zip"],
+              "extensions": [
+                ".zip"
+              ],
               "extensionSetting": {
                 "action": "Reference",
                 "actionOnError": "Reference",
@@ -456,7 +587,9 @@
               }
             },
             {
-              "extensions": [".wri"],
+              "extensions": [
+                ".wri"
+              ],
               "extensionSetting": {
                 "action": "Reference",
                 "actionOnError": "Reference",
@@ -470,7 +603,10 @@
               }
             },
             {
-              "extensions": [".swf", ".spl"],
+              "extensions": [
+                ".swf",
+                ".spl"
+              ],
               "extensionSetting": {
                 "action": "Reference",
                 "actionOnError": "Reference",
@@ -484,7 +620,10 @@
               }
             },
             {
-              "extensions": [".chm", ".hlp"],
+              "extensions": [
+                ".chm",
+                ".hlp"
+              ],
               "extensionSetting": {
                 "action": "Reference",
                 "actionOnError": "Reference",
@@ -498,7 +637,9 @@
               }
             },
             {
-              "extensions": [".ncs"],
+              "extensions": [
+                ".ncs"
+              ],
               "extensionSetting": {
                 "action": "Reference",
                 "actionOnError": "Reference",
@@ -512,7 +653,14 @@
               }
             },
             {
-              "extensions": [".email", ".eml", ".ews", ".mime", ".mht", ".mhtml"],
+              "extensions": [
+                ".email",
+                ".eml",
+                ".ews",
+                ".mime",
+                ".mht",
+                ".mhtml"
+              ],
               "extensionSetting": {
                 "action": "Retrieve",
                 "actionOnError": "Reference",
@@ -526,7 +674,10 @@
               }
             },
             {
-              "extensions": [".exe", ".dll"],
+              "extensions": [
+                ".exe",
+                ".dll"
+              ],
               "extensionSetting": {
                 "action": "Reference",
                 "actionOnError": "Reference",
@@ -540,7 +691,10 @@
               }
             },
             {
-              "extensions": [".xsl", ".xslt"],
+              "extensions": [
+                ".xsl",
+                ".xslt"
+              ],
               "extensionSetting": {
                 "action": "Ignore",
                 "actionOnError": "Reference",
@@ -554,7 +708,10 @@
               }
             },
             {
-              "extensions": [".msg", ".oft"],
+              "extensions": [
+                ".msg",
+                ".oft"
+              ],
               "extensionSetting": {
                 "action": "Retrieve",
                 "actionOnError": "Reference",
@@ -570,7 +727,9 @@
           ],
           "byContentTypes": [
             {
-              "extensions": ["binarydata"],
+              "extensions": [
+                "binarydata"
+              ],
               "extensionSetting": {
                 "action": "Retrieve",
                 "actionOnError": "Reference",
@@ -621,7 +780,9 @@
               }
             },
             {
-              "extensions": ["text/html"],
+              "extensions": [
+                "text/html"
+              ],
               "extensionSetting": {
                 "action": "Retrieve",
                 "actionOnError": "Reference",
@@ -635,7 +796,9 @@
               }
             },
             {
-              "extensions": ["text/xml"],
+              "extensions": [
+                "text/xml"
+              ],
               "extensionSetting": {
                 "action": "Retrieve",
                 "actionOnError": "Reference",
@@ -649,7 +812,9 @@
               }
             },
             {
-              "extensions": ["message/rfc822"],
+              "extensions": [
+                "message/rfc822"
+              ],
               "extensionSetting": {
                 "action": "Retrieve",
                 "actionOnError": "Reference",
@@ -668,15 +833,7 @@
     }
   },
   "preConversionExtensions": [],
-  "postConversionExtensions": [
-    {
-      "actionOnError": "SKIP_EXTENSION",
-      "condition": "",
-      "extensionId": "dummygroupk5f2dpwl-ukjs6nvyjvqdn4vozf3ugjkdqe",
-      "parameters": {},
-      "versionId": ""
-    }
-  ],
+  "postConversionExtensions": [],
   "mappings": [
     {
       "id": "xgkhdsada9fdsnh5xkffu",
@@ -731,5 +888,5 @@
   "pushEnabled": false,
   "onPremisesEnabled": false,
   "logicalIndex": "default",
-  "resourceId": "rrbbidfxa2ri4usxhzzmhq2hge-dummygroupproduction"
+  "resourceId": "tcytrppteddiqkmboszu4skdoe-dummygroupproduction"
 }
