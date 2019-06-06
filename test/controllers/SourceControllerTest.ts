@@ -458,10 +458,7 @@ export const SourceControllerTest = () => {
             expect(diffResultArray.TO_UPDATE.length).to.eql(1);
             expect(diffResultArray.TO_DELETE.length).to.eql(0);
 
-            // TODO: get clean version
-            // throw new Error('To implement');
             const cleanVersion = controller.getCleanVersion(diffResultArray, diffOptions);
-
             const updatedSource = cleanVersion.TO_UPDATE[0];
 
             // Make sure the blacklisted keys are not part of the diff
@@ -852,9 +849,115 @@ export const SourceControllerTest = () => {
           });
       });
 
-      // it('Should graduate using the whitelist strategy', (done: MochaDone) => {
-      //   throw new Error('To implement');
-      // });
+      it('Should graduate using the whitelist strategy', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          .post('/rest/organizations/prod/sources/raw?rebuild=false', {
+            mappings: [],
+            postConversionExtensions: []
+          })
+          .reply(RequestUtils.OK)
+          .put('/rest/organizations/prod/sources/web-source-prod/raw?rebuild=false', {
+            mappings: [
+              {
+                id: 'q4qripnnvztvqempxtkvdb2cqa',
+                kind: 'COMMON',
+                fieldName: 'printableuri',
+                extractionMethod: 'METADATA',
+                content: '%[printableuri]'
+              }
+            ],
+            postConversionExtensions: []
+          })
+          .reply(RequestUtils.OK);
+
+        const extensionDiff: DiffResultArray<Source> = new DiffResultArray();
+        extensionDiff.TO_CREATE = [
+          new Source({
+            sourceType: 'SITEMAP',
+            id: 'dev-source',
+            name: 'sitemaptest',
+            mappings: [],
+            information: {
+              sourceStatus: {
+                type: 'DISABLED',
+                allowedOperations: ['DELETE', 'REBUILD']
+              },
+              rebuildRequired: true,
+              numberOfDocuments: 0,
+              documentsTotalSize: 0
+            },
+            preConversionExtensions: [],
+            postConversionExtensions: [],
+            resourceId: 'dev-source4'
+          })
+        ];
+        extensionDiff.TO_UPDATE = [
+          new Source({
+            sourceType: 'WEB',
+            id: 'web-source',
+            name: 'My web source',
+            mappings: [
+              {
+                id: 'q4qripnnvztvqempxtkvdb2cqa',
+                kind: 'COMMON',
+                fieldName: 'printableuri',
+                extractionMethod: 'METADATA',
+                content: '%[printableuri]'
+              }
+            ],
+            information: {
+              sourceStatus: {
+                type: 'DISABLED',
+                allowedOperations: ['DELETE', 'REBUILD']
+              },
+              rebuildRequired: true,
+              numberOfDocuments: 0,
+              documentsTotalSize: 0
+            },
+            preConversionExtensions: [],
+            postConversionExtensions: [],
+            resourceId: 'web-source'
+          })
+        ];
+        extensionDiff.TO_UPDATE_OLD = [
+          new Source({
+            sourceType: 'WEB',
+            id: 'web-source-prod',
+            name: 'My web source',
+            mappings: [],
+            information: {
+              sourceStatus: {
+                type: 'DISABLED',
+                allowedOperations: ['DELETE', 'REBUILD']
+              },
+              rebuildRequired: true,
+              numberOfDocuments: 0,
+              documentsTotalSize: 0
+            },
+            preConversionExtensions: [],
+            postConversionExtensions: [],
+            resourceId: 'web-source-prod'
+          })
+        ];
+
+        const graduateOptions: IGraduateOptions = {
+          POST: true,
+          PUT: true,
+          DELETE: false,
+          keyWhitelist: ['mappings', 'postConversionExtensions'],
+          diffOptions: {}
+        };
+
+        controller
+          .graduate(extensionDiff, graduateOptions)
+          .then((resolved: any[]) => {
+            // expect(resolved).to.be.empty;
+            done();
+          })
+          .catch((err: any) => {
+            done(err);
+          });
+      });
     });
   });
 };

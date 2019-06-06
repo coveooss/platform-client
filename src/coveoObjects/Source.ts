@@ -37,7 +37,6 @@ export class Source extends BaseCoveoObject implements ISource {
     return this.configuration['preConversionExtensions'];
   }
 
-  // TODO: put in JSON utils
   sortMappingsAndStripIds() {
     // Sort mappings
     let cleanedMappings: Array<IStringMap<string>> = _.sortBy(this.getMappings(), (mapping: IStringMap<string>) =>

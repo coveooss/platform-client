@@ -112,7 +112,6 @@ export class DiffCommand {
         if (objectName === 'source') {
           Logger.info('Preparing HTML diff file');
 
-          // TODO: also print new and deleted sources
           const cleanVersion = controller.getCleanVersion(diffResultArray, options);
 
           const newSources = JSON.stringify(cleanVersion.TO_CREATE);

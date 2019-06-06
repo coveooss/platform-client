@@ -154,9 +154,7 @@ export class SourceController extends BaseController {
         // 1. Replacing extensions with destination id
         this.replaceExtensionNameWithId(source, this.extensionList[1]);
 
-        // 2. Whitelist only keys that should be graduated
-        // TODO:
-        // 3. Strip source from keys that should not be graduated
+        // 3. Strip source from keys that should not be graduated using whitelist and blacklist strategy
         source.removeParameters(options.keyBlacklist || [], options.keyWhitelist || []);
       });
 
