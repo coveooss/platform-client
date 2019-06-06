@@ -293,7 +293,7 @@ export class SourceController extends BaseController {
           diffOptions.includeOnly
         );
 
-        sourceDiff.push({ newSource: jsDiff.diffJson(cleanedOldVersion, cleanedNewVersion) });
+        sourceDiff.push({ [(newSource as Source).getName()]: jsDiff.diffJson(cleanedOldVersion, cleanedNewVersion) });
       });
       return sourceDiff;
     }

@@ -134,16 +134,21 @@ export class DiffCommand {
               .replace('SOURCES_TO_CREATE', newSources)
               .replace('SOURCES_TO_DELETE', deletedSources);
 
-            fs.writeFile(`${objectName}Diff.html`, htmlContent, error => {
-              if (error) {
+            fs.writeFile(`${objectName}Diff.html`, htmlContent)
+              .then(() => {
+                Logger.info('Diff operation completed');
+                Logger.info(`File saved as ${Colors.filename(objectName + 'Diff.json')}`);
+                Logger.stopSpinner();
+                if (!options.silent) {
+                  opn(`${objectName}Diff.html`);
+                }
+                process.exit();
+              })
+              .catch((error: any) => {
                 Logger.error('Unable to create html file', error);
                 Logger.stopSpinner();
                 process.exit();
-              }
-              Logger.info('HTML file created');
-              opn(`${objectName}Diff.html`);
-              process.exit();
-            });
+              });
           });
         } else {
           fs.writeJSON(`${objectName}Diff.json`, controller.getCleanVersion(diffResultArray, options), { spaces: 2 })
