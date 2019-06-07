@@ -157,11 +157,11 @@ export class Organization extends BaseCoveoObject implements IOrganization {
     this.clearSources();
   }
 
-  getConfiguration(): IStringMap<any> {
+  getConfiguration(): IStringMap<Dictionary<Source | Field | Extension>> {
     return {
       fields: this.getFields(),
       sources: this.getSources(),
-      getExtensions: this.getExtensions()
+      extensions: this.getExtensions()
     };
   }
 
