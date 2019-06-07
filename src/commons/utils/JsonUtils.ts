@@ -34,6 +34,7 @@ export class JsonUtils {
       return obj;
     }
 
+    Assert.check(!Array.isArray(obj), 'Should not flatten arrays');
     let map = flatten(obj);
 
     const omit = (keys: string[], initialMatchCondition: boolean) => {

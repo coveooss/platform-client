@@ -62,6 +62,11 @@ export const JsonUtilsTest = () => {
         });
       });
 
+      it('Should unflatten an object', () => {
+        const flattenedObj1 = { a: 1, 'b.c': 2, 'b.d.0': 3, 'b.d.1': 4 };
+        expect(JsonUtils.unflatten(flattenedObj1)).to.eql(obj1);
+      });
+
       it('Should not modify the initial object', () => {
         const flattened = JsonUtils.flatten(obj1);
         flattened['a'] = 2;
