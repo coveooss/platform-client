@@ -57,7 +57,10 @@ export const DiffSourcesCommand = (program: any, commanderUtils: CommanderUtils)
         'configuration.parameters.OrganizationId',
         'configuration.parameters.ClientSecret',
         'configuration.parameters.ClientId',
-        'configuration.parameters.IsSandbox'
+        'configuration.parameters.IsSandbox',
+        'additionalInfos.salesforceOrg',
+        'additionalInfos.salesforceUser',
+        'additionalInfos.salesforceOrgName'
       ];
 
       // Set diff options

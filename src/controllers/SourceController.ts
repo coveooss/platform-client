@@ -43,8 +43,8 @@ export class SourceController extends BaseController {
         this.replaceExtensionIdWithName(source2, this.extensionList[1]);
 
         // Do not diff extensions that have been blacklisted
-        // Only applies to the organization of origin
-        this.removeExtensionFromOriginSource(source1);
+        this.removeExtensionFromSource(source1, this.organization1);
+        this.removeExtensionFromSource(source2, this.organization2);
 
         _.each([...source1.values(), ...source2.values()], source => {
           source.sortMappingsAndStripIds();
@@ -64,9 +64,9 @@ export class SourceController extends BaseController {
       });
   }
 
-  removeExtensionFromOriginSource(sourceList: Dictionary<Source>) {
+  removeExtensionFromSource(sourceList: Dictionary<Source>, org: Organization) {
     _.each(sourceList.values(), (source: Source) => {
-      _.each(this.organization1.getExtensionBlacklist(), (extensionToRemove: string) => {
+      _.each(org.getExtensionBlacklist(), (extensionToRemove: string) => {
         source.removeExtension(extensionToRemove, 'pre');
         source.removeExtension(extensionToRemove, 'post');
       });

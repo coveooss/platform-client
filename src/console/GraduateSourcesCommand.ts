@@ -58,7 +58,10 @@ export const GraduateSourcesCommand = (program: any, commanderUtils: CommanderUt
         'configuration.parameters.OrganizationId',
         'configuration.parameters.ClientSecret',
         'configuration.parameters.ClientId',
-        'configuration.parameters.IsSandbox'
+        'configuration.parameters.IsSandbox',
+        'additionalInfos.salesforceOrg',
+        'additionalInfos.salesforceUser',
+        'additionalInfos.salesforceOrgName'
       ];
 
       const graduateOptions: IGraduateOptions = {
