@@ -1,0 +1,25 @@
+{
+  "content": "import json\r\nfrom sets import Set\r\n\r\nvalues = dict()\r\nfields = Set([])\r\ntype = ''\r\n\r\nfor m in document.get_meta_data():\r\n    type = ':' + m.origin\r\n    for metadata_name, metadata_value in m.values.iteritems():\r\n        values[metadata_name+type] = metadata_value\r\n        fields.add(metadata_name)\r\n        \r\n# Add the allmetadatavalues metadata\r\ndocument.add_meta_data({\"allmetadatavalues\": json.dumps(values)})\r\ndocument.add_meta_data({\"allmetadatafields\": ';'.join(fields)})",
+  "createdDate": 1523375756000,
+  "description": "Exposes all available metadata for discovery/troubleshooting purpose; requires a mapping to a field that can likely be named AllMetadataValues",
+  "enabled": true,
+  "id": "dummygroupk5f2dpwl-qww6e7om4rommwdba5nk3ykc4e",
+  "lastModified": 1523375756000,
+  "name": "AllMetadataValues",
+  "requiredDataStreams": [],
+  "versionId": ".Hvd.k9RniKVoYMvCSHBvdr7TSHD.oyc",
+  "usedBy": [],
+  "status": {
+    "durationHealth": { "healthIndicator": "UNKNOWN" },
+    "dailyStatistics": {
+      "averageDurationInSeconds": 0.0,
+      "numberOfErrors": 0,
+      "numberOfExecutions": 0,
+      "numberOfSkips": 0,
+      "numberOfTimeouts": 0
+    },
+    "disabledStatus": {},
+    "timeoutHealth": { "healthIndicator": "UNKNOWN" },
+    "timeoutLikeliness": "NONE"
+  }
+}

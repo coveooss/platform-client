@@ -16,6 +16,7 @@
     "async": "^2.6.1",
     "chalk": "2.4.2",
     "commander": "^2.19.0",
+    "diff": "^4.0.1",
     "flat": "4.1.0",
     "fs-extra": "^7.0.1",
     "inquirer": "^6.2.1",
@@ -30,6 +31,7 @@
   "devDependencies": {
     "@types/async": "^2.0.50",
     "@types/chai": "^4.1.7",
+    "@types/diff": "^4.0.2",
     "@types/flat": "0.0.28",
     "@types/fs-extra": "^5.0.4",
     "@types/inquirer": "0.0.43",
@@ -64,7 +66,6 @@
     "ts-loader": "^5.3.3",
     "ts-node": "^7.0.1",
     "tslint": "^5.12.1",
-    "uglifyjs-webpack-plugin": "^2.1.1",
     "webpack": "^4.28.4",
     "webpack-cli": "^3.2.1",
     "webpack-notifier": "^1.7.0"

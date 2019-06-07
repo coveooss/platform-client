@@ -38,7 +38,7 @@ export const GraduateFieldsCommand = (program: any, commanderUtils: CommanderUti
           includeOnly: options.onlyKeys,
           silent: options.silent
         },
-        keysToStrip: ['sources'], // Do not graduate the source to which the field is associated.
+        keyBlacklist: ['sources'], // Do not graduate the source to which the field is associated.
         POST: options.methods.indexOf('POST') > -1,
         PUT: options.methods.indexOf('PUT') > -1,
         DELETE: options.methods.indexOf('DELETE') > -1

@@ -1,0 +1,168 @@
+[
+  {
+    "sourceType": "WEB2",
+    "id": "rrbbidfxa2ri4usxhzzmhq2hge-dummygroupproduction",
+    "name": "My web source",
+    "owner": "mike@coveo.com-google",
+    "sourceVisibility": "SHARED",
+    "information": {
+      "sourceStatus": {
+        "type": "IDLE",
+        "timestamp": 1250810907000,
+        "allowedOperations": [
+          "DELETE",
+          "REBUILD",
+          "FULL_REFRESH"
+        ]
+      },
+      "lastOperation": {
+        "id": "cca99e67520b4111989569b800aa9dc9",
+        "operationType": "FULL_REFRESH",
+        "timestamp": 1250810907000,
+        "result": "SUCCESS",
+        "initialBuild": false,
+        "numberOfDocuments": 1447
+      },
+      "nextOperation": {
+        "operationType": "FULL_REFRESH",
+        "timestamp": 1250890800000
+      },
+      "rebuildRequired": true,
+      "numberOfDocuments": 283,
+      "documentsTotalSize": 24718758
+    },
+    "pushEnabled": false,
+    "onPremisesEnabled": false,
+    "logicalIndex": "default",
+    "preConversionExtensions": [],
+    "postConversionExtensions": [],
+    "urlFilters": [
+      {
+        "filter": "*",
+        "includeFilter": true,
+        "filterType": "WILDCARD"
+      },
+      {
+        "filter": "https://www.dummy.com/search*",
+        "includeFilter": false,
+        "filterType": "REGEX"
+      },
+      {
+        "filter": "https://www.dummy.com/CatalogResourcesV3*",
+        "includeFilter": false,
+        "filterType": "REGEX"
+      }
+    ],
+    "resourceId": "rrbbidfxa2ri4usxhzzmhq2hge-dummygroupproduction"
+  },
+  {
+    "sourceType": "SITEMAP",
+    "id": "tcytrppteddiqkmboszu4skdoe-dummygroupproduction",
+    "name": "My Sitemap Source",
+    "owner": "mike@coveo.com-google",
+    "sourceVisibility": "SHARED",
+    "information": {
+      "sourceStatus": {
+        "type": "IDLE",
+        "timestamp": 1250867254000,
+        "allowedOperations": [
+          "DELETE",
+          "REBUILD",
+          "FULL_REFRESH",
+          "INCREMENTAL_REFRESH"
+        ]
+      },
+      "lastOperation": {
+        "id": "8f4cfcc2b72023erfc07335085cc8a",
+        "operationType": "INCREMENTAL_REFRESH",
+        "timestamp": 1250867254000,
+        "result": "SUCCESS",
+        "initialBuild": false,
+        "numberOfDocuments": 0
+      },
+      "nextOperation": {
+        "operationType": "INCREMENTAL_REFRESH",
+        "timestamp": 1520881800000
+      },
+      "rebuildRequired": true,
+      "numberOfDocuments": 127,
+      "documentsTotalSize": 379398032
+    },
+    "pushEnabled": false,
+    "onPremisesEnabled": false,
+    "logicalIndex": "default",
+    "preConversionExtensions": [],
+    "postConversionExtensions": [],
+    "urlFilters": [
+      {
+        "filter": "*",
+        "includeFilter": true,
+        "filterType": "WILDCARD"
+      }
+    ],
+    "resourceId": "tcytrppteddiqkmboszu4skdoe-dummygroupproduction"
+  },
+  {
+    "sourceType": "SALESFORCE",
+    "id": "wyowilfyrpf2qogxm45uhgskri-dummygroupproduction",
+    "name": "Salesforce",
+    "owner": "randomuser@dummy.com-salesforce",
+    "sourceVisibility": "SHARED",
+    "information": {
+      "sourceStatus": {
+        "type": "IDLE",
+        "timestamp": 1550870077000,
+        "allowedOperations": [
+          "DELETE",
+          "REBUILD",
+          "FULL_REFRESH",
+          "INCREMENTAL_REFRESH"
+        ]
+      },
+      "lastOperation": {
+        "id": "0fe789a2ab134490b2506909b3352d48",
+        "operationType": "INCREMENTAL_REFRESH",
+        "timestamp": 1550870077000,
+        "result": "SUCCESS",
+        "initialBuild": false,
+        "numberOfDocuments": 111
+      },
+      "nextOperation": {
+        "operationType": "INCREMENTAL_REFRESH",
+        "timestamp": 1550883780000
+      },
+      "rebuildRequired": false,
+      "numberOfDocuments": 1552,
+      "documentsTotalSize": 1043509
+    },
+    "pushEnabled": false,
+    "onPremisesEnabled": false,
+    "logicalIndex": "default",
+    "securityProviderReferences": [],
+    "preConversionExtensions": [],
+    "postConversionExtensions": [
+      {
+        "actionOnError": "SKIP_EXTENSION",
+        "condition": "",
+        "extensionId": "dummygroupproduction-sr3jny7s5ekuwuyaak45awcaku",
+        "parameters": {},
+        "versionId": ""
+      },
+      {
+        "actionOnError": "SKIP_EXTENSION",
+        "condition": "",
+        "extensionId": "dummygroupproduction-xnnutbu2n6kiwm243iossdsjha",
+        "parameters": {},
+        "versionId": ""
+      }
+    ],
+    "urlFilters": [
+      {
+        "filter": "*",
+        "includeFilter": true,
+        "filterType": "WILDCARD"
+      }
+    ],
+    "resourceId": "wyowilfyrpf2qogxm45uhgskri-dummygroupproduction"
+  }
+]

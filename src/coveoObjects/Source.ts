@@ -37,8 +37,19 @@ export class Source extends BaseCoveoObject implements ISource {
     return this.configuration['preConversionExtensions'];
   }
 
-  removeParameters(parameterKeys: string[]) {
-    this.configuration = _.omit(this.configuration, parameterKeys);
+  sortMappingsAndStripIds() {
+    // Sort mappings
+    let cleanedMappings: Array<IStringMap<string>> = _.sortBy(this.getMappings(), (mapping: IStringMap<string>) =>
+      _.compact([mapping.fieldName, mapping.type]).join('-')
+    );
+
+    // Remove id from mappings
+    cleanedMappings = _.map(cleanedMappings, (mapping: IStringMap<string>) => _.omit(mapping, 'id'));
+    this.configuration['mappings'] = cleanedMappings;
+  }
+
+  removeParameters(keysToRemove: string[] = [], exclusiveKeys: string[] = []): void {
+    this.configuration = JsonUtils.removeKeyValuePairsFromJson(this.configuration, keysToRemove, exclusiveKeys);
   }
 
   removeExtension(extensionId: string, stage: 'pre' | 'post') {

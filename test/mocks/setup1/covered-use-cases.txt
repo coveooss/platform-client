@@ -1,0 +1,13 @@
+Used cases that are covered in this setup
+
+* Salesforce sources have same mapping rules but with different id and different order.
+* Uses cases for Sitemp sources
+  - different extensions attached to the source
+  - basic configuration variation (startingAddresses and addressPatterns)
+  - configuration parameter variation (RespectRobotsDotTxt)
+  - mapping with item type
+  - mapping with array in rule
+  - added, updated and deleted rules
+
+* Uses cases for the web source
+  - Configuration modification that should not impact the diff (id, resourceId, userIdentities, owner).

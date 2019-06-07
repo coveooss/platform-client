@@ -5,7 +5,7 @@ import { Assert } from '../commons/misc/Assert';
 /**
  * Every Coveo Object ultimately inherits from this base Model class.
  */
-export abstract class BaseCoveoObject implements ICoveoObject {
+export abstract class BaseCoveoObject implements ICoveoObject<BaseCoveoObject> {
   constructor(private id: string) {
     Assert.exists(id, StaticErrorMessage.INVALID_ID);
   }
@@ -20,4 +20,5 @@ export abstract class BaseCoveoObject implements ICoveoObject {
   }
 
   abstract clone(): BaseCoveoObject;
+  abstract getConfiguration(): {};
 }

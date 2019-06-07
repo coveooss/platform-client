@@ -11,6 +11,7 @@ import { FieldController } from '../controllers/FieldController';
 import { SourceController } from '../controllers/SourceController';
 import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
 import { Organization, IBlacklistObjects } from '../coveoObjects/Organization';
+import { EnvironmentUtils } from '../commons/utils/EnvironmentUtils';
 
 export interface IDiffOptions {
   /**
@@ -107,21 +108,66 @@ export class DiffCommand {
     controller
       .diff(options)
       .then((diffResultArray: DiffResultArray<BaseCoveoObject>) => {
-        fs.writeJSON(`${objectName}Diff.json`, controller.getCleanVersion(diffResultArray, options), { spaces: 2 })
-          .then(() => {
-            Logger.info('Diff operation completed');
-            Logger.info(`File saved as ${Colors.filename(objectName + 'Diff.json')}`);
-            Logger.stopSpinner();
-            if (!options.silent) {
-              opn(`${objectName}Diff.json`);
+        Logger.info(`objectName: ${objectName}`);
+        if (objectName === 'source') {
+          Logger.info('Preparing HTML diff file');
+
+          const cleanVersion = controller.getCleanVersion(diffResultArray, options);
+
+          const newSources = JSON.stringify(cleanVersion.TO_CREATE);
+          const deletedSources = JSON.stringify(cleanVersion.TO_DELETE);
+          const cleanDiff = JSON.stringify(cleanVersion.TO_UPDATE);
+
+          const viewPath = EnvironmentUtils.isTestRunning() ? `../../views/source-diff.ejs` : `views/source-diff.ejs`;
+
+          fs.readFile(viewPath, (err, data) => {
+            Logger.info('Reading file');
+            if (err) {
+              Logger.error('Unable to read html file', err);
+              return;
             }
-            process.exit();
-          })
-          .catch((err: any) => {
-            Logger.error('Unable to save setting file', err);
-            Logger.stopSpinner();
-            process.exit();
+
+            // FIXME: That's very sketchy. Ideally we want to use an ejs loader.
+            const htmlContent = data
+              .toString()
+              .replace('DIFF_OBJECT', cleanDiff)
+              .replace('SOURCES_TO_CREATE', newSources)
+              .replace('SOURCES_TO_DELETE', deletedSources);
+
+            fs.writeFile(`${objectName}Diff.html`, htmlContent)
+              .then(() => {
+                Logger.info('Diff operation completed');
+                Logger.info(`File saved as ${Colors.filename(objectName + 'Diff.json')}`);
+                Logger.stopSpinner();
+                if (!options.silent) {
+                  opn(`${objectName}Diff.html`);
+                }
+                process.exit();
+              })
+              .catch((error: any) => {
+                Logger.error('Unable to create html file', error);
+                Logger.stopSpinner();
+                process.exit();
+              });
           });
+        } else {
+          fs.writeJSON(`${objectName}Diff.json`, controller.getCleanVersion(diffResultArray, options), { spaces: 2 })
+            .then(() => {
+              // TODO: do the same for every object types
+              Logger.info('Diff operation completed');
+              Logger.info(`File saved as ${Colors.filename(objectName + 'Diff.json')}`);
+              Logger.stopSpinner();
+              if (!options.silent) {
+                opn(`${objectName}Diff.json`);
+              }
+              process.exit();
+            })
+            .catch((err: any) => {
+              Logger.error('Unable to save setting file', err);
+              Logger.stopSpinner();
+              process.exit();
+            });
+        }
       })
       .catch((err: any) => {
         Logger.logOnly(StaticErrorMessage.UNABLE_TO_DIFF, err);

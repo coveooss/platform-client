@@ -15,12 +15,6 @@ export const GraduateSourcesCommand = (program: any, commanderUtils: CommanderUt
       commanderUtils.list,
       []
     )
-    // Maybe we can use one of these options
-    // .option('-M, --skipMappings', 'Keys to ignore. String separated by ",".', false)
-    // .option('-E, --skipExtensions', 'Keys to ignore. String separated by ",".', false)
-
-    // Not sure ignore keys are relavant here
-    // .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', list)
     // TODO: provide option to rebuild
     // .option('-r, --rebuild', 'Rebuild source after graduation')
     .option(
@@ -44,12 +38,37 @@ export const GraduateSourcesCommand = (program: any, commanderUtils: CommanderUt
     .action((origin: string, destination: string, apiKey: string, options: any) => {
       commanderUtils.setLogger(options, 'graduate-sources');
 
+      const includeOnly = [
+        'logicalIndex',
+        'mappings',
+        'postConversionExtensions',
+        'preConversionExtensions',
+        'configuration.addressPatterns',
+        'configuration.documentConfig',
+        'configuration.extendedDataFiles',
+        'configuration.parameters',
+        'configuration.startingAddresses',
+        'configuration.sourceSecurityOption',
+        'configuration.permissions',
+        'additionalInfos'
+      ];
+
+      const keysToIgnore = [
+        'configuration.parameters.SourceId',
+        'configuration.parameters.OrganizationId',
+        'configuration.parameters.ClientSecret',
+        'configuration.parameters.ClientId',
+        'configuration.parameters.IsSandbox'
+      ];
+
       const graduateOptions: IGraduateOptions = {
         diffOptions: {
           silent: options.silent,
-          keysToIgnore: ['information', 'resourceId', 'id', 'owner', 'securityProviderReferences']
+          includeOnly: includeOnly,
+          keysToIgnore: keysToIgnore
         },
-        keysToStrip: ['information', 'resourceId', 'id', 'owner', 'securityProviderReferences'], // These parameters will be stripped from the source before their graduation
+        keyWhitelist: includeOnly,
+        keyBlacklist: keysToIgnore,
         rebuild: options.rebuild,
         POST: options.methods.indexOf('POST') > -1,
         PUT: options.methods.indexOf('PUT') > -1,
@@ -64,9 +83,6 @@ export const GraduateSourcesCommand = (program: any, commanderUtils: CommanderUt
         sources: options.ignoreSources
       };
       const command = new GraduateCommand(origin, destination, apiKey, apiKey, blacklistOptions);
-      // if (options.skipExtensions) {
-      //   _.extend(options.keysToIgnore, [], ['preConversionExtensions', 'postConversionExtensions']);
-      // }
       command.graduateSources(graduateOptions);
     });
 };

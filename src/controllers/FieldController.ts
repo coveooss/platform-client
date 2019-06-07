@@ -119,8 +119,8 @@ export class FieldController extends BaseController {
 
       _.each(_.union(diffResultArray.TO_CREATE, diffResultArray.TO_DELETE, diffResultArray.TO_UPDATE), field => {
         // Strip parameters that should not be graduated
-        if (options.keysToStrip && options.keysToStrip.length > 0) {
-          field.removeParameters(options.keysToStrip);
+        if (options.keyBlacklist && options.keyBlacklist.length > 0) {
+          field.removeParameters(options.keyBlacklist);
         }
       });
 
@@ -193,7 +193,7 @@ export class FieldController extends BaseController {
   }
 
   private extractFieldModel(fields: Field[]): Array<IStringMap<any>> {
-    return _.map(fields, (field: Field) => field.getFieldModel());
+    return _.map(fields, (field: Field) => field.getConfiguration());
   }
 
   extractionMethod(object: any[], diffOptions: IDiffOptions, oldVersion?: any[]): any[] {
@@ -205,7 +205,7 @@ export class FieldController extends BaseController {
     };
     if (oldVersion === undefined) {
       return _.map(object, (f: Field) => {
-        const fieldModel = f.getFieldModel();
+        const fieldModel = f.getConfiguration();
         return stripIdFromSourceParameter(fieldModel);
       });
     } else {
@@ -214,8 +214,8 @@ export class FieldController extends BaseController {
           return f.getName() === oldField.getName();
         });
 
-        const newFieldModel = newField.getFieldModel();
-        const oldFieldModel = oldField.getFieldModel();
+        const newFieldModel = newField.getConfiguration();
+        const oldFieldModel = oldField.getConfiguration();
 
         const updatedFieldModel: IStringMap<any> = _.mapObject(newFieldModel, (val, key) => {
           if (!_.isEqual(oldFieldModel[key], val) && (!diffOptions.keysToIgnore || diffOptions.keysToIgnore.indexOf(key) === -1)) {

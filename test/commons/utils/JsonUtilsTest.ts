@@ -61,6 +61,21 @@ export const JsonUtilsTest = () => {
           '2': 0
         });
       });
+
+      it('Should unflatten an object', () => {
+        const flattenedObj1 = { a: 1, 'b.c': 2, 'b.d.0': 3, 'b.d.1': 4 };
+        expect(JsonUtils.unflatten(flattenedObj1)).to.eql(obj1);
+      });
+
+      it('Should not modify the initial object', () => {
+        const flattened = JsonUtils.flatten(obj1);
+        flattened['a'] = 2;
+        expect(flattened).to.eql({ a: 2, 'b.c': 2, 'b.d.0': 3, 'b.d.1': 4 });
+        expect(obj1).to.eql({
+          a: 1,
+          b: { c: 2, d: [3, 4] }
+        });
+      });
     });
 
     describe('Clone Method', () => {
@@ -144,6 +159,15 @@ export const JsonUtilsTest = () => {
         expect(obj).to.eql({ one: 1, two: 2, three: 3 });
       });
 
+      it('Should remove nested keys', () => {
+        expect(JsonUtils.removeKeyValuePairsFromJson(mixedJson, ['value.identityType'], [])).to.eql({
+          id: 0,
+          value: {
+            permission: 0
+          }
+        });
+      });
+
       it('Should return an empty object if all the fields to include do not exsit', () => {
         expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, [], ['four', 'five'])).to.eql({});
       });
@@ -160,8 +184,13 @@ export const JsonUtilsTest = () => {
         expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, [], [])).to.eql({ one: 1, two: 2, three: 3 });
       });
 
-      it('Should override blacklist strategy', () => {
-        expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, ['one'], ['one', 'two'])).to.eql({ one: 1, two: 2 });
+      it('Should perform whitlist then blacklist strategy', () => {
+        expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, [], ['one', 'two'])).to.eql({ one: 1, two: 2 });
+        expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, ['one', 'two'], ['one'])).to.eql({});
+        expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, ['one', 'two'], [])).to.eql({ three: 3 });
+        expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, [], [])).to.eql({ one: 1, two: 2, three: 3 });
+        expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, ['one'], ['one', 'two'])).to.eql({ two: 2 });
+        expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, ['two', 'three'], ['one'])).to.eql({ one: 1 });
       });
     });
 
@@ -180,29 +209,39 @@ export const JsonUtilsTest = () => {
         expect(JsonUtils.removeKeyValuePairsFromJson(simpleObject, ['two'])).to.eql({ one: 1, three: 3 });
       });
 
-      it('Should remove specified fields from JSON object', () => {
+      it('Should remove specified fields from JSON object (complexe)', () => {
         const obj = {
           id: 0,
+          child: {
+            value: {
+              identityType: [1, 2, 3]
+            }
+          },
           value: {
             permission: 0,
             identityType: [1, 2, 3]
           }
         };
-        expect(JsonUtils.removeKeyValuePairsFromJson(obj, ['identityType'])).to.eql({
+        expect(JsonUtils.removeKeyValuePairsFromJson(obj, ['value.identityType'])).to.eql({
           id: 0,
+          child: {
+            value: {
+              identityType: [1, 2, 3]
+            }
+          },
           value: {
             permission: 0
           }
         });
-        expect(JsonUtils.removeKeyValuePairsFromJson(obj, ['id'])).to.eql({
-          value: {
-            permission: 0,
-            identityType: [1, 2, 3]
-          }
-        });
-        expect(JsonUtils.removeKeyValuePairsFromJson(obj, ['value'])).to.eql({
-          id: 0
-        });
+        // expect(JsonUtils.removeKeyValuePairsFromJson(obj, ['id'])).to.eql({
+        //   value: {
+        //     permission: 0,
+        //     identityType: [1, 2, 3]
+        //   }
+        // });
+        // expect(JsonUtils.removeKeyValuePairsFromJson(obj, ['value'])).to.eql({
+        //   id: 0
+        // });
       });
     });
 

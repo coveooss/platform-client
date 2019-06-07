@@ -1,3 +1,4 @@
+import * as jsDiff from 'diff';
 import * as _ from 'underscore';
 import { series } from 'async';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
@@ -17,6 +18,7 @@ import { ExtensionAPI } from '../commons/rest/ExtensionAPI';
 import { RequestResponse } from 'request';
 import { IGraduateOptions } from '../commands/GraduateCommand';
 import { Colors } from '../commons/colors';
+import { JsonUtils } from '../commons/utils/JsonUtils';
 
 export class SourceController extends BaseController {
   private extensionList: Array<Array<{}>> = [];
@@ -26,15 +28,6 @@ export class SourceController extends BaseController {
   }
 
   static CONTROLLER_NAME: string = 'sources';
-
-  // private shouldSkipExtension(diffOptions?: IDiffOptions): boolean {
-  //   return (
-  //     diffOptions !== undefined &&
-  //     diffOptions.keysToIgnore !== undefined &&
-  //     _.contains(diffOptions.keysToIgnore, 'postConversionExtensions') &&
-  //     _.contains(diffOptions.keysToIgnore, 'preConversionExtensions')
-  //   );
-  // }
 
   diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Source>> {
     // Do not load extensions if --skipExtension option is present
@@ -52,6 +45,10 @@ export class SourceController extends BaseController {
         // Do not diff extensions that have been blacklisted
         // Only applies to the organization of origin
         this.removeExtensionFromOriginSource(source1);
+
+        _.each([...source1.values(), ...source2.values()], source => {
+          source.sortMappingsAndStripIds();
+        });
 
         const diffResultArray = DiffUtils.getDiffResult(source1, source2, diffOptions);
         if (diffResultArray.containsItems()) {
@@ -91,7 +88,7 @@ export class SourceController extends BaseController {
           if (extensionFound) {
             sourceExt.extensionId = (extensionFound as IStringMap<string>)['name'];
           } else {
-            const message = `The extension ${Colors.extension(sourceExt.extensionId)} does not exsist`;
+            const message = `The extension ${Colors.extension(sourceExt.extensionId)} does not exist`;
             Logger.error(`${message}`);
             throw new Error(message);
           }
@@ -118,8 +115,8 @@ export class SourceController extends BaseController {
         if (extensionFound) {
           sourceExt.extensionId = (extensionFound as any)['id'];
         } else {
-          const message = `The extension ${Colors.extension(sourceExt.extensionId)} does not exsist`;
-          Logger.error(`${message}. Make sure to graduate extensions first`);
+          const message = `The extension ${Colors.extension(sourceExt.extensionId)} does not exist`;
+          Logger.error(`${message}. Make sure to graduate extensions first.`);
           throw new Error(message);
         }
       });
@@ -157,10 +154,8 @@ export class SourceController extends BaseController {
         // 1. Replacing extensions with destination id
         this.replaceExtensionNameWithId(source, this.extensionList[1]);
 
-        // 2. Strip source from keys that should not be graduated
-        if (options.keysToStrip && options.keysToStrip.length > 0) {
-          source.removeParameters(options.keysToStrip);
-        }
+        // 3. Strip source from keys that should not be graduated using whitelist and blacklist strategy
+        source.removeParameters(options.keyBlacklist || [], options.keyWhitelist || []);
       });
 
       return Promise.all(
@@ -266,33 +261,46 @@ export class SourceController extends BaseController {
     });
   }
 
-  extractionMethod(object: any[], diffOptions: IDiffOptions, oldVersion?: any[]): any[] {
+  /**
+   * Returns a string or 2 dimensions table: jsDiff per sources.
+   * If the source should be created or deleted, then the function just return the source name. Returning the entire source configueration is not necessary here.
+   * If the source has been updated, the function returns a 2 dimension table using the jsDiff package.
+   */
+  extractionMethod(
+    object: Source[],
+    diffOptions: IDiffOptions,
+    oldVersion?: Source[]
+  ): string[] | Array<{ [sourceName: string]: jsDiff.Change[] }> {
     if (oldVersion === undefined) {
-      return _.map(object, (e: Source) => e.getConfiguration());
+      // returning sources to create and to delete
+      return _.map(object, (e: Source) => e.getName());
     } else {
-      return _.map(oldVersion, (oldSource: Source) => {
-        const newSource: Source = _.find(object, (e: Source) => {
+      const sourceDiff: Array<{ [sourceName: string]: jsDiff.Change[] }> = [];
+      _.map(oldVersion, (oldSource: Source) => {
+        const newSource: Source | undefined = _.find(object, (e: Source) => {
           return e.getName() === oldSource.getName();
         });
+        Assert.isNotUndefined(newSource, `Something went wrong in the source diff. Unable to find ${oldSource.getName()}`);
+        // Make sure to ignore keys that were not part of the diff
+        const cleanedNewVersion: any = JsonUtils.removeKeyValuePairsFromJson(
+          (newSource as Source).getConfiguration(),
+          diffOptions.keysToIgnore,
+          diffOptions.includeOnly
+        );
+        const cleanedOldVersion: any = JsonUtils.removeKeyValuePairsFromJson(
+          oldSource.getConfiguration(),
+          diffOptions.keysToIgnore,
+          diffOptions.includeOnly
+        );
 
-        const newSourceModel = newSource.getConfiguration();
-        const oldSourceModel = oldSource.getConfiguration();
-
-        const updatedSourceModel: IStringMap<any> = _.mapObject(newSourceModel, (val, key) => {
-          // TODO: this only parses the first level keys. It would be nice to drill down the nested object
-          if (!_.isEqual(oldSourceModel[key], val) && (!diffOptions.keysToIgnore || diffOptions.keysToIgnore.indexOf(key) === -1)) {
-            return { newValue: val, oldValue: oldSourceModel[key] };
-          } else {
-            return val;
-          }
-        });
-        return updatedSourceModel;
+        sourceDiff.push({ [(newSource as Source).getName()]: jsDiff.diffJson(cleanedOldVersion, cleanedNewVersion) });
       });
+      return sourceDiff;
     }
   }
 
   /**
-   * Returns a 2 dimension table: extensions per sources
+   * Returns a 2 dimensions table: extensions per sources
    *
    * @returns {Promise<Array<Array<{}>>>}
    */

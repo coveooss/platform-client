@@ -1,7 +1,8 @@
+import * as jsDiff from 'diff';
 // tslint:disable:no-magic-numbers
 import { expect } from 'chai';
+import * as _ from 'underscore';
 import * as nock from 'nock';
-import { IGraduateOptions } from '../../src/commands/GraduateCommand';
 import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
 import { IGenericError } from '../../src/commons/errors';
 import { UrlService } from '../../src/commons/rest/UrlService';
@@ -10,791 +11,38 @@ import { Utils } from '../../src/commons/utils/Utils';
 import { Source } from '../../src/coveoObjects/Source';
 import { Organization } from '../../src/coveoObjects/Organization';
 import { SourceController } from './../../src/controllers/SourceController';
+import { IDiffOptions } from '../../src/commands/DiffCommand';
 import { Dictionary } from '../../src/commons/collections/Dictionary';
+import { JsonUtils } from '../../src/commons/utils/JsonUtils';
+import { IGraduateOptions } from '../../src/commands/GraduateCommand';
 
-const rawExtension1 = {
-  content: 'random content',
-  createdDate: 1511812769000,
-  description: 'This extension is used to parse urls to extract metadata like categories.',
-  enabled: true,
-  id: 'ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu',
-  lastModified: 1511812770000,
-  name: 'URL Parsing to extract metadata',
-  requiredDataStreams: [],
-  versionId: 'hwnahJ9mql3cBB4PH6qG_9yXEwwFEhgX'
-};
+const allDevSources: Array<{}> = require('./../mocks/setup1/sources/dev/allSources.json');
+// const DEVrrbbidfxa2ri4usxhzzmhq2hge: {} = require('./../mocks/setup1/sources/dev/web.json');
+const DEVtcytrppteddiqkmboszu4skdoe: {} = require('./../mocks/setup1/sources/dev/sitemap.json');
+const DEVwyowilfyrpf2qogxm45uhgskri: {} = require('./../mocks/setup1/sources/dev/salesforce.json');
+const DEVqtngyd2gvxjxrrkftndaepcngu: {} = require('./../mocks/setup1/sources/dev/youtube.json');
 
-const rawExtension2 = {
-  content: '# Title: Reject a document.\n# Description: This extension simply rejects a document.\n',
-  createdDate: 1512812764000,
-  description: 'This extension simply rejects a document. It gets triggered on certain file types in the source configuration',
-  enabled: true,
-  id: 'ccli1wq3fmkys-tknepx33tdhmqibch2uzxhcc44',
-  lastModified: 1511812764000,
-  name: 'Reject a document.',
-  requiredDataStreams: [],
-  versionId: 'a6LyFxn91XW5IcgNMTKOabXcJWp05e7i'
-};
+const allProdSources: Array<{}> = require('./../mocks/setup1/sources/prod/allSources.json');
+const PRODrrbbidfxa2ri4usxhzzmhq2hge: {} = require('./../mocks/setup1/sources/prod/web.json');
+const PRODtcytrppteddiqkmboszu4skdoe: {} = require('./../mocks/setup1/sources/prod/sitemap.json');
+const PRODwyowilfyrpf2qogxm45uhgskri: {} = require('./../mocks/setup1/sources/prod/salesforce.json');
 
-const rawExtension3 = {
-  content: 'print "test"',
-  createdDate: 1511322764000,
-  description: 'An extension that prints "test"',
-  enabled: false,
-  id: 'ccli1wq3fmkys-tdosaijdfsafds9fidsf0d9sfd3',
-  lastModified: 1511812764000,
-  name: 'Simply prints something',
-  requiredDataStreams: [],
-  versionId: 'a6LyFxJKLDKDK0dsDDDOabXcJWp05e1k'
-};
+// const allDevExtensions: {} = require('./../mocks/setup1/extensions/dev/allExtensions.json');
+// const q32rkqp2fzuz2b3rbw5d53kc2q: {} = require('./../mocks/setup1/extensions/dev/q32rkqp2fzuz2b3rbw5d53kc2q.json'); // used by no sources
+// const qww6e7om4rommwdba5nk3ykc4e: {} = require('./../mocks/setup1/extensions/dev/qww6e7om4rommwdba5nk3ykc4e.json'); // used by no sources
+// DEV Exensions
+const DEVsfm7yvhqtiftmfuasrqtpfkio4: {} = require('./../mocks/setup1/extensions/dev/sfm7yvhqtiftmfuasrqtpfkio4.json');
+const DEVsr3jny7s5ekuwuyaak45awcaku: {} = require('./../mocks/setup1/extensions/dev/sr3jny7s5ekuwuyaak45awcaku.json');
+const DEVukjs6nvyjvqdn4vozf3ugjkdqe: {} = require('./../mocks/setup1/extensions/dev/ukjs6nvyjvqdn4vozf3ugjkdqe.json');
+const DEVxnnutbu2n6kiwm243iossdsjha: {} = require('./../mocks/setup1/extensions/dev/xnnutbu2n6kiwm243iossdsjha.json');
+const DEVxuklmyqaujg3gj2ivcynor2adq: {} = require('./../mocks/setup1/extensions/dev/xuklmyqaujg3gj2ivcynor2adq.json');
 
-const rawExtension4 = {
-  content: 'Production extension',
-  createdDate: 1511322764000,
-  description: 'An extension for the production',
-  enabled: false,
-  id: 'ccliprodozvzoaua-vvdaravex2tqdt5npreoz2clgu',
-  lastModified: 1511812764000,
-  name: 'Simply prints something',
-  requiredDataStreams: [],
-  versionId: 'a6LyFxJKLDKDK0dsDDDOabXcJWp05e1k'
-};
-
-const rawDummyExtension1 = {
-  content: 'dummy',
-  description: 'An extension that prints "test"',
-  id: 'dummy-xx1',
-  name: 'dummyExtension 1',
-  requiredDataStreams: []
-};
-
-const rawDummyExtension2 = {
-  content: 'dummy',
-  description: 'An extension that prints "test"',
-  id: 'dummy-xx2',
-  name: 'dummyExtension 2',
-  requiredDataStreams: []
-};
-
-const rawDummyExtension3 = {
-  content: 'dummy',
-  description: 'An extension that prints "test"',
-  id: 'dummy-xx3',
-  name: 'dummyExtension 3',
-  requiredDataStreams: []
-};
-
-const source1: Source = new Source({
-  id: 'rdsajkldjsakjdklsajh-sadsa9f',
-  name: 'Sitemap Source',
-  sourceType: 'SITEMAP',
-  sourceSecurityOption: 'Specified',
-  postConversionExtensions: [
-    {
-      actionOnError: 'SKIP_EXTENSION',
-      condition: '',
-      extensionId: 'ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu',
-      parameters: {},
-      versionId: ''
-    },
-    {
-      actionOnError: 'SKIP_EXTENSION',
-      condition: '',
-      extensionId: 'ccli1wq3fmkys-tknepx33tdhmqibch2uzxhcc44',
-      parameters: {},
-      versionId: ''
-    }
-  ],
-  preConversionExtensions: [
-    {
-      actionOnError: 'SKIP_EXTENSION',
-      condition: '',
-      extensionId: 'ccli1wq3fmkys-tdosaijdfsafds9fidsf0d9sfd3',
-      parameters: {},
-      versionId: ''
-    }
-  ],
-  mappings: []
-});
-
-const source2: Source = new Source({
-  id: 'rds9pdosjakkgop4kljh-lkasjdg',
-  name: 'Web Source',
-  sourceType: 'WEB',
-  sourceSecurityOption: 'Specified',
-  postConversionExtensions: [
-    {
-      actionOnError: 'SKIP_EXTENSION',
-      condition: '',
-      extensionId: 'ccli1wq3fmkys-tdosaijdfsafds9fidsf0d9sfd3',
-      parameters: {},
-      versionId: ''
-    }
-  ],
-  preConversionExtensions: [],
-  mappings: []
-});
-
-const allProdSources = [
-  {
-    sourceType: 'SITEMAP',
-    id: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4',
-    name: 'sitemaptest',
-    owner: 'prodUser@coveo.com-google',
-    sourceVisibility: 'PRIVATE',
-    information: {
-      sourceStatus: {
-        type: 'DISABLED',
-        allowedOperations: ['DELETE', 'REBUILD']
-      },
-      rebuildRequired: true,
-      numberOfDocuments: 0,
-      documentsTotalSize: 0
-    },
-    pushEnabled: false,
-    onPremisesEnabled: false,
-    preConversionExtensions: [],
-    postConversionExtensions: [
-      {
-        actionOnError: 'SKIP_EXTENSION',
-        condition: '',
-        extensionId: 'ccliprodozvzoaua-vvdaravex2tqdt5npreoz2clgu',
-        parameters: {},
-        versionId: ''
-      }
-    ],
-    permissions: {
-      permissionLevels: [
-        {
-          name: 'Source Specified Permissions',
-          permissionSets: [
-            {
-              name: 'Private',
-              permissions: [
-                {
-                  allowed: true,
-                  identityType: 'USER',
-                  identity: 'prodUser@coveo.com',
-                  securityProvider: 'Email Security Provider'
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    urlFilters: [
-      {
-        filter: '*',
-        includeFilter: true,
-        filterType: 'WILDCARD'
-      }
-    ],
-    resourceId: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4'
-  }
-];
-
-const xze6hjeidrpcborfhqk4vxkgy4 = {
-  sourceType: 'SITEMAP',
-  id: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4',
-  name: 'sitemaptest',
-  owner: 'prodUser@coveo.com-google',
-  sourceVisibility: 'PRIVATE',
-  mappings: [
-    {
-      id: 'q3uv7s6lw6iqirufv4e5vhkloy',
-      kind: 'COMMON',
-      fieldName: 'foldingchild',
-      extractionMethod: 'METADATA',
-      content: '%[coveo_foldingchild]'
-    },
-    {
-      id: 'q4qripnnvztvqempxtkvdb2cqa',
-      kind: 'COMMON',
-      fieldName: 'printableuri',
-      extractionMethod: 'METADATA',
-      content: '%[printableuri]'
-    }
-  ],
-  information: {
-    sourceStatus: {
-      type: 'DISABLED',
-      allowedOperations: ['DELETE', 'REBUILD']
-    },
-    rebuildRequired: true,
-    numberOfDocuments: 0,
-    documentsTotalSize: 0
-  },
-  pushEnabled: false,
-  onPremisesEnabled: false,
-  preConversionExtensions: [],
-  postConversionExtensions: [
-    {
-      actionOnError: 'SKIP_EXTENSION',
-      condition: '',
-      extensionId: 'ccliprodozvzoaua-vvdaravex2tqdt5npreoz2clgu',
-      parameters: {},
-      versionId: ''
-    }
-  ],
-  permissions: {
-    permissionLevels: [
-      {
-        name: 'Source Specified Permissions',
-        permissionSets: [
-          {
-            name: 'Private',
-            permissions: [
-              {
-                allowed: true,
-                identityType: 'USER',
-                identity: 'prodUser@coveo.com',
-                securityProvider: 'Email Security Provider'
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  urlFilters: [
-    {
-      filter: '*',
-      includeFilter: true,
-      filterType: 'WILDCARD'
-    }
-  ],
-  username: 'megatron',
-  urls: ['http://test.com'],
-  userAgent: 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko) (compatible; Coveobot/2.0;+http://www.coveo.com/bot.html)',
-  enableJavaScript: true,
-  javaScriptLoadingDelayInMilliseconds: 0,
-  requestsTimeoutInSeconds: 100,
-  scrapingConfiguration:
-    '[\n  {\n    "for": {\n    "urls": [".*"]\n    },\n    "exclude": [\n      {\n        "type": "CSS",\n        "path": "body header"\n      },\n      {\n        "type": "CSS",\n        "path": "#herobox"\n      },\n      {\n        "type": "CSS",\n        "path": "#mainbar .everyonelovesstackoverflow"\n      },\n      {\n        "type": "CSS",\n        "path": "#sidebar"\n      },\n      {\n        "type": "CSS",\n        "path": "#footer"\n      },\n      {\n        "type": "CSS",\n        "path": "#answers"\n      }\n    ],\n    "metadata": {\n      "askeddate":{\n        "type": "CSS",\n        "path": "div#sidebar table#qinfo p::attr(title)"\n      },\n      "upvotecount": {\n        "type": "XPATH",\n        "path": "//div[@id=\'question\'] //span[@itemprop=\'upvoteCount\']/text()"\n      },\n      "author":{\n        "type": "CSS",\n        "path": "td.post-signature.owner div.user-details a::text"\n      }\n    },\n    "subItems": {\n      "answer": {\n        "type": "css",\n        "path": "#answers div.answer"\n      }\n    }\n  }, {\n    "for": {\n      "types": ["answer"]\n    },\n    "metadata": {\n      "upvotecount": {\n        "type": "XPATH",\n        "path": "//span[@itemprop=\'upvoteCount\']/text()"\n      },\n      "author": {\n        "type": "CSS",\n        "path": "td.post-signature:last-of-type div.user-details a::text"\n      }\n    }\n  }\n]',
-  resourceId: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4'
-};
-
-const allProdSources2 = [
-  {
-    sourceType: 'SITEMAP',
-    id: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4',
-    name: 'sitemaptest',
-    owner: 'prodUser@coveo.com-google',
-    sourceVisibility: 'PRIVATE',
-    information: {
-      sourceStatus: {
-        type: 'DISABLED',
-        allowedOperations: ['DELETE', 'REBUILD']
-      },
-      rebuildRequired: true,
-      numberOfDocuments: 0,
-      documentsTotalSize: 0
-    },
-    pushEnabled: false,
-    onPremisesEnabled: false,
-    preConversionExtensions: [],
-    postConversionExtensions: [],
-    permissions: {
-      permissionLevels: [
-        {
-          name: 'Source Specified Permissions',
-          permissionSets: [
-            {
-              name: 'Private',
-              permissions: [
-                {
-                  allowed: true,
-                  identityType: 'USER',
-                  identity: 'prodUser@coveo.com',
-                  securityProvider: 'Email Security Provider'
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    urlFilters: [
-      {
-        filter: '*',
-        includeFilter: true,
-        filterType: 'WILDCARD'
-      }
-    ],
-    resourceId: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4'
-  }
-];
+// Prod Exensions
+const PRODsr3jny7s5ekuwuyaak45awcaku: {} = require('./../mocks/setup1/extensions/prod/sr3jny7s5ekuwuyaak45awcaku.json');
+const PRODxnnutbu2n6kiwm243iossdsjha: {} = require('./../mocks/setup1/extensions/prod/xnnutbu2n6kiwm243iossdsjha.json');
 
 // This is a copy of a dev source without any updates expect for some keys to ignore
-const xze6hjeidrpcborfhqk4vxkgy4Copy = {
-  sourceType: 'SITEMAP',
-  id: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4',
-  name: 'sitemaptest',
-  owner: 'prodUser@coveo.com-google',
-  sourceVisibility: 'PRIVATE',
-  mappings: [
-    {
-      id: 'xknmlmdlpb6e5vpukm52nzkoii',
-      kind: 'COMMON',
-      fieldName: 'foldingchild',
-      extractionMethod: 'METADATA',
-      content: '%[coveo_foldingchild]'
-    },
-    {
-      id: 'xzhwsjxkvcksfngdospjn7keie',
-      kind: 'COMMON',
-      fieldName: 'printableuri',
-      extractionMethod: 'METADATA',
-      content: '%[printableuri]/test.html'
-    }
-  ],
-  information: {
-    sourceStatus: {
-      type: 'DISABLED',
-      allowedOperations: ['DELETE', 'REBUILD']
-    },
-    rebuildRequired: true,
-    numberOfDocuments: 0,
-    documentsTotalSize: 0
-  },
-  pushEnabled: false,
-  onPremisesEnabled: false,
-  preConversionExtensions: [],
-  postConversionExtensions: [],
-  permissions: {
-    permissionLevels: [
-      {
-        name: 'Source Specified Permissions',
-        permissionSets: [
-          {
-            name: 'Private',
-            permissions: [
-              {
-                allowed: true,
-                identityType: 'USER',
-                identity: 'userDev@coveo.com',
-                securityProvider: 'Email Security Provider'
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  urlFilters: [
-    {
-      filter: '*',
-      includeFilter: true,
-      filterType: 'WILDCARD'
-    }
-  ],
-  username: 'megatron',
-  urls: ['http://test.com'],
-  userAgent: 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko) (compatible; Coveobot/2.0;+http://www.coveo.com/bot.html)',
-  enableJavaScript: true,
-  javaScriptLoadingDelayInMilliseconds: 0,
-  requestsTimeoutInSeconds: 100,
-  resourceId: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4'
-};
-
-const allDevSources2 = [
-  {
-    sourceType: 'SITEMAP',
-    id: 'cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74',
-    name: 'sitemaptest',
-    owner: 'userDev@coveo.com-google',
-    sourceVisibility: 'PRIVATE',
-    information: {
-      sourceStatus: {
-        type: 'DISABLED',
-        allowedOperations: ['DELETE', 'REBUILD']
-      },
-      nextOperation: {
-        operationType: 'FULL_REFRESH',
-        timestamp: 1543633200000
-      },
-      rebuildRequired: true,
-      numberOfDocuments: 0,
-      documentsTotalSize: 0
-    },
-    pushEnabled: false,
-    onPremisesEnabled: false,
-    preConversionExtensions: [],
-    postConversionExtensions: [],
-    permissions: {
-      permissionLevels: [
-        {
-          name: 'Source Specified Permissions',
-          permissionSets: [
-            {
-              name: 'Private',
-              permissions: [
-                {
-                  allowed: true,
-                  identityType: 'USER',
-                  identity: 'userDev@coveo.com',
-                  securityProvider: 'Email Security Provider'
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    urlFilters: [
-      {
-        filter: '*',
-        includeFilter: true,
-        filterType: 'WILDCARD'
-      }
-    ],
-    resourceId: 'cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74'
-  }
-];
-
-const ur4el4nwejfvpghipsvvs32m74Copy = {
-  sourceType: 'SITEMAP',
-  id: 'cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74',
-  name: 'sitemaptest',
-  owner: 'userDev@coveo.com-google',
-  sourceVisibility: 'PRIVATE',
-  mappings: [
-    {
-      id: 'xknmlmdlpb6e5vpukm52nzkoii',
-      kind: 'COMMON',
-      fieldName: 'foldingchild',
-      extractionMethod: 'METADATA',
-      content: '%[coveo_foldingchild]'
-    },
-    {
-      id: 'xzhwsjxkvcksfngdospjn7keie',
-      kind: 'COMMON',
-      fieldName: 'printableuri',
-      extractionMethod: 'METADATA',
-      content: '%[printableuri]/test.html'
-    }
-  ],
-  information: {
-    sourceStatus: {
-      type: 'DISABLED',
-      allowedOperations: ['DELETE', 'REBUILD']
-    },
-    nextOperation: {
-      operationType: 'FULL_REFRESH',
-      timestamp: 1543633200000
-    },
-    rebuildRequired: true,
-    numberOfDocuments: 0,
-    documentsTotalSize: 0
-  },
-  pushEnabled: false,
-  onPremisesEnabled: false,
-  preConversionExtensions: [],
-  postConversionExtensions: [],
-  permissions: {
-    permissionLevels: [
-      {
-        name: 'Source Specified Permissions',
-        permissionSets: [
-          {
-            name: 'Private',
-            permissions: [
-              {
-                allowed: true,
-                identityType: 'USER',
-                identity: 'userDev@coveo.com',
-                securityProvider: 'Email Security Provider'
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  urlFilters: [
-    {
-      filter: '*',
-      includeFilter: true,
-      filterType: 'WILDCARD'
-    }
-  ],
-  username: 'megatron',
-  urls: ['http://test.com'],
-  userAgent: 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko) (compatible; Coveobot/2.0;+http://www.coveo.com/bot.html)',
-  enableJavaScript: true,
-  javaScriptLoadingDelayInMilliseconds: 0,
-  requestsTimeoutInSeconds: 100,
-  resourceId: 'cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74'
-};
-
-const allDevSources = [
-  {
-    sourceType: 'SITEMAP',
-    id: 'cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74',
-    name: 'sitemaptest',
-    owner: 'userDev@coveo.com-google',
-    sourceVisibility: 'PRIVATE',
-    information: {
-      sourceStatus: {
-        type: 'DISABLED',
-        allowedOperations: ['DELETE', 'REBUILD']
-      },
-      nextOperation: {
-        operationType: 'FULL_REFRESH',
-        timestamp: 1543633200000
-      },
-      rebuildRequired: true,
-      numberOfDocuments: 0,
-      documentsTotalSize: 0
-    },
-    pushEnabled: false,
-    onPremisesEnabled: false,
-    preConversionExtensions: [],
-    postConversionExtensions: [
-      {
-        actionOnError: 'SKIP_EXTENSION',
-        condition: '',
-        extensionId: 'ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu',
-        parameters: {},
-        versionId: ''
-      },
-      {
-        actionOnError: 'SKIP_EXTENSION',
-        condition: '',
-        extensionId: 'ccli1wq3fmkys-tknepx33tdhmqibch2uzxhcc44',
-        parameters: {},
-        versionId: ''
-      }
-    ],
-    permissions: {
-      permissionLevels: [
-        {
-          name: 'Source Specified Permissions',
-          permissionSets: [
-            {
-              name: 'Private',
-              permissions: [
-                {
-                  allowed: true,
-                  identityType: 'USER',
-                  identity: 'userDev@coveo.com',
-                  securityProvider: 'Email Security Provider'
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    urlFilters: [
-      {
-        filter: '*',
-        includeFilter: true,
-        filterType: 'WILDCARD'
-      }
-    ],
-    resourceId: 'cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74'
-  },
-  {
-    sourceType: 'YOUTUBE',
-    id: 'cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq',
-    name: 'youtube test',
-    owner: 'userDev@coveo.com-google',
-    sourceVisibility: 'SHARED',
-    information: {
-      sourceStatus: {
-        type: 'DISABLED',
-        allowedOperations: ['DELETE', 'REBUILD']
-      },
-      nextOperation: {
-        operationType: 'INCREMENTAL_REFRESH',
-        timestamp: 1543623960000
-      },
-      rebuildRequired: true,
-      numberOfDocuments: 0,
-      documentsTotalSize: 0
-    },
-    pushEnabled: false,
-    onPremisesEnabled: false,
-    preConversionExtensions: [],
-    postConversionExtensions: [
-      {
-        actionOnError: 'SKIP_EXTENSION',
-        condition: '',
-        extensionId: 'ccli1wq3fmkys-tknepx33tdhmqibch2uzxhcc44',
-        parameters: {},
-        versionId: ''
-      }
-    ],
-    urlFilters: [
-      {
-        filter: '*',
-        includeFilter: true,
-        filterType: 'WILDCARD'
-      }
-    ],
-    resourceId: 'cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq'
-  }
-];
-
-const ur4el4nwejfvpghipsvvs32m74 = {
-  sourceType: 'SITEMAP',
-  id: 'cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74',
-  name: 'sitemaptest',
-  owner: 'userDev@coveo.com-google',
-  sourceVisibility: 'PRIVATE',
-  mappings: [
-    {
-      id: 'xknmlmdlpb6e5vpukm52nzkoii',
-      kind: 'COMMON',
-      fieldName: 'foldingchild',
-      extractionMethod: 'METADATA',
-      content: '%[coveo_foldingchild]'
-    },
-    {
-      id: 'xzhwsjxkvcksfngdospjn7keie',
-      kind: 'COMMON',
-      fieldName: 'printableuri',
-      extractionMethod: 'METADATA',
-      content: '%[printableuri]/test.html'
-    }
-  ],
-  information: {
-    sourceStatus: {
-      type: 'DISABLED',
-      allowedOperations: ['DELETE', 'REBUILD']
-    },
-    nextOperation: {
-      operationType: 'FULL_REFRESH',
-      timestamp: 1543633200000
-    },
-    rebuildRequired: true,
-    numberOfDocuments: 0,
-    documentsTotalSize: 0
-  },
-  pushEnabled: false,
-  onPremisesEnabled: false,
-  preConversionExtensions: [],
-  postConversionExtensions: [
-    {
-      actionOnError: 'SKIP_EXTENSION',
-      condition: '',
-      extensionId: 'ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu',
-      parameters: {},
-      versionId: ''
-    },
-    {
-      actionOnError: 'SKIP_EXTENSION',
-      condition: '',
-      extensionId: 'ccli1wq3fmkys-tknepx33tdhmqibch2uzxhcc44',
-      parameters: {},
-      versionId: ''
-    }
-  ],
-  permissions: {
-    permissionLevels: [
-      {
-        name: 'Source Specified Permissions',
-        permissionSets: [
-          {
-            name: 'Private',
-            permissions: [
-              {
-                allowed: true,
-                identityType: 'USER',
-                identity: 'userDev@coveo.com',
-                securityProvider: 'Email Security Provider'
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  urlFilters: [
-    {
-      filter: '*',
-      includeFilter: true,
-      filterType: 'WILDCARD'
-    }
-  ],
-  username: 'megatron',
-  urls: ['http://test.com'],
-  userAgent: 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko) (compatible; Coveobot/2.0;+http://www.coveo.com/bot.html)',
-  enableJavaScript: true,
-  javaScriptLoadingDelayInMilliseconds: 0,
-  requestsTimeoutInSeconds: 100,
-  scrapingConfiguration:
-    '[\n  {\n    "for": {\n    "urls": [".*"]\n    },\n    "exclude": [\n      {\n        "type": "CSS",\n        "path": "body header"\n      },\n      {\n        "type": "CSS",\n        "path": "#herobox"\n      },\n      {\n        "type": "CSS",\n        "path": "#mainbar .everyonelovesstackoverflow"\n      },\n      {\n        "type": "CSS",\n        "path": "#sidebar"\n      },\n      {\n        "type": "CSS",\n        "path": "#footer"\n      },\n      {\n        "type": "CSS",\n        "path": "#answers"\n      }\n    ],\n    "metadata": {\n      "askeddate":{\n        "type": "CSS",\n        "path": "div#sidebar table#qinfo p::attr(title)"\n      },\n      "upvotecount": {\n        "type": "XPATH",\n        "path": "//div[@id=\'question\'] //span[@itemprop=\'upvoteCount\']/text()"\n      },\n      "author":{\n        "type": "CSS",\n        "path": "td.post-signature.owner div.user-details a::text"\n      }\n    },\n    "subItems": {\n      "answer": {\n        "type": "css",\n        "path": "#answers div.answer"\n      }\n    }\n  }, {\n    "for": {\n      "types": ["answer"]\n    },\n    "metadata": {\n      "upvotecount": {\n        "type": "XPATH",\n        "path": "//span[@itemprop=\'upvoteCount\']/text()"\n      },\n      "author": {\n        "type": "CSS",\n        "path": "td.post-signature:last-of-type div.user-details a::text"\n      }\n    }\n  }\n]',
-  resourceId: 'cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74'
-};
-
-const uwfuop2jp2hdvo5ao7abjlsgyq = {
-  sourceType: 'YOUTUBE',
-  id: 'cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq',
-  name: 'youtube test',
-  owner: 'userDev@coveo.com-google',
-  sourceVisibility: 'SHARED',
-  mappings: [
-    {
-      id: 'xcdsbzj2spglvzwbyeoiqecl2u',
-      kind: 'COMMON',
-      fieldName: 'fax',
-      extractionMethod: 'METADATA',
-      content: '%[fax]'
-    },
-    {
-      id: 'xmx3f32kxl6re526vypml22ku4',
-      kind: 'COMMON',
-      fieldName: 'connectortype',
-      extractionMethod: 'METADATA',
-      content: '%[connectortype]'
-    },
-    {
-      id: 'xobrohc7eog6oxty4hgzfskgle',
-      kind: 'COMMON',
-      fieldName: 'homephone',
-      extractionMethod: 'METADATA',
-      content: '%[homephone]'
-    }
-  ],
-  information: {
-    sourceStatus: {
-      type: 'DISABLED',
-      allowedOperations: ['DELETE', 'REBUILD']
-    },
-    nextOperation: {
-      operationType: 'INCREMENTAL_REFRESH',
-      timestamp: 1543623960000
-    },
-    rebuildRequired: true,
-    numberOfDocuments: 0,
-    documentsTotalSize: 0
-  },
-  pushEnabled: false,
-  onPremisesEnabled: false,
-  preConversionExtensions: [],
-  postConversionExtensions: [
-    {
-      actionOnError: 'SKIP_EXTENSION',
-      condition: '',
-      extensionId: 'ccli1wq3fmkys-tknepx33tdhmqibch2uzxhcc44',
-      parameters: {},
-      versionId: ''
-    }
-  ],
-  urlFilters: [
-    {
-      filter: '*',
-      includeFilter: true,
-      filterType: 'WILDCARD'
-    }
-  ],
-  urls: ['https://www.youtube.com/dummy'],
-  indexPlaylists: false,
-  resourceId: 'cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq'
-};
+// xze6hjeidrpcborfhqk4vxkgy4Copy
 
 export const SourceControllerTest = () => {
   describe('Source Controller', () => {
@@ -821,37 +69,48 @@ export const SourceControllerTest = () => {
       nock.cleanAll();
     });
 
-    describe('GetCleanVersion Method', () => {
-      // TODO
-    });
-
     describe('Extension ID and Name replacements', () => {
       it('Should replace extension ids with their according name', () => {
+        const source1 = new Source(DEVtcytrppteddiqkmboszu4skdoe);
+        const source2 = new Source(DEVwyowilfyrpf2qogxm45uhgskri);
+
         const sourceController = new SourceController(org1, org2);
         const sourceDict: Dictionary<Source> = new Dictionary({
           'Sitemap Source': source1.clone(), // Make a copy of the source
-          'Web Source': source2.clone() // Make a copy of the source
+          Salesforce: source2.clone() // Make a copy of the source
         });
-        const extensionList = [rawExtension1, rawExtension2, rawExtension3, rawDummyExtension1, rawDummyExtension2, rawDummyExtension3];
+        const extensionList = [
+          DEVukjs6nvyjvqdn4vozf3ugjkdqe,
+          DEVsfm7yvhqtiftmfuasrqtpfkio4,
+          DEVxnnutbu2n6kiwm243iossdsjha,
+          DEVsr3jny7s5ekuwuyaak45awcaku
+        ];
 
         sourceController.replaceExtensionIdWithName(sourceDict, extensionList);
         const _source1 = sourceDict.getItem('Sitemap Source');
-        expect(_source1.getPostConversionExtensions()[0]['extensionId']).to.eq('URL Parsing to extract metadata');
-        expect(_source1.getPostConversionExtensions()[1]['extensionId']).to.eq('Reject a document.');
-        expect(_source1.getPreConversionExtensions()[0]['extensionId']).to.eq('Simply prints something');
+        expect(_source1.getPostConversionExtensions()[0]['extensionId']).to.eq('SharedVideosNormalization');
+        expect(_source1.getPostConversionExtensions()[1]['extensionId']).to.eq('FilterVideos');
 
-        const _source2 = sourceDict.getItem('Web Source');
-        expect(_source2.getPostConversionExtensions()[0]['extensionId']).to.eq('Simply prints something');
+        const _source2 = sourceDict.getItem('Salesforce');
+        expect(_source2.getPostConversionExtensions()[0]['extensionId']).to.eq('dummy extension');
+        expect(_source2.getPostConversionExtensions()[1]['extensionId']).to.eq('FilterArticles');
       });
 
       it('Should remove extensions that have been blacklisted form the source configuration', () => {
-        const org3 = new Organization('dev', 'xxx', { extensions: ['URL Parsing to extract metadata'] });
+        const org3 = new Organization('dev', 'xxx', { extensions: ['SharedVideosNormalization'] });
+        const source1 = new Source(DEVtcytrppteddiqkmboszu4skdoe);
+        const source2 = new Source(DEVwyowilfyrpf2qogxm45uhgskri);
         const sourceController = new SourceController(org3, org2);
-        const extensionList = [rawExtension1, rawExtension2, rawExtension3, rawDummyExtension1, rawDummyExtension2, rawDummyExtension3];
         const sourceDict: Dictionary<Source> = new Dictionary({
-          'Sitemap Source': source1.clone(),
-          'Web Source': source2.clone()
+          'Sitemap Source': source1.clone(), // Make a copy of the source
+          Salesforce: source2.clone() // Make a copy of the source
         });
+        const extensionList = [
+          DEVukjs6nvyjvqdn4vozf3ugjkdqe,
+          DEVsfm7yvhqtiftmfuasrqtpfkio4,
+          DEVxnnutbu2n6kiwm243iossdsjha,
+          DEVsr3jny7s5ekuwuyaak45awcaku
+        ];
 
         expect(sourceDict.getItem('Sitemap Source').getPostConversionExtensions().length).to.eql(2);
         // First, replace extension IDs with their respective name
@@ -862,129 +121,75 @@ export const SourceControllerTest = () => {
       });
 
       it('Should remove any obejct from the source configuration', () => {
-        const sampleSource = new Source({
-          sourceType: 'SITEMAP',
-          id: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4',
-          name: 'sitemaptest',
-          owner: 'prodUser@coveo.com-google',
-          sourceVisibility: 'PRIVATE',
-          mappings: [],
-          information: {
-            sourceStatus: {
-              type: 'DISABLED',
-              allowedOperations: ['DELETE', 'REBUILD']
-            },
-            rebuildRequired: true,
-            numberOfDocuments: 0,
-            documentsTotalSize: 0
-          },
-          pushEnabled: false,
-          onPremisesEnabled: false,
-          preConversionExtensions: [],
-          postConversionExtensions: [
-            {
-              actionOnError: 'SKIP_EXTENSION',
-              condition: '',
-              extensionId: 'ccliprodozvzoaua-vvdaravex2tqdt5npreoz2clgu',
-              parameters: {},
-              versionId: ''
-            }
-          ],
-          permissions: {
-            permissionLevels: [
-              {
-                name: 'Source Specified Permissions',
-                permissionSets: [
-                  {
-                    name: 'Private',
-                    permissions: [
-                      {
-                        allowed: true,
-                        identityType: 'USER',
-                        identity: 'prodUser@coveo.com',
-                        securityProvider: 'Email Security Provider'
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          urlFilters: [
-            {
-              filter: '*',
-              includeFilter: true,
-              filterType: 'WILDCARD'
-            }
-          ],
-          resourceId: 'ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4'
-        });
+        const salesforceSource = new Source(PRODwyowilfyrpf2qogxm45uhgskri);
 
-        sampleSource.removeParameters([
-          'information',
-          'resourceId',
-          'id',
-          'owner',
-          'securityProviderReferences',
-          'dummyParameter',
-          'actionOnError'
-        ]); // actionController should not be deleted as it is not on the first level
-        expect(sampleSource.getConfiguration()).to.eql({
-          sourceType: 'SITEMAP',
-          name: 'sitemaptest',
-          sourceVisibility: 'PRIVATE',
-          pushEnabled: false,
-          onPremisesEnabled: false,
-          mappings: [],
+        const keyWhitelist = [
+          'logicalIndex',
+          'postConversionExtensions',
+          'preConversionExtensions',
+          'configuration.addressPatterns',
+          'configuration.parameters',
+          'configuration.startingAddresses'
+        ];
+
+        const keyBlacklist = [
+          'configuration.parameters.SourceId',
+          'configuration.parameters.OrganizationId',
+          'configuration.parameters.ClientSecret',
+          'configuration.parameters.ClientId',
+          'configuration.parameters.IsSandbox'
+        ];
+
+        salesforceSource.removeParameters(keyBlacklist, keyWhitelist);
+
+        expect(salesforceSource.getConfiguration()).to.eql({
+          configuration: {
+            startingAddresses: ['http://www.salesforce.com'],
+            addressPatterns: [{ expression: '*', patternType: 'Wildcard', allowed: true }],
+            parameters: {
+              PauseOnError: { sensitive: false, value: 'true' },
+              SchemaVersion: { sensitive: false, value: 'LEGACY' },
+              UseRefreshToken: { sensitive: false, value: 'true' }
+            }
+          },
           preConversionExtensions: [],
           postConversionExtensions: [
             {
               actionOnError: 'SKIP_EXTENSION',
               condition: '',
-              extensionId: 'ccliprodozvzoaua-vvdaravex2tqdt5npreoz2clgu',
+              extensionId: 'dummygroupproduction-sr3jny7s5ekuwuyaak45awcaku',
+              parameters: {},
+              versionId: ''
+            },
+            {
+              actionOnError: 'SKIP_EXTENSION',
+              condition: '',
+              extensionId: 'dummygroupproduction-xnnutbu2n6kiwm243iossdsjha',
               parameters: {},
               versionId: ''
             }
           ],
-          permissions: {
-            permissionLevels: [
-              {
-                name: 'Source Specified Permissions',
-                permissionSets: [
-                  {
-                    name: 'Private',
-                    permissions: [
-                      {
-                        allowed: true,
-                        identityType: 'USER',
-                        identity: 'prodUser@coveo.com',
-                        securityProvider: 'Email Security Provider'
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          urlFilters: [
-            {
-              filter: '*',
-              includeFilter: true,
-              filterType: 'WILDCARD'
-            }
-          ]
+          logicalIndex: 'default'
         });
       });
 
       it('Should replace extension name with their according id', () => {
-        const sourceController = new SourceController(org1, org2);
-        const extensionList = [rawExtension1, rawExtension2, rawExtension3, rawDummyExtension1, rawDummyExtension2, rawDummyExtension3];
+        const source1 = new Source(DEVtcytrppteddiqkmboszu4skdoe);
+        const source2 = new Source(DEVwyowilfyrpf2qogxm45uhgskri);
         const source1Clone = source1.clone();
         const source2Clone = source2.clone();
+
+        const sourceController = new SourceController(org1, org2);
         const sourceDict: Dictionary<Source> = new Dictionary({
           'Sitemap Source': source1Clone,
-          'Web Source': source2Clone
+          Salesforce: source2Clone
         });
+        const extensionList = [
+          DEVukjs6nvyjvqdn4vozf3ugjkdqe,
+          DEVsfm7yvhqtiftmfuasrqtpfkio4,
+          DEVxnnutbu2n6kiwm243iossdsjha,
+          DEVsr3jny7s5ekuwuyaak45awcaku
+        ];
 
         sourceController.replaceExtensionIdWithName(sourceDict, extensionList);
         // Now do the revert operation
@@ -992,16 +197,17 @@ export const SourceControllerTest = () => {
         sourceController.replaceExtensionNameWithId(source2Clone, extensionList);
 
         const _source1 = sourceDict.getItem('Sitemap Source');
-        expect(_source1.getPostConversionExtensions()[0]['extensionId']).to.eq('ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu');
-        expect(_source1.getPostConversionExtensions()[1]['extensionId']).to.eq('ccli1wq3fmkys-tknepx33tdhmqibch2uzxhcc44');
-        expect(_source1.getPreConversionExtensions()[0]['extensionId']).to.eq('ccli1wq3fmkys-tdosaijdfsafds9fidsf0d9sfd3');
+        expect(_source1.getPostConversionExtensions()[0]['extensionId']).to.eq('dummygroupk5f2dpwl-sfm7yvhqtiftmfuasrqtpfkio4');
+        expect(_source1.getPostConversionExtensions()[1]['extensionId']).to.eq('dummygroupk5f2dpwl-ukjs6nvyjvqdn4vozf3ugjkdqe');
 
-        const _source2 = sourceDict.getItem('Web Source');
-        expect(_source2.getPostConversionExtensions()[0]['extensionId']).to.eq('ccli1wq3fmkys-tdosaijdfsafds9fidsf0d9sfd3');
+        const _source2 = sourceDict.getItem('Salesforce');
+        expect(_source2.getPostConversionExtensions()[0]['extensionId']).to.eq('dummygroupk5f2dpwl-sr3jny7s5ekuwuyaak45awcaku');
+        expect(_source2.getPostConversionExtensions()[1]['extensionId']).to.eq('dummygroupk5f2dpwl-xnnutbu2n6kiwm243iossdsjha');
       });
 
       it('Should throw an error if the extension does not exist in the organization', () => {
         const sourceController = new SourceController(org1, org2);
+        const source1 = new Source(DEVtcytrppteddiqkmboszu4skdoe);
         const sourceDict: Dictionary<Source> = new Dictionary({
           'Sitemap Source': source1.clone()
         });
@@ -1012,36 +218,319 @@ export const SourceControllerTest = () => {
     });
 
     describe('Diff Method', () => {
-      it('Should diff sources', (done: MochaDone) => {
+      it('Should support item types mapping', (done: MochaDone) => {
+        const devMappings = [
+          {
+            id: 'rasdf33sgh2evy',
+            kind: 'MAPPING',
+            type: 'Playlist',
+            fieldName: 'videotype',
+            extractionMethod: 'LITERAL',
+            content: 'playlist'
+          },
+          {
+            id: 'rasdfgh2evy',
+            kind: 'MAPPING',
+            type: 'Playlist',
+            fieldName: 'body',
+            extractionMethod: 'LITERAL',
+            content: 'New body value'
+          },
+          {
+            id: 'fdkjslfkdsf',
+            kind: 'COMMON',
+            fieldName: 'body',
+            extractionMethod: 'METADATA',
+            content: '%[description]'
+          }
+        ];
+        const prodMapping = [
+          {
+            id: 'fd345yujkmjnhgfdd',
+            kind: 'COMMON',
+            fieldName: 'body',
+            extractionMethod: 'METADATA',
+            content: '%[description]'
+          },
+          {
+            id: 'dsadsdsad',
+            kind: 'MAPPING',
+            type: 'Playlist',
+            fieldName: 'videotype',
+            extractionMethod: 'LITERAL',
+            content: 'playlist'
+          },
+          {
+            id: 'wertghj',
+            kind: 'MAPPING',
+            type: 'Playlist',
+            fieldName: 'body',
+            extractionMethod: 'LITERAL',
+            content: 'New body value'
+          }
+        ];
+
+        const devSource = JsonUtils.clone(DEVtcytrppteddiqkmboszu4skdoe);
+        devSource.mappings = devMappings;
+
+        const prodSource = JsonUtils.clone(PRODtcytrppteddiqkmboszu4skdoe);
+        prodSource.mappings = prodMapping;
+
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources')
-          .reply(RequestUtils.OK, allDevSources)
+          .reply(RequestUtils.OK, _.where(allDevSources, { name: 'My Sitemap Source' })) // Just picking the sitemap for this test
           // Fecth extensions from dev
           .get('/rest/organizations/dev/extensions')
-          .reply(RequestUtils.OK, [rawExtension1, rawExtension2, rawExtension3])
+          .reply(RequestUtils.OK, [DEVsfm7yvhqtiftmfuasrqtpfkio4, DEVukjs6nvyjvqdn4vozf3ugjkdqe])
           // Fecth extensions from Prod
           .get('/rest/organizations/prod/extensions')
           // Rename extension Ids
-          .reply(RequestUtils.OK, [rawExtension4])
+          .reply(RequestUtils.OK, [DEVukjs6nvyjvqdn4vozf3ugjkdqe])
           // Fetching dev sources one by one
-          .get('/rest/organizations/dev/sources/cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74')
-          .reply(RequestUtils.OK, ur4el4nwejfvpghipsvvs32m74)
-          .get('/rest/organizations/dev/sources/cclidev2l78wr0o-uwfuop2jp2hdvo5ao7abjlsgyq')
-          .reply(RequestUtils.OK, uwfuop2jp2hdvo5ao7abjlsgyq)
+          .get('/rest/organizations/dev/sources/tcytrppteddiqkmboszu4skdoe-dummygroupk5f2dpwl/raw')
+          // Replace mappings
+          .reply(RequestUtils.OK, devSource)
           // Fecthing all prod sources
           .get('/rest/organizations/prod/sources')
-          .reply(RequestUtils.OK, allProdSources)
-          .get('/rest/organizations/prod/sources/ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4')
-          .reply(RequestUtils.OK, xze6hjeidrpcborfhqk4vxkgy4);
+          .reply(RequestUtils.OK, _.where(allProdSources, { name: 'My Sitemap Source' }))
+          .get('/rest/organizations/prod/sources/tcytrppteddiqkmboszu4skdoe-dummygroupproduction/raw')
+          // Replace mappings
+          .reply(RequestUtils.OK, prodSource);
 
-        const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner'] };
+        // Set diff options
+        const diffOptions: IDiffOptions = {
+          includeOnly: ['mappings']
+        };
+
         controller
           .diff(diffOptions)
-          .then((diff: DiffResultArray<Source>) => {
-            expect(diff.TO_CREATE.length).to.eql(1);
-            expect(diff.TO_UPDATE.length).to.eql(1);
-            expect(diff.TO_DELETE.length).to.eql(0);
+          .then((diffResultArray: DiffResultArray<Source>) => {
+            expect(diffResultArray.TO_CREATE.length).to.eql(0);
+            expect(diffResultArray.TO_UPDATE.length).to.eql(0);
+            expect(diffResultArray.TO_DELETE.length).to.eql(0);
+
+            done();
+          })
+          .catch((err: IGenericError) => {
+            done(err);
+          });
+      });
+
+      it('Extraction method should be agnostic to the mapping id and order', () => {
+        const devSource = new Source({
+          id: 'dev',
+          name: 'mysource',
+          mappings: [
+            {
+              id: 'rasdf33sgh2evy',
+              kind: 'MAPPING',
+              type: 'Playlist',
+              fieldName: 'videotype',
+              extractionMethod: 'LITERAL',
+              content: 'playlist'
+            },
+            {
+              id: 'rasdfgh2evy',
+              kind: 'MAPPING',
+              type: 'Playlist',
+              fieldName: 'body',
+              extractionMethod: 'LITERAL',
+              content: 'New body value'
+            },
+            {
+              id: 'fdkjslfkdsf',
+              kind: 'COMMON',
+              fieldName: 'body',
+              extractionMethod: 'METADATA',
+              content: '%[description]'
+            }
+          ],
+          sourceType: 'Dummy',
+          preConversionExtensions: [],
+          postConversionExtensions: []
+        });
+
+        const prodSource = new Source({
+          id: 'prod',
+          name: 'mysource',
+          mappings: [
+            {
+              id: 'fd345yujkmjnhgfdd',
+              kind: 'COMMON',
+              fieldName: 'body',
+              extractionMethod: 'METADATA',
+              content: '%[description]'
+            },
+            {
+              id: 'dsadsdsad',
+              kind: 'MAPPING',
+              type: 'Playlist',
+              fieldName: 'videotype',
+              extractionMethod: 'LITERAL',
+              content: 'playlist'
+            },
+            {
+              id: 'wertghj',
+              kind: 'MAPPING',
+              type: 'Playlist',
+              fieldName: 'body',
+              extractionMethod: 'LITERAL',
+              content: 'New body value'
+            }
+          ],
+          sourceType: 'Dummy',
+          preConversionExtensions: [],
+          postConversionExtensions: []
+        });
+
+        const diffOptions: IDiffOptions = {
+          includeOnly: ['mappings']
+        };
+
+        // These 2 function are being called in the source diff
+        devSource.sortMappingsAndStripIds();
+        prodSource.sortMappingsAndStripIds();
+
+        const cleanVersion: any = controller.extractionMethod([devSource], diffOptions, [prodSource]);
+
+        const diff: jsDiff.Change[] = cleanVersion[0].mysource;
+
+        // The mapping arrays should be similar
+        expect(diff.length).to.eq(1);
+        expect(diff[0].added).to.not.exist;
+        expect(diff[0].removed).to.not.exist;
+      });
+
+      it('Should diff sources (updated)', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          // First expected request
+          .get('/rest/organizations/dev/sources')
+          .reply(RequestUtils.OK, _.where(allDevSources, { name: 'My Sitemap Source' })) // Just picking the sitemap for this test
+          // Fecth extensions from dev
+          .get('/rest/organizations/dev/extensions')
+          .reply(RequestUtils.OK, [DEVsfm7yvhqtiftmfuasrqtpfkio4, DEVukjs6nvyjvqdn4vozf3ugjkdqe])
+          // Fecth extensions from Prod
+          .get('/rest/organizations/prod/extensions')
+          // Rename extension Ids
+          .reply(RequestUtils.OK, [DEVukjs6nvyjvqdn4vozf3ugjkdqe])
+          // Fetching dev sources one by one
+          .get('/rest/organizations/dev/sources/tcytrppteddiqkmboszu4skdoe-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, DEVtcytrppteddiqkmboszu4skdoe)
+          // Fecthing all prod sources
+          .get('/rest/organizations/prod/sources')
+          .reply(RequestUtils.OK, _.where(allProdSources, { name: 'My Sitemap Source' }))
+          .get('/rest/organizations/prod/sources/tcytrppteddiqkmboszu4skdoe-dummygroupproduction/raw')
+          .reply(RequestUtils.OK, PRODtcytrppteddiqkmboszu4skdoe);
+
+        const includeOnly = [
+          'mappings',
+          'postConversionExtensions',
+          'preConversionExtensions',
+          'configuration.addressPatterns',
+          'configuration.documentConfig',
+          'configuration.extendedDataFiles',
+          'configuration.parameters',
+          'veryOldParameter',
+          'NewParameter',
+          'configuration.startingAddresses'
+        ];
+
+        const keysToIgnore = [
+          'configuration.parameters.SourceId',
+          'configuration.parameters.OrganizationId',
+          'configuration.parameters.ClientSecret',
+          'configuration.parameters.ClientId',
+          'configuration.parameters.IsSandbox',
+          'resourceId'
+        ];
+
+        // Set diff options
+        const diffOptions: IDiffOptions = {
+          includeOnly: includeOnly,
+          keysToIgnore: keysToIgnore
+        };
+
+        controller
+          .diff(diffOptions)
+          .then((diffResultArray: DiffResultArray<Source>) => {
+            expect(diffResultArray.TO_CREATE.length).to.eql(0);
+            expect(diffResultArray.TO_UPDATE.length).to.eql(1);
+            expect(diffResultArray.TO_DELETE.length).to.eql(0);
+
+            const cleanVersion = controller.getCleanVersion(diffResultArray, diffOptions);
+            const updatedSource = cleanVersion.TO_UPDATE[0];
+
+            // Make sure the blacklisted keys are not part of the diff
+            expect(updatedSource['configuration.parameters.OrganizationId.value.newValue']).to.be.undefined;
+            expect(updatedSource['configuration.parameters.OrganizationId.value.oldValue']).to.be.undefined;
+            expect(updatedSource['resourceId.oldValue']).to.be.undefined;
+            expect(updatedSource['resourceId.newValue']).to.be.undefined;
+
+            done();
+          })
+          .catch((err: IGenericError) => {
+            done(err);
+          });
+      });
+
+      it('Should diff sources (new - deleted)', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          // First expected request
+          .get('/rest/organizations/dev/sources')
+          .reply(RequestUtils.OK, _.where(allDevSources, { name: 'My Sitemap Source' })) // Just picking the sitemap for this test
+          // Fecth extensions from dev
+          .get('/rest/organizations/dev/extensions')
+          .reply(RequestUtils.OK, [DEVsfm7yvhqtiftmfuasrqtpfkio4, DEVukjs6nvyjvqdn4vozf3ugjkdqe])
+          // Fecth extensions from Prod
+          .get('/rest/organizations/prod/extensions')
+          // Rename extension Ids
+          .reply(RequestUtils.OK, [])
+          // Fetching dev sources one by one
+          .get('/rest/organizations/dev/sources/tcytrppteddiqkmboszu4skdoe-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, DEVtcytrppteddiqkmboszu4skdoe)
+          // Fecthing all prod sources
+          .get('/rest/organizations/prod/sources')
+          .reply(RequestUtils.OK, _.where(allProdSources, { name: 'My web source' }))
+          .get('/rest/organizations/prod/sources/rrbbidfxa2ri4usxhzzmhq2hge-dummygroupproduction/raw')
+          .reply(RequestUtils.OK, PRODrrbbidfxa2ri4usxhzzmhq2hge);
+
+        const keyWhitelist = [
+          'mappings',
+          'postConversionExtensions',
+          'preConversionExtensions',
+          'configuration.addressPatterns',
+          'configuration.documentConfig',
+          'configuration.extendedDataFiles',
+          'configuration.parameters',
+          'configuration.startingAddresses'
+        ];
+
+        // Set diff options
+        const diffOptions: IDiffOptions = {
+          includeOnly: keyWhitelist
+        };
+
+        controller
+          .diff(diffOptions)
+          .then((diffResultArray: DiffResultArray<Source>) => {
+            expect(diffResultArray.TO_CREATE.length).to.eql(1);
+            expect(diffResultArray.TO_UPDATE.length).to.eql(0);
+            expect(diffResultArray.TO_DELETE.length).to.eql(1);
+
+            const cleanVersion = controller.getCleanVersion(diffResultArray, diffOptions);
+
+            expect(cleanVersion, "only Only print the souce's name if no modification was brought").to.eql({
+              summary: {
+                TO_CREATE: 1,
+                TO_UPDATE: 0,
+                TO_DELETE: 1
+              },
+              TO_CREATE: ['My Sitemap Source'],
+              TO_UPDATE: [],
+              TO_DELETE: ['My web source']
+            });
+
             done();
           })
           .catch((err: IGenericError) => {
@@ -1050,64 +539,36 @@ export const SourceControllerTest = () => {
       });
 
       it('Should not load extensions that have been blacklisted on the source diff', (done: MochaDone) => {
-        const orgx: Organization = new Organization('dev', 'xxx', { extensions: ['URL Parsing to extract metadata'] });
+        const orgx: Organization = new Organization('dev', 'xxx', { extensions: ['SharedVideosNormalization', 'FilterVideos'] });
         const orgy: Organization = new Organization('prod', 'yyy');
         const controllerxy = new SourceController(orgx, orgy);
-
-        const localDevSource = {
-          sourceType: 'SITEMAP',
-          id: 'dev-source',
-          name: 'sitemaptest',
-          mappings: [],
-          preConversionExtensions: [],
-          postConversionExtensions: [
-            {
-              actionOnError: 'SKIP_EXTENSION',
-              condition: '',
-              extensionId: 'ccli1wq3fmkys-sa2fjv3lwf67va2pbiztb22fsu',
-              parameters: {},
-              versionId: ''
-            }
-          ],
-          resourceId: 'dev-source4'
-        };
-
-        const localProdSource = {
-          sourceType: 'SITEMAP',
-          id: 'prod-source',
-          name: 'sitemaptest',
-          mappings: [],
-          preConversionExtensions: [],
-          postConversionExtensions: [],
-          resourceId: 'prod-source'
-        };
 
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources')
-          .reply(RequestUtils.OK, [localDevSource])
+          .reply(RequestUtils.OK, _.where(allDevSources, { name: 'My Sitemap Source' })) // Just picking the sitemap for this test
           // Fecth extensions from dev
           .get('/rest/organizations/dev/extensions')
-          .reply(RequestUtils.OK, [rawExtension1])
+          .reply(RequestUtils.OK, [DEVsfm7yvhqtiftmfuasrqtpfkio4, DEVukjs6nvyjvqdn4vozf3ugjkdqe])
           // Fecth extensions from Prod
           .get('/rest/organizations/prod/extensions')
           // Rename extension Ids
           .reply(RequestUtils.OK, [])
           // Fetching dev sources one by one
-          .get('/rest/organizations/dev/sources/dev-source')
-          .reply(RequestUtils.OK, localDevSource)
+          .get('/rest/organizations/dev/sources/tcytrppteddiqkmboszu4skdoe-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, DEVtcytrppteddiqkmboszu4skdoe)
           // Fecthing all prod sources
           .get('/rest/organizations/prod/sources')
-          .reply(RequestUtils.OK, [localProdSource])
-          .get('/rest/organizations/prod/sources/prod-source')
-          .reply(RequestUtils.OK, localProdSource);
+          .reply(RequestUtils.OK, _.where(allProdSources, { name: 'My Sitemap Source' })) // Just picking the sitemap for this test
+          .get('/rest/organizations/prod/sources/tcytrppteddiqkmboszu4skdoe-dummygroupproduction/raw')
+          .reply(RequestUtils.OK, PRODtcytrppteddiqkmboszu4skdoe);
 
-        const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner'] };
+        const diffOptions: IDiffOptions = { includeOnly: ['postConversionExtensions'] };
         controllerxy
           .diff(diffOptions)
           .then((diff: DiffResultArray<Source>) => {
+            // No change detected because the extensions were blacklisted
             expect(diff.TO_CREATE.length).to.eql(0);
-
             expect(diff.TO_UPDATE.length).to.eql(0);
             expect(diff.TO_DELETE.length).to.eql(0);
             done();
@@ -1118,75 +579,46 @@ export const SourceControllerTest = () => {
       });
 
       it('Should not load sources that have been blacklisted for the diff', (done: MochaDone) => {
-        const orgx: Organization = new Organization('dev', 'xxx', { sources: ['web test'] });
-        const orgy: Organization = new Organization('prod', 'yyy');
+        const orgx: Organization = new Organization('dev', 'xxx', { sources: ['My web source'] });
+        const orgy: Organization = new Organization('prod', 'yyy', { sources: ['My web source'] });
         const controllerxy = new SourceController(orgx, orgy);
-
-        const localDevSource = {
-          sourceType: 'SITEMAP',
-          id: 'dev-source',
-          name: 'sitemap test',
-          mappings: [
-            {
-              id: 'q4qripnnvztvqempxtkvdb2cqa',
-              kind: 'COMMON',
-              fieldName: 'printableuri',
-              extractionMethod: 'METADATA',
-              content: '%[printableuri]'
-            }
-          ],
-          preConversionExtensions: [],
-          postConversionExtensions: [],
-          resourceId: 'dev-source4'
-        };
-
-        const localDevSource2 = {
-          sourceType: 'WEB',
-          id: 'web-dev-source',
-          name: 'web test',
-          mappings: [],
-          preConversionExtensions: [],
-          postConversionExtensions: [],
-          resourceId: 'dev-source4'
-        };
-
-        const localProdSource = {
-          sourceType: 'SITEMAP',
-          id: 'prod-source',
-          name: 'sitemap test',
-          mappings: [],
-          preConversionExtensions: [],
-          postConversionExtensions: [],
-          resourceId: 'prod-source'
-        };
 
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources')
-          .reply(RequestUtils.OK, [localDevSource, localDevSource2])
+          .reply(RequestUtils.OK, allDevSources)
           // Fecth extensions from dev
           .get('/rest/organizations/dev/extensions')
-          .reply(RequestUtils.OK, [rawExtension1])
+          .reply(RequestUtils.OK, [
+            DEVxuklmyqaujg3gj2ivcynor2adq,
+            DEVsr3jny7s5ekuwuyaak45awcaku,
+            DEVxnnutbu2n6kiwm243iossdsjha,
+            DEVsfm7yvhqtiftmfuasrqtpfkio4,
+            DEVukjs6nvyjvqdn4vozf3ugjkdqe
+          ])
           // Fecth extensions from Prod
           .get('/rest/organizations/prod/extensions')
-          // Rename extension Ids
-          .reply(RequestUtils.OK, [])
+          .reply(RequestUtils.OK, [PRODsr3jny7s5ekuwuyaak45awcaku, PRODxnnutbu2n6kiwm243iossdsjha])
           // Fetching dev sources one by one
-          .get('/rest/organizations/dev/sources/dev-source')
-          .reply(RequestUtils.OK, localDevSource)
+          .get('/rest/organizations/dev/sources/tcytrppteddiqkmboszu4skdoe-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, DEVtcytrppteddiqkmboszu4skdoe)
+          .get('/rest/organizations/dev/sources/wyowilfyrpf2qogxm45uhgskri-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, DEVwyowilfyrpf2qogxm45uhgskri)
+          .get('/rest/organizations/dev/sources/qtngyd2gvxjxrrkftndaepcngu-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, DEVqtngyd2gvxjxrrkftndaepcngu)
           // Fecthing all prod sources
           .get('/rest/organizations/prod/sources')
-          .reply(RequestUtils.OK, [localProdSource])
-          .get('/rest/organizations/prod/sources/prod-source')
-          .reply(RequestUtils.OK, localProdSource);
+          .reply(RequestUtils.OK, allProdSources)
+          .get('/rest/organizations/prod/sources/tcytrppteddiqkmboszu4skdoe-dummygroupproduction/raw')
+          .reply(RequestUtils.OK, PRODtcytrppteddiqkmboszu4skdoe)
+          .get('/rest/organizations/prod/sources/wyowilfyrpf2qogxm45uhgskri-dummygroupproduction/raw')
+          .reply(RequestUtils.OK, PRODwyowilfyrpf2qogxm45uhgskri);
 
         const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner'] };
         controllerxy
           .diff(diffOptions)
           .then((diff: DiffResultArray<Source>) => {
-            expect(diff.TO_CREATE.length).to.eql(0);
-            expect(diff.TO_UPDATE.length).to.eql(1);
-            expect(diff.TO_DELETE.length).to.eql(0);
+            // We don't care about the diff result here. We just wan to make sure the Diff command ignored the blacklisted sources
             done();
           })
           .catch((err: IGenericError) => {
@@ -1251,12 +683,12 @@ export const SourceControllerTest = () => {
           // Rename extension Ids
           .reply(RequestUtils.OK, [])
           // Fetching dev sources one by one
-          .get('/rest/organizations/dev/sources/dev-source')
+          .get('/rest/organizations/dev/sources/dev-source/raw')
           .reply(RequestUtils.OK, localDevSource)
           // Fecthing all prod sources
           .get('/rest/organizations/prod/sources')
           .reply(RequestUtils.OK, [localProdSource])
-          .get('/rest/organizations/prod/sources/prod-source')
+          .get('/rest/organizations/prod/sources/prod-source/raw')
           .reply(RequestUtils.OK, localProdSource);
 
         const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner'] };
@@ -1265,41 +697,6 @@ export const SourceControllerTest = () => {
           .then((diff: DiffResultArray<Source>) => {
             expect(diff.TO_CREATE.length).to.eql(0);
             expect(diff.TO_UPDATE.length).to.eql(1);
-            expect(diff.TO_DELETE.length).to.eql(0);
-            done();
-          })
-          .catch((err: IGenericError) => {
-            done(err);
-          });
-      });
-
-      it('Should not have updated source in the diff', (done: MochaDone) => {
-        scope = nock(UrlService.getDefaultUrl())
-          // First expected request
-          .get('/rest/organizations/dev/sources')
-          .reply(RequestUtils.OK, allDevSources2)
-          // Fecth extensions from dev
-          .get('/rest/organizations/dev/extensions')
-          .reply(RequestUtils.OK, [])
-          // Fecth extensions from Prod
-          .get('/rest/organizations/prod/extensions')
-          // Rename extension Ids
-          .reply(RequestUtils.OK, [])
-          // Fetching dev sources one by one
-          .get('/rest/organizations/dev/sources/cclidev2l78wr0o-ur4el4nwejfvpghipsvvs32m74')
-          .reply(RequestUtils.OK, ur4el4nwejfvpghipsvvs32m74Copy)
-          // Fecthing all prod sources
-          .get('/rest/organizations/prod/sources')
-          .reply(RequestUtils.OK, allProdSources2)
-          .get('/rest/organizations/prod/sources/ccliprodozvzoaua-xze6hjeidrpcborfhqk4vxkgy4')
-          .reply(RequestUtils.OK, xze6hjeidrpcborfhqk4vxkgy4Copy);
-
-        const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner'] };
-        controller
-          .diff(diffOptions)
-          .then((diff: DiffResultArray<Source>) => {
-            expect(diff.TO_CREATE.length).to.eql(0);
-            expect(diff.TO_UPDATE.length).to.eql(0);
             expect(diff.TO_DELETE.length).to.eql(0);
             done();
           })
@@ -1320,34 +717,12 @@ export const SourceControllerTest = () => {
           TO_DELETE: []
         });
       });
-
-      it('Should return the clean diff version', () => {
-        const diffResultArray: DiffResultArray<Source> = new DiffResultArray();
-        diffResultArray.TO_CREATE.push(new Source(uwfuop2jp2hdvo5ao7abjlsgyq));
-        diffResultArray.TO_UPDATE.push(new Source(ur4el4nwejfvpghipsvvs32m74));
-        diffResultArray.TO_UPDATE_OLD.push(new Source(xze6hjeidrpcborfhqk4vxkgy4));
-
-        const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner'] };
-        const cleanVersion = controller.getCleanVersion(diffResultArray, diffOptions);
-
-        const updatedSource = cleanVersion.TO_UPDATE[0];
-        expect(updatedSource.id, 'Should not include the source id in the diff').to.not.have.keys('newValue', 'oldValue');
-        expect(updatedSource.owner, 'Should not include the `owner` property in the diff').to.not.have.keys('newValue', 'oldValue');
-        expect(updatedSource.resourceId, 'Should not include the `resourceId` property in the diff').to.not.have.keys(
-          'newValue',
-          'oldValue'
-        );
-        expect(updatedSource.information, 'Should not include the `information` property in the diff').to.not.have.keys(
-          'newValue',
-          'oldValue'
-        );
-      });
     });
 
     describe('Graduate Method', () => {
-      it('Should graduate', (done: MochaDone) => {
+      it('Should graduate using the blacklist strategy', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
-          .post('/rest/organizations/prod/sources?rebuild=false', {
+          .post('/rest/organizations/prod/sources/raw?rebuild=false', {
             sourceType: 'SITEMAP',
             name: 'sitemaptest',
             mappings: [],
@@ -1355,7 +730,7 @@ export const SourceControllerTest = () => {
             postConversionExtensions: []
           })
           .reply(RequestUtils.OK)
-          .put('/rest/organizations/prod/sources/web-source-prod?rebuild=false', {
+          .put('/rest/organizations/prod/sources/web-source-prod/raw?rebuild=false', {
             sourceType: 'WEB',
             name: 'My web source',
             mappings: [
@@ -1459,7 +834,117 @@ export const SourceControllerTest = () => {
           POST: true,
           PUT: true,
           DELETE: true,
-          keysToStrip: ['information', 'resourceId', 'id', 'owner', 'securityProviderReferences'],
+          keyBlacklist: ['information', 'resourceId', 'id', 'owner', 'securityProviderReferences'],
+          diffOptions: {}
+        };
+
+        controller
+          .graduate(extensionDiff, graduateOptions)
+          .then((resolved: any[]) => {
+            // expect(resolved).to.be.empty;
+            done();
+          })
+          .catch((err: any) => {
+            done(err);
+          });
+      });
+
+      it('Should graduate using the whitelist strategy', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          .post('/rest/organizations/prod/sources/raw?rebuild=false', {
+            mappings: [],
+            postConversionExtensions: []
+          })
+          .reply(RequestUtils.OK)
+          .put('/rest/organizations/prod/sources/web-source-prod/raw?rebuild=false', {
+            mappings: [
+              {
+                id: 'q4qripnnvztvqempxtkvdb2cqa',
+                kind: 'COMMON',
+                fieldName: 'printableuri',
+                extractionMethod: 'METADATA',
+                content: '%[printableuri]'
+              }
+            ],
+            postConversionExtensions: []
+          })
+          .reply(RequestUtils.OK);
+
+        const extensionDiff: DiffResultArray<Source> = new DiffResultArray();
+        extensionDiff.TO_CREATE = [
+          new Source({
+            sourceType: 'SITEMAP',
+            id: 'dev-source',
+            name: 'sitemaptest',
+            mappings: [],
+            information: {
+              sourceStatus: {
+                type: 'DISABLED',
+                allowedOperations: ['DELETE', 'REBUILD']
+              },
+              rebuildRequired: true,
+              numberOfDocuments: 0,
+              documentsTotalSize: 0
+            },
+            preConversionExtensions: [],
+            postConversionExtensions: [],
+            resourceId: 'dev-source4'
+          })
+        ];
+        extensionDiff.TO_UPDATE = [
+          new Source({
+            sourceType: 'WEB',
+            id: 'web-source',
+            name: 'My web source',
+            mappings: [
+              {
+                id: 'q4qripnnvztvqempxtkvdb2cqa',
+                kind: 'COMMON',
+                fieldName: 'printableuri',
+                extractionMethod: 'METADATA',
+                content: '%[printableuri]'
+              }
+            ],
+            information: {
+              sourceStatus: {
+                type: 'DISABLED',
+                allowedOperations: ['DELETE', 'REBUILD']
+              },
+              rebuildRequired: true,
+              numberOfDocuments: 0,
+              documentsTotalSize: 0
+            },
+            preConversionExtensions: [],
+            postConversionExtensions: [],
+            resourceId: 'web-source'
+          })
+        ];
+        extensionDiff.TO_UPDATE_OLD = [
+          new Source({
+            sourceType: 'WEB',
+            id: 'web-source-prod',
+            name: 'My web source',
+            mappings: [],
+            information: {
+              sourceStatus: {
+                type: 'DISABLED',
+                allowedOperations: ['DELETE', 'REBUILD']
+              },
+              rebuildRequired: true,
+              numberOfDocuments: 0,
+              documentsTotalSize: 0
+            },
+            preConversionExtensions: [],
+            postConversionExtensions: [],
+            resourceId: 'web-source-prod'
+          })
+        ];
+
+        const graduateOptions: IGraduateOptions = {
+          POST: true,
+          PUT: true,
+          DELETE: false,
+          keyWhitelist: ['mappings', 'postConversionExtensions'],
           diffOptions: {}
         };
 

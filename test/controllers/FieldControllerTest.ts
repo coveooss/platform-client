@@ -159,7 +159,6 @@ export const FieldControllerTest = () => {
 
       it('Should return an empty diff result - even if sources are different', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
-          // First expected request
           .get('/rest/organizations/dev/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
           .reply(RequestUtils.OK, {
