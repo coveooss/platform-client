@@ -317,7 +317,7 @@ export const SourceControllerTest = () => {
           });
       });
 
-      it('Extraction method should ignore id when diffing mappings and the mapping order', () => {
+      it('Extraction method should be agnostic to the mapping id and order', () => {
         const devSource = new Source({
           id: 'dev',
           name: 'mysource',
@@ -394,7 +394,7 @@ export const SourceControllerTest = () => {
 
         const cleanVersion: any = controller.extractionMethod([devSource], diffOptions, [prodSource]);
 
-        const diff: jsDiff.Change[] = cleanVersion[0].newSource;
+        const diff: jsDiff.Change[] = cleanVersion[0].mysource;
 
         // The mapping arrays should be similar
         expect(diff.length).to.eq(1);
