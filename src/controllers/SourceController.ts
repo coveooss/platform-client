@@ -22,6 +22,7 @@ import { JsonUtils } from '../commons/utils/JsonUtils';
 
 export class SourceController extends BaseController {
   private extensionList: Array<Array<{}>> = [];
+  private mappingIds: IStringMap<string[]> = {};
 
   constructor(private organization1: Organization, private organization2: Organization) {
     super();
@@ -46,7 +47,12 @@ export class SourceController extends BaseController {
         this.removeExtensionFromSource(source1, this.organization1);
         this.removeExtensionFromSource(source2, this.organization2);
 
-        _.each([...source1.values(), ...source2.values()], source => {
+        _.each(source1.values(), source => {
+          const mappingIds = source.sortMappingsAndStripIds();
+          // Storing the mapping ids for graduation
+          this.mappingIds[source.getName()] = mappingIds;
+        });
+        _.each(source2.values(), source => {
           source.sortMappingsAndStripIds();
         });
 
@@ -154,8 +160,11 @@ export class SourceController extends BaseController {
         // 1. Replacing extensions with destination id
         this.replaceExtensionNameWithId(source, this.extensionList[1]);
 
-        // 3. Strip source from keys that should not be graduated using whitelist and blacklist strategy
+        // 2. Strip source from keys that should not be graduated using whitelist and blacklist strategy
         source.removeParameters(options.keyBlacklist || [], options.keyWhitelist || []);
+
+        // 3. Put back the mapping ids to make sure the platform keeps the mapping order by not generating other mapping ids
+        source.restoreMappingIds(this.mappingIds[source.getName()]);
       });
 
       return Promise.all(

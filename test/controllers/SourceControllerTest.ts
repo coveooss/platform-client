@@ -116,7 +116,7 @@ export const SourceControllerTest = () => {
         // First, replace extension IDs with their respective name
         sourceController.replaceExtensionIdWithName(sourceDict, extensionList);
         // Now, remove blacklisted extensions
-        sourceController.removeExtensionFromOriginSource(sourceDict);
+        sourceController.removeExtensionFromSource(sourceDict, org3);
         expect(sourceDict.getItem('Sitemap Source').getPostConversionExtensions().length).to.eql(1);
       });
 
@@ -721,23 +721,90 @@ export const SourceControllerTest = () => {
 
     describe('Graduate Method', () => {
       it('Should graduate using the blacklist strategy', (done: MochaDone) => {
+        const orgx: Organization = new Organization('dev', 'xxx');
+        const orgy: Organization = new Organization('prod', 'yyy');
+        const controllerxy = new SourceController(orgx, orgy);
+
+        const localDevSource = {
+          sourceType: 'SITEMAP',
+          id: 'dev-source',
+          name: 'sitemap test',
+          mappings: [
+            {
+              id: 'xxxxxb',
+              kind: 'COMMON',
+              fieldName: 'uri',
+              extractionMethod: 'METADATA',
+              content: '%[printableuri]'
+            },
+            {
+              id: 'xxxxxa',
+              kind: 'COMMON',
+              fieldName: 'printableuri',
+              extractionMethod: 'METADATA',
+              content: '%[printableuri]'
+            }
+          ],
+          preConversionExtensions: [],
+          postConversionExtensions: [],
+          owner: 'test@coveo.com',
+          resourceId: 'dev-source'
+        };
+
+        const localProdSource = {
+          sourceType: 'SITEMAP',
+          id: 'prod-source',
+          name: 'sitemap test',
+          owner: 'test@coveo.com',
+          mappings: [
+            {
+              id: 'yyyyyyb',
+              kind: 'COMMON',
+              fieldName: 'printableuri',
+              extractionMethod: 'METADATA',
+              content: '%[printableuri]'
+            }
+          ],
+          preConversionExtensions: [],
+          postConversionExtensions: [],
+          resourceId: 'prod-source'
+        };
+
         scope = nock(UrlService.getDefaultUrl())
-          .post('/rest/organizations/prod/sources/raw?rebuild=false', {
+          // First expected request
+          .get('/rest/organizations/dev/sources')
+          .reply(RequestUtils.OK, [localDevSource])
+          // Fecth extensions from dev
+          .get('/rest/organizations/dev/extensions')
+          .reply(RequestUtils.OK, [])
+          // Fecth extensions from Prod
+          .get('/rest/organizations/prod/extensions')
+          // Rename extension Ids
+          .reply(RequestUtils.OK, [])
+          // Fetching dev sources one by one
+          .get('/rest/organizations/dev/sources/dev-source/raw')
+          .reply(RequestUtils.OK, localDevSource)
+          // Fecthing all prod sources
+          .get('/rest/organizations/prod/sources')
+          .reply(RequestUtils.OK, [localProdSource])
+          .get('/rest/organizations/prod/sources/prod-source/raw')
+          .reply(RequestUtils.OK, localProdSource)
+          // Graduation time!
+          .put('/rest/organizations/prod/sources/prod-source/raw?rebuild=false', {
             sourceType: 'SITEMAP',
-            name: 'sitemaptest',
-            mappings: [],
-            preConversionExtensions: [],
-            postConversionExtensions: []
-          })
-          .reply(RequestUtils.OK)
-          .put('/rest/organizations/prod/sources/web-source-prod/raw?rebuild=false', {
-            sourceType: 'WEB',
-            name: 'My web source',
+            name: 'sitemap test',
             mappings: [
               {
-                id: 'q4qripnnvztvqempxtkvdb2cqa',
+                id: 'xxxxxa',
                 kind: 'COMMON',
                 fieldName: 'printableuri',
+                extractionMethod: 'METADATA',
+                content: '%[printableuri]'
+              },
+              {
+                id: 'xxxxxb',
+                kind: 'COMMON',
+                fieldName: 'uri',
                 extractionMethod: 'METADATA',
                 content: '%[printableuri]'
               }
@@ -745,216 +812,152 @@ export const SourceControllerTest = () => {
             preConversionExtensions: [],
             postConversionExtensions: []
           })
-          .reply(RequestUtils.OK)
-          .delete('/rest/organizations/prod/sources/dev-source-to-delete')
           .reply(RequestUtils.OK);
 
-        const extensionDiff: DiffResultArray<Source> = new DiffResultArray();
-        extensionDiff.TO_CREATE = [
-          new Source({
-            sourceType: 'SITEMAP',
-            id: 'dev-source',
-            name: 'sitemaptest',
-            mappings: [],
-            information: {
-              sourceStatus: {
-                type: 'DISABLED',
-                allowedOperations: ['DELETE', 'REBUILD']
-              },
-              rebuildRequired: true,
-              numberOfDocuments: 0,
-              documentsTotalSize: 0
-            },
-            preConversionExtensions: [],
-            postConversionExtensions: [],
-            resourceId: 'dev-source4'
-          })
-        ];
-        extensionDiff.TO_UPDATE = [
-          new Source({
-            sourceType: 'WEB',
-            id: 'web-source',
-            name: 'My web source',
-            mappings: [
-              {
-                id: 'q4qripnnvztvqempxtkvdb2cqa',
-                kind: 'COMMON',
-                fieldName: 'printableuri',
-                extractionMethod: 'METADATA',
-                content: '%[printableuri]'
-              }
-            ],
-            information: {
-              sourceStatus: {
-                type: 'DISABLED',
-                allowedOperations: ['DELETE', 'REBUILD']
-              },
-              rebuildRequired: true,
-              numberOfDocuments: 0,
-              documentsTotalSize: 0
-            },
-            preConversionExtensions: [],
-            postConversionExtensions: [],
-            resourceId: 'web-source'
-          })
-        ];
-        extensionDiff.TO_UPDATE_OLD = [
-          new Source({
-            sourceType: 'WEB',
-            id: 'web-source-prod',
-            name: 'My web source',
-            mappings: [],
-            information: {
-              sourceStatus: {
-                type: 'DISABLED',
-                allowedOperations: ['DELETE', 'REBUILD']
-              },
-              rebuildRequired: true,
-              numberOfDocuments: 0,
-              documentsTotalSize: 0
-            },
-            preConversionExtensions: [],
-            postConversionExtensions: [],
-            resourceId: 'web-source-prod'
-          })
-        ];
-        extensionDiff.TO_DELETE = [
-          new Source({
-            sourceType: 'SITEMAP',
-            id: 'dev-source-to-delete',
-            name: 'source to delete',
-            mappings: [],
-            preConversionExtensions: [],
-            postConversionExtensions: [],
-            resourceId: 'dev-source-to-delete'
-          })
-        ];
-
+        const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner'] };
         const graduateOptions: IGraduateOptions = {
           POST: true,
           PUT: true,
           DELETE: true,
-          keyBlacklist: ['information', 'resourceId', 'id', 'owner', 'securityProviderReferences'],
-          diffOptions: {}
+          diffOptions: diffOptions,
+          keyBlacklist: ['information', 'resourceId', 'id', 'owner']
         };
-
-        controller
-          .graduate(extensionDiff, graduateOptions)
-          .then((resolved: any[]) => {
-            // expect(resolved).to.be.empty;
-            done();
+        controllerxy
+          .diff(diffOptions)
+          .then((diff: DiffResultArray<Source>) => {
+            expect(diff.TO_CREATE.length).to.eql(0);
+            expect(diff.TO_UPDATE.length).to.eql(1);
+            expect(diff.TO_DELETE.length).to.eql(0);
+            controllerxy
+              .graduate(diff, graduateOptions)
+              .then((resolved: any[]) => {
+                done();
+              })
+              .catch((err: any) => {
+                done(err);
+              });
           })
-          .catch((err: any) => {
+          .catch((err: IGenericError) => {
             done(err);
           });
       });
 
       it('Should graduate using the whitelist strategy', (done: MochaDone) => {
+        const orgx: Organization = new Organization('dev', 'xxx');
+        const orgy: Organization = new Organization('prod', 'yyy');
+        const controllerxy = new SourceController(orgx, orgy);
+
+        const localDevSource = {
+          sourceType: 'SITEMAP',
+          id: 'dev-source',
+          name: 'sitemap test',
+          mappings: [
+            {
+              id: 'xxxxxb',
+              kind: 'COMMON',
+              fieldName: 'uri',
+              extractionMethod: 'METADATA',
+              content: '%[printableuri]'
+            },
+            {
+              id: 'xxxxxa',
+              kind: 'COMMON',
+              fieldName: 'printableuri',
+              extractionMethod: 'METADATA',
+              content: '%[printableuri]'
+            }
+          ],
+          preConversionExtensions: [],
+          postConversionExtensions: [],
+          owner: 'test@coveo.com',
+          resourceId: 'dev-source'
+        };
+
+        const localProdSource = {
+          sourceType: 'SITEMAP',
+          id: 'prod-source',
+          name: 'sitemap test',
+          owner: 'test@coveo.com',
+          mappings: [
+            {
+              id: 'yyyyyyb',
+              kind: 'COMMON',
+              fieldName: 'printableuri',
+              extractionMethod: 'METADATA',
+              content: '%[printableuri]'
+            }
+          ],
+          preConversionExtensions: [],
+          postConversionExtensions: [],
+          resourceId: 'prod-source'
+        };
+
         scope = nock(UrlService.getDefaultUrl())
-          .post('/rest/organizations/prod/sources/raw?rebuild=false', {
-            mappings: [],
-            postConversionExtensions: []
-          })
-          .reply(RequestUtils.OK)
-          .put('/rest/organizations/prod/sources/web-source-prod/raw?rebuild=false', {
+          // First expected request
+          .get('/rest/organizations/dev/sources')
+          .reply(RequestUtils.OK, [localDevSource])
+          // Fecth extensions from dev
+          .get('/rest/organizations/dev/extensions')
+          .reply(RequestUtils.OK, [])
+          // Fecth extensions from Prod
+          .get('/rest/organizations/prod/extensions')
+          // Rename extension Ids
+          .reply(RequestUtils.OK, [])
+          // Fetching dev sources one by one
+          .get('/rest/organizations/dev/sources/dev-source/raw')
+          .reply(RequestUtils.OK, localDevSource)
+          // Fecthing all prod sources
+          .get('/rest/organizations/prod/sources')
+          .reply(RequestUtils.OK, [localProdSource])
+          .get('/rest/organizations/prod/sources/prod-source/raw')
+          .reply(RequestUtils.OK, localProdSource)
+          // Graduation time!
+          .put('/rest/organizations/prod/sources/prod-source/raw?rebuild=false', {
+            sourceType: 'SITEMAP',
+            name: 'sitemap test',
             mappings: [
               {
-                id: 'q4qripnnvztvqempxtkvdb2cqa',
+                id: 'xxxxxa',
                 kind: 'COMMON',
                 fieldName: 'printableuri',
                 extractionMethod: 'METADATA',
                 content: '%[printableuri]'
+              },
+              {
+                id: 'xxxxxb',
+                kind: 'COMMON',
+                fieldName: 'uri',
+                extractionMethod: 'METADATA',
+                content: '%[printableuri]'
               }
-            ],
-            postConversionExtensions: []
+            ]
           })
           .reply(RequestUtils.OK);
 
-        const extensionDiff: DiffResultArray<Source> = new DiffResultArray();
-        extensionDiff.TO_CREATE = [
-          new Source({
-            sourceType: 'SITEMAP',
-            id: 'dev-source',
-            name: 'sitemaptest',
-            mappings: [],
-            information: {
-              sourceStatus: {
-                type: 'DISABLED',
-                allowedOperations: ['DELETE', 'REBUILD']
-              },
-              rebuildRequired: true,
-              numberOfDocuments: 0,
-              documentsTotalSize: 0
-            },
-            preConversionExtensions: [],
-            postConversionExtensions: [],
-            resourceId: 'dev-source4'
-          })
-        ];
-        extensionDiff.TO_UPDATE = [
-          new Source({
-            sourceType: 'WEB',
-            id: 'web-source',
-            name: 'My web source',
-            mappings: [
-              {
-                id: 'q4qripnnvztvqempxtkvdb2cqa',
-                kind: 'COMMON',
-                fieldName: 'printableuri',
-                extractionMethod: 'METADATA',
-                content: '%[printableuri]'
-              }
-            ],
-            information: {
-              sourceStatus: {
-                type: 'DISABLED',
-                allowedOperations: ['DELETE', 'REBUILD']
-              },
-              rebuildRequired: true,
-              numberOfDocuments: 0,
-              documentsTotalSize: 0
-            },
-            preConversionExtensions: [],
-            postConversionExtensions: [],
-            resourceId: 'web-source'
-          })
-        ];
-        extensionDiff.TO_UPDATE_OLD = [
-          new Source({
-            sourceType: 'WEB',
-            id: 'web-source-prod',
-            name: 'My web source',
-            mappings: [],
-            information: {
-              sourceStatus: {
-                type: 'DISABLED',
-                allowedOperations: ['DELETE', 'REBUILD']
-              },
-              rebuildRequired: true,
-              numberOfDocuments: 0,
-              documentsTotalSize: 0
-            },
-            preConversionExtensions: [],
-            postConversionExtensions: [],
-            resourceId: 'web-source-prod'
-          })
-        ];
-
+        const diffOptions: IDiffOptions = { includeOnly: ['sourceType', 'name', 'mappings'] };
         const graduateOptions: IGraduateOptions = {
           POST: true,
           PUT: true,
-          DELETE: false,
-          keyWhitelist: ['mappings', 'postConversionExtensions'],
-          diffOptions: {}
+          DELETE: true,
+          diffOptions: diffOptions,
+          keyWhitelist: ['name', 'mappings', 'sourceType']
         };
-
-        controller
-          .graduate(extensionDiff, graduateOptions)
-          .then((resolved: any[]) => {
-            // expect(resolved).to.be.empty;
-            done();
+        controllerxy
+          .diff(diffOptions)
+          .then((diff: DiffResultArray<Source>) => {
+            expect(diff.TO_CREATE.length).to.eql(0);
+            expect(diff.TO_UPDATE.length).to.eql(1);
+            expect(diff.TO_DELETE.length).to.eql(0);
+            controllerxy
+              .graduate(diff, graduateOptions)
+              .then((resolved: any[]) => {
+                done();
+              })
+              .catch((err: any) => {
+                done(err);
+              });
           })
-          .catch((err: any) => {
+          .catch((err: IGenericError) => {
             done(err);
           });
       });

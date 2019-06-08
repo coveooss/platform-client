@@ -39,6 +39,9 @@ export const GraduateSourcesCommand = (program: any, commanderUtils: CommanderUt
       commanderUtils.setLogger(options, 'graduate-sources');
 
       const includeOnly = [
+        'name',
+        'sourceType',
+        'crawlerInstanceType',
         'logicalIndex',
         'mappings',
         'postConversionExtensions',

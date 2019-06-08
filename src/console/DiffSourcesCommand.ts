@@ -36,8 +36,11 @@ export const DiffSourcesCommand = (program: any, commanderUtils: CommanderUtils)
     .action((origin: string, destination: string, apiKey: string, options: any) => {
       commanderUtils.setLogger(options, 'diff-sources');
 
-      // TODO: add option to modify these options from the command
+      // TODO: add option to modify these options from the command BUT KEEP MANDATORY PARAMETERS
       const includeOnly = [
+        'name', // mandatory
+        'sourceType', // mandatory
+        'crawlerInstanceType', // mandatory
         'logicalIndex',
         'mappings',
         'postConversionExtensions',

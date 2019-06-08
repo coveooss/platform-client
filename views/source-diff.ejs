@@ -264,6 +264,8 @@
         const sourceName = _.keys(sourceDiff)[0];
         const jsonDiff = sourceDiff[sourceName];
 
+        // Activate back navigation button
+        $('.navigation-button').removeClass('state-disabled');
         // Select the source tab
         $(`.navigation-menu-section-item`).removeClass('state-active');
         $(`#diff-source-section`).removeClass('hidden');
