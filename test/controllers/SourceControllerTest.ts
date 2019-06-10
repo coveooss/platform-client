@@ -899,6 +899,23 @@ export const SourceControllerTest = () => {
           postConversionExtensions: [],
           resourceId: 'prod-source'
         };
+        const localProdSource2 = {
+          sourceType: 'SITEMAP',
+          id: 'prod-source2',
+          name: 'websource test',
+          mappings: [
+            {
+              id: 'yyyyyyb',
+              kind: 'COMMON',
+              fieldName: 'printableuri',
+              extractionMethod: 'METADATA',
+              content: '%[printableuri]'
+            }
+          ],
+          preConversionExtensions: [],
+          postConversionExtensions: [],
+          resourceId: 'prod-source2'
+        };
 
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
@@ -916,9 +933,11 @@ export const SourceControllerTest = () => {
           .reply(RequestUtils.OK, localDevSource)
           // Fecthing all prod sources
           .get('/rest/organizations/prod/sources')
-          .reply(RequestUtils.OK, [localProdSource])
+          .reply(RequestUtils.OK, [localProdSource, localProdSource2])
           .get('/rest/organizations/prod/sources/prod-source/raw')
           .reply(RequestUtils.OK, localProdSource)
+          .get('/rest/organizations/prod/sources/prod-source2/raw')
+          .reply(RequestUtils.OK, localProdSource2)
           // Graduation time!
           .put('/rest/organizations/prod/sources/prod-source/raw?rebuild=false', {
             sourceType: 'SITEMAP',
@@ -946,7 +965,9 @@ export const SourceControllerTest = () => {
             postConversionExtensions: [],
             resourceId: 'prod-source'
           })
-          .reply(RequestUtils.OK);
+          .reply(RequestUtils.OK)
+          .delete('/rest/organizations/prod/sources/prod-source2')
+          .reply(RequestUtils.NO_CONTENT);
 
         const diffOptions: IDiffOptions = { includeOnly: ['name', 'mappings'] };
         const graduateOptions: IGraduateOptions = {
@@ -961,7 +982,7 @@ export const SourceControllerTest = () => {
           .then((diff: DiffResultArray<Source>) => {
             expect(diff.TO_CREATE.length).to.eql(0);
             expect(diff.TO_UPDATE.length).to.eql(1);
-            expect(diff.TO_DELETE.length).to.eql(0);
+            expect(diff.TO_DELETE.length).to.eql(1);
             controllerxy
               .graduate(diff, graduateOptions)
               .then((resolved: any[]) => {

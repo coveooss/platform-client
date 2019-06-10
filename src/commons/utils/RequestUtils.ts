@@ -105,7 +105,7 @@ export class RequestUtils {
           if (err) {
             reject(err);
           } else {
-            if (response.statusCode === RequestUtils.NO_CONTENT) {
+            if (response.statusCode === RequestUtils.NO_CONTENT || response.statusCode === RequestUtils.OK) {
               resolve(response);
             } else {
               reject(JsonUtils.stringify(response.body));

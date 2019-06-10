@@ -165,7 +165,11 @@ export class SourceController extends BaseController {
         source.removeParameters(options.keyBlacklist || [], options.keyWhitelist || []);
 
         // 3. Put back the mapping ids to make sure the platform keeps the mapping order by not generating other mapping ids
-        source.restoreMappingIds(this.mappingIds[source.getName()]);
+        //    This applies to TO_UPDATE and TO_CREATE sources
+        if (this.mappingIds[source.getName()]) {
+          // TO_DELETE sources do not have mapping ids to restore
+          source.restoreMappingIds(this.mappingIds[source.getName()]);
+        }
       });
 
       return Promise.all(
