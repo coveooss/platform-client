@@ -16,6 +16,7 @@
     "async": "^2.6.1",
     "chalk": "2.4.2",
     "commander": "^2.19.0",
+    "deep-extend": "^0.6.0",
     "diff": "^4.0.1",
     "flat": "4.1.0",
     "fs-extra": "^7.0.1",
@@ -31,6 +32,7 @@
   "devDependencies": {
     "@types/async": "^2.0.50",
     "@types/chai": "^4.1.7",
+    "@types/deep-extend": "^0.4.31",
     "@types/diff": "^4.0.2",
     "@types/flat": "0.0.28",
     "@types/fs-extra": "^5.0.4",

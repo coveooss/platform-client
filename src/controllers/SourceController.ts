@@ -1,5 +1,6 @@
 import * as jsDiff from 'diff';
 import * as _ from 'underscore';
+import * as deepExtend from 'deep-extend';
 import { series } from 'async';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { IDownloadResultArray } from '../commons/collections/DownloadResultArray';
@@ -217,8 +218,13 @@ export class SourceController extends BaseController {
     );
     const asyncArray = _.map(diffResult.TO_UPDATE, (source: Source, idx: number) => {
       return (callback: any) => {
-        const destinationSource = diffResult.TO_UPDATE_OLD[idx].getId();
-        SourceAPI.updateSource(this.organization2, destinationSource, source.getConfiguration())
+        const destinationSource = diffResult.TO_UPDATE_OLD[idx];
+        // Update the source by extending the old source config with the new conifg
+        SourceAPI.updateSource(
+          this.organization2,
+          destinationSource.getId(),
+          deepExtend({}, destinationSource.getConfiguration(), source.getConfiguration())
+        )
           .then((response: RequestResponse) => {
             callback(null, response);
             this.successHandler(response, `Successfully updated source ${Colors.source(source.getName())}`);

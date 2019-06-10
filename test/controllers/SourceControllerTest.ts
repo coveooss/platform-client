@@ -729,6 +729,7 @@ export const SourceControllerTest = () => {
           sourceType: 'SITEMAP',
           id: 'dev-source',
           name: 'sitemap test',
+          configuration: { parameters: { isSandbox: { value: true }, customParam: 'new-param' } },
           mappings: [
             {
               id: 'xxxxxb',
@@ -755,7 +756,8 @@ export const SourceControllerTest = () => {
           sourceType: 'SITEMAP',
           id: 'prod-source',
           name: 'sitemap test',
-          owner: 'test@coveo.com',
+          owner: 'prod-owner@coveo.com',
+          configuration: { parameters: { isSandbox: { value: false }, customParam: 'prod-something' } },
           mappings: [
             {
               id: 'yyyyyyb',
@@ -793,6 +795,9 @@ export const SourceControllerTest = () => {
           .put('/rest/organizations/prod/sources/prod-source/raw?rebuild=false', {
             sourceType: 'SITEMAP',
             name: 'sitemap test',
+            id: 'prod-source', // Prod value
+            owner: 'prod-owner@coveo.com', // Prod value
+            configuration: { parameters: { isSandbox: { value: false }, customParam: 'new-param' } },
             mappings: [
               {
                 id: 'xxxxxa',
@@ -810,17 +815,18 @@ export const SourceControllerTest = () => {
               }
             ],
             preConversionExtensions: [],
-            postConversionExtensions: []
+            postConversionExtensions: [],
+            resourceId: 'prod-source' // Prod value
           })
           .reply(RequestUtils.OK);
 
-        const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner'] };
+        const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner', 'configuration.parameters.isSandbox'] };
         const graduateOptions: IGraduateOptions = {
           POST: true,
           PUT: true,
           DELETE: true,
           diffOptions: diffOptions,
-          keyBlacklist: ['information', 'resourceId', 'id', 'owner']
+          keyBlacklist: ['information', 'resourceId', 'id', 'owner', 'configuration.parameters.isSandbox']
         };
         controllerxy
           .diff(diffOptions)
@@ -851,6 +857,7 @@ export const SourceControllerTest = () => {
           sourceType: 'SITEMAP',
           id: 'dev-source',
           name: 'sitemap test',
+          parameters: { prodParameter: 'DEV value that should not be graduated' },
           mappings: [
             {
               id: 'xxxxxb',
@@ -877,7 +884,8 @@ export const SourceControllerTest = () => {
           sourceType: 'SITEMAP',
           id: 'prod-source',
           name: 'sitemap test',
-          owner: 'test@coveo.com',
+          parameters: { prodParameter: 'something' },
+          owner: 'prod-owner@coveo.com',
           mappings: [
             {
               id: 'yyyyyyb',
@@ -914,7 +922,10 @@ export const SourceControllerTest = () => {
           // Graduation time!
           .put('/rest/organizations/prod/sources/prod-source/raw?rebuild=false', {
             sourceType: 'SITEMAP',
+            id: 'prod-source',
             name: 'sitemap test',
+            parameters: { prodParameter: 'something' },
+            owner: 'prod-owner@coveo.com',
             mappings: [
               {
                 id: 'xxxxxa',
@@ -930,17 +941,20 @@ export const SourceControllerTest = () => {
                 extractionMethod: 'METADATA',
                 content: '%[printableuri]'
               }
-            ]
+            ],
+            preConversionExtensions: [],
+            postConversionExtensions: [],
+            resourceId: 'prod-source'
           })
           .reply(RequestUtils.OK);
 
-        const diffOptions: IDiffOptions = { includeOnly: ['sourceType', 'name', 'mappings'] };
+        const diffOptions: IDiffOptions = { includeOnly: ['name', 'mappings'] };
         const graduateOptions: IGraduateOptions = {
           POST: true,
           PUT: true,
           DELETE: true,
           diffOptions: diffOptions,
-          keyWhitelist: ['name', 'mappings', 'sourceType']
+          keyWhitelist: ['name', 'mappings']
         };
         controllerxy
           .diff(diffOptions)
