@@ -121,7 +121,7 @@ export class DiffCommand {
           const viewPath = EnvironmentUtils.isTestRunning() ? `../../views/source-diff.ejs` : `views/source-diff.ejs`;
 
           fs.readFile(viewPath, (err, data) => {
-            Logger.info('Reading file');
+            Logger.verbose('Reading HTML ejs file');
             if (err) {
               Logger.error('Unable to read html file', err);
               return;

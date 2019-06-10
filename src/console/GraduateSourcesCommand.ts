@@ -39,7 +39,9 @@ export const GraduateSourcesCommand = (program: any, commanderUtils: CommanderUt
       commanderUtils.setLogger(options, 'graduate-sources');
 
       const includeOnly = [
-        'logicalIndex',
+        'name', // mandatory
+        'sourceType', // mandatory
+        'crawlerInstanceType', // mandatory
         'mappings',
         'postConversionExtensions',
         'preConversionExtensions',
@@ -58,7 +60,10 @@ export const GraduateSourcesCommand = (program: any, commanderUtils: CommanderUt
         'configuration.parameters.OrganizationId',
         'configuration.parameters.ClientSecret',
         'configuration.parameters.ClientId',
-        'configuration.parameters.IsSandbox'
+        'configuration.parameters.IsSandbox',
+        'additionalInfos.salesforceOrg',
+        'additionalInfos.salesforceUser',
+        'additionalInfos.salesforceOrgName'
       ];
 
       const graduateOptions: IGraduateOptions = {

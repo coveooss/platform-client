@@ -16,12 +16,12 @@
 
     <!-- Custom CSS -->
     <style>
-      .page-content {
-        scroll-behavior: smooth;
-      }
       del,
       ins {
         text-decoration: none;
+      }
+      .change-focus {
+        box-shadow: 0 0 6px 1px #1d4f76;
       }
 
       .highlight {
@@ -162,8 +162,8 @@
                 <span id="addition-count" class="text-green"> </span> &nbsp; <span id="deletion-count" class="text-red"> </span>
               </h4>
               <div class="form-control fixed m1" id="navigation-section" style="right:4rem;">
-                <button class="btn mod-small" onclick="javascript:jumpToPreviousChange(this)">Previous</button>
-                <button class="btn mod-small" onclick="javascript:jumpToNextChange(this)">Next</button>
+                  <button class="btn mod-small navigation-button" onclick="javascript:jumpToPreviousChange(this)">Previous</button>
+                  <button class="btn mod-small navigation-button" onclick="javascript:jumpToNextChange(this)">Next</button>
               </div>
               <figure class="highlight p0"><pre id="result"></pre></figure>
             </div>
@@ -173,27 +173,41 @@
     </div>
 
     <script>
-      function jumpToPreviousChange(_this) {
-        var elmnts = $('.diff-change');
-        var indexCount = _this.parentElement.getAttribute('data-index') || -1;
-        console.log(indexCount);
+    function jumpToPreviousChange(_this) {
+      $('.navigation-button').removeClass('state-disabled');
+      var elmnts = $('.diff-change');
+      elmnts.removeClass('change-focus')
+      var indexCount = _this.parentElement.getAttribute('data-index') || -1;
+      console.log(indexCount);
 
-        if (parseInt(indexCount) > 0) {
-          elmnts[parseInt(indexCount) - 1].scrollIntoView();
-          _this.parentElement.setAttribute('data-index', parseInt(indexCount) - 1);
-        }
+      if (parseInt(indexCount) > 0) {
+        var elem = elmnts[parseInt(indexCount) - 1];
+        elem.classList.add('change-focus')
+        // elem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        $('.page-content').stop().animate({scrollTop: elem.getBoundingClientRect().y + $('.page-content')[0].scrollTop - Math.floor(window.innerHeight*0.3)}, 300, 'swing', function(){})
+        _this.parentElement.setAttribute('data-index', parseInt(indexCount) - 1);
+      } else {
+        _this.classList.add('state-disabled')
       }
+    }
 
-      function jumpToNextChange(_this) {
-        var elmnts = $('.diff-change');
-        var indexCount = _this.parentElement.getAttribute('data-index') || -1;
-        console.log(indexCount);
+    function jumpToNextChange(_this) {
+      $('.navigation-button').removeClass('state-disabled');
+      var elmnts = $('.diff-change');
+      elmnts.removeClass('change-focus')
+      var indexCount = _this.parentElement.getAttribute('data-index') || -1;
+      console.log(indexCount);
 
-        if (parseInt(indexCount) + 1 < elmnts.length) {
-          elmnts[parseInt(indexCount) + 1].scrollIntoView();
-          _this.parentElement.setAttribute('data-index', (parseInt(indexCount) + 1) % elmnts.length);
-        }
+      if (parseInt(indexCount) + 1 < elmnts.length) {
+        var elem = elmnts[parseInt(indexCount) + 1];
+        elem.classList.add('change-focus')
+        // elem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        $('.page-content').stop().animate({scrollTop: elem.getBoundingClientRect().y + $('.page-content')[0].scrollTop - Math.floor(window.innerHeight*0.3)}, 300, 'swing', function(){})
+        _this.parentElement.setAttribute('data-index', (parseInt(indexCount) + 1) % elmnts.length);
+      } else {
+        _this.classList.add('state-disabled')
       }
+    }
 
       function getModificationCount(jsonDiff) {
         let count = [0, 0];
@@ -250,6 +264,8 @@
         const sourceName = _.keys(sourceDiff)[0];
         const jsonDiff = sourceDiff[sourceName];
 
+        // Activate back navigation button
+        $('.navigation-button').removeClass('state-disabled');
         // Select the source tab
         $(`.navigation-menu-section-item`).removeClass('state-active');
         $(`#diff-source-section`).removeClass('hidden');

@@ -1,5 +1,6 @@
 import * as jsDiff from 'diff';
 import * as _ from 'underscore';
+import * as deepExtend from 'deep-extend';
 import { series } from 'async';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { IDownloadResultArray } from '../commons/collections/DownloadResultArray';
@@ -22,6 +23,7 @@ import { JsonUtils } from '../commons/utils/JsonUtils';
 
 export class SourceController extends BaseController {
   private extensionList: Array<Array<{}>> = [];
+  private mappingIds: IStringMap<string[]> = {};
 
   constructor(private organization1: Organization, private organization2: Organization) {
     super();
@@ -43,10 +45,15 @@ export class SourceController extends BaseController {
         this.replaceExtensionIdWithName(source2, this.extensionList[1]);
 
         // Do not diff extensions that have been blacklisted
-        // Only applies to the organization of origin
-        this.removeExtensionFromOriginSource(source1);
+        this.removeExtensionFromSource(source1, this.organization1);
+        this.removeExtensionFromSource(source2, this.organization2);
 
-        _.each([...source1.values(), ...source2.values()], source => {
+        _.each(source1.values(), source => {
+          const mappingIds = source.sortMappingsAndStripIds();
+          // Storing the mapping ids for graduation
+          this.mappingIds[source.getName()] = mappingIds;
+        });
+        _.each(source2.values(), source => {
           source.sortMappingsAndStripIds();
         });
 
@@ -64,9 +71,9 @@ export class SourceController extends BaseController {
       });
   }
 
-  removeExtensionFromOriginSource(sourceList: Dictionary<Source>) {
+  removeExtensionFromSource(sourceList: Dictionary<Source>, org: Organization) {
     _.each(sourceList.values(), (source: Source) => {
-      _.each(this.organization1.getExtensionBlacklist(), (extensionToRemove: string) => {
+      _.each(org.getExtensionBlacklist(), (extensionToRemove: string) => {
         source.removeExtension(extensionToRemove, 'pre');
         source.removeExtension(extensionToRemove, 'post');
       });
@@ -154,8 +161,15 @@ export class SourceController extends BaseController {
         // 1. Replacing extensions with destination id
         this.replaceExtensionNameWithId(source, this.extensionList[1]);
 
-        // 3. Strip source from keys that should not be graduated using whitelist and blacklist strategy
+        // 2. Strip source from keys that should not be graduated using whitelist and blacklist strategy
         source.removeParameters(options.keyBlacklist || [], options.keyWhitelist || []);
+
+        // 3. Put back the mapping ids to make sure the platform keeps the mapping order by not generating other mapping ids
+        //    This applies to TO_UPDATE and TO_CREATE sources
+        if (this.mappingIds[source.getName()]) {
+          // TO_DELETE sources do not have mapping ids to restore
+          source.restoreMappingIds(this.mappingIds[source.getName()]);
+        }
       });
 
       return Promise.all(
@@ -208,8 +222,13 @@ export class SourceController extends BaseController {
     );
     const asyncArray = _.map(diffResult.TO_UPDATE, (source: Source, idx: number) => {
       return (callback: any) => {
-        const destinationSource = diffResult.TO_UPDATE_OLD[idx].getId();
-        SourceAPI.updateSource(this.organization2, destinationSource, source.getConfiguration())
+        const destinationSource = diffResult.TO_UPDATE_OLD[idx];
+        // Update the source by extending the old source config with the new conifg
+        SourceAPI.updateSource(
+          this.organization2,
+          destinationSource.getId(),
+          deepExtend({}, destinationSource.getConfiguration(), source.getConfiguration())
+        )
           .then((response: RequestResponse) => {
             callback(null, response);
             this.successHandler(response, `Successfully updated source ${Colors.source(source.getName())}`);

@@ -37,15 +37,38 @@ export class Source extends BaseCoveoObject implements ISource {
     return this.configuration['preConversionExtensions'];
   }
 
-  sortMappingsAndStripIds() {
+  restoreMappingIds(mappingIds: string[] = []) {
+    const sourceMappings = this.getMappings();
+    Assert.check(
+      mappingIds.length === sourceMappings.length,
+      `The number of ids (${mappingIds.length}) should match the number of mappings in the source (${sourceMappings.length})`
+    );
+    _.each(sourceMappings, (mapping: IStringMap<string>, idx: number) => {
+      mapping['id'] = mappingIds[idx];
+    });
+  }
+
+  /**
+   * Sort mapping rules and strip ids.
+   *
+   * @returns {string[]} the mapping id (in order)
+   * @memberof Source
+   */
+  sortMappingsAndStripIds(): string[] {
+    const mappingIds: string[] = [];
     // Sort mappings
     let cleanedMappings: Array<IStringMap<string>> = _.sortBy(this.getMappings(), (mapping: IStringMap<string>) =>
-      _.compact([mapping.fieldName, mapping.type]).join('-')
+      _.compact([mapping.fieldName, mapping.type, mapping.id]).join('-')
     );
 
     // Remove id from mappings
-    cleanedMappings = _.map(cleanedMappings, (mapping: IStringMap<string>) => _.omit(mapping, 'id'));
+    cleanedMappings = _.map(cleanedMappings, (mapping: IStringMap<string>) => {
+      mappingIds.push(mapping['id']);
+      return _.omit(mapping, 'id');
+    });
+
     this.configuration['mappings'] = cleanedMappings;
+    return mappingIds;
   }
 
   removeParameters(keysToRemove: string[] = [], exclusiveKeys: string[] = []): void {
