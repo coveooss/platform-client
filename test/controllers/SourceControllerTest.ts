@@ -538,6 +538,30 @@ export const SourceControllerTest = () => {
           });
       });
 
+      it('Should  throw an error if throttled by the REST API', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          // First expected request
+          .get('/rest/organizations/dev/sources')
+          .reply(429, 'SOOOORRY') // Too many requests
+          .get('/rest/organizations/prod/sources')
+          .reply(429, 'SOOOORRY') // Too many requests
+          .get('/rest/organizations/dev/extensions')
+          .reply(429, 'SOOOORRY') // Too many requests
+          .get('/rest/organizations/prod/extensions')
+          .reply(429, 'SOOOORRY'); // Too many requests
+
+        controller
+          .diff()
+          .then(() => {
+            done('Should not resolve');
+          })
+          .catch((err: IGenericError) => {
+            // We are expecting an error
+            expect(err.message).to.eql('"SOOOORRY"');
+            done();
+          });
+      });
+
       it('Should not load extensions that have been blacklisted on the source diff', (done: MochaDone) => {
         const orgx: Organization = new Organization('dev', 'xxx', { extensions: ['SharedVideosNormalization', 'FilterVideos'] });
         const orgy: Organization = new Organization('prod', 'yyy');
