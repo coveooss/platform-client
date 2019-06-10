@@ -996,6 +996,48 @@ export const SourceControllerTest = () => {
             done(err);
           });
       });
+
+      it('Should have nothing to graduate', (done: MochaDone) => {
+        const orgx: Organization = new Organization('dev', 'xxx');
+        const orgy: Organization = new Organization('prod', 'yyy');
+        const controllerxy = new SourceController(orgx, orgy);
+
+        scope = nock(UrlService.getDefaultUrl())
+          .get('/rest/organizations/dev/sources')
+          .reply(RequestUtils.OK, [])
+          .get('/rest/organizations/dev/extensions')
+          .reply(RequestUtils.OK, [])
+          .get('/rest/organizations/prod/extensions')
+          .reply(RequestUtils.OK, [])
+          .get('/rest/organizations/prod/sources')
+          .reply(RequestUtils.OK, []);
+
+        const diffOptions: IDiffOptions = {};
+        const graduateOptions: IGraduateOptions = {
+          POST: true,
+          PUT: true,
+          DELETE: true,
+          diffOptions: {}
+        };
+        controllerxy
+          .diff(diffOptions)
+          .then((diff: DiffResultArray<Source>) => {
+            expect(diff.TO_CREATE.length).to.eql(0);
+            expect(diff.TO_UPDATE.length).to.eql(0);
+            expect(diff.TO_DELETE.length).to.eql(0);
+            controllerxy
+              .graduate(diff, graduateOptions)
+              .then((resolved: any[]) => {
+                done();
+              })
+              .catch((err: any) => {
+                done(err);
+              });
+          })
+          .catch((err: IGenericError) => {
+            done(err);
+          });
+      });
     });
   });
 };
