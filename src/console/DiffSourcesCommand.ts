@@ -39,6 +39,8 @@ export const DiffSourcesCommand = (program: any, commanderUtils: CommanderUtils)
       // TODO: add option to modify these options from the command BUT KEEP MANDATORY PARAMETERS
       const includeOnly = [
         'name', // mandatory
+        'sourceType', // mandatory
+        'crawlerInstanceType', // mandatory
         'logicalIndex',
         'mappings',
         'postConversionExtensions',

@@ -40,7 +40,8 @@ export const GraduateSourcesCommand = (program: any, commanderUtils: CommanderUt
 
       const includeOnly = [
         'name', // mandatory
-        'logicalIndex',
+        'sourceType', // mandatory
+        'crawlerInstanceType', // mandatory
         'mappings',
         'postConversionExtensions',
         'preConversionExtensions',
