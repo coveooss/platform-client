@@ -35,7 +35,7 @@ export class RequestUtils {
 
   static post(uri: string, apiKey: string, data: any): Promise<request.RequestResponse> {
     Logger.verbose(`${chalk.bgGreen.bold('POST')} ${chalk.underline(uri)}`);
-    Logger.insane(`${chalk.bgYellow.bold('PUT')} ${JsonUtils.stringify(data, 0)}`);
+    Logger.insane(`${chalk.bgYellow.bold('POST')} ${JsonUtils.stringify(data, 0)}`);
     return new Promise((resolve: (value?: any) => void, reject: (error: any) => void) => {
       request(
         uri,

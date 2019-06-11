@@ -156,21 +156,30 @@ export class SourceController extends BaseController {
     if (diffResultArray.containsItems()) {
       Logger.loadingTask('Graduating Sources');
 
-      _.each(_.union(diffResultArray.TO_CREATE, diffResultArray.TO_DELETE, diffResultArray.TO_UPDATE), source => {
-        // Make some assertions here. Return an error if an extension is missing
-        // 1. Replacing extensions with destination id
-        this.replaceExtensionNameWithId(source, this.extensionList[1]);
+      const graduatationCleanup = (sourceList: Source[], stripParams = false) => {
+        _.each(sourceList, source => {
+          // Make some assertions here. Return an error if an extension is missing
+          // 1. Replacing extensions with destination id
+          this.replaceExtensionNameWithId(source, this.extensionList[1]);
 
-        // 2. Strip source from keys that should not be graduated using whitelist and blacklist strategy
-        source.removeParameters(options.keyBlacklist || [], options.keyWhitelist || []);
+          // 2. Strip source from keys that should not be graduated using whitelist and blacklist strategy
+          //    Should apply to "TO_UPDATE" sources only
+          if (stripParams) {
+            source.removeParameters(options.keyBlacklist || [], options.keyWhitelist || []);
+          }
 
-        // 3. Put back the mapping ids to make sure the platform keeps the mapping order by not generating other mapping ids
-        //    This applies to TO_UPDATE and TO_CREATE sources
-        if (this.mappingIds[source.getName()]) {
-          // TO_DELETE sources do not have mapping ids to restore
-          source.restoreMappingIds(this.mappingIds[source.getName()]);
-        }
-      });
+          // 3. Put back the mapping ids to make sure the platform keeps the mapping order by not generating other mapping ids
+          //    This applies to TO_UPDATE and TO_CREATE sources
+          if (this.mappingIds[source.getName()]) {
+            // TO_DELETE sources do not have mapping ids to restore
+            source.restoreMappingIds(this.mappingIds[source.getName()]);
+          }
+        });
+      };
+
+      graduatationCleanup(diffResultArray.TO_CREATE);
+      graduatationCleanup(diffResultArray.TO_UPDATE, true);
+      graduatationCleanup(diffResultArray.TO_DELETE);
 
       return Promise.all(
         _.map(
