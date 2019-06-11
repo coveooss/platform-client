@@ -904,6 +904,32 @@ export const SourceControllerTest = () => {
           resourceId: 'dev-source'
         };
 
+        const localDevSource2 = {
+          sourceType: 'WEB',
+          id: 'web-source',
+          name: 'web test',
+          mappings: [
+            {
+              id: 'qwert',
+              kind: 'COMMON',
+              fieldName: 'uri',
+              extractionMethod: 'METADATA',
+              content: '%[printableuri]'
+            },
+            {
+              id: 'abcd',
+              kind: 'COMMON',
+              fieldName: 'printableuri',
+              extractionMethod: 'METADATA',
+              content: '%[printableuri]'
+            }
+          ],
+          preConversionExtensions: [],
+          postConversionExtensions: [],
+          owner: 'test@coveo.com',
+          resourceId: 'web-source'
+        };
+
         const localProdSource = {
           sourceType: 'SITEMAP',
           id: 'prod-source',
@@ -944,7 +970,7 @@ export const SourceControllerTest = () => {
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources')
-          .reply(RequestUtils.OK, [localDevSource])
+          .reply(RequestUtils.OK, [localDevSource, localDevSource2])
           // Fecth extensions from dev
           .get('/rest/organizations/dev/extensions')
           .reply(RequestUtils.OK, [])
@@ -955,6 +981,8 @@ export const SourceControllerTest = () => {
           // Fetching dev sources one by one
           .get('/rest/organizations/dev/sources/dev-source/raw')
           .reply(RequestUtils.OK, localDevSource)
+          .get('/rest/organizations/dev/sources/web-source/raw')
+          .reply(RequestUtils.OK, localDevSource2)
           // Fecthing all prod sources
           .get('/rest/organizations/prod/sources')
           .reply(RequestUtils.OK, [localProdSource, localProdSource2])
@@ -963,6 +991,32 @@ export const SourceControllerTest = () => {
           .get('/rest/organizations/prod/sources/prod-source2/raw')
           .reply(RequestUtils.OK, localProdSource2)
           // Graduation time!
+          .post('/rest/organizations/prod/sources/raw?rebuild=false', {
+            sourceType: 'WEB',
+            id: 'web-source',
+            name: 'web test',
+            mappings: [
+              {
+                id: 'abcd',
+                kind: 'COMMON',
+                fieldName: 'printableuri',
+                extractionMethod: 'METADATA',
+                content: '%[printableuri]'
+              },
+              {
+                id: 'qwert',
+                kind: 'COMMON',
+                fieldName: 'uri',
+                extractionMethod: 'METADATA',
+                content: '%[printableuri]'
+              }
+            ],
+            preConversionExtensions: [],
+            postConversionExtensions: [],
+            owner: 'test@coveo.com',
+            resourceId: 'web-source'
+          })
+          .reply(RequestUtils.OK)
           .put('/rest/organizations/prod/sources/prod-source/raw?rebuild=false', {
             sourceType: 'SITEMAP',
             id: 'prod-source',
@@ -1004,7 +1058,7 @@ export const SourceControllerTest = () => {
         controllerxy
           .diff(diffOptions)
           .then((diff: DiffResultArray<Source>) => {
-            expect(diff.TO_CREATE.length).to.eql(0);
+            expect(diff.TO_CREATE.length).to.eql(1);
             expect(diff.TO_UPDATE.length).to.eql(1);
             expect(diff.TO_DELETE.length).to.eql(1);
             controllerxy

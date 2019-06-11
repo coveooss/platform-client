@@ -26,7 +26,7 @@ import { OrganizationTest } from './coveoObjects/OrganizationTest';
 import { SourceTest } from './coveoObjects/SourceTest';
 import { SourceAPITest } from './commons/rest/SourceAPITest';
 
-console.log(`Environment: ${config.env}\n`);
+console.log(`Mocking Coveo Cloud Environment: ${config.env}\n`);
 
 Logger.disableSpinner();
 
