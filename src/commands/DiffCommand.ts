@@ -1,6 +1,7 @@
 import * as fs from 'fs-extra';
 import * as opn from 'open';
 import * as _ from 'underscore';
+import path = require('path');
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { Colors } from '../commons/colors';
 import { StaticErrorMessage } from '../commons/errors';
@@ -118,10 +119,12 @@ export class DiffCommand {
           const deletedSources = JSON.stringify(cleanVersion.TO_DELETE);
           const cleanDiff = JSON.stringify(cleanVersion.TO_UPDATE);
 
-          const viewPath = EnvironmentUtils.isTestRunning() ? `../../views/source-diff.ejs` : `views/source-diff.ejs`;
+          const viewPath = EnvironmentUtils.isTestRunning()
+            ? `../../views/source-diff.ejs`
+            : path.resolve(__dirname, `views/source-diff.ejs`);
+          Logger.verbose(`Resolve path "${viewPath}"`);
 
           fs.readFile(viewPath, (err, data) => {
-            Logger.verbose('Reading HTML ejs file');
             if (err) {
               Logger.error('Unable to read html file', err);
               return;

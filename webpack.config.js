@@ -19,8 +19,8 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.js'],
     alias: {
-      env: __dirname + '/environments',
-      views: __dirname + '/views'
+      env: __dirname + '/environments'
+      // views: __dirname + '/views'
     }
   },
   module: {
