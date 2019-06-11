@@ -36,9 +36,41 @@ export const DiffSourcesCommand = (program: any, commanderUtils: CommanderUtils)
     .action((origin: string, destination: string, apiKey: string, options: any) => {
       commanderUtils.setLogger(options, 'diff-sources');
 
+      // TODO: add option to modify these options from the command BUT KEEP MANDATORY PARAMETERS
+      const includeOnly = [
+        'name', // mandatory
+        'sourceType', // mandatory
+        'crawlerInstanceType', // mandatory
+        'logicalIndex',
+        'mappings',
+        'postConversionExtensions',
+        'preConversionExtensions',
+        'configuration.addressPatterns',
+        'configuration.documentConfig',
+        'configuration.extendedDataFiles',
+        'configuration.parameters',
+        'configuration.startingAddresses',
+        'configuration.sourceSecurityOption',
+        'configuration.permissions',
+        'additionalInfos'
+      ];
+
+      const keysToIgnore = [
+        'configuration.parameters.SourceId',
+        'configuration.parameters.OrganizationId',
+        'configuration.parameters.ClientSecret',
+        'configuration.parameters.ClientId',
+        'configuration.parameters.IsSandbox',
+        'additionalInfos.salesforceOrg',
+        'additionalInfos.salesforceUser',
+        'additionalInfos.salesforceOrgName'
+      ];
+
       // Set diff options
       const diffOptions: IDiffOptions = {
-        silent: options.silent
+        silent: options.silent,
+        includeOnly: includeOnly,
+        keysToIgnore: keysToIgnore
       };
 
       const blacklistOptions: IBlacklistObjects = {
@@ -46,7 +78,6 @@ export const DiffSourcesCommand = (program: any, commanderUtils: CommanderUtils)
         sources: options.ignoreSources
       };
       const command = new DiffCommand(origin, destination, apiKey, apiKey, blacklistOptions);
-      diffOptions.keysToIgnore = ['information', 'resourceId', 'id', 'owner', 'securityProviderReferences'];
       command.diffSources(diffOptions);
     });
 };

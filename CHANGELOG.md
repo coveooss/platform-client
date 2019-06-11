@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.6.0"></a>
+# [2.6.0](https://github.com/coveo/platform-client/compare/v2.5.1...v2.6.0) (2019-06-11)
+
+
+### Bug Fixes
+
+* Add allfieldvalues to extensions to ignore ([a5b786a](https://github.com/coveo/platform-client/commit/a5b786a))
+* Adding mandatory params for source creation ([f151903](https://github.com/coveo/platform-client/commit/f151903))
+* Delete source during graduation ([a527bdd](https://github.com/coveo/platform-client/commit/a527bdd))
+* don't remove params to create sources ([efa5047](https://github.com/coveo/platform-client/commit/efa5047))
+* Ignore leading space in command option (resolves [#25](https://github.com/coveo/platform-client/issues/25)) ([7451019](https://github.com/coveo/platform-client/commit/7451019))
+* Ignore Salesforce specific keys (fix [#39](https://github.com/coveo/platform-client/issues/39)) ([efe44f0](https://github.com/coveo/platform-client/commit/efe44f0))
+* Keep mapping order on source graduate ([#40](https://github.com/coveo/platform-client/issues/40)) ([43ae5f0](https://github.com/coveo/platform-client/commit/43ae5f0))
+* Multiple corrections ([5a3bdf7](https://github.com/coveo/platform-client/commit/5a3bdf7)), closes [#32](https://github.com/coveo/platform-client/issues/32) [#31](https://github.com/coveo/platform-client/issues/31)
+* Source diff html page ([775d6d1](https://github.com/coveo/platform-client/commit/775d6d1))
+* source graduation-keep params on destination ([6f9cc1e](https://github.com/coveo/platform-client/commit/6f9cc1e))
+* Update source diff logic ([#22](https://github.com/coveo/platform-client/issues/22) [#23](https://github.com/coveo/platform-client/issues/23)) ([793e755](https://github.com/coveo/platform-client/commit/793e755))
+* Use raw API call for sources ([#31](https://github.com/coveo/platform-client/issues/31)) ([b7b09c9](https://github.com/coveo/platform-client/commit/b7b09c9))
+
+
+### Features
+
+* Add QA environment ([e02e7f9](https://github.com/coveo/platform-client/commit/e02e7f9))
+* Add source diff html page ([65e3649](https://github.com/coveo/platform-client/commit/65e3649))
+
+
+
 <a name="2.5.1"></a>
 ## [2.5.1](https://github.com/coveo/platform-client/compare/v2.5.0...v2.5.1) (2019-02-17)
 

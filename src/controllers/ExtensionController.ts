@@ -85,7 +85,7 @@ export class ExtensionController extends BaseController {
     );
     const asyncArray = _.map(diffResult.TO_CREATE, (extension: Extension) => {
       return (callback: any) => {
-        ExtensionAPI.createExtension(this.organization2, extension.getExtensionModel())
+        ExtensionAPI.createExtension(this.organization2, extension.getConfiguration())
           .then((response: RequestResponse) => {
             callback(null, response);
             this.successHandler(response, `Successfully created extension ${Colors.extension(extension.getName())}`);
@@ -116,7 +116,7 @@ export class ExtensionController extends BaseController {
     const asyncArray = _.map(diffResult.TO_UPDATE, (extension: Extension, idx: number) => {
       return (callback: any) => {
         const destinationExtension = diffResult.TO_UPDATE_OLD[idx].getId();
-        ExtensionAPI.updateExtension(this.organization2, destinationExtension, extension.getExtensionModel())
+        ExtensionAPI.updateExtension(this.organization2, destinationExtension, extension.getConfiguration())
           .then((response: RequestResponse) => {
             callback(null, response);
             this.successHandler(response, `Successfully updated extension ${Colors.extension(extension.getName())}`);
@@ -174,15 +174,15 @@ export class ExtensionController extends BaseController {
 
   extractionMethod(object: any[], diffOptions: IDiffOptions, oldVersion?: any[]): any[] {
     if (oldVersion === undefined) {
-      return _.map(object, (e: Extension) => e.getExtensionModel());
+      return _.map(object, (e: Extension) => e.getConfiguration());
     } else {
       return _.map(oldVersion, (oldExtension: Extension) => {
         const newExtension: Extension = _.find(object, (e: Extension) => {
           return e.getName() === oldExtension.getName();
         });
 
-        const newExtensionModel = newExtension.getExtensionModel();
-        const oldExtensionModel = oldExtension.getExtensionModel();
+        const newExtensionModel = newExtension.getConfiguration();
+        const oldExtensionModel = oldExtension.getConfiguration();
 
         // TODO: add keys to ignore here
         const updatedExtensionModel: IStringMap<any> = _.mapObject(newExtensionModel, (val, key) => {

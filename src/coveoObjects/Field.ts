@@ -40,11 +40,11 @@ export class Field extends BaseCoveoObject implements IField {
    *
    * @returns {IStringMap<any>} field Model
    */
-  getFieldModel(): IStringMap<any> {
+  getConfiguration(): IStringMap<any> {
     return this.fieldModel;
   }
 
   clone(): Field {
-    return new Field(JsonUtils.clone(this.getFieldModel()));
+    return new Field(JsonUtils.clone(this.getConfiguration()));
   }
 }

@@ -5,6 +5,7 @@ import { Extension } from '../../src/coveoObjects/Extension';
 import { Field } from '../../src/coveoObjects/Field';
 import { Organization, IBlacklistObjects } from '../../src/coveoObjects/Organization';
 import { Source } from '../../src/coveoObjects/Source';
+import { Dictionary } from '../../src/commons/collections/Dictionary';
 
 export const OrganizationTest = () => {
   describe('Organization Model', () => {
@@ -12,6 +13,40 @@ export const OrganizationTest = () => {
       const organization: Organization = new Organization('org1', 'xxx-aaa-123');
       expect(organization.getId()).to.equal('org1', 'Invalid organization Id');
       expect(organization.getApiKey()).to.equal('xxx-aaa-123', 'Invalid API Key');
+    });
+
+    describe('Configuration Methods', () => {
+      it('Should return the organization configuration', () => {
+        const organization: Organization = new Organization('org1', 'xxx-aaa-123');
+        expect(organization.getConfiguration()).to.eql({
+          fields: new Dictionary<Field>(),
+          sources: new Dictionary<Source>(),
+          extensions: new Dictionary<Extension>()
+        });
+      });
+
+      it('Should return the organization configuration', () => {
+        const organization: Organization = new Organization('org1', 'xxx-aaa-123');
+        expect(organization.getConfiguration()).to.eql({
+          fields: new Dictionary<Field>(),
+          sources: new Dictionary<Source>(),
+          extensions: new Dictionary<Extension>()
+        });
+      });
+
+      it('Should return the organization configuration', () => {
+        const organization: Organization = new Organization('org1', 'xxx-aaa-123');
+        organization.addField(new Field({ name: 'myfield' }));
+
+        const fieldDict = new Dictionary<Field>();
+        fieldDict.add('myfield', new Field({ name: 'myfield' }));
+
+        expect(organization.getConfiguration()).to.eql({
+          fields: fieldDict,
+          sources: new Dictionary<Source>(),
+          extensions: new Dictionary<Extension>()
+        });
+      });
     });
 
     describe('Fields Methods', () => {

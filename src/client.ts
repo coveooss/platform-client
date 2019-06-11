@@ -17,7 +17,9 @@ const pkg: any = require('./../package.json');
 const updateNotifier = require('update-notifier');
 updateNotifier({ pkg }).notify();
 
-program.option('--env [value]', 'Environment (Production by default)').version(pkg.version);
+program
+  .option('--env [value]', 'Environment (Production by default. Supported environments are: test|development|qa|production)')
+  .version(pkg.version);
 
 const commanderUtils = new CommanderUtils();
 

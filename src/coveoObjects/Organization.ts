@@ -157,6 +157,14 @@ export class Organization extends BaseCoveoObject implements IOrganization {
     this.clearSources();
   }
 
+  getConfiguration(): IStringMap<Dictionary<Source | Field | Extension>> {
+    return {
+      fields: this.getFields(),
+      sources: this.getSources(),
+      extensions: this.getExtensions()
+    };
+  }
+
   clone() {
     const newOrg = new Organization(this.getId(), this.getApiKey());
     _.each(this.fields.values(), (field: Field) => {

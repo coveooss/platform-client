@@ -34,7 +34,7 @@ export class DownloadCommand {
     // hack: FieldController needs 2 orgs becaase initially it was  meant for comparison. Feed it.
     const dummyOrg = new Organization('dummy', 'dummy');
     const fieldController: FieldController = new FieldController(this.oganization, dummyOrg);
-    this.download(fieldController, 'Field', (field: Field) => field.getFieldModel());
+    this.download(fieldController, 'Field', (field: Field) => field.getConfiguration());
   }
 
   private download(controller: BaseController, objectName: string, extractionMethod: (object: any) => IStringMap<any>) {
@@ -56,8 +56,7 @@ export class DownloadCommand {
         // prepare file name
         const filename = path.join(this.outputFolder, `${objectName.toLowerCase()}.json`);
         // save to file
-        fs
-          .writeJSON(filename, items, { spaces: 2 })
+        fs.writeJSON(filename, items, { spaces: 2 })
           .then(() => {
             Logger.info('Download operation completed');
             Logger.info(`File saved as ${Colors.filename(filename)}`);

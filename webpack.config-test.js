@@ -1,4 +1,3 @@
-const webpack = require('webpack');
 const path = require('path');
 const WebpackNotifierPlugin = require('webpack-notifier');
 const buildCoverage = ['coverage', 'test'].indexOf(process.env.NODE_ENV) != -1;
@@ -39,5 +38,8 @@ module.exports = {
     )
   },
   plugins: plugins,
-  bail: true
+  bail: true,
+  optimization: {
+    nodeEnv: false
+  }
 };

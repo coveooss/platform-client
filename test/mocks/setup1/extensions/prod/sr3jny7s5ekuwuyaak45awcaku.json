@@ -1,0 +1,25 @@
+{
+  "content": "#SharedVideosNormalization\r\nimport re\r\nimport json\r\n\r\ntrace_level = 0 #default level: warning\r\n\r\nconstExcludeFromCoveo = 'exclude from Coveo'\r\n\r\nbrands_mapping = {\r\n    #lower_case_input_match: output_value\r\n    'masterBetty': 'masterBetty',\r\n    'elite' : 'masterBetty', \r\n    'dummy': 'dummy',\r\n    'dsadsa': 'dsadsa',\r\n    'clicker': 'Clicker'\r\n}\r\n\r\nproduct_type_mapping = {\r\n    #lower_case_input_match: output_value\r\n    'can': 'can',\r\n    'gdo' : 'can',\r\n    'can accessories': 'can Accessories',\r\n    'gdo accessories': 'can Accessories',\r\n    'gdo-accessories' : 'can Accessories',\r\n    'gdo dsadsa' : 'Smartphone Controls',\r\n    'smartphone controls' : 'Smartphone Controls'\r\n}\r\n\r\ndef main():\r\n    log_trace('ENTER: main')\r\n\r\n    normalize('brand','commonbrand', brands_mapping)\r\n    normalize('producttype','commonproducttype', product_type_mapping)\r\n\r\n    log_trace('EXIT: main')\r\n\r\n#normalize\r\n# input: inputField, outputField, valuemap, valuekey\r\n# output: \"commonbrand\" metadata\r\ndef normalize(metainput, metaoutput, mapping):\r\n    original_meta = safe_get_meta_data_value(metainput)\r\n    log_trace('original_meta: ' + original_meta)\r\n\r\n    lowercase_meta = original_meta.lower()\r\n    log_trace('lowercase_meta: ' + lowercase_meta)\r\n\r\n    meta_list = lowercase_meta.split(';')\r\n\r\n    normalized_list = [] #default use empty\r\n\r\n    for meta_value in meta_list:\r\n        log_trace('meta_value: ' + meta_value)\r\n        if meta_value in mapping:\r\n            normalized_value = mapping[meta_value]\r\n            normalized_list.append(normalized_value)\r\n            log_trace('found map for ' + meta_value + ':' + normalized_value)\r\n        else:\r\n# Uncomment the next line to ensure all  values appear.  Currently if a value is\r\n# not in the maps about the metadata will be dropped.\r\n#            normalized_list.append(meta_value)\r\n            log_trace('not found map for ' + meta_value + ', original value is kept.')\r\n    \r\n    normalized_meta = ';'.join(normalized_list)\r\n    document.add_meta_data({metaoutput: normalized_meta})\r\n    return normalized_meta\r\n\r\n#safe_get_parameter\r\n#  returns value from Indexing Pipeline Extension \"Parameter\"\r\n#  returns a string type by default\r\n#  returns a value of same tyep as defaultValue param, if cast is possible\r\n#    if case impossible, returns defaultValue\r\ndef safe_get_parameter(paramName, defaultValue=None):\r\n    def func_get(p_name):\r\n        return parameters[p_name]\r\n        \r\n    return safe_get_data(func_get, paramName, defaultValue)\r\n\r\ndef safe_get_meta_data_value(metadataName, defaultValue=None):\r\n    def func_get(p_name):\r\n        return document.get_meta_data_value(p_name)[-1]\r\n\r\n    log_trace('ENTER  safe_get_meta_data_value:' + metadataName)\r\n    retval =  safe_get_data(func_get, metadataName, defaultValue)\r\n    log_trace('EXIT safe_get_meta_data_value:' + retval)\r\n    return retval\r\n\r\ndef safe_get_data(func, paramName, defaultValue=None):\r\n    try:\r\n        if defaultValue is None:\r\n            defaultValue = ''\r\n\r\n        value = func(paramName)\r\n        neededType = type(defaultValue)\r\n        log_trace('{0} {1}: {2}'.format(paramName, type(value), value))\r\n        \r\n        return neededType(value)\r\n    except Exception as e:\r\n        #log_trace('except in safe_get_data: ' + str(e))\r\n        return defaultValue #return the default on any error\r\n\r\ndef log_trace(msg):\r\n    global trace_level\r\n    if trace_level < 1:\r\n        log(msg, 'debug')\r\n\r\ndef log_info(msg):\r\n    global trace_level\r\n    if trace_level < 2:\r\n        log(msg, 'normal')\r\n        \r\ndef log_warn(msg):\r\n    global trace_level\r\n    if trace_level < 3:\r\n        log(msg, 'warning')\r\n\r\ndef log_error(msg):\r\n    log(msg, 'error')        \r\n\r\nlog_trace('ENTER SalesforceNormalization')\r\ntrace_level = safe_get_parameter('trace_level', trace_level)\r\n\r\ntry:\r\n    main()\r\nexcept Exception as e:\r\n    log_error('UNEXPECTED: ' + str(e))\r\nlog_trace('EXIT SalesforceNormalization')\r\n",
+  "createdDate": 1523375802000,
+  "description": "",
+  "enabled": true,
+  "id": "dummygroupproduction-sr3jny7s5ekuwuyaak45awcaku",
+  "lastModified": 1523375203000,
+  "name": "dummy extension",
+  "requiredDataStreams": [],
+  "versionId": "XufRKiqPLkXsdfgfds2WMtoBvv",
+  "usedBy": [{ "sourceId": "wyowilfyrpf2qogxm45uhgskri-dummygroupproduction", "sourceName": "Manuals" }],
+  "status": {
+    "durationHealth": { "healthIndicator": "UNKNOWN" },
+    "dailyStatistics": {
+      "averageDurationInSeconds": 0.0,
+      "numberOfErrors": 0,
+      "numberOfExecutions": 0,
+      "numberOfSkips": 0,
+      "numberOfTimeouts": 0
+    },
+    "disabledStatus": {},
+    "timeoutHealth": { "healthIndicator": "UNKNOWN" },
+    "timeoutLikeliness": "NONE"
+  }
+}

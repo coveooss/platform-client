@@ -9,12 +9,16 @@ export class JsonUtils {
     return JSON.stringify(obj, undefined, space);
   }
 
+  static unflatten(jsonObject: any): any {
+    return unflatten(jsonObject);
+  }
+
   static flatten(jsonObject: any): any {
     return flatten(jsonObject);
   }
 
   /**
-   * Remove key value pairs from the JSON object. Noth that the parameter 'exclusiveKeys' take precedence over the parameter 'keysToRemove'.
+   * Remove key value pairs from the JSON object. Note that the parameter 'exclusiveKeys' take precedence over the parameter 'keysToRemove'.
    * This means that if you specify both parameters, only the 'exclusiveKeys' will be taken in consideration
    *
    * @static
@@ -30,18 +34,40 @@ export class JsonUtils {
       return obj;
     }
 
+    Assert.check(!Array.isArray(obj), 'Should not flatten arrays');
     let map = flatten(obj);
 
-    map = _.omit(map, (value: any, key: string) => {
-      const keys = key.split('.');
-      if (exclusiveKeys.length > 0) {
-        // Whitelist strategy
-        return _.intersection(keys, exclusiveKeys).length === 0;
-      } else {
-        // Blacklist strategy
-        return _.intersection(keys, keysToRemove).length > 0;
-      }
-    });
+    const omit = (keys: string[], initialMatchCondition: boolean) => {
+      return _.omit(map, (value: any, key: string) => {
+        const _key = key.split('.');
+        let match;
+
+        for (let i = 0; i < keys.length; i++) {
+          match = initialMatchCondition;
+          const _str = keys[i].split('.');
+          for (let j = 0; j < _str.length; j++) {
+            if (_key[j] !== _str[j]) {
+              match = !initialMatchCondition;
+              break;
+            }
+          }
+          if (match === initialMatchCondition) {
+            break;
+          }
+        }
+        return match;
+      });
+    };
+
+    // First pass - whitelist strategy
+    if (exclusiveKeys.length > 0) {
+      map = omit(exclusiveKeys, false);
+    }
+
+    // Second pass - blacklist strategy
+    if (keysToRemove.length > 0) {
+      map = omit(keysToRemove, true);
+    }
 
     return unflatten(map);
   }
@@ -55,7 +81,7 @@ export class JsonUtils {
    * @returns {boolean} Contains or not the specified key
    */
   static hasKey(obj: any, keysToFind: string[] = []): boolean {
-    const map = flatten(obj);
+    const map: {} = flatten(obj);
     const noCommonElements = Object.keys(map).every((key: string) => {
       const keys = key.split('.');
       return _.intersection(keys, keysToFind).length === 0;

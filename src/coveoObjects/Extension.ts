@@ -1,10 +1,10 @@
-import { ICoveoObject } from '../commons/interfaces/ICoveoObject';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { Assert } from '../commons/misc/Assert';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 import { BaseCoveoObject } from './BaseCoveoObject';
+import { IExtention } from '../commons/interfaces/IExtension';
 
-export class Extension extends BaseCoveoObject implements ICoveoObject {
+export class Extension extends BaseCoveoObject implements IExtention {
   constructor(private configuration: any) {
     super(configuration['id']);
     Assert.isNotUndefined(this.configuration['content'], 'Extension content should not be undefined.');
@@ -34,7 +34,7 @@ export class Extension extends BaseCoveoObject implements ICoveoObject {
    *
    * @returns {IStringMap<any>}
    */
-  getExtensionModel(): IStringMap<any> {
+  getConfiguration(): IStringMap<any> {
     return {
       content: this.getContent(),
       description: this.getDescription(),

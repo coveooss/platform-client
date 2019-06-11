@@ -34,7 +34,7 @@ export class SourceAPI {
 
   static getSingleSource(organization: Organization, sourceId: string): Promise<RequestResponse> {
     Assert.isNotUndefined(sourceId, 'Cannot load undefined source');
-    return RequestUtils.get(UrlService.getSingleSourceUrl(organization.getId(), sourceId), organization.getApiKey());
+    return RequestUtils.get(UrlService.getSingleRawSourceUrl(organization.getId(), sourceId), organization.getApiKey());
   }
 
   static loadSources(org: Organization): Promise<{}> {
@@ -77,7 +77,7 @@ export class SourceAPI {
         // tslint:disable-next-line:typedef
         return this.getSingleSource(org, source['id'])
           .then((sourceBody: RequestResponse) => {
-            Logger.info(`Successfully loaded source ${Colors.source(source['name'])} from ${Colors.organization(org.getId())}`);
+            Logger.verbose(`Successfully loaded source ${Colors.source(source['name'])} from ${Colors.organization(org.getId())}`);
             this.addLoadedSourcesToOrganization(org, sourceBody.body);
             callback(null, source['name']);
           })
