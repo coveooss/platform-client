@@ -538,6 +538,30 @@ export const SourceControllerTest = () => {
           });
       });
 
+      it('Should  throw an error if throttled by the REST API', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          // First expected request
+          .get('/rest/organizations/dev/sources')
+          .reply(429, 'SOOOORRY') // Too many requests
+          .get('/rest/organizations/prod/sources')
+          .reply(429, 'SOOOORRY') // Too many requests
+          .get('/rest/organizations/dev/extensions')
+          .reply(429, 'SOOOORRY') // Too many requests
+          .get('/rest/organizations/prod/extensions')
+          .reply(429, 'SOOOORRY'); // Too many requests
+
+        controller
+          .diff()
+          .then(() => {
+            done('Should not resolve');
+          })
+          .catch((err: IGenericError) => {
+            // We are expecting an error
+            expect(err.message).to.eql('"SOOOORRY"');
+            done();
+          });
+      });
+
       it('Should not load extensions that have been blacklisted on the source diff', (done: MochaDone) => {
         const orgx: Organization = new Organization('dev', 'xxx', { extensions: ['SharedVideosNormalization', 'FilterVideos'] });
         const orgy: Organization = new Organization('prod', 'yyy');
@@ -990,6 +1014,156 @@ export const SourceControllerTest = () => {
               })
               .catch((err: any) => {
                 done(err);
+              });
+          })
+          .catch((err: IGenericError) => {
+            done(err);
+          });
+      });
+
+      it('Should graduate using the whitelist strategy', (done: MochaDone) => {
+        const orgx: Organization = new Organization('dev', 'xxx');
+        const orgy: Organization = new Organization('prod', 'yyy');
+        const controllerxy = new SourceController(orgx, orgy);
+
+        const localDevSource = {
+          sourceType: 'SITEMAP',
+          id: 'dev-source',
+          name: 'sitemap test',
+          parameters: { prodParameter: 'DEV value that should not be graduated' },
+          mappings: [
+            {
+              id: 'xxxxxb',
+              kind: 'COMMON',
+              fieldName: 'uri',
+              extractionMethod: 'METADATA',
+              content: '%[printableuri]'
+            },
+            {
+              id: 'xxxxxa',
+              kind: 'COMMON',
+              fieldName: 'printableuri',
+              extractionMethod: 'METADATA',
+              content: '%[printableuri]'
+            }
+          ],
+          preConversionExtensions: [],
+          postConversionExtensions: [],
+          owner: 'test@coveo.com',
+          resourceId: 'dev-source'
+        };
+
+        const localProdSource = {
+          sourceType: 'SITEMAP',
+          id: 'prod-source',
+          name: 'sitemap test',
+          parameters: { prodParameter: 'something' },
+          owner: 'prod-owner@coveo.com',
+          mappings: [
+            {
+              id: 'yyyyyyb',
+              kind: 'COMMON',
+              fieldName: 'printableuri',
+              extractionMethod: 'METADATA',
+              content: '%[printableuri]'
+            }
+          ],
+          preConversionExtensions: [],
+          postConversionExtensions: [],
+          resourceId: 'prod-source'
+        };
+        const localProdSource2 = {
+          sourceType: 'SITEMAP',
+          id: 'prod-source2',
+          name: 'websource test',
+          mappings: [
+            {
+              id: 'yyyyyyb',
+              kind: 'COMMON',
+              fieldName: 'printableuri',
+              extractionMethod: 'METADATA',
+              content: '%[printableuri]'
+            }
+          ],
+          preConversionExtensions: [],
+          postConversionExtensions: [],
+          resourceId: 'prod-source2'
+        };
+
+        scope = nock(UrlService.getDefaultUrl())
+          // First expected request
+          .get('/rest/organizations/dev/sources')
+          .reply(RequestUtils.OK, [localDevSource])
+          // Fecth extensions from dev
+          .get('/rest/organizations/dev/extensions')
+          .reply(RequestUtils.OK, [])
+          // Fecth extensions from Prod
+          .get('/rest/organizations/prod/extensions')
+          // Rename extension Ids
+          .reply(RequestUtils.OK, [])
+          // Fetching dev sources one by one
+          .get('/rest/organizations/dev/sources/dev-source/raw')
+          .reply(RequestUtils.OK, localDevSource)
+          // Fecthing all prod sources
+          .get('/rest/organizations/prod/sources')
+          .reply(RequestUtils.OK, [localProdSource, localProdSource2])
+          .get('/rest/organizations/prod/sources/prod-source/raw')
+          .reply(RequestUtils.OK, localProdSource)
+          .get('/rest/organizations/prod/sources/prod-source2/raw')
+          .reply(RequestUtils.OK, localProdSource2)
+          // Graduation time!
+          .put('/rest/organizations/prod/sources/prod-source/raw?rebuild=false', {
+            sourceType: 'SITEMAP',
+            id: 'prod-source',
+            name: 'sitemap test',
+            parameters: { prodParameter: 'something' },
+            owner: 'prod-owner@coveo.com',
+            mappings: [
+              {
+                id: 'xxxxxa',
+                kind: 'COMMON',
+                fieldName: 'printableuri',
+                extractionMethod: 'METADATA',
+                content: '%[printableuri]'
+              },
+              {
+                id: 'xxxxxb',
+                kind: 'COMMON',
+                fieldName: 'uri',
+                extractionMethod: 'METADATA',
+                content: '%[printableuri]'
+              }
+            ],
+            preConversionExtensions: [],
+            postConversionExtensions: [],
+            resourceId: 'prod-source'
+          })
+          .reply(429, 'TOO_MANY_REQUESTS')
+          .delete('/rest/organizations/prod/sources/prod-source2')
+          .reply(429, 'TOO_MANY_REQUESTS');
+
+        const diffOptions: IDiffOptions = { includeOnly: ['name', 'mappings'] };
+        const graduateOptions: IGraduateOptions = {
+          POST: true,
+          PUT: true,
+          DELETE: true,
+          diffOptions: diffOptions,
+          keyWhitelist: ['name', 'mappings']
+        };
+        controllerxy
+          .diff(diffOptions)
+          .then((diff: DiffResultArray<Source>) => {
+            expect(diff.TO_CREATE.length).to.eql(0);
+            expect(diff.TO_UPDATE.length).to.eql(1);
+            expect(diff.TO_DELETE.length).to.eql(1);
+            controllerxy
+              .graduate(diff, graduateOptions)
+              .then((resolved: any[]) => {
+                done('Should not resolve');
+              })
+              .catch((err: any) => {
+                expect(err).to.eql('"TOO_MANY_REQUESTS"');
+                done();
               });
           })
           .catch((err: IGenericError) => {

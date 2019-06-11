@@ -81,7 +81,7 @@ export class JsonUtils {
    * @returns {boolean} Contains or not the specified key
    */
   static hasKey(obj: any, keysToFind: string[] = []): boolean {
-    const map = flatten(obj);
+    const map: {} = flatten(obj);
     const noCommonElements = Object.keys(map).every((key: string) => {
       const keys = key.split('.');
       return _.intersection(keys, keysToFind).length === 0;

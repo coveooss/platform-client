@@ -44,7 +44,7 @@ export class InteractiveQuestion {
   start() {
     const prompt = inquirer.createPromptModule();
     return this.loadFieldModel()
-      .then((model: {}) => {
+      .then((model: string[]) => {
         return prompt(this.getInitialQuestions({ fieldModel: model })).then((ans: Answers) => {
           InteractiveQuestion.PREVIOUS_ANSWERS = ans;
           const org = new Organization(ans[InteractiveQuestion.ORIGIN_ORG_ID], ans[InteractiveQuestion.MASTER_API_KEY]);
@@ -70,7 +70,7 @@ export class InteractiveQuestion {
       });
   }
 
-  loadFieldModel() {
+  loadFieldModel(): Promise<string[]> {
     // tslint:disable-next-line:typedef
     return new Promise((resolve, reject) => {
       FieldAPI.getFieldDefinitions()
