@@ -5,6 +5,12 @@ const WebpackNotifierPlugin = require('webpack-notifier');
 const plugins = [];
 plugins.push(new WebpackNotifierPlugin());
 
+plugins.push(
+  new webpack.ProvidePlugin({
+    _: 'underscore'
+  })
+);
+
 module.exports = {
   name: 'client',
   target: 'node',

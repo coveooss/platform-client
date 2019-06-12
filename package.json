@@ -1,6 +1,6 @@
 {
   "name": "coveo-platform-client",
-  "version": "2.6.1",
+  "version": "2.6.2",
   "description": "A client to manage organizations in the Coveo Cloud Platform",
   "main": "./bin/client-global.js",
   "keywords": [
@@ -48,6 +48,7 @@
     "conventional-recommended-bump": "^4.0.4",
     "cross-env": "^5.2.0",
     "del": "^3.0.0",
+    "ejs-loader": "^0.3.3",
     "gulp": "^4.0.0",
     "gulp-concat": "^2.6.1",
     "gulp-replace": "^1.0.0",
