@@ -1,7 +1,6 @@
 import * as fs from 'fs-extra';
 import * as opn from 'open';
 import * as _ from 'underscore';
-import path = require('path');
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { Colors } from '../commons/colors';
 import { StaticErrorMessage } from '../commons/errors';
@@ -12,7 +11,6 @@ import { FieldController } from '../controllers/FieldController';
 import { SourceController } from '../controllers/SourceController';
 import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
 import { Organization, IBlacklistObjects } from '../coveoObjects/Organization';
-import { EnvironmentUtils } from '../commons/utils/EnvironmentUtils';
 
 export interface IDiffOptions {
   /**
@@ -115,44 +113,29 @@ export class DiffCommand {
 
           const cleanVersion = controller.getCleanVersion(diffResultArray, options);
 
-          const newSources = JSON.stringify(cleanVersion.TO_CREATE);
-          const deletedSources = JSON.stringify(cleanVersion.TO_DELETE);
-          const cleanDiff = JSON.stringify(cleanVersion.TO_UPDATE);
+          const template = require('ejs-loader!./../../views/source-diff.ejs');
 
-          const viewPath = EnvironmentUtils.isTestRunning()
-            ? `../../views/source-diff.ejs`
-            : path.resolve(__dirname, `views/source-diff.ejs`);
-          Logger.verbose(`Resolve path "${viewPath}"`);
-
-          fs.readFile(viewPath, (err, data) => {
-            if (err) {
-              Logger.error('Unable to read html file', err);
-              return;
-            }
-
-            // FIXME: That's very sketchy. Ideally we want to use an ejs loader.
-            const htmlContent = data
-              .toString()
-              .replace('DIFF_OBJECT', cleanDiff)
-              .replace('SOURCES_TO_CREATE', newSources)
-              .replace('SOURCES_TO_DELETE', deletedSources);
-
-            fs.writeFile(`${objectName}Diff.html`, htmlContent)
-              .then(() => {
-                Logger.info('Diff operation completed');
-                Logger.info(`File saved as ${Colors.filename(objectName + 'Diff.json')}`);
-                Logger.stopSpinner();
-                if (!options.silent) {
-                  opn(`${objectName}Diff.html`);
-                }
-                process.exit();
-              })
-              .catch((error: any) => {
-                Logger.error('Unable to create html file', error);
-                Logger.stopSpinner();
-                process.exit();
-              });
+          const result = template({
+            DIFF_OBJECT: JSON.stringify(cleanVersion.TO_UPDATE),
+            SOURCES_TO_CREATE: JSON.stringify(cleanVersion.TO_CREATE),
+            SOURCES_TO_DELETE: JSON.stringify(cleanVersion.TO_DELETE)
           });
+
+          fs.writeFile(`${objectName}Diff.html`, result)
+            .then(() => {
+              Logger.info('Diff operation completed');
+              Logger.info(`File saved as ${Colors.filename(objectName + 'Diff.json')}`);
+              Logger.stopSpinner();
+              if (!options.silent) {
+                opn(`${objectName}Diff.html`);
+              }
+              process.exit();
+            })
+            .catch((error: any) => {
+              Logger.error('Unable to create html file', error);
+              Logger.stopSpinner();
+              process.exit();
+            });
         } else {
           fs.writeJSON(`${objectName}Diff.json`, controller.getCleanVersion(diffResultArray, options), { spaces: 2 })
             .then(() => {
@@ -173,6 +156,7 @@ export class DiffCommand {
         }
       })
       .catch((err: any) => {
+        // FIXME: logonly does not seem to log
         Logger.logOnly(StaticErrorMessage.UNABLE_TO_DIFF, err);
         Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, 'Consult the logs for more information');
         Logger.stopSpinner();

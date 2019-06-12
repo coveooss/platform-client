@@ -48,9 +48,9 @@
   </head>
 
   <script>
-    window.sourcesToCreate = SOURCES_TO_CREATE;
-    window.sourcesToDelete = SOURCES_TO_DELETE;
-    window.sourcesToUpdate = DIFF_OBJECT;
+    window.sourcesToCreate = <%= SOURCES_TO_CREATE %>;
+    window.sourcesToDelete = <%= SOURCES_TO_DELETE %>;
+    window.sourcesToUpdate = <%= DIFF_OBJECT %>;
   </script>
 
   <body>
@@ -162,8 +162,8 @@
                 <span id="addition-count" class="text-green"> </span> &nbsp; <span id="deletion-count" class="text-red"> </span>
               </h4>
               <div class="form-control fixed m1" id="navigation-section" style="right:4rem;">
-                  <button class="btn mod-small navigation-button" onclick="javascript:jumpToPreviousChange(this)">Previous</button>
-                  <button class="btn mod-small navigation-button" onclick="javascript:jumpToNextChange(this)">Next</button>
+                <button class="btn mod-small navigation-button" onclick="javascript:jumpToPreviousChange(this)">Previous</button>
+                <button class="btn mod-small navigation-button" onclick="javascript:jumpToNextChange(this)">Next</button>
               </div>
               <figure class="highlight p0"><pre id="result"></pre></figure>
             </div>
@@ -173,41 +173,59 @@
     </div>
 
     <script>
-    function jumpToPreviousChange(_this) {
-      $('.navigation-button').removeClass('state-disabled');
-      var elmnts = $('.diff-change');
-      elmnts.removeClass('change-focus')
-      var indexCount = _this.parentElement.getAttribute('data-index') || -1;
-      console.log(indexCount);
+      function jumpToPreviousChange(_this) {
+        $('.navigation-button').removeClass('state-disabled');
+        var elmnts = $('.diff-change');
+        elmnts.removeClass('change-focus');
+        var indexCount = _this.parentElement.getAttribute('data-index') || -1;
+        console.log(indexCount);
 
-      if (parseInt(indexCount) > 0) {
-        var elem = elmnts[parseInt(indexCount) - 1];
-        elem.classList.add('change-focus')
-        // elem.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        $('.page-content').stop().animate({scrollTop: elem.getBoundingClientRect().y + $('.page-content')[0].scrollTop - Math.floor(window.innerHeight*0.3)}, 300, 'swing', function(){})
-        _this.parentElement.setAttribute('data-index', parseInt(indexCount) - 1);
-      } else {
-        _this.classList.add('state-disabled')
+        if (parseInt(indexCount) > 0) {
+          var elem = elmnts[parseInt(indexCount) - 1];
+          elem.classList.add('change-focus');
+          // elem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          $('.page-content')
+            .stop()
+            .animate(
+              {
+                scrollTop: elem.getBoundingClientRect().y + $('.page-content')[0].scrollTop - Math.floor(window.innerHeight * 0.3)
+              },
+              300,
+              'swing',
+              function() {}
+            );
+          _this.parentElement.setAttribute('data-index', parseInt(indexCount) - 1);
+        } else {
+          _this.classList.add('state-disabled');
+        }
       }
-    }
 
-    function jumpToNextChange(_this) {
-      $('.navigation-button').removeClass('state-disabled');
-      var elmnts = $('.diff-change');
-      elmnts.removeClass('change-focus')
-      var indexCount = _this.parentElement.getAttribute('data-index') || -1;
-      console.log(indexCount);
+      function jumpToNextChange(_this) {
+        $('.navigation-button').removeClass('state-disabled');
+        var elmnts = $('.diff-change');
+        elmnts.removeClass('change-focus');
+        var indexCount = _this.parentElement.getAttribute('data-index') || -1;
+        console.log(indexCount);
 
-      if (parseInt(indexCount) + 1 < elmnts.length) {
-        var elem = elmnts[parseInt(indexCount) + 1];
-        elem.classList.add('change-focus')
-        // elem.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        $('.page-content').stop().animate({scrollTop: elem.getBoundingClientRect().y + $('.page-content')[0].scrollTop - Math.floor(window.innerHeight*0.3)}, 300, 'swing', function(){})
-        _this.parentElement.setAttribute('data-index', (parseInt(indexCount) + 1) % elmnts.length);
-      } else {
-        _this.classList.add('state-disabled')
+        if (parseInt(indexCount) + 1 < elmnts.length) {
+          var elem = elmnts[parseInt(indexCount) + 1];
+          elem.classList.add('change-focus');
+          // elem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          $('.page-content')
+            .stop()
+            .animate(
+              {
+                scrollTop: elem.getBoundingClientRect().y + $('.page-content')[0].scrollTop - Math.floor(window.innerHeight * 0.3)
+              },
+              300,
+              'swing',
+              function() {}
+            );
+          _this.parentElement.setAttribute('data-index', (parseInt(indexCount) + 1) % elmnts.length);
+        } else {
+          _this.classList.add('state-disabled');
+        }
       }
-    }
 
       function getModificationCount(jsonDiff) {
         let count = [0, 0];
@@ -236,23 +254,23 @@
         let sourcesToDelete = document.getElementById('sources-to-delete-list');
         sourcesToDelete.innerHTML = '';
 
-        window.sourcesToCreate.forEach(sourceName => {
+        window.sourcesToCreate.forEach(sourceNameToCreate => {
           let li = document.createElement('li');
 
           let element = document.createElement('h4');
           element.className = 'title-text mt1';
-          element.textContent = sourceName;
+          element.textContent = sourceNameToCreate;
 
           li.appendChild(element);
           sourcesToCreate.appendChild(li);
         });
 
-        window.sourcesToDelete.forEach(sourceName => {
+        window.sourcesToDelete.forEach(sourceNameToDelete => {
           let li = document.createElement('li');
 
           let element = document.createElement('h4');
           element.className = 'title-text mt1';
-          element.textContent = sourceName;
+          element.textContent = sourceNameToDelete;
 
           li.appendChild(element);
           sourcesToDelete.appendChild(li);
@@ -261,8 +279,8 @@
 
       function handleUpdatedSourceChange(sourceDiff) {
         document.getElementById('navigation-section').setAttribute('data-index', -1);
-        const sourceName = _.keys(sourceDiff)[0];
-        const jsonDiff = sourceDiff[sourceName];
+        const sourceDiffKeys = _.keys(sourceDiff)[0];
+        const jsonDiff = sourceDiff[sourceDiffKeys];
 
         // Activate back navigation button
         $('.navigation-button').removeClass('state-disabled');
@@ -271,12 +289,12 @@
         $(`#diff-source-section`).removeClass('hidden');
         $(`#diff-summary`).addClass('hidden');
 
-        const sourceTab = document.querySelector(`li[data-source-name="${sourceName}"]`);
+        const sourceTab = document.querySelector('li[data-source-name="' + sourceDiffKeys + '"]');
         sourceTab.classList.add('state-active');
 
         const modificationsCount = getModificationCount(jsonDiff);
-        document.getElementById('addition-count').textContent = modificationsCount[0] > 0 ? `+ ${modificationsCount[0]}` : '';
-        document.getElementById('deletion-count').textContent = modificationsCount[1] > 0 ? `- ${modificationsCount[1]}` : '';
+        document.getElementById('addition-count').textContent = modificationsCount[0] > 0 ? '+ ' + modificationsCount[0] : '';
+        document.getElementById('deletion-count').textContent = modificationsCount[1] > 0 ? '- ' + modificationsCount[1] : '';
 
         changed(jsonDiff);
       }
@@ -314,16 +332,16 @@
 
         let sourceList = document.getElementById('source-list-to-update');
         sources.forEach(source => {
-          const sourceName = _.keys(source)[0];
+          const keys0 = _.keys(source)[0];
           let li = document.createElement('li');
           li.className = 'navigation-menu-section-item';
-          li.setAttribute('data-source-name', sourceName);
+          li.setAttribute('data-source-name', keys0);
 
           let anchor = document.createElement('a');
           anchor.className = 'block navigation-menu-section-item-link';
           anchor.href = '#';
           anchor.onclick = () => handleUpdatedSourceChange(source);
-          anchor.textContent = sourceName;
+          anchor.textContent = keys0;
 
           li.appendChild(anchor);
           sourceList.appendChild(li);
@@ -331,7 +349,7 @@
 
         // Add updated source count
         sourceList = document.getElementById('source-list-to-update-count');
-        sourceList.textContent = `(${sources.length})`;
+        sourceList.textContent = '(' + sources.length + ')';
         // Show first source form the list
         //handleUpdatedSourceChange(_.values(sources)[0]);
       }
