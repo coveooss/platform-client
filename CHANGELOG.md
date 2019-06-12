@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.6.2"></a>
+## [2.6.2](https://github.com/coveo/platform-client/compare/v2.6.1...v2.6.2) (2019-06-12)
+
+
+### Bug Fixes
+
+* Add ejs loader to open source diff ([ed0964e](https://github.com/coveo/platform-client/commit/ed0964e))
+
+
+
 <a name="2.6.1"></a>
 ## [2.6.1](https://github.com/coveo/platform-client/compare/v2.6.0...v2.6.1) (2019-06-11)
 
