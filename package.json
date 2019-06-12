@@ -1,6 +1,6 @@
 {
   "name": "coveo-platform-client",
-  "version": "2.6.1",
+  "version": "2.6.2",
   "description": "A client to manage organizations in the Coveo Cloud Platform",
   "main": "./bin/client-global.js",
   "keywords": [
