@@ -1,14 +1,14 @@
 import { Assert } from '../misc/Assert';
-import { config } from './../../config/index';
+import { EnvironmentUtils } from '../utils/EnvironmentUtils';
 
 export class UrlService {
   static getDefaultUrl(path: string = ''): string {
-    return `${config.coveo.platformUrl}${path}`;
+    return `${EnvironmentUtils.getConfiguration().coveo.platformUrl}${path}`;
   }
 
   /*** Organization API ***/
   static getOrganizationUrl(organizationId: string): string {
-    return `${config.coveo.platformUrl}/rest/organizations/${organizationId}`;
+    return `${EnvironmentUtils.getConfiguration().coveo.platformUrl}/rest/organizations/${organizationId}`;
   }
 
   /*** Extensions API ***/
@@ -22,7 +22,7 @@ export class UrlService {
 
   /*** Fields API ***/
   static getFieldDocs(): string {
-    return `${config.coveo.platformUrl}/api-docs/Field?group=public`;
+    return `${EnvironmentUtils.getConfiguration().coveo.platformUrl}/api-docs/Field?group=public`;
   }
 
   static getFieldsPageUrl(organizationId: string, page: number, perPage: number = 1000): string {
