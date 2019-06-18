@@ -25,8 +25,7 @@ export class InteractionController {
       .then((answers: Answers) => {
         const commandFilename = answers[InteractiveQuestion.SETTING_FILENAME];
         const command = ['platformclient', this.generateCommand(answers)].join(' ');
-        fs
-          .writeFile(commandFilename, [this.setShebangLine(), command].join('\n'))
+        fs.writeFile(commandFilename, [this.setShebangLine(), command].join('\n'))
           .then(() => {
             console.log(`Intruction saved in ${Colors.filename(commandFilename)}`);
           })
@@ -56,7 +55,8 @@ export class InteractionController {
       .concat(this.saveOptionIfExists(answers, '-O ', InteractiveQuestion.LOG_FILENAME))
       .concat(this.saveOptionIfExists(answers, '-l ', InteractiveQuestion.LOG_LEVEL))
       .concat(this.saveOptionIfExists(answers, '-i ', InteractiveQuestion.KEY_TO_IGNORE))
-      .concat(this.saveOptionIfExists(answers, '-o ', InteractiveQuestion.KEY_TO_INCLUDE_ONLY));
+      .concat(this.saveOptionIfExists(answers, '-o ', InteractiveQuestion.KEY_TO_INCLUDE_ONLY))
+      .concat(this.saveOptionIfExists(answers, '--env ', InteractiveQuestion.ENVIRONMENT));
 
     return command.join(' ');
   }
@@ -69,7 +69,11 @@ export class InteractionController {
     const answer = answers[option];
 
     return Array.isArray(answer)
-      ? Utils.isEmptyArray(answer) ? [] : [`${prefix}${answer}`]
-      : Utils.isEmptyString(answer) ? [] : [`${prefix}${answer}`];
+      ? Utils.isEmptyArray(answer)
+        ? []
+        : [`${prefix}${answer}`]
+      : Utils.isEmptyString(answer)
+      ? []
+      : [`${prefix}${answer}`];
   }
 }
