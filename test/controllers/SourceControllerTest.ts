@@ -15,9 +15,10 @@ import { IDiffOptions } from '../../src/commands/DiffCommand';
 import { Dictionary } from '../../src/commons/collections/Dictionary';
 import { JsonUtils } from '../../src/commons/utils/JsonUtils';
 import { IGraduateOptions } from '../../src/commands/GraduateCommand';
+import { IDownloadResultArray } from '../../src/commons/collections/DownloadResultArray';
 
 const allDevSources: Array<{}> = require('./../mocks/setup1/sources/dev/allSources.json');
-// const DEVrrbbidfxa2ri4usxhzzmhq2hge: {} = require('./../mocks/setup1/sources/dev/web.json');
+const DEVrrbbidfxa2ri4usxhzzmhq2hge: {} = require('./../mocks/setup1/sources/dev/web.json');
 const DEVtcytrppteddiqkmboszu4skdoe: {} = require('./../mocks/setup1/sources/dev/sitemap.json');
 const DEVwyowilfyrpf2qogxm45uhgskri: {} = require('./../mocks/setup1/sources/dev/salesforce.json');
 const DEVqtngyd2gvxjxrrkftndaepcngu: {} = require('./../mocks/setup1/sources/dev/youtube.json');
@@ -1263,6 +1264,35 @@ export const SourceControllerTest = () => {
               });
           })
           .catch((err: IGenericError) => {
+            done(err);
+          });
+      });
+    });
+
+    describe('Download Method', () => {
+      it('Should download sources', (done: MochaDone) => {
+        const orgx: Organization = new Organization('dev', 'xxx');
+        const controllerxy = new SourceController(orgx);
+
+        scope = nock(UrlService.getDefaultUrl())
+          .get('/rest/organizations/dev/sources')
+          .reply(RequestUtils.OK, allDevSources)
+          .get('/rest/organizations/dev/sources/rrbbidfxa2ri4usxhzzmhq2hge-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, DEVrrbbidfxa2ri4usxhzzmhq2hge)
+          .get('/rest/organizations/dev/sources/tcytrppteddiqkmboszu4skdoe-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, DEVtcytrppteddiqkmboszu4skdoe)
+          .get('/rest/organizations/dev/sources/wyowilfyrpf2qogxm45uhgskri-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, DEVwyowilfyrpf2qogxm45uhgskri)
+          .get('/rest/organizations/dev/sources/qtngyd2gvxjxrrkftndaepcngu-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, DEVqtngyd2gvxjxrrkftndaepcngu);
+
+        controllerxy
+          .download()
+          .then((downloadResultArray: IDownloadResultArray) => {
+            expect(downloadResultArray.getCount()).to.be.eql(4);
+            done();
+          })
+          .catch((err: any) => {
             done(err);
           });
       });

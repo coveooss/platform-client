@@ -1,3 +1,4 @@
+import * as _ from 'underscore';
 import * as fs from 'fs-extra';
 import path = require('path');
 import { IDownloadResultArray } from '../commons/collections/DownloadResultArray';
@@ -5,15 +6,15 @@ import { Colors } from '../commons/colors';
 import { IGenericError, StaticErrorMessage } from '../commons/errors';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { Logger } from '../commons/logger';
-import { JsonUtils } from '../commons/utils/JsonUtils';
 import { BaseController } from '../controllers/BaseController';
 import { FieldController } from '../controllers/FieldController';
-import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
 import { Field } from '../coveoObjects/Field';
 import { Organization } from '../coveoObjects/Organization';
+import { SourceController } from '../controllers/SourceController';
+import { Source } from '../coveoObjects/Source';
 
 export class DownloadCommand {
-  private oganization: Organization;
+  private organization: Organization;
 
   /**
    * Creates an instance of DownloadCommand.
@@ -22,8 +23,8 @@ export class DownloadCommand {
    * @param {string} outputFolder
    * @memberof DownloadCommand
    */
-  constructor(private originOrganization: string, originApiKey: string, private outputFolder: string) {
-    this.oganization = new Organization(originOrganization, originApiKey);
+  constructor(originOrganization: string, originApiKey: string, private outputFolder: string) {
+    this.organization = new Organization(originOrganization, originApiKey);
   }
 
   /**
@@ -31,26 +32,39 @@ export class DownloadCommand {
    * @memberof DownloadCommand
    */
   downloadFields() {
-    // hack: FieldController needs 2 orgs becaase initially it was  meant for comparison. Feed it.
-    const dummyOrg = new Organization('dummy', 'dummy');
-    const fieldController: FieldController = new FieldController(this.oganization, dummyOrg);
+    const fieldController: FieldController = new FieldController(this.organization);
     this.download(fieldController, 'Field', (field: Field) => field.getConfiguration());
   }
 
+  /**
+   * Downloads the sources of organization. Produces a ${objectName}.json file
+   * @memberof DownloadCommand
+   */
+  downloadSources() {
+    const sourceController: SourceController = new SourceController(this.organization);
+    this.download(sourceController, 'Source', (source: Source) => source.getConfiguration());
+  }
+
+  /**
+   * Downloads the extensions of organization. Produces a ${objectName}.json file
+   * @memberof DownloadCommand
+   */
+  downloadExtensions() {
+    // TODO: to implement
+  }
+
   private download(controller: BaseController, objectName: string, extractionMethod: (object: any) => IStringMap<any>) {
-    Logger.startSpinner('Downloading fields');
+    Logger.startSpinner(`Downloading ${objectName}s`);
 
     controller
-      .download(this.originOrganization)
+      .download()
       .then((downloadResultArray: IDownloadResultArray) => {
         // sort the items in the list
         downloadResultArray.sort();
+
         // get the list
-        const items = downloadResultArray.getItems();
-        // sort items' attributes
-        items.forEach((value: BaseCoveoObject, index: number, array: BaseCoveoObject[]) => {
-          array[index] = JsonUtils.sortObjectProperties(extractionMethod(value), true);
-        });
+        const items = _.map(downloadResultArray.getItems(), item => extractionMethod(item));
+
         // ensure path
         fs.ensureDirSync(this.outputFolder);
         // prepare file name

@@ -33,7 +33,7 @@ export abstract class BaseController {
 
   abstract graduate(diffResultArray: DiffResultArray<BaseCoveoObject>, options: IHTTPGraduateOptions): Promise<any[]>;
 
-  abstract download(organization: string): Promise<IDownloadResultArray>;
+  abstract download(): Promise<IDownloadResultArray>;
 
   abstract extractionMethod(object: any[], diffOptions?: IDiffOptions, oldVersion?: any[]): any[];
 

@@ -9,6 +9,7 @@ import { GraduateSourcesCommand } from './console/GraduateSourcesCommand';
 import { DiffSourcesCommand } from './console/DiffSourcesCommand';
 import { InteractiveCommand } from './console/InteractiveCommand';
 import { DownloadFieldsCommand } from './console/DownloadFieldsCommand';
+import { DownloadSourcesCommand } from './console/DownloadSourcesCommand';
 import { GraduateFieldsCommand } from './console/GraduateFieldsCommand';
 import { DiffExtensionsCommand } from './console/DiffExtensionsCommand';
 import { DiffFieldsCommand } from './console/DiffFieldsCommand';
@@ -43,6 +44,7 @@ DiffSourcesCommand(program, commanderUtils);
 /* Download Commands
 /**************************************************/
 DownloadFieldsCommand(program, commanderUtils);
+DownloadSourcesCommand(program, commanderUtils);
 
 // Parsing the arguments
 program.parse(process.argv);

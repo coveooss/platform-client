@@ -20,12 +20,14 @@ import { RequestResponse } from 'request';
 import { IGraduateOptions } from '../commands/GraduateCommand';
 import { Colors } from '../commons/colors';
 import { JsonUtils } from '../commons/utils/JsonUtils';
+import { DownloadUtils } from '../commons/utils/DownloadUtils';
 
 export class SourceController extends BaseController {
   private extensionList: Array<Array<{}>> = [];
   private mappingIds: IStringMap<string[]> = {};
 
-  constructor(private organization1: Organization, private organization2: Organization) {
+  // The second organization can be optional in some cases like the download command for instance.
+  constructor(private organization1: Organization, private organization2: Organization = new Organization('', '')) {
     super();
   }
 
@@ -141,8 +143,15 @@ export class SourceController extends BaseController {
    * @returns {Promise<IDownloadResultArray>}
    * @memberof SourceController
    */
-  download(organization: string): Promise<IDownloadResultArray> {
-    throw new Error('TODO: download method not implemented');
+  download(): Promise<IDownloadResultArray> {
+    return SourceAPI.loadSources(this.organization1)
+      .then(() => {
+        return DownloadUtils.getDownloadResult(this.organization1.getSources());
+      })
+      .catch((err: IGenericError) => {
+        this.errorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_SOURCES);
+        return Promise.reject(err);
+      });
   }
 
   /**

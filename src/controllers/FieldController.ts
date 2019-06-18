@@ -1,6 +1,5 @@
 import { RequestResponse } from 'request';
 import * as _ from 'underscore';
-import { isUndefined } from 'util';
 import { IDiffOptions } from '../commands/DiffCommand';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { IDownloadResultArray } from '../commons/collections/DownloadResultArray';
@@ -27,7 +26,8 @@ export class FieldController extends BaseController {
   private fieldsPerBatch: number = 500;
   private deleteFieldsPerBatch: number = 200;
 
-  constructor(private organization1: Organization, private organization2: Organization) {
+  // The second organization can be optional in some cases like the download command for instance.
+  constructor(private organization1: Organization, private organization2: Organization = new Organization('', '')) {
     super();
   }
 
@@ -86,19 +86,13 @@ export class FieldController extends BaseController {
    * Download fields of one org.
    * Provide the name of one of the orgs you specified in creator.
    *
-   * @param {string} organization
    * @returns {Promise<IDownloadResultArray>}
    * @memberof FieldController
    */
-  download(organization: string): Promise<IDownloadResultArray> {
-    const org = _.find([this.organization1, this.organization2], (x: Organization) => {
-      return x.getId() === organization;
-    });
-    // _.find can return Undefined; FieldAPI.loadFields expects
-    const foundOrNot = isUndefined(org) ? new Organization('dummy', 'dummy') : org;
-    return FieldAPI.loadFields(foundOrNot)
+  download(): Promise<IDownloadResultArray> {
+    return FieldAPI.loadFields(this.organization1)
       .then(() => {
-        return DownloadUtils.getDownloadResult(foundOrNot.getFields());
+        return DownloadUtils.getDownloadResult(this.organization1.getFields());
       })
       .catch((err: IGenericError) => {
         this.errorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_FIELDS);

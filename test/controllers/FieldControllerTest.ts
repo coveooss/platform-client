@@ -813,7 +813,7 @@ export const FieldControllerTest = () => {
           });
 
         fieldController
-          .download(org1.getId())
+          .download()
           .then(() => {
             expect(org1.getFields().getCount()).to.be.eql(3);
             done();

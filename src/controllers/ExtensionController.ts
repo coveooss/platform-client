@@ -51,7 +51,7 @@ export class ExtensionController extends BaseController {
    * @returns {Promise<IDownloadResultArray>}
    * @memberof ExtensionController
    */
-  download(organization: string): Promise<IDownloadResultArray> {
+  download(): Promise<IDownloadResultArray> {
     throw new Error('Not Implemented');
   }
 
