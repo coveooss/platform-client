@@ -15,3 +15,5 @@ testScripts
 release.sh
 .zip
 yarn.lock
+sourceDiff.html
+command.sh
