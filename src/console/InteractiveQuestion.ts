@@ -15,6 +15,7 @@ import { Organization } from '../coveoObjects/Organization';
 import { SourceController } from '../controllers/SourceController';
 import { ExtensionAPI } from '../commons/rest/ExtensionAPI';
 import { StringUtil } from '../commons/utils/StringUtils';
+import { EnvironmentUtils } from '../commons/utils/EnvironmentUtils';
 
 export class InteractiveQuestion {
   // Required parameters
@@ -22,6 +23,7 @@ export class InteractiveQuestion {
   static MASTER_API_KEY: string = 'APIKey';
   static DESTINATION_ORG_ID: string = 'destinationOrganizationId';
   static COMMAND: string = 'command';
+  static ENVIRONMENT: string = 'environment';
 
   // Options
   static GRADUATE_OPERATIONS: string = 'graduateOperations';
@@ -49,6 +51,9 @@ export class InteractiveQuestion {
           InteractiveQuestion.PREVIOUS_ANSWERS = ans;
           const org = new Organization(ans[InteractiveQuestion.ORIGIN_ORG_ID], ans[InteractiveQuestion.MASTER_API_KEY]);
 
+          // Set Node Environment
+          EnvironmentUtils.setNodeEnvironment(ans[InteractiveQuestion.ENVIRONMENT]);
+
           return Promise.all([this.loadSourceList(org), this.loadExtensionList(org)])
             .then(values => {
               const sources = values[0];
@@ -56,7 +61,7 @@ export class InteractiveQuestion {
               return prompt(this.getFinalQuestions({ sources: sources, extensionsToIgnore: extensions }));
             })
             .catch((err: any) => {
-              console.error(chalk.red('Unable to load sources and extensions.'), chalk.red(err));
+              console.error(chalk.red('Unable to load sources or extensions.'), chalk.red(err));
               return prompt(this.getFinalQuestions([]));
             });
         });
@@ -92,11 +97,7 @@ export class InteractiveQuestion {
     return new Promise((resolve, reject) => {
       ExtensionAPI.getAllExtensions(org)
         .then((resp: RequestResponse) => {
-          if (resp.body.length > 0) {
-            resolve(_.pluck(resp.body, 'name'));
-          } else {
-            reject('No extension available in this organization');
-          }
+          resolve(_.pluck(resp.body, 'name'));
         })
         .catch((err: any) => {
           reject(err);
@@ -145,6 +146,16 @@ export class InteractiveQuestion {
       name: InteractiveQuestion.MASTER_API_KEY,
       message: 'Master API Key: ',
       validate: this.inputValidator('You need to provide an API Key')
+    };
+  }
+
+  getPlatformEnvironment(): Question {
+    return {
+      type: 'list',
+      name: InteractiveQuestion.ENVIRONMENT,
+      message: 'Coveo platform environment',
+      default: 'production',
+      choices: [{ name: 'production' }, { name: 'development' }, { name: 'qa' }]
     };
   }
 
@@ -302,7 +313,7 @@ export class InteractiveQuestion {
     return {
       type: 'checkbox',
       name: InteractiveQuestion.SOURCES,
-      message: `Select sources to ${chalk.bold('ignore')}. Selecting nothing will diff all sources`,
+      message: `Select sources to ${chalk.underline('ignore')}. Selecting nothing will diff all sources`,
       choices: sources,
       when: (answer: Answers) => {
         answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
@@ -347,6 +358,7 @@ export class InteractiveQuestion {
 
   getInitialQuestions(data: any): Question[] {
     return [
+      this.getPlatformEnvironment(),
       this.getOriginOrganizationId(),
       this.getDestinationOrganizationId(),
       this.getApiKey(),

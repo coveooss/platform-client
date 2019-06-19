@@ -10,6 +10,21 @@ import { Utils } from '../../src/commons/utils/Utils';
 import { Extension } from '../../src/coveoObjects/Extension';
 import { Organization } from '../../src/coveoObjects/Organization';
 import { ExtensionController } from './../../src/controllers/ExtensionController';
+import { DownloadResultArray } from '../../src/commons/collections/DownloadResultArray';
+
+const allDevExtensions: {} = require('./../mocks/setup1/extensions/dev/allExtensions.json');
+
+const DEVq32rkqp2fzuz2b3rbw5d53kc2q: {} = require('./../mocks/setup1/extensions/dev/q32rkqp2fzuz2b3rbw5d53kc2q.json');
+const DEVqww6e7om4rommwdba5nk3ykc4e: {} = require('./../mocks/setup1/extensions/dev/qww6e7om4rommwdba5nk3ykc4e.json');
+const DEVsfm7yvhqtiftmfuasrqtpfkio4: {} = require('./../mocks/setup1/extensions/dev/sfm7yvhqtiftmfuasrqtpfkio4.json');
+const DEVsr3jny7s5ekuwuyaak45awcaku: {} = require('./../mocks/setup1/extensions/dev/sr3jny7s5ekuwuyaak45awcaku.json');
+const DEVukjs6nvyjvqdn4vozf3ugjkdqe: {} = require('./../mocks/setup1/extensions/dev/ukjs6nvyjvqdn4vozf3ugjkdqe.json');
+const DEVxnnutbu2n6kiwm243iossdsjha: {} = require('./../mocks/setup1/extensions/dev/xnnutbu2n6kiwm243iossdsjha.json');
+const DEVxuklmyqaujg3gj2ivcynor2adq: {} = require('./../mocks/setup1/extensions/dev/xuklmyqaujg3gj2ivcynor2adq.json');
+
+// Prod Exensions
+// const PRODsr3jny7s5ekuwuyaak45awcaku: {} = require('./../mocks/setup1/extensions/prod/sr3jny7s5ekuwuyaak45awcaku.json');
+// const PRODxnnutbu2n6kiwm243iossdsjha: {} = require('./../mocks/setup1/extensions/prod/xnnutbu2n6kiwm243iossdsjha.json');
 
 export const ExtensionControllerTest = () => {
   describe('Extension Controller', () => {
@@ -509,6 +524,69 @@ export const ExtensionControllerTest = () => {
           })
           .catch((err: any) => {
             done(err);
+          });
+      });
+    });
+
+    describe('Download Method', () => {
+      it('Should download sources', (done: MochaDone) => {
+        const orgx: Organization = new Organization('dev', 'xxx');
+        const controllerxy = new ExtensionController(orgx);
+
+        scope = nock(UrlService.getDefaultUrl())
+          .get('/rest/organizations/dev/extensions')
+          .reply(RequestUtils.OK, allDevExtensions)
+          .get('/rest/organizations/dev/extensions/dummygroupk5f2dpwl-q32rkqp2fzuz2b3rbw5d53kc2q')
+          .reply(RequestUtils.OK, DEVq32rkqp2fzuz2b3rbw5d53kc2q)
+          .get('/rest/organizations/dev/extensions/dummygroupk5f2dpwl-qww6e7om4rommwdba5nk3ykc4e')
+          .reply(RequestUtils.OK, DEVqww6e7om4rommwdba5nk3ykc4e)
+          .get('/rest/organizations/dev/extensions/dummygroupk5f2dpwl-sfm7yvhqtiftmfuasrqtpfkio4')
+          .reply(RequestUtils.OK, DEVsfm7yvhqtiftmfuasrqtpfkio4)
+          .get('/rest/organizations/dev/extensions/dummygroupk5f2dpwl-sr3jny7s5ekuwuyaak45awcaku')
+          .reply(RequestUtils.OK, DEVsr3jny7s5ekuwuyaak45awcaku)
+          .get('/rest/organizations/dev/extensions/dummygroupk5f2dpwl-ukjs6nvyjvqdn4vozf3ugjkdqe')
+          .reply(RequestUtils.OK, DEVukjs6nvyjvqdn4vozf3ugjkdqe)
+          .get('/rest/organizations/dev/extensions/dummygroupk5f2dpwl-xnnutbu2n6kiwm243iossdsjha')
+          .reply(RequestUtils.OK, DEVxnnutbu2n6kiwm243iossdsjha)
+          .get('/rest/organizations/dev/extensions/dummygroupk5f2dpwl-xuklmyqaujg3gj2ivcynor2adq')
+          .reply(RequestUtils.OK, DEVxuklmyqaujg3gj2ivcynor2adq);
+
+        controllerxy
+          .download()
+          .then((downloadResultArray: DownloadResultArray) => {
+            expect(downloadResultArray.getCount()).to.be.eql(7);
+            done();
+          })
+          .catch((err: any) => {
+            done(err);
+          });
+      });
+
+      it('Should not download sources if REST API error', (done: MochaDone) => {
+        const orgx: Organization = new Organization('dev', 'xxx');
+        const controllerxy = new ExtensionController(orgx);
+
+        scope = nock(UrlService.getDefaultUrl())
+          .get('/rest/organizations/dev/extensions')
+          .reply(RequestUtils.OK, allDevExtensions)
+          .get('/rest/organizations/dev/extensions/dummygroupk5f2dpwl-q32rkqp2fzuz2b3rbw5d53kc2q')
+          .reply(RequestUtils.OK, DEVq32rkqp2fzuz2b3rbw5d53kc2q)
+          .get('/rest/organizations/dev/extensions/dummygroupk5f2dpwl-qww6e7om4rommwdba5nk3ykc4e')
+          .reply(RequestUtils.OK, DEVqww6e7om4rommwdba5nk3ykc4e)
+          .get('/rest/organizations/dev/extensions/dummygroupk5f2dpwl-sfm7yvhqtiftmfuasrqtpfkio4')
+          .reply(RequestUtils.OK, DEVsfm7yvhqtiftmfuasrqtpfkio4)
+          .get('/rest/organizations/dev/extensions/dummygroupk5f2dpwl-sr3jny7s5ekuwuyaak45awcaku')
+          .reply(429, 'SOOOORRY'); // Too many requests. Stop the rest of the flow
+
+        controllerxy
+          .download()
+          .then(() => {
+            done('Should not resolve');
+          })
+          .catch((err: IGenericError) => {
+            // We are expecting an error
+            expect(err.message).to.eql('"SOOOORRY"');
+            done();
           });
       });
     });

@@ -3,7 +3,7 @@ import * as _ from 'underscore';
 import { IDiffOptions } from '../commands/DiffCommand';
 import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
-import { IDownloadResultArray } from '../commons/collections/DownloadResultArray';
+import { DownloadResultArray } from '../commons/collections/DownloadResultArray';
 import { Colors } from '../commons/colors';
 import { IGenericError } from '../commons/errors';
 import { Logger } from '../commons/logger';
@@ -33,7 +33,7 @@ export abstract class BaseController {
 
   abstract graduate(diffResultArray: DiffResultArray<BaseCoveoObject>, options: IHTTPGraduateOptions): Promise<any[]>;
 
-  abstract download(organization: string): Promise<IDownloadResultArray>;
+  abstract download(): Promise<DownloadResultArray>;
 
   abstract extractionMethod(object: any[], diffOptions?: IDiffOptions, oldVersion?: any[]): any[];
 

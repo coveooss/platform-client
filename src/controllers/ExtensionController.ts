@@ -3,7 +3,7 @@ import { series } from 'async';
 import { RequestResponse } from 'request';
 import { IGraduateOptions } from '../commands/GraduateCommand';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
-import { IDownloadResultArray } from '../commons/collections/DownloadResultArray';
+import { DownloadResultArray } from '../commons/collections/DownloadResultArray';
 import { IGenericError, StaticErrorMessage } from '../commons/errors';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { Logger } from '../commons/logger';
@@ -14,9 +14,11 @@ import { Organization } from '../coveoObjects/Organization';
 import { IDiffOptions } from './../commands/DiffCommand';
 import { BaseController } from './BaseController';
 import { Colors } from '../commons/colors';
+import { DownloadUtils } from '../commons/utils/DownloadUtils';
 
 export class ExtensionController extends BaseController {
-  constructor(private organization1: Organization, private organization2: Organization) {
+  // The second organization can be optional in some cases like the download command for instance.
+  constructor(private organization1: Organization, private organization2: Organization = new Organization('', '')) {
     super();
   }
 
@@ -48,11 +50,18 @@ export class ExtensionController extends BaseController {
    * Not implemented
    *
    * @param {string} organization
-   * @returns {Promise<IDownloadResultArray>}
+   * @returns {Promise<DownloadResultArray>}
    * @memberof ExtensionController
    */
-  download(organization: string): Promise<IDownloadResultArray> {
-    throw new Error('Not Implemented');
+  download(): Promise<DownloadResultArray> {
+    return ExtensionAPI.loadExtensions(this.organization1)
+      .then(() => {
+        return DownloadUtils.getDownloadResult(this.organization1.getExtensions());
+      })
+      .catch((err: IGenericError) => {
+        this.errorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_EXTENTIONS);
+        return Promise.reject(err);
+      });
   }
 
   /**

@@ -19,8 +19,8 @@ export class Field extends BaseCoveoObject implements IField {
     return this.getId();
   }
 
-  removeParameters(parameterKeys: string[]) {
-    this.fieldModel = _.omit(this.fieldModel, parameterKeys);
+  removeParameters(keysToRemove: string[] = [], exclusiveKeys: string[] = []): void {
+    this.fieldModel = JsonUtils.removeKeyValuePairsFromJson(this.fieldModel, keysToRemove, exclusiveKeys);
   }
 
   isPartOfTheSources(sources: string[]): boolean {

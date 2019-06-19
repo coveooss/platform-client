@@ -1,19 +1,6 @@
 import { BaseCoveoObject } from '../../coveoObjects/BaseCoveoObject';
 
-export interface IDownloadResultArray {
-  add(item: BaseCoveoObject): void;
-  getCount(): number;
-  containsItems(): boolean;
-  /**
-   * Sorts the items of this download. Sort is specific to Coveo object type.
-   *
-   * @memberof IDownloadResultArray
-   */
-  sort(): void;
-  getItems(): BaseCoveoObject[];
-}
-
-export class DownloadResultArray implements IDownloadResultArray {
+export class DownloadResultArray {
   private ITEMS: BaseCoveoObject[];
 
   constructor() {
@@ -32,6 +19,11 @@ export class DownloadResultArray implements IDownloadResultArray {
     return this.ITEMS.length > 0;
   }
 
+  /**
+   * Sorts the items of this download. Sort is specific to Coveo object type.
+   *
+   * @memberof DownloadResultArray
+   */
   sort(): void {
     this.ITEMS.sort((a: BaseCoveoObject, b: BaseCoveoObject) => {
       return a.getId().localeCompare(b.getId());

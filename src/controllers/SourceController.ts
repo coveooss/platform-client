@@ -3,7 +3,7 @@ import * as _ from 'underscore';
 import * as deepExtend from 'deep-extend';
 import { series } from 'async';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
-import { IDownloadResultArray } from '../commons/collections/DownloadResultArray';
+import { DownloadResultArray } from '../commons/collections/DownloadResultArray';
 import { Organization } from '../coveoObjects/Organization';
 import { Source } from '../coveoObjects/Source';
 import { IDiffOptions } from './../commands/DiffCommand';
@@ -20,12 +20,14 @@ import { RequestResponse } from 'request';
 import { IGraduateOptions } from '../commands/GraduateCommand';
 import { Colors } from '../commons/colors';
 import { JsonUtils } from '../commons/utils/JsonUtils';
+import { DownloadUtils } from '../commons/utils/DownloadUtils';
 
 export class SourceController extends BaseController {
   private extensionList: Array<Array<{}>> = [];
   private mappingIds: IStringMap<string[]> = {};
 
-  constructor(private organization1: Organization, private organization2: Organization) {
+  // The second organization can be optional in some cases like the download command for instance.
+  constructor(private organization1: Organization, private organization2: Organization = new Organization('', '')) {
     super();
   }
 
@@ -138,11 +140,18 @@ export class SourceController extends BaseController {
   /**
    *
    * @param {string} organization
-   * @returns {Promise<IDownloadResultArray>}
+   * @returns {Promise<DownloadResultArray>}
    * @memberof SourceController
    */
-  download(organization: string): Promise<IDownloadResultArray> {
-    throw new Error('TODO: download method not implemented');
+  download(): Promise<DownloadResultArray> {
+    return SourceAPI.loadSources(this.organization1)
+      .then(() => {
+        return DownloadUtils.getDownloadResult(this.organization1.getSources());
+      })
+      .catch((err: IGenericError) => {
+        this.errorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_SOURCES);
+        return Promise.reject(err);
+      });
   }
 
   /**

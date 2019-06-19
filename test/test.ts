@@ -1,5 +1,4 @@
 import { Logger } from '../src/commons/logger';
-import { config } from '../src/config/index';
 import { DictionaryTest } from './commons/collections/DictionaryTest';
 import { DiffResultArrayTest } from './commons/collections/DiffResultArrayTest';
 import { DownloadResultArrayTest } from './commons/collections/DownloadResultArrayTest';
@@ -25,8 +24,10 @@ import { FieldTest } from './coveoObjects/FieldTest';
 import { OrganizationTest } from './coveoObjects/OrganizationTest';
 import { SourceTest } from './coveoObjects/SourceTest';
 import { SourceAPITest } from './commons/rest/SourceAPITest';
+import { EnvironmentUtils } from '../src/commons/utils/EnvironmentUtils';
+import { AssertTest } from './commons/misc/AssertTest';
 
-console.log(`Mocking Coveo Cloud Environment: ${config.env}\n`);
+console.log(`Mocking Coveo Cloud Environment: ${EnvironmentUtils.getNodeEnvironment()}\n`);
 
 Logger.disableSpinner();
 
@@ -68,6 +69,9 @@ UtilsTest();
 
 // Config
 configTest();
+
+// Assert
+AssertTest();
 
 // Console
 // ConsoleTest();
