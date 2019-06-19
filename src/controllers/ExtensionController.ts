@@ -3,7 +3,7 @@ import { series } from 'async';
 import { RequestResponse } from 'request';
 import { IGraduateOptions } from '../commands/GraduateCommand';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
-import { IDownloadResultArray } from '../commons/collections/DownloadResultArray';
+import { DownloadResultArray } from '../commons/collections/DownloadResultArray';
 import { IGenericError, StaticErrorMessage } from '../commons/errors';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { Logger } from '../commons/logger';
@@ -50,10 +50,10 @@ export class ExtensionController extends BaseController {
    * Not implemented
    *
    * @param {string} organization
-   * @returns {Promise<IDownloadResultArray>}
+   * @returns {Promise<DownloadResultArray>}
    * @memberof ExtensionController
    */
-  download(): Promise<IDownloadResultArray> {
+  download(): Promise<DownloadResultArray> {
     return ExtensionAPI.loadExtensions(this.organization1)
       .then(() => {
         return DownloadUtils.getDownloadResult(this.organization1.getExtensions());

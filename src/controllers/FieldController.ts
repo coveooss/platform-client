@@ -2,7 +2,7 @@ import { RequestResponse } from 'request';
 import * as _ from 'underscore';
 import { IDiffOptions } from '../commands/DiffCommand';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
-import { IDownloadResultArray } from '../commons/collections/DownloadResultArray';
+import { DownloadResultArray } from '../commons/collections/DownloadResultArray';
 import { Colors } from '../commons/colors';
 import { IGenericError, StaticErrorMessage } from '../commons/errors';
 import { IStringMap } from '../commons/interfaces/IStringMap';
@@ -86,10 +86,10 @@ export class FieldController extends BaseController {
    * Download fields of one org.
    * Provide the name of one of the orgs you specified in creator.
    *
-   * @returns {Promise<IDownloadResultArray>}
+   * @returns {Promise<DownloadResultArray>}
    * @memberof FieldController
    */
-  download(): Promise<IDownloadResultArray> {
+  download(): Promise<DownloadResultArray> {
     return FieldAPI.loadFields(this.organization1)
       .then(() => {
         return DownloadUtils.getDownloadResult(this.organization1.getFields());

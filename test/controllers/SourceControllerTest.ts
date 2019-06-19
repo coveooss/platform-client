@@ -15,7 +15,7 @@ import { IDiffOptions } from '../../src/commands/DiffCommand';
 import { Dictionary } from '../../src/commons/collections/Dictionary';
 import { JsonUtils } from '../../src/commons/utils/JsonUtils';
 import { IGraduateOptions } from '../../src/commands/GraduateCommand';
-import { IDownloadResultArray } from '../../src/commons/collections/DownloadResultArray';
+import { DownloadResultArray } from '../../src/commons/collections/DownloadResultArray';
 
 const allDevSources: Array<{}> = require('./../mocks/setup1/sources/dev/allSources.json');
 const DEVrrbbidfxa2ri4usxhzzmhq2hge: {} = require('./../mocks/setup1/sources/dev/web.json');
@@ -1288,7 +1288,7 @@ export const SourceControllerTest = () => {
 
         controllerxy
           .download()
-          .then((downloadResultArray: IDownloadResultArray) => {
+          .then((downloadResultArray: DownloadResultArray) => {
             expect(downloadResultArray.getCount()).to.be.eql(4);
             done();
           })

@@ -3,7 +3,7 @@ import * as _ from 'underscore';
 import * as deepExtend from 'deep-extend';
 import { series } from 'async';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
-import { IDownloadResultArray } from '../commons/collections/DownloadResultArray';
+import { DownloadResultArray } from '../commons/collections/DownloadResultArray';
 import { Organization } from '../coveoObjects/Organization';
 import { Source } from '../coveoObjects/Source';
 import { IDiffOptions } from './../commands/DiffCommand';
@@ -140,10 +140,10 @@ export class SourceController extends BaseController {
   /**
    *
    * @param {string} organization
-   * @returns {Promise<IDownloadResultArray>}
+   * @returns {Promise<DownloadResultArray>}
    * @memberof SourceController
    */
-  download(): Promise<IDownloadResultArray> {
+  download(): Promise<DownloadResultArray> {
     return SourceAPI.loadSources(this.organization1)
       .then(() => {
         return DownloadUtils.getDownloadResult(this.organization1.getSources());

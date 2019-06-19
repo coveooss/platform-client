@@ -1,7 +1,7 @@
 import * as _ from 'underscore';
 import * as fs from 'fs-extra';
 import path = require('path');
-import { IDownloadResultArray } from '../commons/collections/DownloadResultArray';
+import { DownloadResultArray } from '../commons/collections/DownloadResultArray';
 import { Colors } from '../commons/colors';
 import { IGenericError, StaticErrorMessage } from '../commons/errors';
 import { IStringMap } from '../commons/interfaces/IStringMap';
@@ -61,7 +61,7 @@ export class DownloadCommand {
 
     controller
       .download()
-      .then((downloadResultArray: IDownloadResultArray) => {
+      .then((downloadResultArray: DownloadResultArray) => {
         // sort the items in the list
         downloadResultArray.sort();
 

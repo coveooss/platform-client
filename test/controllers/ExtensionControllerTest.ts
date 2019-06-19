@@ -10,7 +10,7 @@ import { Utils } from '../../src/commons/utils/Utils';
 import { Extension } from '../../src/coveoObjects/Extension';
 import { Organization } from '../../src/coveoObjects/Organization';
 import { ExtensionController } from './../../src/controllers/ExtensionController';
-import { IDownloadResultArray } from '../../src/commons/collections/DownloadResultArray';
+import { DownloadResultArray } from '../../src/commons/collections/DownloadResultArray';
 
 const allDevExtensions: {} = require('./../mocks/setup1/extensions/dev/allExtensions.json');
 
@@ -553,7 +553,7 @@ export const ExtensionControllerTest = () => {
 
         controllerxy
           .download()
-          .then((downloadResultArray: IDownloadResultArray) => {
+          .then((downloadResultArray: DownloadResultArray) => {
             expect(downloadResultArray.getCount()).to.be.eql(7);
             done();
           })
