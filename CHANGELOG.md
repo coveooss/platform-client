@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.7.0"></a>
+# [2.7.0](https://github.com/coveo/platform-client/compare/v2.6.3...v2.7.0) (2019-06-19)
+
+
+### Bug Fixes
+
+* Fix interactive command (resolves [#46](https://github.com/coveo/platform-client/issues/46), [#48](https://github.com/coveo/platform-client/issues/48)) ([2183d78](https://github.com/coveo/platform-client/commit/2183d78))
+
+
+### Features
+
+* Add download-extensions (resolves [#52](https://github.com/coveo/platform-client/issues/52)) ([e3a78b7](https://github.com/coveo/platform-client/commit/e3a78b7))
+* Add source-download command (fixes [#45](https://github.com/coveo/platform-client/issues/45)) ([82df1fb](https://github.com/coveo/platform-client/commit/82df1fb))
+
+
+
 <a name="2.6.3"></a>
 ## [2.6.3](https://github.com/coveo/platform-client/compare/v2.6.2...v2.6.3) (2019-06-18)
 
