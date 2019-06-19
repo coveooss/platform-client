@@ -488,6 +488,117 @@ export const FieldControllerTest = () => {
           });
       });
 
+      it('Should graduate fields using a blacklist option', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          .get('/rest/organizations/dev/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'allmetadatavalues',
+                description: '',
+                sources: ['sitemap'],
+                type: 'STRING'
+              },
+              {
+                name: 'attachmentdepth',
+                description: 'The attachment depth.',
+                sources: ['sitemap'],
+                type: 'STRING'
+              },
+              {
+                name: 'newfield',
+                description: 'new description',
+                sources: ['sitemap'],
+                type: 'LONG'
+              }
+            ],
+            totalPages: 1,
+            totalEntries: 3
+          })
+          .get('/rest/organizations/prod/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'allmetadatavalues',
+                description: 'new description',
+                sources: ['salesforce', 'sitemap'],
+                type: 'STRING'
+              },
+              {
+                name: 'attachmentdepth',
+                description: 'The attachment depth.',
+                sources: ['salesforce', 'sitemap'],
+                type: 'STRING'
+              },
+              {
+                name: 'attachmentparentid',
+                description: 'The identifier of the attachment"s immediate parent, for parent/child relationship.',
+                sources: ['salesforce', 'sitemap'],
+                type: 'LONG'
+              },
+              {
+                name: 'authorloginname',
+                description: 'Login Name of the item author',
+                sources: ['salesforce', 'sitemap'],
+                type: 'STRING'
+              }
+            ],
+            totalPages: 1,
+            totalEntries: 4
+          })
+          .post('/rest/organizations/prod/indexes/fields/batch/create', [
+            {
+              name: 'newfield',
+              description: 'new description',
+              type: 'LONG'
+            }
+          ])
+          .reply(RequestUtils.OK)
+          .put('/rest/organizations/prod/indexes/fields/batch/update', [
+            {
+              name: 'allmetadatavalues',
+              description: '',
+              type: 'STRING'
+            }
+          ])
+          .reply(RequestUtils.NO_CONTENT)
+          .delete('/rest/organizations/prod/indexes/fields/batch/delete')
+          .query({ fields: 'attachmentparentid,authorloginname' })
+          .reply(RequestUtils.NO_CONTENT);
+
+        const diffOptions: IDiffOptions = {
+          keysToIgnore: ['sources']
+        };
+
+        const graduateOptions: IGraduateOptions = {
+          POST: true,
+          PUT: true,
+          DELETE: true,
+          keyBlacklist: ['sources'],
+          diffOptions: diffOptions
+        };
+
+        fieldController
+          .diff(diffOptions)
+          .then((diffResultArray: DiffResultArray<Field>) => {
+            expect(diffResultArray.TO_UPDATE.length).to.equal(1, 'Should only have one field to update');
+
+            fieldController
+              .graduate(diffResultArray, graduateOptions)
+              .then(() => {
+                done();
+              })
+              .catch((err: any) => {
+                done(err);
+              });
+          })
+          .catch((err: any) => {
+            done(err);
+          });
+      });
+
       it('Should not graduate fields: Graduation error', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/sources/page/fields')
@@ -786,7 +897,7 @@ export const FieldControllerTest = () => {
     });
 
     describe('Download Method', () => {
-      it('Should return an empty diff result', (done: MochaDone) => {
+      it('Should downlaod some fields', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
@@ -820,6 +931,24 @@ export const FieldControllerTest = () => {
           })
           .catch((err: any) => {
             done(err);
+          });
+      });
+
+      it('Should catch an error if too many request', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          .get('/rest/organizations/dev/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .reply(429, 'SOOOORRY'); // Too many requests
+
+        fieldController
+          .download()
+          .then(() => {
+            done('Should not resolve');
+          })
+          .catch((err: IGenericError) => {
+            // We are expecting an error
+            expect(err.message).to.eql('"SOOOORRY"');
+            done();
           });
       });
     });

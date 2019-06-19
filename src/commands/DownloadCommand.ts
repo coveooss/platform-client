@@ -12,6 +12,8 @@ import { Field } from '../coveoObjects/Field';
 import { Organization } from '../coveoObjects/Organization';
 import { SourceController } from '../controllers/SourceController';
 import { Source } from '../coveoObjects/Source';
+import { ExtensionController } from '../controllers/ExtensionController';
+import { Extension } from '../coveoObjects/Extension';
 
 export class DownloadCommand {
   private organization: Organization;
@@ -50,7 +52,8 @@ export class DownloadCommand {
    * @memberof DownloadCommand
    */
   downloadExtensions() {
-    // TODO: to implement
+    const extensionController: ExtensionController = new ExtensionController(this.organization);
+    this.download(extensionController, 'Extension', (extension: Extension) => extension.getConfiguration());
   }
 
   private download(controller: BaseController, objectName: string, extractionMethod: (object: any) => IStringMap<any>) {

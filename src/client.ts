@@ -13,6 +13,7 @@ import { DownloadSourcesCommand } from './console/DownloadSourcesCommand';
 import { GraduateFieldsCommand } from './console/GraduateFieldsCommand';
 import { DiffExtensionsCommand } from './console/DiffExtensionsCommand';
 import { DiffFieldsCommand } from './console/DiffFieldsCommand';
+import { DownloadExtensionsCommand } from './console/DownloadExtensionsCommand';
 
 const pkg: any = require('./../package.json');
 const updateNotifier = require('update-notifier');
@@ -45,6 +46,7 @@ DiffSourcesCommand(program, commanderUtils);
 /**************************************************/
 DownloadFieldsCommand(program, commanderUtils);
 DownloadSourcesCommand(program, commanderUtils);
+DownloadExtensionsCommand(program, commanderUtils);
 
 // Parsing the arguments
 program.parse(process.argv);

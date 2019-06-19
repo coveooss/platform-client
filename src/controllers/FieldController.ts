@@ -111,11 +111,9 @@ export class FieldController extends BaseController {
     if (diffResultArray.containsItems()) {
       Logger.loadingTask('Graduating fields');
 
-      _.each(_.union(diffResultArray.TO_CREATE, diffResultArray.TO_DELETE, diffResultArray.TO_UPDATE), field => {
+      _.each(_.union(diffResultArray.TO_CREATE, diffResultArray.TO_UPDATE), field => {
         // Strip parameters that should not be graduated
-        if (options.keyBlacklist && options.keyBlacklist.length > 0) {
-          field.removeParameters(options.keyBlacklist);
-        }
+        field.removeParameters(options.keyBlacklist || [], options.keyWhitelist || []);
       });
 
       return Promise.all(
