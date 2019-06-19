@@ -108,5 +108,41 @@ export const FieldTest = () => {
       const field: Field = new Field(cloneFieldModel);
       expect(field.isPartOfTheSources(['sourceX'])).to.be.false;
     });
+
+    it('Should remove some parameters (whitelist strategy)', () => {
+      const field: Field = new Field(fieldModel);
+      field.removeParameters([], ['name', 'description', 'type']);
+      expect(field.getConfiguration()).to.eql({
+        name: 'newfield',
+        description: 'New field in prod only',
+        type: 'STRING'
+      });
+    });
+    it('Should remove some parameters (blacklist strategy)', () => {
+      const field: Field = new Field(fieldModel);
+      field.removeParameters([
+        'includeInQuery',
+        'includeInResults',
+        'mergeWithLexicon',
+        'smartDateFacet',
+        'facet',
+        'multiValueFacet',
+        'sort',
+        'ranking',
+        'stemming',
+        'multiValueFacetTokenizers',
+        'useCacheForNestedQuery',
+        'useCacheForSort',
+        'useCacheForNumericQuery',
+        'useCacheForComputedFacet',
+        'dateFormat',
+        'system'
+      ]);
+      expect(field.getConfiguration()).to.eql({
+        name: 'newfield',
+        description: 'New field in prod only',
+        type: 'STRING'
+      });
+    });
   });
 };

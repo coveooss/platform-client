@@ -25,6 +25,7 @@ import { OrganizationTest } from './coveoObjects/OrganizationTest';
 import { SourceTest } from './coveoObjects/SourceTest';
 import { SourceAPITest } from './commons/rest/SourceAPITest';
 import { EnvironmentUtils } from '../src/commons/utils/EnvironmentUtils';
+import { AssertTest } from './commons/misc/AssertTest';
 
 console.log(`Mocking Coveo Cloud Environment: ${EnvironmentUtils.getNodeEnvironment()}\n`);
 
@@ -68,6 +69,9 @@ UtilsTest();
 
 // Config
 configTest();
+
+// Assert
+AssertTest();
 
 // Console
 // ConsoleTest();

@@ -14,7 +14,7 @@ import { Organization, IBlacklistObjects } from '../coveoObjects/Organization';
 
 export interface IDiffOptions {
   /**
-   * Specify which key to ignore during the Diff action. This is useful when a key always change from one Org to the other.
+   * Specify which key to ignore during the Diff action. This is useful when a key always changes from one Org to the other.
    * For instance id, createdDate, versionId, ...
    */
   keysToIgnore?: string[];
