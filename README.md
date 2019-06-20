@@ -46,13 +46,22 @@ To get help regarding a specific command, run `platformclient <command> --help`.
 platformclient <command> [options] <origin> <destination> <apiKey>
 ```
 
-#### Description
+##### Description
 1. `<command>`: Available `diff` and `graduate` commands
 1. `[options]`: Command options
 1. `<origin>`: The origin organization
 1. `<destination>`: The destination organization
 1. `<apiKey>`: An API key assigned to you by the Coveo Cloud Platform. You can view that api key if you connect to the [Coveo Cloud Platform](https://platform.cloud.coveo.com/) and open the developer console
 ![API key](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/apiKey.png)
+
+
+<!-- #### Diff
+The diff commands will allow
+
+#### Graduation
+* By default the delete will not be executed enless specified in the command using the option `-m`
+* The source graduation will exclude a bunch of parameters That are specific to the organization
+#### Download -->
 
 #### Examples
 
