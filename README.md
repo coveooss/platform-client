@@ -1,6 +1,7 @@
 # Coveo-Platform-Client [![Build Status](https://api.travis-ci.org/coveo/platform-client.svg?branch=master)](https://travis-ci.org/coveo/platform-client) [![codecov](https://codecov.io/gh/coveo/platform-client/branch/master/graph/badge.svg)](https://codecov.io/gh/coveo/platform-client) [![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/ellerbrock/typescript-badges/) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
 A simple client to manage organizations in the Coveo Cloud Platform.
+**The Coveo-Platform-Client is free to use, but is not an official Coveo product.**
 
 ## Description
 This repository contains a command line tool to perform administrative tasks in the Coveo Cloud Platform. It also allows automation of tasks that previously had to be done manually, like graduating the configuration from organizations in a different stage (e.g.: DEV, UAT, PROD).
@@ -20,21 +21,23 @@ _Alternatively_, if you are using **NPM 5.2+** you can [use `npx`](https://mediu
 npx coveo-platform-client
 ```
 
-## Usage the command line tool
+
+## Using from the command line
 
 ### Interactive tool
 
-The command line tool can be used in two different ways. The first one is by using the interactive tool :
+To initiate the interactive mode, run the following command in your terminal:
 
 ```
 platformclient interactive
 ```
 
-![Alt Text](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/interactive.png)
+
+<!-- ![Alt Text](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/interactive.png) -->
 
 ### Commands
 
-For CLI options, use the -h (or --help) argument:
+For automated help, use the `-h` (or `--help`) argument:
 
 ![](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/help.png)
 
@@ -54,42 +57,76 @@ platformclient <command> [options] <origin> <destination> <apiKey>
 1. `<apiKey>`: An API key assigned to you by the Coveo Cloud Platform. You can view that api key if you connect to the [Coveo Cloud Platform](https://platform.cloud.coveo.com/) and open the developer console
 ![API key](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/apiKey.png)
 
+##### Coveo Cloud Platform environment
+You can target any of the 3 Coveo Cloud environments by using the `--env` option.
+1. [production](https://platform.cloud.coveo.com) (default)
+1. [development](https://platformdev.cloud.coveo.com)
+1. [qa](https://platformqa.cloud.coveo.com)
 
-<!-- #### Diff
-The diff commands will allow
+So if you want to diff sources within the https://platformdev.cloud.coveo.com environment, you would run:
+
+```
+platformclient diff-sources ... --env development
+```
+
+#### Diff
+The diff commands will allow you to visualize changes between organizations without doing any modifications.
+
+##### Examples
+
+*In the following examples, we are diffing from `devOrg` to `prodOrg`*
+
+Basic field diff.
+```
+platformclient diff-fields devOrg prodOrg myApiKey
+```
+
+Diff fields and only return fields for which the `facet` and `sort` properties have changed.
+```
+platformclient diff-fields devOrg prodOrg myApiKey --onlyKeys facet,sort
+```
+
+Diff extensions without taking into account the description property.
+```
+platformclient diff-extensions devOrg prodOrg myApiKey --ignoreKeys description
+```
+
+Diff all sources **but** `Source A` and `Source B`.
+```
+platformclient diff-sources devOrg prodOrg myApiKey -S "Source A,Source B"
+```
 
 #### Graduation
-* By default the delete will not be executed enless specified in the command using the option `-m`
-* The source graduation will exclude a bunch of parameters That are specific to the organization
-#### Download -->
+The graduate commands will deploy the changes from your origin organization to your destination organization. It is highly recommended to perform a `diff` prior to a `graduate` in order to make sure you know what you are graduating.
 
-#### Examples
+You also have the choice to create (`POST`), update (`PUT`) or/and delete (`DELETE`) resources during the graduation. If you don't specify the HTTP verb(s) with the `--methods` option, the graduation will only perform `POST` and `PUT` HTTP requests, meaning that nothing will be deleted unless you specify otherwise.
 
-Diff fields between the `devEnv` and `prodEnv` organizations.
-```
-platformclient diff-fields devEnv prodEnv myApiKey
-```
+##### Examples
 
-Diff fields between the `devEnv` and `prodEnv` organizations and return only fields for which the `facet` and `sort` properties have changed.
+*In the following examples, we are graduating from `devOrg` to `prodOrg`*
+
+Graduate fields by only performing `PUT` operations. This will only update exisiting fields. `POST` and `DELETE` arguments can be used for adding and deleting fields.
 ```
-platformclient diff-fields devEnv prodEnv myApiKey --onlyKeys facet,sort
+platformclient diff-extensions devOrg prodOrg myApiKey --methods PUT
 ```
 
-Diff extensions between the `devEnv` and `prodEnv` organizations without taking into account the description property.
+Graduate extensions and prevent `my first extension` and `other extension` extensions from being graduated
 ```
-platformclient diff-extensions devEnv prodEnv myApiKey --ignoreKeys description
-```
-
-Graduate fields from the `devEnv` to the `prodEnv` organization by only performing `PUT` operations. This will only update exisiting fields. `POST` and `DELETE` arguments can be used for adding and deleting fields.
-```
-platformclient diff-extensions devEnv prodEnv myApiKey --methods PUT
+platformclient diff-extensions devOrg prodOrg myApiKey --ignoreExtensions "my first extension, other extension"
 ```
 
-Graduate extensions from the `devEnv` to the `prodEnv` organization without a particular set of extensions. This command will prevent `my first extension` and `other extension` from being graduated
-```
-platformclient diff-extensions devEnv prodEnv myApiKey --ignoreExtensions "my first extension, other extension"
-```
+#### Download
 
+The dowload commands can be useful keep backups or snapshots of a resource in a given time.
+For instance, you can create a script to automatically take a snapshot of the fields, sources and extensions of an organization.
+
+```
+#!/bin/sh
+
+platformclient download-fields $COVEO_ORG_ID $COVEO_API_KEY ./backup/
+platformclient download-sources $COVEO_ORG_ID $COVEO_API_KEY ./backup/
+platformclient download-extensions $COVEO_ORG_ID $COVEO_API_KEY ./backup/
+```
 
 ## Development
 ### Important Gulp Tasks
