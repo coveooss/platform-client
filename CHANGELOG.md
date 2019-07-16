@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.7.2"></a>
+## [2.7.2](https://github.com/coveo/platform-client/compare/v2.7.1...v2.7.2) (2019-07-16)
+
+
+### Bug Fixes
+
+* .snyk & package.json to reduce vulnerabilities ([811d212](https://github.com/coveo/platform-client/commit/811d212))
+
+
+
+<a name="2.1.0"></a>
+# [2.1.0](https://github.com/coveo/platform-client/compare/v2.0.0...v2.1.0) (2018-12-27)
+
+
+
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/coveo/platform-client/compare/v1.5.0...v2.0.0) (2018-12-11)
+
+
+
+<a name="1.5.0"></a>
+# [1.5.0](https://github.com/coveo/platform-client/compare/v1.4.0...v1.5.0) (2018-12-05)
+
+
+
+<a name="1.4.0"></a>
+# [1.4.0](https://github.com/coveo/platform-client/compare/v1.3.1...v1.4.0) (2018-12-04)
+
+
+
 <a name="2.7.1"></a>
 ## [2.7.1](https://github.com/coveo/platform-client/compare/v2.7.0...v2.7.1) (2019-07-16)
 
