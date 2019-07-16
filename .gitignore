@@ -14,6 +14,6 @@ package-lock.json
 testScripts
 release.sh
 .zip
-yarn.lock
 command.sh
 sourceDiff.html
+.snyk
