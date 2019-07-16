@@ -11,6 +11,7 @@ import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
 import { Organization, IBlacklistObjects } from '../coveoObjects/Organization';
 import { DiffCommand, IDiffOptions } from './DiffCommand';
 import { SourceController } from '../controllers/SourceController';
+import { PageController } from '../controllers/PageController';
 
 export interface IHTTPGraduateOptions {
   POST: boolean;
@@ -70,6 +71,11 @@ export class GraduateCommand {
   graduateExtensions(options?: IGraduateOptions) {
     const extensionController: ExtensionController = new ExtensionController(this.organization1, this.organization2);
     this.graduate(extensionController, 'Extension', options);
+  }
+
+  graduatePages(options?: IGraduateOptions) {
+    const pageController: PageController = new PageController(this.organization1, this.organization2);
+    this.graduate(pageController, 'Page', options);
   }
 
   graduateSources(options?: IGraduateOptions) {

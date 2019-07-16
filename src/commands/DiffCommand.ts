@@ -11,6 +11,7 @@ import { FieldController } from '../controllers/FieldController';
 import { SourceController } from '../controllers/SourceController';
 import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
 import { Organization, IBlacklistObjects } from '../coveoObjects/Organization';
+import { PageController } from '../controllers/PageController';
 
 export interface IDiffOptions {
   /**
@@ -62,6 +63,15 @@ export class DiffCommand {
   diffFields(options?: IDiffOptions) {
     const fieldController: FieldController = new FieldController(this.organization1, this.organization2);
     this.diff(fieldController, 'Field', options);
+  }
+
+  /**
+   * Diff the pages of both organizations passed in parameter
+   *
+   */
+  diffPages(options?: IDiffOptions) {
+    const pageController: PageController = new PageController(this.organization1, this.organization2);
+    this.diff(pageController, 'Page', options);
   }
 
   /**
