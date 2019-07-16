@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.7.1"></a>
+## [2.7.1](https://github.com/coveo/platform-client/compare/v2.7.0...v2.7.1) (2019-07-16)
+
+
+
 <a name="2.7.0"></a>
 # [2.7.0](https://github.com/coveo/platform-client/compare/v2.6.3...v2.7.0) (2019-06-19)
 
