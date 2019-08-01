@@ -8,6 +8,7 @@ export class RequestUtils {
   static NO_CONTENT: number = 204;
   static REDIRECTION: number = 300;
   static ACCESS_DENIED: number = 403;
+  static UNAUTHORIZED: number = 401;
 
   static get(uri: string, apiKey: string): Promise<request.RequestResponse> {
     Logger.verbose(`${chalk.bgCyan.bold('GET')} ${chalk.underline(uri)}`);

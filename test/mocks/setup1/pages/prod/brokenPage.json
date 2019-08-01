@@ -1,0 +1,51 @@
+{
+  "id": "2b34dc4a-5411-4606-9f93-03c27ca89e7a",
+  "name": "broken",
+  "title": "Broken search page",
+  "lastModified": "2019-07-29T16:11:43Z",
+  "html": "<didsdsa<script<>.ds a/s/.2,4;kop;,./,>alert() javascript(void)<></div?>",
+  "css": [
+      {
+          "Name": "CoveoUI",
+          "URL": "https://static.cloud.coveo.com/searchui/v2.6459/css/CoveoFullSearch.min.css",
+          "InlineContent": ""
+      },
+      {
+          "Name": "Interface Editor toolbox",
+          "URL": "https://static.cloud.coveo.com/interfaceeditor/v1.11/css/InterfaceToolbox.css",
+          "InlineContent": ""
+      },
+      {
+          "Name": "Reset body margin",
+          "URL": "",
+          "InlineContent": "body {margin:0;}"
+      }
+  ],
+  "javascript": [
+      {
+          "Name": "CoveoSearchUI",
+          "URL": "https://static.cloud.coveo.com/searchui/v2.6459/js/CoveoJsSearch.Lazy.min.js",
+          "InlineContent": ""
+      },
+      {
+          "Name": "CoveoSearchTemplates",
+          "URL": "https://static.cloud.coveo.com/searchui/v2.6459/js/templates/templates.js",
+          "InlineContent": ""
+      },
+      {
+          "Name": "CoveoInterfaceEditorToolbox",
+          "URL": "https://static.cloud.coveo.com/interfaceeditor/v1.11/js/InterfaceToolbox.js",
+          "InlineContent": ""
+      },
+      {
+          "Name": "CoveoInterfaceEditorToolboxString",
+          "URL": "https://static.cloud.coveo.com/interfaceeditor/v1.11/js/cultures/toolbox-en.js",
+          "InlineContent": ""
+      },
+      {
+          "Name": "Interface editor polyfill for IE11",
+          "URL": "https://cdn.jsdelivr.net/npm/whatwg-fetch@3.0.0/dist/fetch.umd.min.js",
+          "InlineContent": ""
+      }
+  ]
+}

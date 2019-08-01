@@ -526,6 +526,102 @@ export const ExtensionControllerTest = () => {
             done(err);
           });
       });
+
+      it('Should not graduate if server error', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          .post('/rest/organizations/prod/extensions', {
+            content: 'print "all metadata"',
+            description: 'This extension is showing all available metadata',
+            name: 'All metadata value',
+            requiredDataStreams: []
+          })
+          .reply(RequestUtils.OK)
+          // Creating secon extention in prod
+          .post('/rest/organizations/prod/extensions', {
+            content: '....',
+            description: 'some description',
+            name: 'Resize images to a smaller size',
+            requiredDataStreams: []
+          })
+          .reply(429, 'TOO_MANY_REQUESTS')
+          // Updating one extension in prod
+          .put('/rest/organizations/prod/extensions/extension-to-update-destination-org', {
+            content: 'new stuff',
+            description: 'This extension is used to parse urls to extract metadata like categories.',
+            name: 'URL Parsing to extract metadata',
+            requiredDataStreams: []
+          })
+          .reply(429, 'TOO_MANY_REQUESTS')
+          // Deleting one extension in prod
+          .delete('/rest/organizations/prod/extensions/extension-to-delete')
+          .reply(429, 'TOO_MANY_REQUESTS');
+
+        const extensionDiff: DiffResultArray<Extension> = new DiffResultArray();
+
+        extensionDiff.TO_CREATE = [
+          new Extension({
+            id: 'random-id',
+            content: 'print "all metadata"',
+            description: 'This extension is showing all available metadata',
+            name: 'All metadata value',
+            requiredDataStreams: []
+          }),
+          new Extension({
+            id: 'random-id-2',
+            content: '....',
+            description: 'some description',
+            name: 'Resize images to a smaller size',
+            requiredDataStreams: []
+          })
+        ];
+
+        extensionDiff.TO_UPDATE = [
+          new Extension({
+            id: 'extension-to-update',
+            content: 'new stuff',
+            description: 'This extension is used to parse urls to extract metadata like categories.',
+            name: 'URL Parsing to extract metadata',
+            requiredDataStreams: []
+          })
+        ];
+
+        extensionDiff.TO_UPDATE_OLD = [
+          new Extension({
+            id: 'extension-to-update-destination-org',
+            content: '#TODO.....',
+            description: 'This extension is used to parse urls to extract metadata like categories.',
+            name: 'URL Parsing to extract metadata',
+            requiredDataStreams: []
+          })
+        ];
+
+        extensionDiff.TO_DELETE = [
+          new Extension({
+            id: 'extension-to-delete',
+            content: 'Broken code',
+            description: 'extension that breaks stuff',
+            name: 'broken extension',
+            requiredDataStreams: []
+          })
+        ];
+
+        const graduateOptions: IGraduateOptions = {
+          POST: true,
+          PUT: true,
+          DELETE: true,
+          diffOptions: {}
+        };
+
+        controller
+          .graduate(extensionDiff, graduateOptions)
+          .then((resolved: any[]) => {
+            done('Should not resolve');
+          })
+          .catch((err: any) => {
+            expect(err).to.eql('"TOO_MANY_REQUESTS"');
+            done();
+          });
+      });
     });
 
     describe('Download Method', () => {

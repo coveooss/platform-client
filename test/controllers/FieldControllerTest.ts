@@ -659,7 +659,7 @@ export const FieldControllerTest = () => {
               type: 'LONG'
             }
           ])
-          .reply(RequestUtils.ACCESS_DENIED, 'not today')
+          .reply(429, 'TOO_MANY_REQUESTS')
           .put('/rest/organizations/prod/indexes/fields/batch/update', [
             {
               name: 'allmetadatavalues',
@@ -667,10 +667,10 @@ export const FieldControllerTest = () => {
               type: 'STRING'
             }
           ])
-          .reply(RequestUtils.ACCESS_DENIED, 'very sorry')
+          .reply(429, 'TOO_MANY_REQUESTS')
           .delete('/rest/organizations/prod/indexes/fields/batch/delete')
           .query({ fields: 'attachmentparentid,authorloginname' })
-          .reply(RequestUtils.ACCESS_DENIED, 'stop that');
+          .reply(429, 'TOO_MANY_REQUESTS');
 
         const graduateOptions: IGraduateOptions = {
           POST: true,
@@ -682,11 +682,15 @@ export const FieldControllerTest = () => {
         fieldController
           .diff()
           .then((diffResultArray: DiffResultArray<Field>) => {
-            fieldController.graduate(diffResultArray, graduateOptions);
-            done();
-          })
-          .catch((err: any) => {
-            done(err);
+            fieldController
+              .graduate(diffResultArray, graduateOptions)
+              .then((resolved: any[]) => {
+                done('Should not resolve');
+              })
+              .catch((err: any) => {
+                expect(err).to.eql('"TOO_MANY_REQUESTS"');
+                done();
+              });
           })
           .catch((err: any) => {
             done(err);

@@ -19,10 +19,16 @@ export const DiffPagesCommand = (program: any, commanderUtils: CommanderUtils) =
     .action((origin: string, destination: string, apiKey: string, options: any) => {
       commanderUtils.setLogger(options, 'diff-page');
 
+      const includeOnly = [
+        'name', // mandatory
+        'title', // mandatory
+        'html'
+      ];
+
       // Set diff options
       const diffOptions: IDiffOptions = {
-        // includeOnly: options.onlyKeys, // Nothing else to diff other than the html
-        silent: options.silent
+        silent: options.silent,
+        includeOnly: includeOnly
       };
 
       const blacklistOptions = {

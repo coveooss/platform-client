@@ -98,6 +98,20 @@ export class Organization extends BaseCoveoObject implements IOrganization {
     });
   }
 
+  /**
+   * Takes a page list and, for each item of the list, create a page that will be added to the Organization
+   *
+   * @param {IStringMap<any>[]} pages page list
+   */
+  addPageList(pages: Array<IStringMap<any>>) {
+    pages.forEach((p: IStringMap<any>) => {
+      const page = new Page(p);
+      if (!_.contains(this.getPageBlacklist() || [], StringUtil.lowerAndStripSpaces(page.getName()))) {
+        this.addPage(page);
+      }
+    });
+  }
+
   clearFields() {
     this.fields.clear();
   }
@@ -174,6 +188,10 @@ export class Organization extends BaseCoveoObject implements IOrganization {
 
   clearExtensions() {
     this.extensions.clear();
+  }
+
+  clearPages() {
+    this.pages.clear();
   }
 
   clearAll() {
