@@ -5,7 +5,7 @@ import { CommanderUtils } from './CommanderUtils';
 
 export const GraduateExtensionsCommand = (program: any, commanderUtils: CommanderUtils) => {
   program
-    .command('graduate-extensions <origin> <destination> <apiKey>')
+    .command('graduate-extensions <origin> <destination> <apiKey...>')
     .description('Graduate one organization to an other')
     .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', commanderUtils.list, [
       'requiredDataStreams',
@@ -26,7 +26,7 @@ export const GraduateExtensionsCommand = (program: any, commanderUtils: Commande
       /^(insane|verbose|info|error|nothing)$/i,
       'info'
     )
-    .action((origin: string, destination: string, apiKey: string, options: any) => {
+    .action((origin: string, destination: string, apiKey: string[], options: any) => {
       commanderUtils.setLogger(options, 'graduate-extensions');
 
       // Set graduation options
@@ -46,7 +46,7 @@ export const GraduateExtensionsCommand = (program: any, commanderUtils: Commande
           options.ignoreExtensions
         )
       };
-      const command = new GraduateCommand(origin, destination, apiKey, apiKey, blacklistOptions);
+      const command = new GraduateCommand(origin, destination, apiKey[0], apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
       command.graduateExtensions(graduateOptions);
     });
 };

@@ -5,7 +5,7 @@ import { IDiffOptions, DiffCommand } from '../commands/DiffCommand';
 
 export const DiffPagesCommand = (program: any, commanderUtils: CommanderUtils) => {
   program
-    .command('diff-page <origin> <destination> <apiKey>')
+    .command('diff-page <origin> <destination> <apiKey...>')
     .description(['Diff the pages of 2 organizations'])
     .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
     .option('-E, --ignorePages []', 'Pages to ignore. String separated by ",".', commanderUtils.list)
@@ -16,7 +16,7 @@ export const DiffPagesCommand = (program: any, commanderUtils: CommanderUtils) =
       'info'
     )
     .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
-    .action((origin: string, destination: string, apiKey: string, options: any) => {
+    .action((origin: string, destination: string, apiKey: string[], options: any) => {
       commanderUtils.setLogger(options, 'diff-page');
 
       const includeOnly = [
@@ -34,7 +34,7 @@ export const DiffPagesCommand = (program: any, commanderUtils: CommanderUtils) =
       const blacklistOptions = {
         pages: options.ignorePages
       };
-      const command = new DiffCommand(origin, destination, apiKey, apiKey, blacklistOptions);
+      const command = new DiffCommand(origin, destination, apiKey[0], apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
       command.diffPages(diffOptions);
     });
 };

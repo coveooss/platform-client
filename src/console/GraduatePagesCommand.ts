@@ -6,7 +6,7 @@ import { IDiffOptions } from '../commands/DiffCommand';
 
 export const GraduatePagesCommand = (program: any, commanderUtils: CommanderUtils) => {
   program
-    .command('graduate-pages <origin> <destination> <apiKey>')
+    .command('graduate-pages <origin> <destination> <apiKey...>')
     .description('Graduate one organization to an other')
     .option('-E, --ignorePages []', 'Pages to ignore. String separated by ",".', commanderUtils.list)
     .option('-m, --methods []', 'HTTP method authorized by the Graduation', commanderUtils.list, ['POST', 'PUT'])
@@ -43,7 +43,7 @@ export const GraduatePagesCommand = (program: any, commanderUtils: CommanderUtil
       const blacklistOptions = {
         pages: options.ignorePages
       };
-      const command = new GraduateCommand(origin, destination, apiKey, apiKey, blacklistOptions);
+      const command = new GraduateCommand(origin, destination, apiKey[0], apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
       command.graduatePages(graduateOptions);
     });
 };

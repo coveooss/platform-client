@@ -6,7 +6,7 @@ import { IBlacklistObjects } from '../coveoObjects/Organization';
 
 export const GraduateSourcesCommand = (program: any, commanderUtils: CommanderUtils) => {
   program
-    .command('graduate-sources <origin> <destination> <apiKey>')
+    .command('graduate-sources <origin> <destination> <apiKey...>')
     .description([`Graduate the sources of 2 organizations`])
     // .option('-r, --rebuild', 'Rebuild the source once created. Default is false', false)
     .option(
@@ -35,7 +35,7 @@ export const GraduateSourcesCommand = (program: any, commanderUtils: CommanderUt
       'info'
     )
     .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
-    .action((origin: string, destination: string, apiKey: string, options: any) => {
+    .action((origin: string, destination: string, apiKey: string[], options: any) => {
       commanderUtils.setLogger(options, 'graduate-sources');
 
       const includeOnly = [
@@ -87,7 +87,7 @@ export const GraduateSourcesCommand = (program: any, commanderUtils: CommanderUt
         ),
         sources: options.ignoreSources
       };
-      const command = new GraduateCommand(origin, destination, apiKey, apiKey, blacklistOptions);
+      const command = new GraduateCommand(origin, destination, apiKey[0], apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
       command.graduateSources(graduateOptions);
     });
 };
