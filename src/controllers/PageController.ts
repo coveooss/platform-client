@@ -1,3 +1,4 @@
+import * as jsDiff from 'diff';
 import * as _ from 'underscore';
 import { series } from 'async';
 import { RequestResponse } from 'request';
@@ -5,7 +6,6 @@ import { IGraduateOptions } from '../commands/GraduateCommand';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { DownloadResultArray } from '../commons/collections/DownloadResultArray';
 import { IGenericError, StaticErrorMessage } from '../commons/errors';
-import { IStringMap } from '../commons/interfaces/IStringMap';
 import { Logger } from '../commons/logger';
 import { DiffUtils } from '../commons/utils/DiffUtils';
 import { Organization } from '../coveoObjects/Organization';
@@ -15,6 +15,7 @@ import { Colors } from '../commons/colors';
 import { DownloadUtils } from '../commons/utils/DownloadUtils';
 import { Page } from '../coveoObjects/Page';
 import { PageAPI } from '../commons/rest/PageAPI';
+import { Assert } from '../commons/misc/Assert';
 
 export class PageController extends BaseController {
   // The second organization can be optional in some cases like the download command for instance.
@@ -173,28 +174,34 @@ export class PageController extends BaseController {
     return Promise.all([PageAPI.loadPages(this.organization1), PageAPI.loadPages(this.organization2)]);
   }
 
-  extractionMethod(object: any[], diffOptions: IDiffOptions, oldVersion?: any[]): any[] {
+  extractionMethod(
+    object: Page[],
+    diffOptions: IDiffOptions,
+    oldVersion?: Page[]
+  ): string[] | Array<{ [pageName: string]: jsDiff.Change[] }> {
     if (oldVersion === undefined) {
-      return _.map(object, (p: Page) => p.getConfiguration());
+      // returning pages to create and to delete
+      return _.map(object, (e: Page) => e.getName());
     } else {
-      return _.map(oldVersion, (oldPage: Page) => {
-        const newPage: Page = _.find(object, (e: Page) => {
+      const pageDiff: Array<{ [pageName: string]: jsDiff.Change[] }> = [];
+      _.map(oldVersion, (oldPage: Page) => {
+        const newPage: Page | undefined = _.find(object, (e: Page) => {
           return e.getName() === oldPage.getName();
         });
+        Assert.isNotUndefined(newPage, `Something went wrong in the page diff. Unable to find ${oldPage.getName()}`);
 
-        const newPageModel = newPage.getConfiguration();
-        const oldPageModel = oldPage.getConfiguration();
+        const oldPageFormatted = oldPage
+          .getHTML()
+          .replace(/\\n/g, '\n')
+          .replace(/<\/script>/g, '<\\/script>');
+        const newPageFormatted = (newPage as Page)
+          .getHTML()
+          .replace(/\\n/g, '\n')
+          .replace(/<\/script>/g, '<\\/script>');
 
-        // TODO: add keys to ignore here
-        const updatedPageModel: IStringMap<any> = _.mapObject(newPageModel, (val, key) => {
-          if (!_.isEqual(oldPageModel[key], val) && (!diffOptions.keysToIgnore || diffOptions.keysToIgnore.indexOf(key) === -1)) {
-            return { newValue: val, oldValue: oldPageModel[key] };
-          } else {
-            return val;
-          }
-        });
-        return updatedPageModel;
+        pageDiff.push({ [(newPage as Page).getName()]: jsDiff.diffJson(oldPageFormatted, newPageFormatted) });
       });
+      return pageDiff;
     }
   }
 }
