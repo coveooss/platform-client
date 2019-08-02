@@ -1,7 +1,8 @@
 // tslint:disable:no-magic-numbers
-import { expect } from 'chai';
+import * as jsDiff from 'diff';
 import * as nock from 'nock';
 import * as _ from 'underscore';
+import { expect } from 'chai';
 import { Utils } from '../../src/commons/utils/Utils';
 import { Organization } from '../../src/coveoObjects/Organization';
 import { PageController } from '../../src/controllers/PageController';
@@ -50,6 +51,35 @@ export const PageControllerTest = () => {
     });
 
     describe('Diff Method', () => {
+      it('Extraction method should be agnostic to the page id', () => {
+        const devPage = new Page({
+          id: '001',
+          name: 'mysource',
+          title: 'my source',
+          html: '<html>...'
+        });
+
+        const prodPage = new Page({
+          id: '002',
+          name: 'mysource',
+          title: 'my source',
+          html: '<html>...'
+        });
+
+        const diffOptions: IDiffOptions = {
+          includeOnly: ['html']
+        };
+
+        const cleanVersion: any = controller.extractionMethod([devPage], diffOptions, [prodPage]);
+
+        const diff: jsDiff.Change[] = cleanVersion[0].mysource;
+
+        // The mapping arrays should be similar
+        expect(diff.length).to.eq(1);
+        expect(diff[0].added).to.not.exist;
+        expect(diff[0].removed).to.not.exist;
+      });
+
       it('Should not return an empty diff result', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           // Fecthing all dev pages
