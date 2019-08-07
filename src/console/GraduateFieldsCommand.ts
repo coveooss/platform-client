@@ -11,7 +11,7 @@ export const GraduateFieldsCommand = (program: any, commanderUtils: CommanderUti
     .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', commanderUtils.list, [])
     .option(
       '-S, --sources []',
-      'Load fields that are associated to specific sources. Leaving this parameter empty will diff all fields.',
+      'If specified, the operation will only graduate fields that are associated to specified sources.',
       commanderUtils.list,
       []
     )
@@ -36,7 +36,8 @@ export const GraduateFieldsCommand = (program: any, commanderUtils: CommanderUti
         diffOptions: {
           keysToIgnore: _.union(options.ignoreKeys, ['sources']),
           includeOnly: options.onlyKeys,
-          silent: options.silent
+          silent: options.silent,
+          sources: options.sources
         },
         keyBlacklist: _.union(options.ignoreKeys, ['sources']),
         POST: options.methods.indexOf('POST') > -1,
