@@ -16,6 +16,8 @@ import { SourceController } from '../controllers/SourceController';
 import { ExtensionAPI } from '../commons/rest/ExtensionAPI';
 import { StringUtil } from '../commons/utils/StringUtils';
 import { EnvironmentUtils } from '../commons/utils/EnvironmentUtils';
+import { PageController } from '../controllers/PageController';
+import { PageAPI } from '../commons/rest/PageAPI';
 
 export class InteractiveQuestion {
   // Required parameters
@@ -54,11 +56,13 @@ export class InteractiveQuestion {
           // Set Node Environment
           EnvironmentUtils.setNodeEnvironment(ans[InteractiveQuestion.ENVIRONMENT]);
 
-          return Promise.all([this.loadSourceList(org), this.loadExtensionList(org)])
+          return Promise.all([this.loadSourceList(org), this.loadExtensionList(org), this.loadPageList(org)])
             .then(values => {
               const sources = values[0];
               const extensions = values[1];
-              return prompt(this.getFinalQuestions({ sources: sources, extensionsToIgnore: extensions }));
+              // tslint:disable-next-line: no-magic-numbers
+              const pages = values[2];
+              return prompt(this.getFinalQuestions({ sources: sources, extensionsToIgnore: extensions, pagesToIgnore: pages }));
             })
             .catch((err: any) => {
               console.error(chalk.red('Unable to load sources or extensions.'), chalk.red(err));
@@ -96,6 +100,19 @@ export class InteractiveQuestion {
     // tslint:disable-next-line:typedef
     return new Promise((resolve, reject) => {
       ExtensionAPI.getAllExtensions(org)
+        .then((resp: RequestResponse) => {
+          resolve(_.pluck(resp.body, 'name'));
+        })
+        .catch((err: any) => {
+          reject(err);
+        });
+    });
+  }
+
+  loadPageList(org: Organization) {
+    // tslint:disable-next-line:typedef
+    return new Promise((resolve, reject) => {
+      PageAPI.getAllPages(org)
         .then((resp: RequestResponse) => {
           resolve(_.pluck(resp.body, 'name'));
         })
@@ -190,7 +207,8 @@ export class InteractiveQuestion {
       choices: [
         { name: FieldController.CONTROLLER_NAME },
         { name: ExtensionController.CONTROLLER_NAME },
-        { name: SourceController.CONTROLLER_NAME }
+        { name: SourceController.CONTROLLER_NAME },
+        { name: PageController.CONTROLLER_NAME }
       ],
       when: (answer: Answers) => {
         answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
@@ -207,7 +225,8 @@ export class InteractiveQuestion {
       choices: [
         { name: FieldController.CONTROLLER_NAME },
         { name: ExtensionController.CONTROLLER_NAME },
-        { name: SourceController.CONTROLLER_NAME }
+        { name: SourceController.CONTROLLER_NAME },
+        { name: PageController.CONTROLLER_NAME }
       ],
       when: (answer: Answers) => {
         answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
@@ -325,6 +344,22 @@ export class InteractiveQuestion {
     };
   }
 
+  selectPagesToIgnore(pages: string[]): Question {
+    return {
+      type: 'checkbox',
+      name: InteractiveQuestion.SOURCES,
+      message: `Select sources to ${chalk.underline('ignore')}. Selecting nothing will diff all sources`,
+      choices: pages,
+      when: (answer: Answers) => {
+        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        return answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === PageController.CONTROLLER_NAME && pages.length > 0;
+      },
+      filter: (input: string) => {
+        return `"${input}"`;
+      }
+    };
+  }
+
   getFileNameForSettings(): Question {
     return this.getGenericFilename(
       InteractiveQuestion.SETTING_FILENAME,
@@ -387,6 +422,11 @@ export class InteractiveQuestion {
     if (data && data.extensionsToIgnore) {
       questions.push(this.selectExtensionsToIgnore(data.extensionsToIgnore)); // only execute when in advanced option
     }
+
+    if (data && data.pagesToIgnore) {
+      questions.push(this.selectPagesToIgnore(data.pagesToIgnore));
+    }
+
     return _.union(questions, [this.setLogLevel(), this.getFileNameForLogs(), this.getFileNameForSettings()]);
   }
 

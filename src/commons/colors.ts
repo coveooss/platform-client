@@ -11,6 +11,10 @@ export class Colors {
     return chalk.bold.cyan(value);
   }
 
+  static page(value: string): string {
+    return chalk.blue(value);
+  }
+
   static extension(value: string): string {
     return chalk.cyan(value);
   }

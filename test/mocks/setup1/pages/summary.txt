@@ -1,0 +1,4 @@
+ProManagePortalSearch:
+  Javascript, css and date are different
+  html is identical
+  should not be considered as changed

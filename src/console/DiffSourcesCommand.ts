@@ -6,7 +6,7 @@ import { IBlacklistObjects } from '../coveoObjects/Organization';
 
 export const DiffSourcesCommand = (program: any, commanderUtils: CommanderUtils) => {
   program
-    .command('diff-sources <origin> <destination> <apiKey>')
+    .command('diff-sources <origin> <destination> <apiKey...>')
     .description(['Diff the sources of 2 organizations'])
     .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
     // .option('-r, --rebuild', 'Rebuild the source once created. Default is false', false)
@@ -33,7 +33,7 @@ export const DiffSourcesCommand = (program: any, commanderUtils: CommanderUtils)
       'info'
     )
     .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
-    .action((origin: string, destination: string, apiKey: string, options: any) => {
+    .action((origin: string, destination: string, apiKey: string[], options: any) => {
       commanderUtils.setLogger(options, 'diff-sources');
 
       // TODO: add option to modify these options from the command BUT KEEP MANDATORY PARAMETERS
@@ -77,7 +77,7 @@ export const DiffSourcesCommand = (program: any, commanderUtils: CommanderUtils)
         extensions: _.union(['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'], options.ignoreExtensions),
         sources: options.ignoreSources
       };
-      const command = new DiffCommand(origin, destination, apiKey, apiKey, blacklistOptions);
+      const command = new DiffCommand(origin, destination, apiKey[0], apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
       command.diffSources(diffOptions);
     });
 };

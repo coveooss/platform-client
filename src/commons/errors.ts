@@ -16,6 +16,7 @@ export class StaticErrorMessage {
   static UNEXPECTED_RESPONSE: string = 'Unexpected response from the server';
   static MISSING_SOURCE_ID_FROM_THE_RESPONSE: string = 'Missing source id from the response';
   static MISSING_EXTENSION_ID_FROM_THE_RESPONSE: string = 'Missing extension id from the response';
+  static MISSING_PAGE_ID_FROM_THE_RESPONSE: string = 'Missing page id from the response';
 
   // Fields
   static MISSING_FIELD_NAME: string = 'Missing field name';
@@ -32,6 +33,14 @@ export class StaticErrorMessage {
   static UNABLE_TO_UPDATE_EXTENSIONS: string = 'Unable to update extension';
   static UNABLE_TO_DELETE_EXTENSIONS: string = 'Unable to delete extension';
   static DUPLICATE_EXTENSION: string = 'There is already an extension with that name in the Organizaton';
+
+  // Pages
+  static UNABLE_TO_LOAD_PAGES: string = 'Unable to load page';
+  static UNABLE_TO_LOAD_SINGLE_PAGE: string = 'Unable to load single page';
+  static UNABLE_TO_CREATE_PAGES: string = 'Unable to create page';
+  static UNABLE_TO_UPDATE_PAGES: string = 'Unable to update page';
+  static UNABLE_TO_DELETE_PAGES: string = 'Unable to delete page';
+  static DUPLICATE_PAGE: string = 'There is already an page with that name in the Organizaton';
 
   // Sources
   static UNABLE_TO_LOAD_SOURCES: string = 'Unable to load sources';

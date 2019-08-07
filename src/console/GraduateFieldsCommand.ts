@@ -5,7 +5,7 @@ import { CommanderUtils } from './CommanderUtils';
 
 export const GraduateFieldsCommand = (program: any, commanderUtils: CommanderUtils) => {
   program
-    .command('graduate-fields <origin> <destination> <apiKey>')
+    .command('graduate-fields <origin> <destination> <apiKey...>')
     .description('Graduate one organization to an other')
     .option('-i, --ignoreKeys []', 'Keys to ignore. String separated by ","', commanderUtils.list, [])
     .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', commanderUtils.list, [])
@@ -28,7 +28,7 @@ export const GraduateFieldsCommand = (program: any, commanderUtils: CommanderUti
       /^(insane|verbose|info|error|nothing)$/i,
       'info'
     )
-    .action((origin: string, destination: string, apiKey: string, options: any) => {
+    .action((origin: string, destination: string, apiKey: string[], options: any) => {
       commanderUtils.setLogger(options, 'graduate-fields');
 
       // Set graduation options
@@ -44,7 +44,7 @@ export const GraduateFieldsCommand = (program: any, commanderUtils: CommanderUti
         DELETE: options.methods.indexOf('DELETE') > -1
       };
 
-      const command = new GraduateCommand(origin, destination, apiKey, apiKey);
+      const command = new GraduateCommand(origin, destination, apiKey[0], apiKey[apiKey.length > 1 ? 1 : 0]);
       command.graduateFields(graduateOptions);
     });
 };

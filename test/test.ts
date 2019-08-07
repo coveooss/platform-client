@@ -26,6 +26,9 @@ import { SourceTest } from './coveoObjects/SourceTest';
 import { SourceAPITest } from './commons/rest/SourceAPITest';
 import { EnvironmentUtils } from '../src/commons/utils/EnvironmentUtils';
 import { AssertTest } from './commons/misc/AssertTest';
+import { PageControllerTest } from './controllers/PageControllerTest';
+import { PageTest } from './coveoObjects/PageTest';
+import { PageAPITest } from './commons/rest/PageAPITest';
 
 console.log(`Mocking Coveo Cloud Environment: ${EnvironmentUtils.getNodeEnvironment()}\n`);
 
@@ -36,11 +39,13 @@ FieldTest();
 ExtensionTest();
 OrganizationTest();
 SourceTest();
+PageTest();
 
 // Controllers
 FieldControllerTest();
 ExtensionControllerTest();
 SourceControllerTest();
+PageControllerTest();
 
 // Common / Collection
 DictionaryTest();
@@ -56,6 +61,7 @@ FieldAPITest();
 ExtensionAPITest();
 SourceAPITest();
 UrlServiceTest();
+PageAPITest();
 
 // Utils
 ArrayUtilTest();

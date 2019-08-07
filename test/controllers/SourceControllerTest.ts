@@ -1108,6 +1108,17 @@ export const SourceControllerTest = () => {
           resourceId: 'dev-source'
         };
 
+        const localDevSource2 = {
+          sourceType: 'WEB',
+          id: 'web-source',
+          name: 'web test',
+          mappings: [],
+          preConversionExtensions: [],
+          postConversionExtensions: [],
+          owner: 'test@coveo.com',
+          resourceId: 'web-source'
+        };
+
         const localProdSource = {
           sourceType: 'SITEMAP',
           id: 'prod-source',
@@ -1127,6 +1138,7 @@ export const SourceControllerTest = () => {
           postConversionExtensions: [],
           resourceId: 'prod-source'
         };
+
         const localProdSource2 = {
           sourceType: 'SITEMAP',
           id: 'prod-source2',
@@ -1148,7 +1160,7 @@ export const SourceControllerTest = () => {
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources')
-          .reply(RequestUtils.OK, [localDevSource])
+          .reply(RequestUtils.OK, [localDevSource, localDevSource2])
           // Fecth extensions from dev
           .get('/rest/organizations/dev/extensions')
           .reply(RequestUtils.OK, [])
@@ -1159,6 +1171,8 @@ export const SourceControllerTest = () => {
           // Fetching dev sources one by one
           .get('/rest/organizations/dev/sources/dev-source/raw')
           .reply(RequestUtils.OK, localDevSource)
+          .get('/rest/organizations/dev/sources/web-source/raw')
+          .reply(RequestUtils.OK, localDevSource2)
           // Fecthing all prod sources
           .get('/rest/organizations/prod/sources')
           .reply(RequestUtils.OK, [localProdSource, localProdSource2])
@@ -1167,6 +1181,17 @@ export const SourceControllerTest = () => {
           .get('/rest/organizations/prod/sources/prod-source2/raw')
           .reply(RequestUtils.OK, localProdSource2)
           // Graduation time!
+          .post('/rest/organizations/prod/sources/raw?rebuild=false', {
+            sourceType: 'WEB',
+            id: 'web-source',
+            name: 'web test',
+            mappings: [],
+            preConversionExtensions: [],
+            postConversionExtensions: [],
+            owner: 'test@coveo.com',
+            resourceId: 'web-source'
+          })
+          .reply(429, 'TOO_MANY_REQUESTS')
           .put('/rest/organizations/prod/sources/prod-source/raw?rebuild=false', {
             sourceType: 'SITEMAP',
             id: 'prod-source',
@@ -1208,7 +1233,7 @@ export const SourceControllerTest = () => {
         controllerxy
           .diff(diffOptions)
           .then((diff: DiffResultArray<Source>) => {
-            expect(diff.TO_CREATE.length).to.eql(0);
+            expect(diff.TO_CREATE.length).to.eql(1);
             expect(diff.TO_UPDATE.length).to.eql(1);
             expect(diff.TO_DELETE.length).to.eql(1);
             controllerxy
@@ -1294,6 +1319,33 @@ export const SourceControllerTest = () => {
           })
           .catch((err: any) => {
             done(err);
+          });
+      });
+
+      it('Should not download if server error', (done: MochaDone) => {
+        const orgx: Organization = new Organization('dev', 'xxx');
+        const controllerxy = new SourceController(orgx);
+
+        scope = nock(UrlService.getDefaultUrl())
+          .get('/rest/organizations/dev/sources')
+          .reply(RequestUtils.OK, allDevSources)
+          .get('/rest/organizations/dev/sources/rrbbidfxa2ri4usxhzzmhq2hge-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, DEVrrbbidfxa2ri4usxhzzmhq2hge)
+          .get('/rest/organizations/dev/sources/tcytrppteddiqkmboszu4skdoe-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, DEVtcytrppteddiqkmboszu4skdoe)
+          .get('/rest/organizations/dev/sources/wyowilfyrpf2qogxm45uhgskri-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, DEVwyowilfyrpf2qogxm45uhgskri)
+          .get('/rest/organizations/dev/sources/qtngyd2gvxjxrrkftndaepcngu-dummygroupk5f2dpwl/raw')
+          .reply(429, { message: 'Too many requests' });
+
+        controllerxy
+          .download()
+          .then(() => {
+            done('Should not resolve');
+          })
+          .catch((err: IGenericError) => {
+            expect(JSON.parse(err.message)).to.eql({ message: 'Too many requests' });
+            done();
           });
       });
     });

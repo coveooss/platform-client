@@ -6,12 +6,14 @@ import * as _ from 'underscore';
 import { CommanderUtils } from './console/CommanderUtils';
 import { GraduateExtensionsCommand } from './console/GraduateExtensionsCommand';
 import { GraduateSourcesCommand } from './console/GraduateSourcesCommand';
+import { GraduatePagesCommand } from './console/GraduatePagesCommand';
 import { DiffSourcesCommand } from './console/DiffSourcesCommand';
 import { InteractiveCommand } from './console/InteractiveCommand';
 import { DownloadFieldsCommand } from './console/DownloadFieldsCommand';
 import { DownloadSourcesCommand } from './console/DownloadSourcesCommand';
 import { GraduateFieldsCommand } from './console/GraduateFieldsCommand';
 import { DiffExtensionsCommand } from './console/DiffExtensionsCommand';
+import { DiffPagesCommand } from './console/DiffPagesCommand';
 import { DiffFieldsCommand } from './console/DiffFieldsCommand';
 import { DownloadExtensionsCommand } from './console/DownloadExtensionsCommand';
 
@@ -33,6 +35,7 @@ InteractiveCommand(program, commanderUtils);
 GraduateFieldsCommand(program, commanderUtils);
 GraduateExtensionsCommand(program, commanderUtils);
 GraduateSourcesCommand(program, commanderUtils);
+GraduatePagesCommand(program, commanderUtils);
 
 /**************************************************/
 /* Diff commands
@@ -40,6 +43,7 @@ GraduateSourcesCommand(program, commanderUtils);
 DiffFieldsCommand(program, commanderUtils);
 DiffExtensionsCommand(program, commanderUtils);
 DiffSourcesCommand(program, commanderUtils);
+DiffPagesCommand(program, commanderUtils);
 
 /**************************************************/
 /* Download Commands

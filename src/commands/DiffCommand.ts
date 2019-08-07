@@ -11,6 +11,7 @@ import { FieldController } from '../controllers/FieldController';
 import { SourceController } from '../controllers/SourceController';
 import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
 import { Organization, IBlacklistObjects } from '../coveoObjects/Organization';
+import { PageController } from '../controllers/PageController';
 
 export interface IDiffOptions {
   /**
@@ -65,6 +66,15 @@ export class DiffCommand {
   }
 
   /**
+   * Diff the pages of both organizations passed in parameter
+   *
+   */
+  diffPages(options?: IDiffOptions) {
+    const pageController: PageController = new PageController(this.organization1, this.organization2);
+    this.diff(pageController, 'Page', options);
+  }
+
+  /**
    * Diff the extensions of both organizations passed in parameter
    *
    */
@@ -95,7 +105,7 @@ export class DiffCommand {
     objectName = objectName.toLowerCase();
     const options = _.extend(DiffCommand.DEFAULT_OPTIONS, opt) as IDiffOptions;
 
-    Logger.startSpinner('Performing a field diff');
+    Logger.startSpinner('Diff in progress...');
 
     // Give some useful information
     options.includeOnly && options.includeOnly.length > 0
@@ -108,7 +118,7 @@ export class DiffCommand {
       .diff(options)
       .then((diffResultArray: DiffResultArray<BaseCoveoObject>) => {
         Logger.info(`objectName: ${objectName}`);
-        if (objectName === 'source') {
+        if (objectName === 'source' || objectName === 'page') {
           Logger.info('Preparing HTML diff file');
 
           const cleanVersion = controller.getCleanVersion(diffResultArray, options);
@@ -118,7 +128,8 @@ export class DiffCommand {
           const result = template({
             DIFF_OBJECT: JSON.stringify(cleanVersion.TO_UPDATE),
             SOURCES_TO_CREATE: JSON.stringify(cleanVersion.TO_CREATE),
-            SOURCES_TO_DELETE: JSON.stringify(cleanVersion.TO_DELETE)
+            SOURCES_TO_DELETE: JSON.stringify(cleanVersion.TO_DELETE),
+            resourceType: objectName
           });
 
           fs.writeFile(`${objectName}Diff.html`, result)
