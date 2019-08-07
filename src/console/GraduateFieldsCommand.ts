@@ -6,7 +6,7 @@ import { CommanderUtils } from './CommanderUtils';
 export const GraduateFieldsCommand = (program: any, commanderUtils: CommanderUtils) => {
   program
     .command('graduate-fields <origin> <destination> <apiKey...>')
-    .description('Graduate one organization to an other')
+    .description('Graduate fields from one organization to another')
     .option('-i, --ignoreKeys []', 'Keys to ignore. String separated by ","', commanderUtils.list, [])
     .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', commanderUtils.list, [])
     .option(
