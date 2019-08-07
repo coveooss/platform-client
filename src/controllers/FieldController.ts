@@ -222,7 +222,7 @@ export class FieldController extends BaseController {
   }
 
   private loadFieldsFromOnlyOneOrganization(organization: Organization): Promise<{}> {
-    Logger.loadingTask('Loading fields from organization');
+    Logger.loadingTask(`Loading fields from organization ${Colors.organization(organization.getId())}`);
     return FieldAPI.loadFields(organization);
   }
 

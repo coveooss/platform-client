@@ -17,6 +17,7 @@ import { DiffPagesCommand } from './console/DiffPagesCommand';
 import { DiffFieldsCommand } from './console/DiffFieldsCommand';
 import { DownloadExtensionsCommand } from './console/DownloadExtensionsCommand';
 import { UploadFieldsCommand } from './console/UploadFieldsCommand';
+import { DiffFieldsFromFileCommand } from './console/UploadFieldsCommand copy';
 
 const pkg: any = require('./../package.json');
 const updateNotifier = require('update-notifier');
@@ -45,6 +46,11 @@ DiffFieldsCommand(program, commanderUtils);
 DiffExtensionsCommand(program, commanderUtils);
 DiffSourcesCommand(program, commanderUtils);
 DiffPagesCommand(program, commanderUtils);
+
+/**************************************************/
+/* Diff From Local File commands
+/**************************************************/
+DiffFieldsFromFileCommand(program, commanderUtils);
 
 /**************************************************/
 /* Download Commands
