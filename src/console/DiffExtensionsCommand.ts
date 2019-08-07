@@ -5,7 +5,7 @@ import { IDiffOptions, DiffCommand } from '../commands/DiffCommand';
 
 export const DiffExtensionsCommand = (program: any, commanderUtils: CommanderUtils) => {
   program
-    .command('diff-extensions <origin> <destination> <apiKey>')
+    .command('diff-extensions <origin> <destination> <apiKey...>')
     .description(['Diff the extensions of 2 organizations'])
     .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
     .option(
@@ -25,7 +25,7 @@ export const DiffExtensionsCommand = (program: any, commanderUtils: CommanderUti
       'info'
     )
     .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
-    .action((origin: string, destination: string, apiKey: string, options: any) => {
+    .action((origin: string, destination: string, apiKey: string[], options: any) => {
       commanderUtils.setLogger(options, 'diff-extensions');
 
       // Set diff options
@@ -37,7 +37,7 @@ export const DiffExtensionsCommand = (program: any, commanderUtils: CommanderUti
       const blacklistOptions = {
         extensions: _.union(['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'], options.ignoreExtensions)
       };
-      const command = new DiffCommand(origin, destination, apiKey, apiKey, blacklistOptions);
+      const command = new DiffCommand(origin, destination, apiKey[0], apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
       diffOptions.includeOnly = diffOptions.includeOnly
         ? diffOptions.includeOnly
         : ['requiredDataStreams', 'content', 'description', 'name'];

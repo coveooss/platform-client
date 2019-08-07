@@ -14,6 +14,8 @@ import { SourceController } from '../controllers/SourceController';
 import { Source } from '../coveoObjects/Source';
 import { ExtensionController } from '../controllers/ExtensionController';
 import { Extension } from '../coveoObjects/Extension';
+import { PageController } from '../controllers/PageController';
+import { Page } from '../coveoObjects/Page';
 
 export class DownloadCommand {
   private organization: Organization;
@@ -36,6 +38,15 @@ export class DownloadCommand {
   downloadFields() {
     const fieldController: FieldController = new FieldController(this.organization);
     this.download(fieldController, 'Field', (field: Field) => field.getConfiguration());
+  }
+
+  /**
+   * Downloads the pages of organization.
+   * @memberof DownloadCommand
+   */
+  downloadPages() {
+    const pageController: PageController = new PageController(this.organization);
+    this.download(pageController, 'Page', (page: Page) => page.getConfiguration());
   }
 
   /**

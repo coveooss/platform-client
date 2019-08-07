@@ -136,13 +136,21 @@ export class FieldController extends BaseController {
         this.organization2.getId()
       )} `
     );
-    return FieldAPI.createFields(this.organization2, this.extractFieldModel(diffResult.TO_CREATE), this.fieldsPerBatch)
-      .then((responses: RequestResponse[]) => {
-        this.successHandler(responses, 'POST operation successfully completed');
-      })
-      .catch((err: any) => {
-        this.errorHandler({ orgId: this.organization2.getId(), message: err } as IGenericError, StaticErrorMessage.UNABLE_TO_CREATE_FIELDS);
-      });
+
+    return new Promise((resolve, reject) => {
+      return FieldAPI.createFields(this.organization2, this.extractFieldModel(diffResult.TO_CREATE), this.fieldsPerBatch)
+        .then((responses: RequestResponse[]) => {
+          resolve();
+          this.successHandler(responses, 'POST operation successfully completed');
+        })
+        .catch((err: any) => {
+          reject(err);
+          this.errorHandler(
+            { orgId: this.organization2.getId(), message: err } as IGenericError,
+            StaticErrorMessage.UNABLE_TO_CREATE_FIELDS
+          );
+        });
+    });
   }
 
   private graduateUpdated(diffResult: DiffResultArray<Field>): Promise<void> {
@@ -151,13 +159,21 @@ export class FieldController extends BaseController {
         diffResult.TO_CREATE.length > 1 ? 's' : ''
       } in ${this.organization2.getId()} `
     );
-    return FieldAPI.updateFields(this.organization2, this.extractFieldModel(diffResult.TO_UPDATE), this.fieldsPerBatch)
-      .then((responses: RequestResponse[]) => {
-        this.successHandler(responses, 'PUT operation successfully completed');
-      })
-      .catch((err: any) => {
-        this.errorHandler({ orgId: this.organization2.getId(), message: err } as IGenericError, StaticErrorMessage.UNABLE_TO_UPDATE_FIELDS);
-      });
+
+    return new Promise((resolve, reject) => {
+      return FieldAPI.updateFields(this.organization2, this.extractFieldModel(diffResult.TO_UPDATE), this.fieldsPerBatch)
+        .then((responses: RequestResponse[]) => {
+          resolve();
+          this.successHandler(responses, 'PUT operation successfully completed');
+        })
+        .catch((err: any) => {
+          reject(err);
+          this.errorHandler(
+            { orgId: this.organization2.getId(), message: err } as IGenericError,
+            StaticErrorMessage.UNABLE_TO_UPDATE_FIELDS
+          );
+        });
+    });
   }
 
   private graduateDeleted(diffResult: DiffResultArray<Field>): Promise<void> {
@@ -166,17 +182,24 @@ export class FieldController extends BaseController {
         diffResult.TO_CREATE.length > 1 ? 's' : ''
       } from ${this.organization2.getId()} `
     );
-    return FieldAPI.deleteFields(
-      this.organization2,
-      _.map(diffResult.TO_DELETE, (field: Field) => field.getName()),
-      this.deleteFieldsPerBatch
-    )
-      .then((responses: RequestResponse[]) => {
-        this.successHandler(responses, 'DELETE operation successfully completed');
-      })
-      .catch((err: any) => {
-        this.errorHandler({ orgId: this.organization2.getId(), message: err } as IGenericError, StaticErrorMessage.UNABLE_TO_DELETE_FIELDS);
-      });
+    return new Promise((resolve, reject) => {
+      return FieldAPI.deleteFields(
+        this.organization2,
+        _.map(diffResult.TO_DELETE, (field: Field) => field.getName()),
+        this.deleteFieldsPerBatch
+      )
+        .then((responses: RequestResponse[]) => {
+          resolve();
+          this.successHandler(responses, 'DELETE operation successfully completed');
+        })
+        .catch((err: any) => {
+          reject(err);
+          this.errorHandler(
+            { orgId: this.organization2.getId(), message: err } as IGenericError,
+            StaticErrorMessage.UNABLE_TO_DELETE_FIELDS
+          );
+        });
+    });
   }
 
   private loadFieldForBothOrganizations(organization1: Organization, organization2: Organization): Promise<Array<{}>> {

@@ -8,12 +8,14 @@ import { Extension } from './Extension';
 import { Field } from './Field';
 import { Source } from './Source';
 import { StringUtil } from '../commons/utils/StringUtils';
+import { Page } from './Page';
 
 // Blacklist all the objects that we do not want to add to the organization.
 export interface IBlacklistObjects {
   fields?: string[];
   extensions?: string[];
   sources?: string[];
+  pages?: string[];
 }
 
 /**
@@ -25,6 +27,7 @@ export class Organization extends BaseCoveoObject implements IOrganization {
   private fields: Dictionary<Field> = new Dictionary<Field>();
   private sources: Dictionary<Source> = new Dictionary<Source>();
   private extensions: Dictionary<Extension> = new Dictionary<Extension>();
+  private pages: Dictionary<Page> = new Dictionary<Page>();
 
   constructor(id: string, private apiKey: string, private blacklist: IBlacklistObjects = {}) {
     super(id);
@@ -33,10 +36,15 @@ export class Organization extends BaseCoveoObject implements IOrganization {
     this.blacklist.extensions = _.map(this.blacklist.extensions || [], e => StringUtil.lowerAndStripSpaces(e));
     this.blacklist.fields = _.map(this.blacklist.fields || [], f => StringUtil.lowerAndStripSpaces(f));
     this.blacklist.sources = _.map(this.blacklist.sources || [], s => StringUtil.lowerAndStripSpaces(s));
+    this.blacklist.pages = _.map(this.blacklist.pages || [], p => StringUtil.lowerAndStripSpaces(p));
   }
 
   getExtensionBlacklist(): string[] {
     return this.blacklist.extensions || [];
+  }
+
+  getPageBlacklist(): string[] {
+    return this.blacklist.pages || [];
   }
 
   getfieldBlacklist(): string[] {
@@ -90,6 +98,20 @@ export class Organization extends BaseCoveoObject implements IOrganization {
     });
   }
 
+  /**
+   * Takes a page list and, for each item of the list, create a page that will be added to the Organization
+   *
+   * @param {IStringMap<any>[]} pages page list
+   */
+  addPageList(pages: Array<IStringMap<any>>) {
+    pages.forEach((p: IStringMap<any>) => {
+      const page = new Page(p);
+      if (!_.contains(this.getPageBlacklist() || [], StringUtil.lowerAndStripSpaces(page.getName()))) {
+        this.addPage(page);
+      }
+    });
+  }
+
   clearFields() {
     this.fields.clear();
   }
@@ -117,6 +139,23 @@ export class Organization extends BaseCoveoObject implements IOrganization {
 
   getExtensions(): Dictionary<Extension> {
     return this.extensions.clone();
+  }
+
+  getPages(): Dictionary<Page> {
+    return this.pages.clone();
+  }
+
+  /**
+   * Add an page to the Organization
+   *
+   * @param {Page} page Page to be added
+   */
+  addPage(page: Page) {
+    // Using the page name as the key since the page ID is not the same from on org to another
+    Assert.isUndefined(this.pages.getItem(page.getName()), `At least 2 pages are having the same name: ${page.getName()}`);
+    if (!_.contains(this.getPageBlacklist() || [], StringUtil.lowerAndStripSpaces(page.getName()))) {
+      this.pages.add(page.getName(), page);
+    }
   }
 
   /**
@@ -149,6 +188,10 @@ export class Organization extends BaseCoveoObject implements IOrganization {
 
   clearExtensions() {
     this.extensions.clear();
+  }
+
+  clearPages() {
+    this.pages.clear();
   }
 
   clearAll() {

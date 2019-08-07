@@ -5,7 +5,7 @@ import { IDiffOptions, DiffCommand } from '../commands/DiffCommand';
 
 export const DiffFieldsCommand = (program: any, commanderUtils: CommanderUtils) => {
   program
-    .command('diff-fields <origin> <destination> <apiKey>')
+    .command('diff-fields <origin> <destination> <apiKey...>')
     .description(['Diff the user defined fields of 2 organizations'])
     .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
     .option(
@@ -23,7 +23,7 @@ export const DiffFieldsCommand = (program: any, commanderUtils: CommanderUtils) 
       'info'
     )
     .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
-    .action((origin: string, destination: string, apiKey: string, options: any) => {
+    .action((origin: string, destination: string, apiKey: string[], options: any) => {
       commanderUtils.setLogger(options, 'diff-fields');
 
       // Set diff options
@@ -35,7 +35,7 @@ export const DiffFieldsCommand = (program: any, commanderUtils: CommanderUtils) 
         sources: options.sources
       };
 
-      const command = new DiffCommand(origin, destination, apiKey, apiKey);
+      const command = new DiffCommand(origin, destination, apiKey[0], apiKey[apiKey.length > 1 ? 1 : 0]);
       command.diffFields(diffOptions);
     });
 };

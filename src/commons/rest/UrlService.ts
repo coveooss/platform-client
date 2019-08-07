@@ -64,4 +64,13 @@ export class UrlService {
   static createSource(organizationId: string, rebuild = false): string {
     return `${this.getOrganizationUrl(organizationId)}/sources/raw?rebuild=${rebuild}`;
   }
+
+  /*** Search Pages API ***/
+  static getPagesUrl(organizationId: string): string {
+    return `${this.getOrganizationUrl(organizationId)}/pages`;
+  }
+
+  static getSinglePageUrl(organizationId: string, pageId: string): string {
+    return `${this.getOrganizationUrl(organizationId)}/pages/${pageId}`;
+  }
 }
