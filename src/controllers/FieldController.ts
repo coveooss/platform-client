@@ -32,15 +32,14 @@ export class FieldController extends BaseController {
   }
 
   /**
-   * Performs a diff and return the result.
+   * Load fields from both organizations and then performs a diff.
    *
    * @param {string[]} keysToIgnore Fields to ignore in the diff. For instance, someone
    * changed the "description" property of the field in the destination org and you don't want the diff to tell you that it has changed.
    * @returns {Promise<DiffResultArray<Field>>}
    */
   diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Field>> {
-    return this.loadFieldForBothOrganizations(this.organization1, this.organization2)
-
+    return this.loadDataForDiff(diffOptions)
       .then(() => {
         let org1Fields = this.organization1.getFields();
         let org2Fields = this.organization2.getFields();
@@ -68,6 +67,22 @@ export class FieldController extends BaseController {
       });
   }
 
+  private loadDataForDiff(diffOptions?: IDiffOptions): Promise<{}> {
+    return new Promise((resolve, reject) => {
+      if (diffOptions && diffOptions.originData) {
+        try {
+          this.organization1.addFieldList(diffOptions.originData);
+        } catch (error) {
+          Logger.error('Invalid origin data');
+          reject(error);
+        }
+        return resolve(this.loadFieldsFromOnlyOneOrganization(this.organization2));
+      } else {
+        return resolve(this.loadFieldsFromBothOrganizations(this.organization1, this.organization2));
+      }
+    });
+  }
+
   private returnOnlyFieldsForDesiredSources(
     fieldDict: Dictionary<Field>,
     sources: string[],
@@ -84,7 +99,6 @@ export class FieldController extends BaseController {
 
   /**
    * Download fields of one org.
-   * Provide the name of one of the orgs you specified in creator.
    *
    * @returns {Promise<DownloadResultArray>}
    * @memberof FieldController
@@ -202,9 +216,14 @@ export class FieldController extends BaseController {
     });
   }
 
-  private loadFieldForBothOrganizations(organization1: Organization, organization2: Organization): Promise<Array<{}>> {
-    Logger.loadingTask('Loading fields for both organizations');
+  private loadFieldsFromBothOrganizations(organization1: Organization, organization2: Organization): Promise<Array<{}>> {
+    Logger.loadingTask('Loading fields from both organizations');
     return Promise.all([FieldAPI.loadFields(organization1), FieldAPI.loadFields(organization2)]);
+  }
+
+  private loadFieldsFromOnlyOneOrganization(organization: Organization): Promise<{}> {
+    Logger.loadingTask('Loading fields from organization');
+    return FieldAPI.loadFields(organization);
   }
 
   private extractFieldModel(fields: Field[]): Array<IStringMap<any>> {

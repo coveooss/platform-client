@@ -1,6 +1,5 @@
 // tslint:disable:no-magic-numbers
 import { assert, expect } from 'chai';
-import { StaticErrorMessage } from '../../src/commons/errors';
 import { Extension } from '../../src/coveoObjects/Extension';
 import { Field } from '../../src/coveoObjects/Field';
 import { Organization, IBlacklistObjects } from '../../src/coveoObjects/Organization';
@@ -219,7 +218,7 @@ export const OrganizationTest = () => {
                 type: 'STRING'
               }
             ]),
-          StaticErrorMessage.INVALID_ID
+          'Missing field name from fieldModel'
         );
       });
     });

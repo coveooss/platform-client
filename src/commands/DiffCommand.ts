@@ -31,6 +31,11 @@ export interface IDiffOptions {
    * Specify the sources from which to load the data
    */
   sources?: string[];
+  /**
+   * If specified the diff operation will grab the origin data from the specified upload file instead of the Coveo Cloud Platform.
+   * This option is used to upload a resource to the platform.
+   */
+  originData?: Array<{}>;
 }
 
 export class DiffCommand {

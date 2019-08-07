@@ -16,6 +16,7 @@ import { DiffExtensionsCommand } from './console/DiffExtensionsCommand';
 import { DiffPagesCommand } from './console/DiffPagesCommand';
 import { DiffFieldsCommand } from './console/DiffFieldsCommand';
 import { DownloadExtensionsCommand } from './console/DownloadExtensionsCommand';
+import { UploadFieldsCommand } from './console/UploadFieldsCommand';
 
 const pkg: any = require('./../package.json');
 const updateNotifier = require('update-notifier');
@@ -51,6 +52,11 @@ DiffPagesCommand(program, commanderUtils);
 DownloadFieldsCommand(program, commanderUtils);
 DownloadSourcesCommand(program, commanderUtils);
 DownloadExtensionsCommand(program, commanderUtils);
+
+/**************************************************/
+/* Upload Commands
+/**************************************************/
+UploadFieldsCommand(program, commanderUtils);
 
 // Parsing the arguments
 program.parse(process.argv);
