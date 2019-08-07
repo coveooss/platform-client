@@ -56,8 +56,8 @@ platformclient <command> [options] <origin> <destination> <apiKey...>
 1. `[options]`: Command options
 1. `<origin>`: The origin organization
 1. `<destination>`: The destination organization
-1. `<apiKey...>`: You can either use a **master API Key** or 2 API keys specific to each Coveo organisation. The **master API key** is assigned to you by the Coveo Cloud Platform. You can view that API key by connecting to the [Coveo Cloud Platform](https://platform.cloud.coveo.com/) then opening the developer console
-   ![API key](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/apiKey.png).
+1. `<apiKey...>`: You can either use a **master API Key** or 2 API keys specific to each Coveo organisation. The **master API key** is assigned to you by the Coveo Cloud Platform. You can view that API key by connecting to the [Coveo Cloud Platform](https://platform.cloud.coveo.com/) then opening the developer console.
+   ![API key](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/apiKey.png)
 
 However, the recommended approach is to use 2 API keys that you have first [created on the Coveo Cloud Platform](https://docs.coveo.com/en/1718/cloud-v2-administrators/api-keys---page). If you are using this approach, make sure to provide the appropriate privileges to the API key based on the operation you want to execute (refer to the table below).
 
@@ -86,6 +86,7 @@ You can target any of the 3 Coveo Cloud environments by using the `--env` option
 1. [production](https://platform.cloud.coveo.com) (default)
 1. [development](https://platformdev.cloud.coveo.com)
 1. [qa](https://platformqa.cloud.coveo.com)
+1. [hipaa](https://platformhipaa.cloud.coveo.com) (unavailable)
 
 So if you want to diff sources within the https://platformdev.cloud.coveo.com environment, you would run:
 
