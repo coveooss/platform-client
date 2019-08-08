@@ -32,7 +32,7 @@ export const DiffFieldsFromFileCommand = (program: any, commanderUtils: Commande
           };
 
           // TODO: find a cleaner way
-          const command = new DiffCommand('dummyOrg', org, apiKey, apiKey);
+          const command = new DiffCommand('localFile', org, apiKey, apiKey);
           command.diffFields(diffOptions);
         })
         .catch((err: any) => {

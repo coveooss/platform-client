@@ -17,7 +17,7 @@ import { DiffPagesCommand } from './console/DiffPagesCommand';
 import { DiffFieldsCommand } from './console/DiffFieldsCommand';
 import { DownloadExtensionsCommand } from './console/DownloadExtensionsCommand';
 import { UploadFieldsCommand } from './console/UploadFieldsCommand';
-import { DiffFieldsFromFileCommand } from './console/UploadFieldsCommand copy';
+import { DiffFieldsFromFileCommand } from './console/DiffFieldsFromFileCommand';
 
 const pkg: any = require('./../package.json');
 const updateNotifier = require('update-notifier');
