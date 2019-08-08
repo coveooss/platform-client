@@ -22,7 +22,7 @@ const updateNotifier = require('update-notifier');
 updateNotifier({ pkg }).notify();
 
 program
-  .option('--env [value]', 'Environment (Production by default. Supported environments are: test|development|qa|production)')
+  .option('--env [value]', 'Environment (Production by default. Supported environments are: development|qa|production)')
   .version(pkg.version);
 
 const commanderUtils = new CommanderUtils();

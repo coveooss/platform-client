@@ -7,7 +7,7 @@ import { IDiffOptions } from '../commands/DiffCommand';
 export const GraduatePagesCommand = (program: any, commanderUtils: CommanderUtils) => {
   program
     .command('graduate-pages <origin> <destination> <apiKey...>')
-    .description('Graduate one organization to an other')
+    .description('Graduate pages from one organization to another')
     .option('-E, --ignorePages []', 'Pages to ignore. String separated by ",".', commanderUtils.list)
     .option('-m, --methods []', 'HTTP method authorized by the Graduation', commanderUtils.list, ['POST', 'PUT'])
     .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
