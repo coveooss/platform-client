@@ -1,24 +1,12 @@
-import { EnvironmentUtils } from './commons/utils/EnvironmentUtils';
-setEnvironmentIfNecessary();
-
 import * as program from 'commander';
 import * as _ from 'underscore';
-import { CommanderUtils } from './console/CommanderUtils';
-import { GraduateExtensionsCommand } from './console/GraduateExtensionsCommand';
-import { GraduateSourcesCommand } from './console/GraduateSourcesCommand';
-import { GraduatePagesCommand } from './console/GraduatePagesCommand';
-import { DiffSourcesCommand } from './console/DiffSourcesCommand';
-import { InteractiveCommand } from './console/InteractiveCommand';
-import { DownloadFieldsCommand } from './console/DownloadFieldsCommand';
-import { DownloadSourcesCommand } from './console/DownloadSourcesCommand';
-import { GraduateFieldsCommand } from './console/GraduateFieldsCommand';
-import { DiffExtensionsCommand } from './console/DiffExtensionsCommand';
-import { DiffPagesCommand } from './console/DiffPagesCommand';
-import { DiffFieldsCommand } from './console/DiffFieldsCommand';
-import { DownloadExtensionsCommand } from './console/DownloadExtensionsCommand';
-import { UploadFieldsCommand } from './console/UploadFieldsCommand';
-import { DiffFieldsFromFileCommand } from './console/DiffFieldsFromFileCommand';
 
+// It is important to first set the environment
+import { EnvironmentUtils } from './commons/utils/EnvironmentUtils';
+setEnvironmentIfNecessary();
+import { InteractionController } from './console/InteractionController';
+
+// Setup notification updates in case of a new version
 const pkg: any = require('./../package.json');
 const updateNotifier = require('update-notifier');
 updateNotifier({ pkg }).notify();
@@ -27,50 +15,56 @@ program
   .option('--env [value]', 'Environment (Production by default. Supported environments are: test|development|qa|production)')
   .version(pkg.version);
 
-const commanderUtils = new CommanderUtils();
-
-InteractiveCommand(program, commanderUtils);
+/**************************************************/
+/* Interactive commands
+/**************************************************/
+import './console/InteractiveCommand';
 
 /**************************************************/
 /* Graduation commands
 /**************************************************/
-GraduateFieldsCommand(program, commanderUtils);
-GraduateExtensionsCommand(program, commanderUtils);
-GraduateSourcesCommand(program, commanderUtils);
-GraduatePagesCommand(program, commanderUtils);
+import './console/GraduateExtensionsCommand';
+import './console/GraduateSourcesCommand';
+import './console/GraduatePagesCommand';
+import './console/GraduateFieldsCommand';
 
 /**************************************************/
 /* Diff commands
 /**************************************************/
-DiffFieldsCommand(program, commanderUtils);
-DiffExtensionsCommand(program, commanderUtils);
-DiffSourcesCommand(program, commanderUtils);
-DiffPagesCommand(program, commanderUtils);
+import './console/DiffSourcesCommand';
+import './console/DiffExtensionsCommand';
+import './console/DiffPagesCommand';
+import './console/DiffFieldsCommand';
 
 /**************************************************/
 /* Diff From Local File commands
 /**************************************************/
-DiffFieldsFromFileCommand(program, commanderUtils);
+import './console/DiffFieldsFromFileCommand';
 
 /**************************************************/
 /* Download Commands
 /**************************************************/
-DownloadFieldsCommand(program, commanderUtils);
-DownloadSourcesCommand(program, commanderUtils);
-DownloadExtensionsCommand(program, commanderUtils);
+import './console/DownloadFieldsCommand';
+import './console/DownloadSourcesCommand';
+import './console/DownloadExtensionsCommand';
 
 /**************************************************/
 /* Upload Commands
 /**************************************************/
-UploadFieldsCommand(program, commanderUtils);
+import './console/UploadFieldsCommand';
+
+// Handling invalid commands
+program.command('*').action(cmd => {
+  console.log(`Invalid command "${cmd}"`);
+});
 
 // Parsing the arguments
 program.parse(process.argv);
 
-if (program.args && _.last(program.args)) {
-  !program.commands.map((cmd: any) => cmd._name).includes((_.last(program.args) as any)._name) && program.help();
-} else {
-  console.log('Missing argument');
+// If no command is provided, fallbacking on interactive mode
+if (program.args.length < 1) {
+  const questions = new InteractionController();
+  questions.start();
 }
 
 function setEnvironmentIfNecessary() {
