@@ -95,11 +95,11 @@
     "environments"
   ],
   "bugs": {
-    "url": "https://github.com/coveo/platform-client/issues"
+    "url": "https://github.com/coveooss/platform-client/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/coveo/platform-client.git"
+    "url": "https://github.com/coveooss/platform-client.git"
   },
   "prettier": {
     "printWidth": 140,
