@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.9.0"></a>
+# [2.9.0](https://github.com/coveooss/platform-client/compare/v2.8.0...v2.9.0) (2019-08-14)
+
+
+### Bug Fixes
+
+* Add missing option on graduate-field command ([a676580](https://github.com/coveooss/platform-client/commit/a676580))
+
+
+### Features
+
+* Add download Page command ([78c23cc](https://github.com/coveooss/platform-client/commit/78c23cc))
+* Add new page commands ([bf0ac06](https://github.com/coveooss/platform-client/commit/bf0ac06))
+* Add upload-fields command ([#61](https://github.com/coveooss/platform-client/issues/61)) ([5db6760](https://github.com/coveooss/platform-client/commit/5db6760))
+* Add upload-fields command ([#65](https://github.com/coveooss/platform-client/issues/65)) ([5572684](https://github.com/coveooss/platform-client/commit/5572684))
+* Allow diff from local file ([#65](https://github.com/coveooss/platform-client/issues/65)) ([06431de](https://github.com/coveooss/platform-client/commit/06431de))
+
+
+
 <a name="2.8.0"></a>
 # [2.8.0](https://github.com/coveooss/platform-client/compare/v2.7.2...v2.8.0) (2019-08-07)
 
