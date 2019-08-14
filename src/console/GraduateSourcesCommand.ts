@@ -7,7 +7,7 @@ import { IBlacklistObjects } from '../coveoObjects/Organization';
 
 program
   .command('graduate-sources <origin> <destination> <apiKey...>')
-  .description(`Graduate the sources of 2 organizations`)
+  .description('Graduate sources from one organization to another')
   // .option('-r, --rebuild', 'Rebuild the source once created. Default is false', false)
   .option(
     '-S, --ignoreSources []',

@@ -6,7 +6,7 @@ import { CommanderUtils } from './CommanderUtils';
 
 program
   .command('graduate-extensions <origin> <destination> <apiKey...>')
-  .description('Graduate one organization to an other')
+  .description('Graduate extensions from one organization to another')
   .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', CommanderUtils.list, [
     'requiredDataStreams',
     'content',

@@ -93,6 +93,7 @@ You can target any of the 3 Coveo Cloud environments by using the `--env` option
 1. [production](https://platform.cloud.coveo.com) (default)
 1. [development](https://platformdev.cloud.coveo.com)
 1. [qa](https://platformqa.cloud.coveo.com)
+1. [hipaa](https://platformhipaa.cloud.coveo.com) (unavailable)
 
 So if you want to diff sources within the https://platformdev.cloud.coveo.com environment, you would run:
 
