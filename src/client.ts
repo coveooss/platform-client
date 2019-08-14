@@ -50,7 +50,7 @@ import './console/DiffPagesFromFileCommand';
 import './console/DownloadFieldsCommand';
 import './console/DownloadExtensionsCommand';
 import './console/DownloadSourcesCommand';
-// TODO: import './console/DownloadPagesCommand';
+import './console/DownloadPagesCommand';
 
 /**************************************************/
 /* Upload Commands
