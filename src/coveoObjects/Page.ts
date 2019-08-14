@@ -7,6 +7,7 @@ import { BaseCoveoObject } from './BaseCoveoObject';
 export class Page extends BaseCoveoObject implements IPage {
   constructor(private configuration: any) {
     super(configuration['id']);
+    Assert.isNotUndefined(this.configuration['id'], 'Page id should not be undefined.');
     Assert.isNotUndefined(this.configuration['title'], 'Page title should not be undefined.');
     Assert.isNotUndefined(this.configuration['name'], 'Page name should not be undefined.');
     Assert.isNotUndefined(this.configuration['html'], 'Page html should not be undefined.');

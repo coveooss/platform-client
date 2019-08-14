@@ -1,64 +1,72 @@
-import { EnvironmentUtils } from './commons/utils/EnvironmentUtils';
-setEnvironmentIfNecessary();
-
 import * as program from 'commander';
 import * as _ from 'underscore';
-import { CommanderUtils } from './console/CommanderUtils';
-import { GraduateExtensionsCommand } from './console/GraduateExtensionsCommand';
-import { GraduateSourcesCommand } from './console/GraduateSourcesCommand';
-import { GraduatePagesCommand } from './console/GraduatePagesCommand';
-import { DiffSourcesCommand } from './console/DiffSourcesCommand';
-import { InteractiveCommand } from './console/InteractiveCommand';
-import { DownloadFieldsCommand } from './console/DownloadFieldsCommand';
-import { DownloadSourcesCommand } from './console/DownloadSourcesCommand';
-import { GraduateFieldsCommand } from './console/GraduateFieldsCommand';
-import { DiffExtensionsCommand } from './console/DiffExtensionsCommand';
-import { DiffPagesCommand } from './console/DiffPagesCommand';
-import { DiffFieldsCommand } from './console/DiffFieldsCommand';
-import { DownloadExtensionsCommand } from './console/DownloadExtensionsCommand';
 
+// It is important to first set the environment
+import { EnvironmentUtils } from './commons/utils/EnvironmentUtils';
+setEnvironmentIfNecessary();
+import { InteractionController } from './console/InteractionController';
+
+// Setup notification updates in case of a new version
 const pkg: any = require('./../package.json');
 const updateNotifier = require('update-notifier');
 updateNotifier({ pkg }).notify();
 
 program
-  .option('--env [value]', 'Environment (Production by default. Supported environments are: test|development|qa|production)')
+  .option('--env [value]', 'Environment (Production by default. Supported environments are: development|qa|production)')
   .version(pkg.version);
 
-const commanderUtils = new CommanderUtils();
-
-InteractiveCommand(program, commanderUtils);
-
 /**************************************************/
-/* Graduation commands
+/* Interactive commands
 /**************************************************/
-GraduateFieldsCommand(program, commanderUtils);
-GraduateExtensionsCommand(program, commanderUtils);
-GraduateSourcesCommand(program, commanderUtils);
-GraduatePagesCommand(program, commanderUtils);
+import './console/InteractiveCommand';
 
 /**************************************************/
 /* Diff commands
 /**************************************************/
-DiffFieldsCommand(program, commanderUtils);
-DiffExtensionsCommand(program, commanderUtils);
-DiffSourcesCommand(program, commanderUtils);
-DiffPagesCommand(program, commanderUtils);
+import './console/DiffFieldsCommand';
+import './console/DiffExtensionsCommand';
+import './console/DiffSourcesCommand';
+import './console/DiffPagesCommand';
+
+/**************************************************/
+/* Graduation commands
+/**************************************************/
+import './console/GraduateFieldsCommand';
+import './console/GraduateExtensionsCommand';
+import './console/GraduateSourcesCommand';
+import './console/GraduatePagesCommand';
+
+/**************************************************/
+/* Diff From Local File commands
+/**************************************************/
+import './console/DiffFieldsFromFileCommand';
+// TODO: import './console/DiffSourcesFromFileCommand';
+// TODO: import './console/DiffExtensionsFromFileCommand';
+import './console/DiffPagesFromFileCommand';
 
 /**************************************************/
 /* Download Commands
 /**************************************************/
-DownloadFieldsCommand(program, commanderUtils);
-DownloadSourcesCommand(program, commanderUtils);
-DownloadExtensionsCommand(program, commanderUtils);
+import './console/DownloadFieldsCommand';
+import './console/DownloadExtensionsCommand';
+import './console/DownloadSourcesCommand';
+import './console/DownloadPagesCommand';
+
+/**************************************************/
+/* Upload Commands
+/**************************************************/
+import './console/UploadFieldsCommand';
+// TODO: import './console/UploadExtensionssCommand';
+// TODO: import './console/UploadSourcesCommand';
+import './console/UploadPagesCommand';
 
 // Parsing the arguments
 program.parse(process.argv);
 
-if (program.args && _.last(program.args)) {
-  !program.commands.map((cmd: any) => cmd._name).includes((_.last(program.args) as any)._name) && program.help();
-} else {
-  console.log('Missing argument');
+// If no command is provided, fallbacking on interactive mode
+if (program.args.length < 1) {
+  const questions = new InteractionController();
+  questions.start();
 }
 
 function setEnvironmentIfNecessary() {

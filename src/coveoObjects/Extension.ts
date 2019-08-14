@@ -7,6 +7,7 @@ import { IExtention } from '../commons/interfaces/IExtension';
 export class Extension extends BaseCoveoObject implements IExtention {
   constructor(private configuration: any) {
     super(configuration['id']);
+    Assert.isNotUndefined(this.configuration['id'], 'Extension id should not be undefined.');
     Assert.isNotUndefined(this.configuration['content'], 'Extension content should not be undefined.');
     Assert.isNotUndefined(this.configuration['name'], 'Extension name should not be undefined.');
     Assert.isNotUndefined(this.configuration['description'], 'Extension description should not be undefined.');

@@ -1,6 +1,6 @@
 {
   "name": "coveo-platform-client",
-  "version": "2.8.0",
+  "version": "2.9.0",
   "description": "A client to manage organizations in the Coveo Cloud Platform",
   "main": "./bin/client-global.js",
   "keywords": [
@@ -95,11 +95,11 @@
     "environments"
   ],
   "bugs": {
-    "url": "https://github.com/coveo/platform-client/issues"
+    "url": "https://github.com/coveooss/platform-client/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/coveo/platform-client.git"
+    "url": "https://github.com/coveooss/platform-client.git"
   },
   "prettier": {
     "printWidth": 140,
