@@ -70,6 +70,10 @@ export class FieldController extends BaseController {
   private loadDataForDiff(diffOptions?: IDiffOptions): Promise<{}> {
     return new Promise((resolve, reject) => {
       if (diffOptions && diffOptions.originData) {
+        if (!Array.isArray(diffOptions.originData)) {
+          Logger.error('Should provide an array of fields');
+          reject();
+        }
         try {
           this.organization1.addFieldList(diffOptions.originData);
         } catch (error) {

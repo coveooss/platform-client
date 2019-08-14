@@ -218,7 +218,7 @@ export const OrganizationTest = () => {
                 type: 'STRING'
               }
             ]),
-          'Missing field name from fieldModel'
+          'Missing property "name" from fieldModel'
         );
       });
     });

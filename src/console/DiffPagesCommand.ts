@@ -17,7 +17,7 @@ program
   )
   .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
   .action((origin: string, destination: string, apiKey: string[], options: any) => {
-    CommanderUtils.setLogger(options, 'diff-page');
+    CommanderUtils.setLogger(options, 'diff-pages');
 
     const includeOnly = [
       'name', // mandatory

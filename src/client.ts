@@ -21,42 +21,44 @@ program
 import './console/InteractiveCommand';
 
 /**************************************************/
+/* Diff commands
+/**************************************************/
+import './console/DiffFieldsCommand';
+import './console/DiffExtensionsCommand';
+import './console/DiffSourcesCommand';
+import './console/DiffPagesCommand';
+
+/**************************************************/
 /* Graduation commands
 /**************************************************/
+import './console/GraduateFieldsCommand';
 import './console/GraduateExtensionsCommand';
 import './console/GraduateSourcesCommand';
 import './console/GraduatePagesCommand';
-import './console/GraduateFieldsCommand';
-
-/**************************************************/
-/* Diff commands
-/**************************************************/
-import './console/DiffSourcesCommand';
-import './console/DiffExtensionsCommand';
-import './console/DiffPagesCommand';
-import './console/DiffFieldsCommand';
 
 /**************************************************/
 /* Diff From Local File commands
 /**************************************************/
 import './console/DiffFieldsFromFileCommand';
+// TODO: import './console/DiffSourcesFromFileCommand';
+// TODO: import './console/DiffExtensionsFromFileCommand';
+import './console/DiffPagesFromFileCommand';
 
 /**************************************************/
 /* Download Commands
 /**************************************************/
 import './console/DownloadFieldsCommand';
-import './console/DownloadSourcesCommand';
 import './console/DownloadExtensionsCommand';
+import './console/DownloadSourcesCommand';
+// TODO: import './console/DownloadPagesCommand';
 
 /**************************************************/
 /* Upload Commands
 /**************************************************/
 import './console/UploadFieldsCommand';
-
-// Handling invalid commands
-program.command('*').action(cmd => {
-  console.log(`Invalid command "${cmd}"`);
-});
+// TODO: import './console/UploadExtensionssCommand';
+// TODO: import './console/UploadSourcesCommand';
+import './console/UploadPagesCommand';
 
 // Parsing the arguments
 program.parse(process.argv);

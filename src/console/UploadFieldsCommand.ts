@@ -49,7 +49,6 @@ program
           DELETE: options.methods.indexOf('DELETE') > -1
         };
 
-        // TODO: find a cleaner way
         const command = new GraduateCommand('dummyOrg', destination, apiKey, apiKey);
         command.graduateFields(graduateOptions);
       })

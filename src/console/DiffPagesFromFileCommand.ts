@@ -1,16 +1,15 @@
-import * as _ from 'underscore';
 import * as program from 'commander';
-import { CommanderUtils } from './CommanderUtils';
-import { FileUtils } from '../commons/utils/FileUtils';
+import * as _ from 'underscore';
 import { Logger } from '../commons/logger';
+import { CommanderUtils } from './CommanderUtils';
 import { IDiffOptions, DiffCommand } from '../commands/DiffCommand';
+import { FileUtils } from '../commons/utils/FileUtils';
 
 program
-  .command('diff-fields-file <org> <apiKey> <filePathToUpload>')
-  .description('Compare fields from an organization to a local configuration file')
+  .command('diff-pages-file <org> <apiKey> <filePathToUpload>')
+  .description('Compare pages from an organization to a local configuration file')
   .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
-  .option('-i, --ignoreKeys []', 'Keys to ignore.', CommanderUtils.list, [])
-  .option('-o, --onlyKeys []', 'Diff only the specified keys.', CommanderUtils.list, [])
+  .option('-E, --ignorePages []', 'Pages to ignore. String separated by ",".', CommanderUtils.list)
   .option(
     '-l, --logLevel <level>',
     'Possible values are: insane, verbose, info, error, nothing',
@@ -21,25 +20,33 @@ program
   .on('--help', () => {
     console.log('');
     console.log('Examples:');
-    console.log('  $ platformclient diff-fields-file --help');
-    console.log('  $ platformclient diff-fields-file YourOrg YourApiKey FileToCompare');
+    console.log('  $ platformclient diff-pages-file --help');
+    console.log('  $ platformclient diff-pages-file YourOrg YourApiKey FileToCompare');
   })
   .action((org: string, apiKey: string, filePathToUpload: string, options: any) => {
-    CommanderUtils.setLogger(options, 'diff-fields-file');
+    CommanderUtils.setLogger(options, 'diff-pages-file');
 
-    // Set graduation options
     FileUtils.readJson(filePathToUpload)
       .then(data => {
+        const includeOnly = [
+          'name', // mandatory
+          'title', // mandatory
+          'html'
+        ];
+
+        // Set diff options
         const diffOptions: IDiffOptions = {
-          keysToIgnore: _.union(options.ignoreKeys, ['sources']),
-          includeOnly: options.onlyKeys,
           silent: options.silent,
+          includeOnly: includeOnly,
           originData: data
         };
 
-        // TODO: find a cleaner way
-        const command = new DiffCommand('localFile', org, apiKey, apiKey);
-        command.diffFields(diffOptions);
+        const blacklistOptions = {
+          pages: options.ignorePages
+        };
+
+        const command = new DiffCommand('localFile', org, apiKey, apiKey, blacklistOptions);
+        command.diffPages(diffOptions);
       })
       .catch((err: any) => {
         Logger.error('Unable to read file', err);

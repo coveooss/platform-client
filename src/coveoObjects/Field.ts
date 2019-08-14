@@ -9,7 +9,7 @@ import { Assert } from '../commons/misc/Assert';
 export class Field extends BaseCoveoObject implements IField {
   constructor(private fieldModel: IStringMap<any>) {
     super(fieldModel['name']);
-    Assert.exists(fieldModel['name'], 'Missing field name from fieldModel');
+    Assert.exists(fieldModel['name'], 'Missing property "name" from fieldModel');
   }
 
   /**
