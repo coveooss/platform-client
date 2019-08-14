@@ -31,6 +31,7 @@ export class Organization extends BaseCoveoObject implements IOrganization {
 
   constructor(id: string, private apiKey: string, private blacklist: IBlacklistObjects = {}) {
     super(id);
+    Assert.exists(id, 'Missing organization id');
     this.apiKey = apiKey;
 
     this.blacklist.extensions = _.map(this.blacklist.extensions || [], e => StringUtil.lowerAndStripSpaces(e));

@@ -4,10 +4,12 @@ import { IStringMap } from '../commons/interfaces/IStringMap';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 import { BaseCoveoObject } from './BaseCoveoObject';
 import { StringUtil } from '../commons/utils/StringUtils';
+import { Assert } from '../commons/misc/Assert';
 
 export class Field extends BaseCoveoObject implements IField {
   constructor(private fieldModel: IStringMap<any>) {
     super(fieldModel['name']);
+    Assert.exists(fieldModel['name'], 'Missing property "name" from fieldModel');
   }
 
   /**

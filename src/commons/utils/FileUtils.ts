@@ -8,4 +8,8 @@ export class FileUtils {
   static writeJson(outputFile: string, data: any, space: number = 2): Promise<void> {
     return fs.writeJson(outputFile, data, { spaces: space });
   }
+
+  static readJson(inputFile: string): Promise<any> {
+    return fs.readJson(inputFile);
+  }
 }

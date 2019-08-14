@@ -1,4 +1,4 @@
-# Coveo-Platform-Client [![Build Status](https://api.travis-ci.org/coveo/platform-client.svg?branch=master)](https://travis-ci.org/coveo/platform-client) [![codecov](https://codecov.io/gh/coveo/platform-client/branch/master/graph/badge.svg)](https://codecov.io/gh/coveo/platform-client) [![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/ellerbrock/typescript-badges/) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
+# Coveo-Platform-Client [![Build Status](https://api.travis-ci.org/coveooss/platform-client.svg?branch=master)](https://travis-ci.org/coveooss/platform-client) [![codecov](https://codecov.io/gh/coveooss/platform-client/branch/master/graph/badge.svg)](https://codecov.io/gh/coveooss/platform-client) [![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/ellerbrock/typescript-badges/) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
 A simple client to manage organizations in the Coveo Cloud Platform.
 
@@ -34,17 +34,17 @@ To initiate the interactive mode, run the following command in your terminal:
 platformclient interactive
 ```
 
-<!-- ![Alt Text](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/interactive.png) -->
+<!-- ![Alt Text](https://raw.githubusercontent.com/coveooss/platform-client/master/documentation/images/interactive.png) -->
 
 ### Commands
 
 For automated help, use the `-h` (or `--help`) argument:
 
-![](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/help.png)
+![](https://raw.githubusercontent.com/coveooss/platform-client/master/documentation/images/help.png)
 
 To get help regarding a specific command, run `platformclient <command> --help`.
 
-![](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/graduate-help.png)
+![](https://raw.githubusercontent.com/coveooss/platform-client/master/documentation/images/graduate-help.png)
 
 ```
 platformclient <command> [options] <origin> <destination> <apiKey...>
@@ -56,28 +56,35 @@ platformclient <command> [options] <origin> <destination> <apiKey...>
 1. `[options]`: Command options
 1. `<origin>`: The origin organization
 1. `<destination>`: The destination organization
-1. `<apiKey...>`: You can either use a **master API Key** or 2 API keys specific to each Coveo organisation. The **master API key** is assigned to you by the Coveo Cloud Platform. You can view that API key by connecting to the [Coveo Cloud Platform](https://platform.cloud.coveo.com/) then opening the developer console.
-   ![API key](https://raw.githubusercontent.com/coveo/platform-client/master/documentation/images/apiKey.png)
+1. `<apiKey...>`: You can either use a **master API Key** or 2 API keys specific to each Coveo organisation. The **master API key** is assigned to you by the Coveo Cloud Platform. You can view that API key by connecting to the [Coveo Cloud Platform](https://platform.cloud.coveo.com/) then opening the developer console
+   ![API key](https://raw.githubusercontent.com/coveooss/platform-client/master/documentation/images/apiKey.png).
 
 However, the recommended approach is to use 2 API keys that you have first [created on the Coveo Cloud Platform](https://docs.coveo.com/en/1718/cloud-v2-administrators/api-keys---page). If you are using this approach, make sure to provide the appropriate privileges to the API key based on the operation you want to execute (refer to the table below).
 
 ###### API Privileges table
 
-| Command             | Access Level                                   |
-| :------------------ | :--------------------------------------------- |
-| download-fields     | Fields (View All)                              |
-| download-extensions | Extensions (View All)                          |
-| download-sources    | Sources (View All)                             |
-| download-pages      | Search Pages (View All)                        |
-| diff-fields         | Fields (View All) _and_ Sources (View All)     |
-| diff-extensions     | Extensions (View All) _and_ Sources (View All) |
-| diff-sources        | Extensions (View All) _and_ Sources (View All) |
-| diff-pages          | Search Pages (View All)                        |
-| graduate-fields     | Fields (Edit All) _and_ Sources (View All)     |
-| graduate-extensions | Extensions (Edit All) _and_ Sources (View All) |
-| graduate-sources    | Extensions (View All) _and_ Sources (Edit All) |
-| graduate-pages      | Search Pages (Edit All)                        |
-
+| Command              | Access Level                                   |
+| :------------------- | :--------------------------------------------- |
+| download-fields      | Fields (View All)                              |
+| upload-fields        | Fields (Edit All)                              |
+| download-extensions  | Extensions (View All)                          |
+| upload-extensions    | Extensions (Edit All)                          |
+| download-sources     | Sources (View All)                             |
+| upload-sources       | Sources (Edit All)                             |
+| download-pages       | Search Pages (View All)                        |
+| upload-pages         | Search Pages (Edit All)                        |
+| diff-fields          | Fields (View All) _and_ Sources (View All)     |
+| diff-fields-file     | Fields (View All) _and_ Sources (View All)     |
+| diff-extensions      | Extensions (View All) _and_ Sources (View All) |
+| diff-extensions-file | Extensions (View All) _and_ Sources (View All) |
+| diff-sources         | Extensions (View All) _and_ Sources (View All) |
+| diff-sources-file    | Extensions (View All) _and_ Sources (View All) |
+| diff-pages           | Search Pages (View All)                        |
+| diff-pages-file      | Search Pages (View All)                        |
+| graduate-fields      | Fields (Edit All) _and_ Sources (View All)     |
+| graduate-extensions  | Extensions (Edit All) _and_ Sources (View All) |
+| graduate-sources     | Extensions (View All) _and_ Sources (Edit All) |
+| graduate-pages       | Search Pages (Edit All)                        |
 
 ##### Coveo Cloud Platform environment
 
@@ -132,6 +139,18 @@ Diff all sources **but** `Source A` and `Source B`.
 platformclient diff-sources devOrg prodOrg myApiKey -S "Source A,Source B"
 ```
 
+You can also diff a resource in your organization against a local file. This can be useful to track changes after a given time.
+For instance you can see how many fields have changed since the last time you ran a `download-fields` command.
+
+##### Examples
+
+Diff fields from `YourOrg` against `YourLocalFile`.
+
+```
+platformclient diff-fields-file YourOrg YourApiKey YourLocalFile
+```
+
+
 #### Graduation
 
 The graduate commands will deploy the changes from your origin organization to your destination organization. It is highly recommended to perform a `diff` prior to a `graduate` in order to make sure you know what you are graduating.
@@ -173,6 +192,12 @@ platformclient download-sources $COVEO_ORG_ID $COVEO_API_KEY ./backup/
 platformclient download-extensions $COVEO_ORG_ID $COVEO_API_KEY ./backup/
 ```
 
+#### Upload
+
+This can be useful if you want to revert back your organization to a previous state (assuming that you have first dowloaded that state).
+Note that the outputs of the `download` commands can be used for the `upload` commands.
+TODO: should always be an array!
+
 ## Development
 
 ### Important Gulp Tasks
@@ -204,6 +229,6 @@ The code for the projects uses APIs, SDKs, and code from the Coveo Platform. You
 - Cloud Platform Swagger: https://platform.cloud.coveo.com/docs?api=Platform (use the drop-down list to navigate the API categories, top-right of the page).
 - PushAPI documentation: https://developers.coveo.com/display/public/CloudPlatform/Push+API+Usage+Overview
 - Usage Analytics Swagger: https://usageanalytics.coveo.com/docs/
-- Coveo Search UI Framework: https://github.com/coveo/search-ui
+- Coveo Search UI Framework: https://github.com/coveooss/search-ui
 
 It's also built on nodejs/typescript.
