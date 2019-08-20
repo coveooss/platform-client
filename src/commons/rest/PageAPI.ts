@@ -39,8 +39,12 @@ export class PageAPI {
 
           org.addPageList(response.body);
 
-          Logger.verbose(`${response.body.length} pages found in ${Colors.page(org.getId())}`);
+          Logger.info(`${response.body.length} pages found in ${Colors.page(org.getId())}`);
           resolve();
+
+          _.each(response.body, (page: IStringMap<any>) => {
+            Logger.info(`Successfully loaded page ${Colors.page(page['name'])}`);
+          });
 
           // No need to load each page since all the pages are returned with the .getAllPages() call
         })

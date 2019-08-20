@@ -65,7 +65,7 @@ export class FieldAPI {
           org.addFieldList(response.body.items);
 
           Logger.verbose(`${response.body.items.length} fields found in ${Colors.organization(org.getId())}`);
-          Logger.verbose(`Successfully loaded first field page from ${Colors.organization(org.getId())}`);
+          Logger.info(`Successfully loaded first field page from ${Colors.organization(org.getId())}`);
           if (response.body.totalPages > 1) {
             this.loadOtherPages(org, response.body.totalPages)
               .then(() => resolve())
@@ -88,7 +88,7 @@ export class FieldAPI {
     const emptyArray: number[] = new Array(totalPages - 1);
     const pageArray = _.map(emptyArray, (v: number, idx: number) => idx + 1);
     return Promise.all(_.map(pageArray, (page: number) => this.getFieldsPage(org, page))).then((otherPages: RequestResponse[]) => {
-      Logger.verbose(`Successfully loaded ${totalPages - 1} additional pages of fields from ${Colors.organization(org.getId())} `);
+      Logger.info(`Successfully loaded ${totalPages - 1} additional pages of fields from ${Colors.organization(org.getId())} `);
       _.each(otherPages, (response: RequestResponse) => {
         Assert.exists(response.body && response.body.items, StaticErrorMessage.UNEXPECTED_RESPONSE);
         org.addFieldList(response.body.items);
