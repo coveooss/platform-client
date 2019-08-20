@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.9.2"></a>
+## [2.9.2](https://github.com/coveooss/platform-client/compare/v2.9.0...v2.9.2) (2019-08-20)
+
+
+### Bug Fixes
+
+*  Adjust log level on Extension API ([ce04906](https://github.com/coveooss/platform-client/commit/ce04906))
+* Update Log level from verbose to info ([a0e71f7](https://github.com/coveooss/platform-client/commit/a0e71f7))
+
+
+
 <a name="2.9.1"></a>
 ## [2.9.1](https://github.com/coveooss/platform-client/compare/v2.9.0...v2.9.1) (2019-08-20)
 
