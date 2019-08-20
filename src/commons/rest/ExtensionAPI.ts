@@ -97,7 +97,7 @@ export class ExtensionAPI {
         Logger.loadingTask(`Loading extension ${Colors.extension(extension['name'])} from ${Colors.organization(org.getId())}`);
         this.getSingleExtension(org, extension['id'])
           .then((extensionBody: RequestResponse) => {
-            Logger.info(`Successfully loaded extension ${Colors.extension(extension['name'])} from ${Colors.organization(org.getId())}`);
+            Logger.verbose(`Successfully loaded extension ${Colors.extension(extension['name'])} from ${Colors.organization(org.getId())}`);
             this.addLoadedExtensionsToOrganization(org, extensionBody.body);
             callback(null, extension['name']);
           })
