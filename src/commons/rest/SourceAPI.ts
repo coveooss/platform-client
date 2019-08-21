@@ -58,7 +58,7 @@ export class SourceAPI {
 
   static loadEachSource(org: Organization, response: RequestResponse) {
     const count = response.body.length;
-    Logger.verbose(`${count} source${count > 1 ? 's' : ''} from ${Colors.organization(org.getId())} to fetch`);
+    Logger.verbose(`${count} source${count > 1 ? 's' : ''} from ${Colors.organization(org.getId())} to load`);
 
     // Reject all sources that have been blacklisted. Do not load blacklisted sources for nothing
     response.body = _.reject(response.body, (source: any) => {

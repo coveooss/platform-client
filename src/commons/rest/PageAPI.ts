@@ -39,7 +39,9 @@ export class PageAPI {
 
           org.addPageList(response.body);
 
-          Logger.info(`${response.body.length} pages found in ${Colors.page(org.getId())}`);
+          Logger.verbose(
+            `${response.body.length} page${response.body.length > 1 ? 's' : ''} from ${Colors.organization(org.getId())} to load`
+          );
           resolve();
 
           _.each(response.body, (page: IStringMap<any>) => {
