@@ -64,7 +64,11 @@ export class FieldAPI {
           Assert.exists(response.body && response.body.items, StaticErrorMessage.UNEXPECTED_RESPONSE);
           org.addFieldList(response.body.items);
 
-          Logger.verbose(`${response.body.items.length} fields found in ${Colors.organization(org.getId())}`);
+          Logger.verbose(
+            `${response.body.items.length} field${response.body.items.length > 1 ? 's' : ''} from ${Colors.organization(
+              org.getId()
+            )} to load`
+          );
           Logger.info(`Successfully loaded first field page from ${Colors.organization(org.getId())}`);
           if (response.body.totalPages > 1) {
             this.loadOtherPages(org, response.body.totalPages)

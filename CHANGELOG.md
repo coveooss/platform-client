@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.9.3"></a>
+## [2.9.3](https://github.com/coveooss/platform-client/compare/v2.9.2...v2.9.3) (2019-08-21)
+
+
+### Bug Fixes
+
+* Make console logging consistent ([#73](https://github.com/coveooss/platform-client/issues/73)) ([de47bef](https://github.com/coveooss/platform-client/commit/de47bef))
+
+
+
 <a name="2.9.2"></a>
 ## [2.9.2](https://github.com/coveooss/platform-client/compare/v2.9.0...v2.9.2) (2019-08-20)
 

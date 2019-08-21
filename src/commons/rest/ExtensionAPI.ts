@@ -79,7 +79,7 @@ export class ExtensionAPI {
 
   static loadEachExtension(org: Organization, response: RequestResponse): Promise<{}> {
     const count = response.body.length;
-    Logger.verbose(`${count} extension${count > 1 ? 's' : ''} from ${Colors.organization(org.getId())}`);
+    Logger.verbose(`${count} extension${count > 1 ? 's' : ''} from ${Colors.organization(org.getId())} to load`);
 
     // Reject all extensions that have been blacklisted. Do not load blacklisted extensions for nothing
     response.body = _.reject(response.body, (extension: any) => {

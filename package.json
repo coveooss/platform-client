@@ -1,6 +1,6 @@
 {
   "name": "coveo-platform-client",
-  "version": "2.9.2",
+  "version": "2.9.3",
   "description": "A client to manage organizations in the Coveo Cloud Platform",
   "main": "./bin/client-global.js",
   "keywords": [
@@ -24,11 +24,11 @@
     "open": "^6.3.0",
     "ora": "^3.0.0",
     "request": "^2.88.0",
+    "snyk": "^1.189.0",
     "strip-ansi": "^5.0.0",
     "typescript": "^3.2.2",
     "underscore": "1.9.1",
-    "update-notifier": "^2.5.0",
-    "snyk": "^1.189.0"
+    "update-notifier": "^2.5.0"
   },
   "devDependencies": {
     "@types/async": "^2.0.50",
@@ -46,6 +46,7 @@
     "@types/underscore": "^1.8.9",
     "chai": "^4.2.0",
     "codecov": "^3.1.0",
+    "commitlint": "^8.1.0",
     "conventional-recommended-bump": "^4.0.4",
     "cross-env": "^5.2.0",
     "del": "^3.0.0",
@@ -74,10 +75,16 @@
     "webpack-cli": "^3.2.1",
     "webpack-notifier": "^1.7.0"
   },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "lint-staged",
+      "pre-publish": "npm run snyk-protect"
+    }
+  },
   "scripts": {
     "test-ci": "mocha-webpack test/test.ts --webpack-config webpack.config-test.js",
     "cover": "cross-env NODE_ENV=coverage nyc npm run test-ci",
-    "precommit": "lint-staged",
     "test": "gulp test",
     "standard-version": "standard-version",
     "release": "gulp release",
@@ -85,8 +92,7 @@
     "posttest": "node node_modules/nyc/bin/nyc.js report --reporter=json && codecov -f coverage/*.json",
     "tslint-check": "tslint-config-prettier-check ./tslint.json",
     "build": "gulp",
-    "snyk-protect": "snyk protect",
-    "prepublish": "npm run snyk-protect"
+    "snyk-protect": "snyk protect"
   },
   "files": [
     "bin",

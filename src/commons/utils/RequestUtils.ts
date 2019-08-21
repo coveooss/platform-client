@@ -11,7 +11,7 @@ export class RequestUtils {
   static UNAUTHORIZED: number = 401;
 
   static get(uri: string, apiKey: string): Promise<request.RequestResponse> {
-    Logger.verbose(`${chalk.bgCyan.bold('GET')} ${chalk.underline(uri)}`);
+    Logger.insane(`${chalk.bgCyan.bold('GET')} ${chalk.underline(uri)}`);
     return new Promise((resolve: (value?: any) => void, reject: (error: any) => void) => {
       request(
         uri,
@@ -35,7 +35,7 @@ export class RequestUtils {
   }
 
   static post(uri: string, apiKey: string, data: any): Promise<request.RequestResponse> {
-    Logger.verbose(`${chalk.bgGreen.bold('POST')} ${chalk.underline(uri)}`);
+    Logger.insane(`${chalk.bgGreen.bold('POST')} ${chalk.underline(uri)}`);
     Logger.insane(`${chalk.bgYellow.bold('POST')} ${JsonUtils.stringify(data, 0)}`);
     return new Promise((resolve: (value?: any) => void, reject: (error: any) => void) => {
       request(
@@ -62,7 +62,7 @@ export class RequestUtils {
   }
 
   static put(uri: string, apiKey: string, data: any): Promise<request.RequestResponse> {
-    Logger.verbose(`${chalk.bgYellow.bold('PUT')} ${chalk.underline(uri)}`);
+    Logger.insane(`${chalk.bgYellow.bold('PUT')} ${chalk.underline(uri)}`);
     Logger.insane(`${chalk.bgYellow.bold('PUT')} ${JsonUtils.stringify(data, 0)}`);
     return new Promise((resolve: (value?: any) => void, reject: (error: any) => void) => {
       request(
@@ -93,7 +93,7 @@ export class RequestUtils {
   }
 
   static delete(uri: string, apiKey: string): Promise<request.RequestResponse> {
-    Logger.verbose(`${chalk.bgRed.bold('DELETE')} ${chalk.underline(uri)}`);
+    Logger.insane(`${chalk.bgRed.bold('DELETE')} ${chalk.underline(uri)}`);
     return new Promise((resolve: (value?: any) => void, reject: (error: any) => void) => {
       request(
         uri,
