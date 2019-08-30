@@ -121,7 +121,7 @@ export const SourceControllerTest = () => {
         expect(sourceDict.getItem('Sitemap Source').getPostConversionExtensions().length).to.eql(1);
       });
 
-      it('Should remove any obejct from the source configuration', () => {
+      it('Should remove objects from the source configuration', () => {
         const salesforceSource = new Source(PRODwyowilfyrpf2qogxm45uhgskri);
 
         const keyWhitelist = [
@@ -845,13 +845,14 @@ export const SourceControllerTest = () => {
           })
           .reply(RequestUtils.OK);
 
-        const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner', 'configuration.parameters.isSandbox'] };
+        const keysToIgnore = ['information', 'resourceId', 'id', 'owner', 'configuration.parameters.isSandbox'];
+        const diffOptions = { keysToIgnore: keysToIgnore };
         const graduateOptions: IGraduateOptions = {
           POST: true,
           PUT: true,
           DELETE: true,
           diffOptions: diffOptions,
-          keyBlacklist: ['information', 'resourceId', 'id', 'owner', 'configuration.parameters.isSandbox']
+          keyBlacklist: keysToIgnore
         };
         controllerxy
           .diff(diffOptions)

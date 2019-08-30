@@ -3,6 +3,7 @@ import * as _ from 'underscore';
 import { Logger } from '../commons/logger';
 import { GraduateCommand, IGraduateOptions } from '../commands/GraduateCommand';
 import { CommanderUtils } from './CommanderUtils';
+import { IBlacklistObjects } from '../coveoObjects/Organization';
 
 program
   .command('graduate-fields <origin> <destination> <apiKey...>')
@@ -45,6 +46,10 @@ program
       DELETE: options.methods.indexOf('DELETE') > -1
     };
 
-    const command = new GraduateCommand(origin, destination, apiKey[0], apiKey[apiKey.length > 1 ? 1 : 0]);
+    const blacklistOptions: IBlacklistObjects = {
+      fields: options.ignoreFields
+    };
+
+    const command = new GraduateCommand(origin, destination, apiKey[0], apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
     command.graduateFields(graduateOptions);
   });

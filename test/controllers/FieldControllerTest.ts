@@ -308,6 +308,107 @@ export const FieldControllerTest = () => {
           });
       });
 
+      it('Should return fields for specified sources expect for the ones blacklisted', (done: MochaDone) => {
+        const orgx: Organization = new Organization('dev', 'xxx', { fields: ['field1', 'field3'] });
+        const orgy: Organization = new Organization('prod', 'yyy', { fields: ['field1', 'field3'] });
+        const controllerxy = new FieldController(orgx, orgy);
+
+        scope = nock(UrlService.getDefaultUrl())
+          // First expected request
+          .get('/rest/organizations/dev/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                // we don't want to diff this field
+                name: 'genericfield',
+                description: '',
+                type: 'STRING',
+                sources: []
+              },
+              {
+                // we don't want to diff this field
+                name: 'field1',
+                description: 'new description',
+                type: 'STRING',
+                sources: [{ name: 'source1', id: 'zxcv' }]
+              },
+              {
+                name: 'field2',
+                description: 'new description',
+                type: 'STRING',
+                sources: [{ name: 'source1', id: 'zxcv' }, { name: 'source2', id: 'wert' }]
+              },
+              {
+                name: 'field3',
+                description: 'should upadte this field event if sources attribute is different.',
+                type: 'STRING',
+                sources: [{ name: 'source3', id: 'asdfg' }, { name: 'source2', id: 'wert' }]
+              },
+              {
+                // we don't want to diff this field
+                name: 'newfield',
+                description: 'new field to create.',
+                type: 'STRING',
+                sources: [{ name: 'source3', id: 'jgfdk' }, { name: 'source6', id: 'fosjd' }]
+              }
+            ]
+          })
+          .get('/rest/organizations/prod/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'genericfield',
+                description: 'changed description',
+                type: 'STRING',
+                sources: []
+              },
+              {
+                name: 'field1',
+                description: 'old description',
+                type: 'STRING',
+                sources: [{ name: 'source1', id: 'zxcv-prod' }]
+              },
+              {
+                name: 'field2',
+                description: '',
+                type: 'STRING',
+                sources: [{ name: 'source1', id: 'zxcv-prod' }, { name: 'source2', id: 'wert-prod' }]
+              },
+              {
+                name: 'field3',
+                description: '',
+                type: 'STRING',
+                sources: [{ name: 'sourceX', id: 'asdfg' }, { name: 'sourceY', id: 'wert' }]
+              },
+              {
+                name: 'fieldtodelete',
+                description: '',
+                type: 'STRING',
+                sources: [{ name: 'source2', id: 'asdfg' }, { name: 'sourceY', id: 'wert' }]
+              }
+            ]
+          });
+
+        const diffOptions: IDiffOptions = {
+          keysToIgnore: ['sources']
+        };
+        controllerxy
+          .diff(diffOptions)
+          .then((diff: DiffResultArray<Field>) => {
+            expect(diff.TO_UPDATE.length).to.eql(2);
+            expect(_.map(diff.TO_UPDATE, f => f.getName())).to.contain('field2');
+            expect(_.map(diff.TO_UPDATE, f => f.getName())).to.contain('genericfield');
+            expect(diff.TO_CREATE.length).to.eql(1);
+            expect(diff.TO_DELETE.length).to.eql(1);
+            done();
+          })
+          .catch((err: any) => {
+            done(err);
+          });
+      });
+
       it('Should not return the diff result', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
@@ -675,6 +776,137 @@ export const FieldControllerTest = () => {
           .diff(diffOptions)
           .then((diffResultArray: DiffResultArray<Field>) => {
             expect(diffResultArray.TO_UPDATE.length).to.equal(1, 'Should only have one field to update');
+
+            fieldController
+              .graduate(diffResultArray, graduateOptions)
+              .then(() => {
+                done();
+              })
+              .catch((err: any) => {
+                done(err);
+              });
+          })
+          .catch((err: any) => {
+            done(err);
+          });
+      });
+
+      it('Should only graduate fields for the specified sources', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          .get('/rest/organizations/dev/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'allmetadatavalues',
+                description: '',
+                sources: [{ name: 'random' }, { name: 'test' }],
+                type: 'date'
+              },
+              {
+                name: 'attachmentdepth',
+                description: 'The attachment depth.',
+                sources: [{ name: 'sitemap' }, { name: 'salesforce' }],
+                type: 'STRING'
+              },
+              {
+                name: 'randomfield',
+                description: 'This is a random field',
+                sources: [{ name: 'random' }],
+                type: 'STRING'
+              },
+              {
+                name: 'newfield',
+                description: 'new description',
+                sources: [{ name: 'sitemap' }],
+                type: 'LONG'
+              }
+            ],
+            totalPages: 1,
+            totalEntries: 3
+          })
+          .get('/rest/organizations/prod/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'allmetadatavalues',
+                description: 'new description',
+                sources: [{ name: 'salesforce' }, { name: 'sitemap' }],
+                type: 'STRING'
+              },
+              {
+                name: 'fieldtodelete',
+                description: 'dsdsdsa',
+                sources: [{ name: 'random' }],
+                type: 'Date'
+              },
+              {
+                name: 'randomfield',
+                description: 'dsdsdsa',
+                sources: [{ name: 'random' }],
+                type: 'Date'
+              },
+              {
+                name: 'attachmentdepth',
+                description: 'The attachment depth.',
+                sources: [{ name: 'salesforce' }, { name: 'sitemap' }],
+                type: 'STRING'
+              },
+              {
+                name: 'attachmentparentid',
+                description: 'The identifier of the attachment"s immediate parent, for parent/child relationship.',
+                sources: [{ name: 'salesforce' }, { name: 'sitemap' }],
+                type: 'LONG'
+              },
+              {
+                name: 'authorloginname',
+                description: 'Login Name of the item author',
+                sources: [{ name: 'salesforce' }, { name: 'sitemap' }],
+                type: 'STRING'
+              }
+            ],
+            totalPages: 1,
+            totalEntries: 4
+          })
+          .post('/rest/organizations/prod/indexes/fields/batch/create', [
+            {
+              name: 'newfield',
+              description: 'new description',
+              type: 'LONG'
+            }
+          ])
+          .reply(RequestUtils.OK)
+          // .put('/rest/organizations/prod/indexes/fields/batch/update', [
+          //   {
+          //     name: 'allmetadatavalues',
+          //     description: '',
+          //     type: 'STRING'
+          //   }
+          // ])
+          // .reply(RequestUtils.NO_CONTENT)
+          .delete('/rest/organizations/prod/indexes/fields/batch/delete')
+          .query({ fields: 'allmetadatavalues,attachmentparentid,authorloginname' })
+          .reply(RequestUtils.NO_CONTENT);
+
+        const diffOptions: IDiffOptions = {
+          keysToIgnore: ['sources'],
+          sources: ['sitemap', 'salesforce']
+        };
+
+        const graduateOptions: IGraduateOptions = {
+          POST: true,
+          PUT: true,
+          DELETE: true,
+          keyBlacklist: ['sources'],
+          diffOptions: diffOptions
+        };
+
+        fieldController
+          .diff(diffOptions)
+          .then((diffResultArray: DiffResultArray<Field>) => {
+            expect(diffResultArray.TO_UPDATE.length).to.equal(0);
+            expect(diffResultArray.TO_CREATE.length).to.equal(1);
 
             fieldController
               .graduate(diffResultArray, graduateOptions)

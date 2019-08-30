@@ -7,7 +7,7 @@ import { Logger } from '../commons/logger';
 
 program
   .command('upload-fields <origin> <apiKey> <filePathToUpload>')
-  .description('Upload fields to an organization.')
+  .description('(beta) Upload fields to an organization.')
   .option('-i, --ignoreKeys []', 'Keys to ignore. String separated by ","', CommanderUtils.list, [])
   .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', CommanderUtils.list, [])
   .option(

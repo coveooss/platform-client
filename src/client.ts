@@ -29,20 +29,20 @@ import './console/DiffSourcesCommand';
 import './console/DiffPagesCommand';
 
 /**************************************************/
+/* Diff From Local File commands
+/**************************************************/
+import './console/DiffFieldsFromFileCommand';
+// TODO: import './console/DiffExtensionsFromFileCommand';
+// TODO: import './console/DiffSourcesFromFileCommand';
+import './console/DiffPagesFromFileCommand';
+
+/**************************************************/
 /* Graduation commands
 /**************************************************/
 import './console/GraduateFieldsCommand';
 import './console/GraduateExtensionsCommand';
 import './console/GraduateSourcesCommand';
 import './console/GraduatePagesCommand';
-
-/**************************************************/
-/* Diff From Local File commands
-/**************************************************/
-import './console/DiffFieldsFromFileCommand';
-// TODO: import './console/DiffSourcesFromFileCommand';
-// TODO: import './console/DiffExtensionsFromFileCommand';
-import './console/DiffPagesFromFileCommand';
 
 /**************************************************/
 /* Download Commands
@@ -56,8 +56,8 @@ import './console/DownloadPagesCommand';
 /* Upload Commands
 /**************************************************/
 import './console/UploadFieldsCommand';
-// TODO: import './console/UploadExtensionssCommand';
-// TODO: import './console/UploadSourcesCommand';
+import './console/UploadExtensionsCommand';
+import './console/UploadSourcesCommand';
 import './console/UploadPagesCommand';
 
 // Parsing the arguments

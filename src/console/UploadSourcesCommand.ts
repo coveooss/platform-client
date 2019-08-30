@@ -3,40 +3,32 @@ import * as _ from 'underscore';
 import { Logger } from '../commons/logger';
 import { GraduateCommand, IGraduateOptions } from '../commands/GraduateCommand';
 import { CommanderUtils } from './CommanderUtils';
-import { IBlacklistObjects } from '../coveoObjects/Organization';
+import { FileUtils } from '../commons/utils/FileUtils';
 
 program
-  .command('graduate-sources <origin> <destination> <apiKey...>')
-  .description('Graduate sources from one organization to another')
-  // .option('-r, --rebuild', 'Rebuild the source once created. Default is false', false)
+  .command('upload-sources <origin> <apiKey> <filePathToUpload>')
+  .description('(beta) Upload sources to an organization.')
   .option(
     '-S, --ignoreSources []',
     'List of sources to ignore. String separated by ",". If no specified, all the sources will be diffed',
     CommanderUtils.list,
     []
   )
-  // TODO: provide option to rebuild
-  // .option('-r, --rebuild', 'Rebuild source after graduation')
   .option(
     '-E, --ignoreExtensions []',
     'Extensions to ignore. String separated by ",". By default, the diff will ignore the : "All metadata values" extension',
     CommanderUtils.list
   )
-  .option(
-    '-m, --methods []',
-    'HTTP method authorized by the Graduation. Should be a comma separated list (no spaces)',
-    CommanderUtils.list,
-    ['POST', 'PUT']
-  )
+  .option('-m, --methods []', 'HTTP method authorized by the Graduation', CommanderUtils.list, ['POST', 'PUT'])
+  .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
   .option(
     '-l, --logLevel <level>',
     'Possible values are: insane, verbose, info, error, nothing',
     /^(insane|verbose|info|error|nothing)$/i,
     'info'
   )
-  .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
-  .action((origin: string, destination: string, apiKey: string[], options: any) => {
-    CommanderUtils.setLogger(options, 'graduate-sources');
+  .action((destination: string, apiKey: string, filePathToUpload: string, options: any) => {
+    CommanderUtils.setLogger(options, 'upload-sources');
 
     const includeOnly = [
       'name', // mandatory
@@ -66,27 +58,34 @@ program
       'additionalInfos.salesforceOrgName'
     ];
 
-    const graduateOptions: IGraduateOptions = {
-      diffOptions: {
-        silent: options.silent,
-        includeOnly: includeOnly,
-        keysToIgnore: keysToIgnore
-      },
-      keyWhitelist: includeOnly,
-      keyBlacklist: keysToIgnore,
-      rebuild: options.rebuild,
-      POST: options.methods.indexOf('POST') > -1,
-      PUT: options.methods.indexOf('PUT') > -1,
-      DELETE: options.methods.indexOf('DELETE') > -1
-    };
+    FileUtils.readJson(filePathToUpload)
+      .then(data => {
+        // Set graduation options
+        const graduateOptions: IGraduateOptions = {
+          diffOptions: {
+            silent: options.silent,
+            includeOnly: includeOnly,
+            keysToIgnore: keysToIgnore
+          },
+          keyWhitelist: includeOnly,
+          keyBlacklist: keysToIgnore,
+          rebuild: options.rebuild,
+          POST: options.methods.indexOf('POST') > -1,
+          PUT: options.methods.indexOf('PUT') > -1,
+          DELETE: options.methods.indexOf('DELETE') > -1
+        };
 
-    const blacklistOptions: IBlacklistObjects = {
-      extensions: _.union(
-        ['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues', 'capturemetadata'],
-        options.ignoreExtensions
-      ),
-      sources: options.ignoreSources
-    };
-    const command = new GraduateCommand(origin, destination, apiKey[0], apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
-    command.graduateSources(graduateOptions);
+        const blacklistOptions = {
+          sources: _.union(
+            ['allfieldvalues', 'allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'],
+            options.ignoreSources
+          )
+        };
+        const command = new GraduateCommand('dummyOrg', destination, apiKey, apiKey, blacklistOptions);
+        command.graduateSources(graduateOptions);
+      })
+      .catch((err: any) => {
+        Logger.error('Unable to read file', err);
+        process.exit();
+      });
   });

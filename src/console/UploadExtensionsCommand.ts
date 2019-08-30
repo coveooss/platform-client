@@ -7,9 +7,9 @@ import { IDiffOptions } from '../commands/DiffCommand';
 import { FileUtils } from '../commons/utils/FileUtils';
 
 program
-  .command('upload-pages <origin> <apiKey> <filePathToUpload>')
-  .description('(beta) Upload pages to an organization.')
-  .option('-E, --ignorePages []', 'Pages to ignore. String separated by ",".', CommanderUtils.list)
+  .command('upload-extensions <origin> <apiKey> <filePathToUpload>')
+  .description('(beta) Upload extensions to an organization.')
+  .option('-E, --ignoreExtensions []', 'Extensions to ignore. String separated by ",".', CommanderUtils.list)
   .option('-m, --methods []', 'HTTP method authorized by the Graduation', CommanderUtils.list, ['POST', 'PUT'])
   .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
   .option(
@@ -19,20 +19,14 @@ program
     'info'
   )
   .action((destination: string, apiKey: string, filePathToUpload: string, options: any) => {
-    CommanderUtils.setLogger(options, 'upload-pages');
+    CommanderUtils.setLogger(options, 'upload-extensions');
 
     FileUtils.readJson(filePathToUpload)
       .then(data => {
-        const includeOnly = [
-          'name', // mandatory
-          'title', // mandatory
-          'html'
-        ];
-
         // Set diff options
         const diffOptions: IDiffOptions = {
           silent: options.silent,
-          includeOnly: includeOnly,
+          includeOnly: options.onlyKeys,
           originData: data
         };
 
@@ -45,10 +39,13 @@ program
         };
 
         const blacklistOptions = {
-          pages: options.ignorePages
+          extensions: _.union(
+            ['allfieldvalues', 'allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'],
+            options.ignoreExtensions
+          )
         };
         const command = new GraduateCommand('dummyOrg', destination, apiKey, apiKey, blacklistOptions);
-        command.graduatePages(graduateOptions);
+        command.graduateExtensions(graduateOptions);
       })
       .catch((err: any) => {
         Logger.error('Unable to read file', err);
