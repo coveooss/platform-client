@@ -3,6 +3,7 @@ import * as program from 'commander';
 import { Logger } from '../commons/logger';
 import { CommanderUtils } from './CommanderUtils';
 import { IDiffOptions, DiffCommand } from '../commands/DiffCommand';
+import { IBlacklistObjects } from '../coveoObjects/Organization';
 
 program
   .command('diff-fields <origin> <destination> <apiKey...>')
@@ -14,7 +15,8 @@ program
     CommanderUtils.list,
     []
   )
-  .option('-i, --ignoreKeys []', 'Keys to ignore.', CommanderUtils.list, [])
+  // .option('-i, --ignoreKeys []', 'Field keys to ignore (e.g. "facet","description").', CommanderUtils.list, [])
+  .option('-i, --ignoreFields []', 'Fields to ignore.', CommanderUtils.list, [])
   .option('-o, --onlyKeys []', 'Diff only the specified keys.', CommanderUtils.list, [])
   .option(
     '-l, --logLevel <level>',
@@ -36,12 +38,16 @@ program
     // Set diff options
     const diffOptions: IDiffOptions = {
       // keysToIgnore: _.union(options.ignoreKeys, ['sources']),
-      keysToIgnore: ['sources'], // TODO: have presence over includeOnly. Remove includeOnly!
+      keysToIgnore: ['sources'], // TODO: have precedence over includeOnly. Remove includeOnly!
       includeOnly: options.onlyKeys,
       silent: options.silent,
       sources: options.sources
     };
 
-    const command = new DiffCommand(origin, destination, apiKey[0], apiKey[apiKey.length > 1 ? 1 : 0]);
+    const blacklistOptions: IBlacklistObjects = {
+      fields: options.ignoreFields
+    };
+
+    const command = new DiffCommand(origin, destination, apiKey[0], apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
     command.diffFields(diffOptions);
   });
