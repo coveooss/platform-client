@@ -8,7 +8,7 @@ import { IBlacklistObjects } from '../coveoObjects/Organization';
 program
   .command('graduate-fields <origin> <destination> <apiKey...>')
   .description('Graduate fields from one organization to another')
-  .option('-i, --ignoreKeys []', 'Keys to ignore. String separated by ","', CommanderUtils.list, [])
+  .option('-i, --ignoreFields []', 'Keys to ignore. String separated by ","', CommanderUtils.list, [])
   .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', CommanderUtils.list, [])
   .option(
     '-S, --sources []',
@@ -35,12 +35,14 @@ program
     // Set graduation options
     const graduateOptions: IGraduateOptions = {
       diffOptions: {
-        keysToIgnore: _.union(options.ignoreKeys, ['sources']),
+        // keysToIgnore: _.union(options.ignoreKeys, ['sources']),
+        keysToIgnore: ['sources'],
         includeOnly: options.onlyKeys,
         silent: options.silent,
         sources: options.sources
       },
-      keyBlacklist: _.union(options.ignoreKeys, ['sources']),
+      // keyBlacklist: _.union(options.ignoreKeys, ['sources']),
+      keyBlacklist: ['sources'],
       POST: options.methods.indexOf('POST') > -1,
       PUT: options.methods.indexOf('PUT') > -1,
       DELETE: options.methods.indexOf('DELETE') > -1
