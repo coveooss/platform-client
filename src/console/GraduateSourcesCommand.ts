@@ -11,7 +11,7 @@ program
   // .option('-r, --rebuild', 'Rebuild the source once created. Default is false', false)
   .option(
     '-S, --ignoreSources []',
-    'List of sources to diff. String separated by ",". If no specified, all the sources will be diffed',
+    'List of sources to ignore. String separated by ",". If no specified, all the sources will be diffed',
     CommanderUtils.list,
     []
   )

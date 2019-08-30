@@ -10,7 +10,7 @@ program
   .description('(beta) Upload sources to an organization.')
   .option(
     '-S, --ignoreSources []',
-    'List of sources to diff. String separated by ",". If no specified, all the sources will be diffed',
+    'List of sources to ignore. String separated by ",". If no specified, all the sources will be diffed',
     CommanderUtils.list,
     []
   )
