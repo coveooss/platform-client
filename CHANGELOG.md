@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.10.0"></a>
+# [2.10.0](https://github.com/coveooss/platform-client/compare/v2.9.3...v2.10.0) (2019-08-30)
+
+
+### Features
+
+* add all upload commands ([5608022](https://github.com/coveooss/platform-client/commit/5608022))
+* add option to ignore fields ([80e4565](https://github.com/coveooss/platform-client/commit/80e4565))
+
+
+
 <a name="2.9.3"></a>
 ## [2.9.3](https://github.com/coveooss/platform-client/compare/v2.9.2...v2.9.3) (2019-08-21)
 
