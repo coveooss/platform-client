@@ -172,7 +172,7 @@ export class InteractiveQuestion {
       name: InteractiveQuestion.ENVIRONMENT,
       message: 'Coveo Cloud platform environment',
       default: 'production',
-      choices: [{ name: 'production' }, { name: 'development' }, { name: 'qa' }, { name: 'hipaa', disabled: 'Not available' }]
+      choices: [{ name: 'production' }, { name: 'development' }, { name: 'qa' }, { name: 'hipaa' }]
     };
   }
 
