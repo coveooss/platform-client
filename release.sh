@@ -10,6 +10,15 @@ then
   exit 1
 fi
 
+echo
+echo "Checking status of current branch"
+echo
+
+# This checks if you have access to push
+if [[ -z $(git push --dry-run | grep "Could not read from remote repository") ]]; then
+    exit 1
+fi
+
 # Making sure the directory is clean
 if [ -z "$(git status --porcelain)" ]; then
   # Working directory clean
@@ -17,6 +26,14 @@ if [ -z "$(git status --porcelain)" ]; then
 else
   echo 'Uncommitted changes!'
   exit 1
+fi
+
+ This checks your current branch for differences
+if [[ -z $(git status -uno | grep "up to date") ]]; then
+    echo "Your branch is *not* up-to-date with origin/$RELEASE_BRANCH"
+    echo "You should either push or reset to what is at master."
+    echo "If you are unsure, you most likely want to do git --reset hard origin/$RELEASE_BRANCH"
+    exit 1
 fi
 
 # Running some the Unit tests and exit if errors
