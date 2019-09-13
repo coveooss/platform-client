@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.10.3"></a>
+## [2.10.3](https://github.com/coveooss/platform-client/compare/v2.10.2...v2.10.3) (2019-09-13)
+
+
+
 <a name="2.10.2"></a>
 ## [2.10.2](https://github.com/coveooss/platform-client/compare/v2.10.1...v2.10.2) (2019-09-12)
 
