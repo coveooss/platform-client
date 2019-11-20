@@ -1,12 +1,30 @@
 # Coveo-Platform-Client [![Build Status](https://api.travis-ci.org/coveooss/platform-client.svg?branch=master)](https://travis-ci.org/coveooss/platform-client) [![codecov](https://codecov.io/gh/coveooss/platform-client/branch/master/graph/badge.svg)](https://codecov.io/gh/coveooss/platform-client) [![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/ellerbrock/typescript-badges/) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
-A simple client to manage organizations in the Coveo Cloud V2 Platform.
+- [Coveo-Platform-Client ![Build Status](https://travis-ci.org/coveooss/platform-client) ![codecov](https://codecov.io/gh/coveooss/platform-client) ![TypeScript](https://github.com/ellerbrock/typescript-badges/) ![code style: prettier](https://github.com/prettier/prettier) ![Conventional Commits](https://conventionalcommits.org)](#coveo-platform-client-build-statushttpstravis-ciorgcoveoossplatform-client-codecovhttpscodecovioghcoveoossplatform-client-typescripthttpsgithubcomellerbrocktypescript-badges-code-style-prettierhttpsgithubcomprettierprettier-conventional-commitshttpsconventionalcommitsorg)
+  - [Description](#description)
+  - [Installation](#installation)
+  - [Using from the command line](#using-from-the-command-line)
+    - [Interactive tool](#interactive-tool)
+    - [Commands](#commands)
+      - [Command parameters](#command-parameters)
+      - [Coveo Cloud V2 Platform environment](#coveo-cloud-v2-platform-environment)
+      - [Diff](#diff)
+      - [Graduation](#graduation)
+        - [Graduation Order](#graduation-order)
+      - [Download](#download)
+      - [Upload](#upload)
+  - [Development](#development)
+    - [Important Gulp Tasks](#important-gulp-tasks)
+    - [Dev server](#dev-server)
+    - [Tests](#tests)
+    - [Run the interactive tool in local](#run-the-interactive-tool-in-local)
+  - [Available Coveo documentation](#available-coveo-documentation)
 
 **The Coveo-Platform-Client is free to use, but is not an official Coveo product.**
 
 ## Description
 
-This repository contains a command line tool to perform administrative tasks in the Coveo Cloud V2 Platform. It also allows automation of tasks that previously had to be done manually, like graduating the configuration from organizations in a different stage (e.g.: DEV, UAT, PROD).
+This repository contains a command line tool to perform administrative tasks in the Coveo Cloud V2 Platform. It also allows the automation of tasks that previously had to be done manually, like graduating the configuration from organizations in a different stage (e.g.: DEV, UAT, PROD).
 
 ## Installation
 
@@ -32,9 +50,9 @@ The interactive tool makes it easier to build the command by answering questions
 
 1. To initiate the interactive mode, run the following command in your terminal:
 
-    ```
-    platformclient interactive
-    ```
+ ```
+ platformclient interactive
+ ```
 
 2. Answer the questions, typing values or selecting options or items.
 3. Manually run the command created by the tool (in the file for which you provided the filename).
@@ -63,34 +81,34 @@ platformclient <command> [options] <origin> <destination> <apiKey...>
 1. `<destination>`: The destination organization
 1. `<apiKey...>`: You can either use a **master API Key** or 2 API keys specific to each Coveo organization. The **master API key** is assigned to you by the Coveo Cloud V2 Platform. You can view that API key by connecting to the [Coveo Cloud V2 Platform](https://platform.cloud.coveo.com/) then opening the developer console.
 
-   ![API key](https://raw.githubusercontent.com/coveooss/platform-client/master/documentation/images/apiKey.png)
+ ![API key](https://raw.githubusercontent.com/coveooss/platform-client/master/documentation/images/apiKey.png)
 
-    However, the recommended approach is to use 2 API keys that you have first [created on the Coveo Cloud V2 Platform](https://docs.coveo.com/en/1718/cloud-v2-administrators/api-keys---page). If you are using this approach, make sure to provide the appropriate privileges to the API key based on the operation you want to execute (refer to the table below).
+ However, the recommended approach is to use 2 API keys that you have first [created on the Coveo Cloud V2 Platform](https://docs.coveo.com/en/1718/cloud-v2-administrators/api-keys---page). If you are using this approach, make sure to provide the appropriate privileges to the API key based on the operation you want to execute (refer to the table below).
 
-    **API Privileges table**
+ **API Privileges table**
 
-    | Command              | Access Level                                   |
-    | :------------------- | :--------------------------------------------- |
-    | download-fields      | Fields (View All)                              |
-    | upload-fields        | Fields (Edit All)                              |
-    | download-extensions  | Extensions (View All)                          |
-    | upload-extensions    | Extensions (Edit All)                          |
-    | download-sources     | Sources (View All)                             |
-    | upload-sources       | Sources (Edit All)                             |
-    | download-pages       | Search Pages (View All)                        |
-    | upload-pages         | Search Pages (Edit All)                        |
-    | diff-fields          | Fields (View All) _and_ Sources (View All)     |
-    | diff-fields-file     | Fields (View All) _and_ Sources (View All)     |
-    | diff-extensions      | Extensions (View All) _and_ Sources (View All) |
-    | diff-extensions-file | Extensions (View All) _and_ Sources (View All) |
-    | diff-sources         | Extensions (View All) _and_ Sources (View All) |
-    | diff-sources-file    | Extensions (View All) _and_ Sources (View All) |
-    | diff-pages           | Search Pages (View All)                        |
-    | diff-pages-file      | Search Pages (View All)                        |
-    | graduate-fields      | Fields (Edit All) _and_ Sources (View All)     |
-    | graduate-extensions  | Extensions (Edit All) _and_ Sources (View All) |
-    | graduate-sources     | Extensions (View All) _and_ Sources (Edit All) |
-    | graduate-pages       | Search Pages (Edit All)                        |
+ |     **Command**      |                  Access Level                  |
+ | :------------------- | :--------------------------------------------- |
+ | download-fields      | Fields (View All)                              |
+ | upload-fields        | Fields (Edit All)                              |
+ | download-extensions  | Extensions (View All)                          |
+ | upload-extensions    | Extensions (Edit All)                          |
+ | download-sources     | Sources (View All)                             |
+ | upload-sources       | Sources (Edit All)                             |
+ | download-pages       | Search Pages (View All)                        |
+ | upload-pages         | Search Pages (Edit All)                        |
+ | diff-fields          | Fields (View All) _and_ Sources (View All)     |
+ | diff-fields-file     | Fields (View All) _and_ Sources (View All)     |
+ | diff-extensions      | Extensions (View All) _and_ Sources (View All) |
+ | diff-extensions-file | Extensions (View All) _and_ Sources (View All) |
+ | diff-sources         | Extensions (View All) _and_ Sources (View All) |
+ | diff-sources-file    | Extensions (View All) _and_ Sources (View All) |
+ | diff-pages           | Search Pages (View All)                        |
+ | diff-pages-file      | Search Pages (View All)                        |
+ | graduate-fields      | Fields (Edit All) _and_ Sources (View All)     |
+ | graduate-extensions  | Extensions (Edit All) _and_ Sources (View All) |
+ | graduate-sources     | Extensions (View All) _and_ Sources (Edit All) |
+ | graduate-pages       | Search Pages (Edit All)                        |
 
 #### Coveo Cloud V2 Platform environment
 
@@ -158,9 +176,19 @@ For instance you can see how many fields have changed since the last time you ra
 
 #### Graduation
 
-The graduate commands will deploy the changes from your origin organization to your destination organization. It is highly recommended to perform a `diff` prior to a `graduate` in order to make sure you know what you are graduating.
+| NOTE: During the graduation, the source credentials (username, password, API keys, ...) are not transferred to the destination org. Make sure to configure them after the source has been created! |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+
+The graduate commands will deploy the changes from your origin organization to your destination organization. It is highly recommended to perform a `diff` before a `graduate` to make sure you know what you are graduating.
 
 You also have the choice to create (`POST`), update (`PUT`) or/and delete (`DELETE`) resources during the graduation. If you don't specify the HTTP verb(s) with the `--methods` option, the graduation will only perform `POST` and `PUT` HTTP requests, meaning that nothing will be deleted unless you specify otherwise.
+
+##### Graduation Order
+
+If you have to graduate sources, **make sure to first graduate fields and extensions**. Trying to graduate a source for which an extension does not exist in the destination organization will likely raise an error and prevent the graduation operation.
+
+<!-- Trying to graduate a source containing mapping rules referencing fields that do not exist in the destination organization will cause to ... -->
+
 
 > **Examples**
 >
@@ -199,7 +227,7 @@ platformclient download-extensions $COVEO_ORG_ID $COVEO_API_KEY ./backup/
 
 #### Upload
 
-This can be useful if you want to revert back your organization to a previous state (assuming that you have first downloaded that state).
+This can be useful if you want to revert your organization to a previous state (assuming that you have first downloaded that state).
 Note that the outputs of the `download` commands can be used for the `upload` commands.
 TODO: should always be an array!
 
@@ -218,7 +246,7 @@ gulp dev
 ```
 
 This will start nodemon dev server instance.
-Any time you hit **Save** in a source file or in a test file, the dev server will reload and re-run your tests.
+Any time you hit **Save** in a source file or a test file, the dev server will reload and re-run your tests.
 
 ### Tests
 
