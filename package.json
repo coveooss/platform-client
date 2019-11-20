@@ -1,6 +1,6 @@
 {
   "name": "coveo-platform-client",
-  "version": "2.10.2",
+  "version": "2.10.4",
   "description": "A client to manage organizations in the Coveo Cloud Platform",
   "main": "./bin/client-global.js",
   "keywords": [
@@ -13,6 +13,8 @@
     "extensions"
   ],
   "dependencies": {
+    "@commitlint/config-conventional": "^8.2.0",
+    "D": "^1.0.0",
     "async": "^2.6.1",
     "chalk": "2.4.2",
     "commander": "^2.19.0",
