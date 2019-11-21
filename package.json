@@ -1,6 +1,6 @@
 {
   "name": "coveo-platform-client",
-  "version": "2.10.5",
+  "version": "0.0.0-development",
   "description": "A client to manage organizations in the Coveo Cloud Platform",
   "main": "./bin/client-global.js",
   "keywords": [
@@ -46,17 +46,14 @@
     "@types/request": "^2.48.1",
     "@types/underscore": "^1.8.9",
     "chai": "^4.2.0",
+    "clean-webpack-plugin": "^3.0.0",
     "codecov": "^3.1.0",
     "commitlint": "^8.1.0",
-    "conventional-recommended-bump": "^4.0.4",
+    "copy-webpack-plugin": "^5.0.5",
     "cross-env": "^5.2.0",
+    "cz-conventional-changelog": "^3.0.2",
     "del": "^3.0.0",
     "ejs-loader": "^0.3.3",
-    "gulp": "^4.0.0",
-    "gulp-concat": "^2.6.1",
-    "gulp-replace": "^1.0.0",
-    "gulp-shell": "^0.6.5",
-    "gulp-zip": "^4.2.0",
     "husky": "^1.3.1",
     "istanbul-instrumenter-loader": "^3.0.1",
     "lint-staged": "^8.1.0",
@@ -66,34 +63,34 @@
     "nodemon": "^1.18.9",
     "nyc": "^13.1.0",
     "prettier": "^1.15.3",
-    "require-dir": "^1.2.0",
-    "semver": "^5.6.0",
-    "standard-version": "^4.4.0",
     "ts-loader": "^5.3.3",
     "ts-node": "^7.0.1",
     "tslint": "^5.12.1",
     "webpack": "^4.28.4",
     "webpack-cli": "^3.2.1",
-    "webpack-notifier": "^1.7.0"
+    "webpack-notifier": "^1.7.0",
+    "semantic-release": "^15.13.31"
   },
   "husky": {
     "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
       "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "prepare-commit-msg": "exec < /dev/tty && git cz --hook || true",
       "pre-publish": "npm run snyk-protect"
     }
   },
   "scripts": {
+    "start": "cross-env NODE_ENV=test nyc mocha-webpack test/test.ts --watch src/**/*.ts --webpack-config webpack.config-test.js --recursive",
+    "winstart": "node_modules/.bin/nyc' 'node_modules/.bin/mocha-webpack' --webpack-config webpack.config-test.js --watch",
+    "test": "cross-env NODE_ENV=test nyc mocha-webpack test/test.ts --webpack-config webpack.config-test.js --recursive --require ts-node/register",
     "test-ci": "mocha-webpack test/test.ts --webpack-config webpack.config-test.js",
     "cover": "cross-env NODE_ENV=coverage nyc npm run test-ci",
-    "test": "gulp test",
-    "standard-version": "standard-version",
-    "release": "gulp release",
-    "lintfix": "node node_modules/tsjs --tslint tslint.json --all --exclude node_modules/",
+    "release": "semantic-release",
     "posttest": "node node_modules/nyc/bin/nyc.js report --reporter=json && codecov -f coverage/*.json",
     "tslint-check": "tslint-config-prettier-check ./tslint.json",
-    "build": "gulp",
-    "snyk-protect": "snyk protect"
+    "build": "webpack --process --progress --colors",
+    "snyk-protect": "snyk protect",
+    "semantic-release": "semantic-release"
   },
   "files": [
     "bin",
@@ -114,8 +111,8 @@
   },
   "lint-staged": {
     "*.ts": [
-      "tslint --fix",
       "prettier --write",
+      "tslint -c ./tslint.json -p ./tsconfig.json --fix",
       "git add"
     ],
     "*.{js}": [
@@ -132,6 +129,11 @@
   ],
   "bin": {
     "platformclient": "./bin/client-global.js"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   },
   "license": "Apache-2.0",
   "snyk": true
