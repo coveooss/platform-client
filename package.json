@@ -90,7 +90,7 @@
     "release": "semantic-release",
     "posttest": "node node_modules/nyc/bin/nyc.js report --reporter=json && codecov -f coverage/*.json",
     "tslint-check": "tslint-config-prettier-check ./tslint.json",
-    "prepublishOnly": "npm run build",
+    "postversion": "npm run build",
     "build": "webpack --process --progress --colors",
     "snyk-protect": "snyk protect",
     "semantic-release": "semantic-release"
