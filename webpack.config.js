@@ -4,19 +4,14 @@ const WebpackNotifierPlugin = require('webpack-notifier');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
-const plugins = [];
-plugins.push(
+const plugins = [
   new WebpackNotifierPlugin(),
   new CleanWebpackPlugin(),
-  new CopyPlugin([
-    { from: 'environments/**/*.js', to: '.' },
-    { from: 'views/**/*.ejs', to: '.' },
-    { from: 'client-global.js', to: '.' }
-  ]),
+  new CopyPlugin([{ from: 'environments/**/*.js', to: '.' }, { from: 'views/**/*.ejs', to: '.' }, { from: 'client-global.js', to: '.' }]),
   new webpack.ProvidePlugin({
     _: 'underscore'
   })
-);
+];
 
 module.exports = {
   name: 'client',
@@ -40,6 +35,5 @@ module.exports = {
     noParse: /update-notifier/,
     rules: [{ test: /\.ts$/, loader: 'ts-loader', exclude: /node_modules/ }]
   },
-  plugins: plugins,
-  bail: true
+  plugins: plugins
 };
