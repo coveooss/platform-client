@@ -1,6 +1,14 @@
-# Coveo-Platform-Client [![Build Status](https://api.travis-ci.org/coveooss/platform-client.svg?branch=master)](https://travis-ci.org/coveooss/platform-client) [![codecov](https://codecov.io/gh/coveooss/platform-client/branch/master/graph/badge.svg)](https://codecov.io/gh/coveooss/platform-client) [![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/ellerbrock/typescript-badges/) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
+# Coveo-Platform-Client
 
-- [Coveo-Platform-Client ![Build Status](https://travis-ci.org/coveooss/platform-client) ![codecov](https://codecov.io/gh/coveooss/platform-client) ![TypeScript](https://github.com/ellerbrock/typescript-badges/) ![code style: prettier](https://github.com/prettier/prettier) ![Conventional Commits](https://conventionalcommits.org)](#coveo-platform-client-build-statushttpstravis-ciorgcoveoossplatform-client-codecovhttpscodecovioghcoveoossplatform-client-typescripthttpsgithubcomellerbrocktypescript-badges-code-style-prettierhttpsgithubcomprettierprettier-conventional-commitshttpsconventionalcommitsorg)
+[![Build Status](https://api.travis-ci.org/coveooss/platform-client.svg?branch=master)](https://travis-ci.org/coveooss/platform-client)
+[![codecov](https://codecov.io/gh/coveooss/platform-client/branch/master/graph/badge.svg)](https://codecov.io/gh/coveooss/platform-client)
+[![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/ellerbrock/typescript-badges/)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
+
+**The Coveo-Platform-Client is free to use, but is not an official Coveo product.**
+
+- [Coveo-Platform-Client](#coveo-platform-client)
   - [Description](#description)
   - [Installation](#installation)
   - [Using from the command line](#using-from-the-command-line)
@@ -14,13 +22,11 @@
       - [Download](#download)
       - [Upload](#upload)
   - [Development](#development)
-    - [Important Gulp Tasks](#important-gulp-tasks)
     - [Dev server](#dev-server)
     - [Tests](#tests)
     - [Run the interactive tool in local](#run-the-interactive-tool-in-local)
   - [Available Coveo documentation](#available-coveo-documentation)
 
-**The Coveo-Platform-Client is free to use, but is not an official Coveo product.**
 
 ## Description
 
@@ -233,16 +239,10 @@ TODO: should always be an array!
 
 ## Development
 
-### Important Gulp Tasks
-
-- `gulp default`: Builds the entire project
-- `gulp dev`: Starts a nodemon dev server as well as the tests.
-- `gulp test`: Builds and runs the unit tests and saves the coverage.
-
 ### Dev server
 
 ```
-gulp dev
+npm start
 ```
 
 This will start nodemon dev server instance.
@@ -250,7 +250,7 @@ Any time you hit **Save** in a source file or a test file, the dev server will r
 
 ### Tests
 
-Tests are written using [MochaJS](https://mochajs.org/). You can use `gulp test` to run the tests.
+Tests are written using [MochaJS](https://mochajs.org/). You can use `npm run test` to run the tests.
 
 Code coverage will be reported in `./coverage`
 
@@ -258,7 +258,7 @@ Code coverage will be reported in `./coverage`
 
 Run the following commands:
 
-1. `gulp`
+1. `npm run build`
 2. `node ./bin/client-global.js`
 
 ## Available Coveo documentation

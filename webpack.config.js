@@ -1,11 +1,18 @@
 const webpack = require('webpack');
 const path = require('path');
 const WebpackNotifierPlugin = require('webpack-notifier');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 const plugins = [];
-plugins.push(new WebpackNotifierPlugin());
-
 plugins.push(
+  new WebpackNotifierPlugin(),
+  new CleanWebpackPlugin(),
+  new CopyPlugin([
+    { from: 'environments/**/*.js', to: '.' },
+    { from: 'views/**/*.ejs', to: '.' },
+    { from: 'client-global.js', to: '.' }
+  ]),
   new webpack.ProvidePlugin({
     _: 'underscore'
   })
