@@ -21,7 +21,7 @@ jobs:
     - stage: test
       script: npm test
     - stage: release
-      script: npm run build
+      # script: npm run build
       deploy:
         skip_cleanup: true
         provider: script
