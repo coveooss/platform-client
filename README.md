@@ -18,6 +18,7 @@
       - [Coveo Cloud V2 Platform environment](#coveo-cloud-v2-platform-environment)
       - [Diff](#diff)
       - [Graduation](#graduation)
+        - [Graduating sources with OAuth authorization protocol](#graduating-sources-with-oauth-authorization-protocol)
         - [Graduation Order](#graduation-order)
       - [Download](#download)
       - [Upload](#upload)
@@ -182,12 +183,16 @@ For instance you can see how many fields have changed since the last time you ra
 
 #### Graduation
 
-| NOTE: During the graduation, the source credentials (username, password, API keys, ...) are not transferred to the destination org. Make sure to configure them after the source has been created! |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-
 The graduate commands will deploy the changes from your origin organization to your destination organization. It is highly recommended to perform a `diff` before a `graduate` to make sure you know what you are graduating.
 
 You also have the choice to create (`POST`), update (`PUT`) or/and delete (`DELETE`) resources during the graduation. If you don't specify the HTTP verb(s) with the `--methods` option, the graduation will only perform `POST` and `PUT` HTTP requests, meaning that nothing will be deleted unless you specify otherwise.
+
+> :warning: During the graduation, the source credentials (username, password, API keys, Client ID, Client Secret ...) are not transferred to the destination org. Make sure to configure them after the source has been created
+
+
+##### Graduating sources with OAuth authorization protocol
+Some sources require the user to initially perform a handshake against another environment. These sources include, but not limited to, Salesforce, Zendesk, SharePoint, Dropbox, Box, Gmail, Google Drive. It is therefore recommended that you initially create the source manually from the Coveo Cloud Platform and make sure it has the same name as the one you are trying to graduate from the lower environment.
+
 
 ##### Graduation Order
 
