@@ -68,16 +68,7 @@ export const ExtensionTest = () => {
 
     it('Should return the extension model', () => {
       const extension: Extension = new Extension(extensionConfig);
-      expect(extension.getConfiguration()).to.be.eql(
-        {
-          content:
-            'import urlparse\n\n# Title: NEW TITLE\n# Description: This extension is used to parse urls to extract metadata like categories.\n# Required data:\n\n# captures the Web Path\npath = urlparse.urlparse(document.uri).path\n\ncategories = {}\n\nfor i, p in enumerate(path.split("/")):\n    # path will start with /, so the first p (i=0) is usually empty\n    if p:\n        # Add categories as meta1, meta2, meta3.\n        # You can use an array if you want specific names for the categories.\n        categories[\'meta\'+str(i)] = p\n\nif len(categories):\n    # Set the categories\n    document.add_meta_data(categories)\n',
-          name: 'URL Parsing to extract metadata',
-          description: 'This extension is used to parse urls to extract metadata like categories.',
-          requiredDataStreams: ['DOCUMENT_DATA']
-        },
-        'Invalid extension model'
-      );
+      expect(extension.getConfiguration()).to.eql(JSON.parse(JSON.stringify(extensionConfig)));
     });
 
     it('Should throw an error if extension ID missing', () => {
@@ -86,6 +77,31 @@ export const ExtensionTest = () => {
 
     it('Should throw an error if undefined extension', () => {
       expect(() => new Extension(undefined)).to.throw();
+    });
+
+    it('Should remove some parameters (whitelist strategy)', () => {
+      const extension: Extension = new Extension({
+        autoMigrated: false,
+        content: 'test',
+        createdDate: 1553708885000,
+        description: 'allo',
+        enabled: true,
+        id: 'vmwaregssservicecloudnonproduction2ga4eguwi-w4cjvrelnszo3klmkcwg3ekbfi',
+        language: 'PYTHON',
+        lastModified: 1574799881000,
+        name: ' SalesforceKnowledgeBodyHTML',
+        requiredDataStreams: ['BODY_HTML'],
+        status: { durationHealth: { healthIndicator: 'UNKNOWN' } },
+        usedBy: [{ sourceId: 'vmwaregssservicecloudnonproduction2ga4eguwi-qhqha2etlffeyan4yacpfdslgi' }],
+        versionId: 'eLY7X9jOvGq940kk7fM6y8VePAzoWaR6'
+      });
+      extension.removeParameters([], ['name', 'description', 'requiredDataStreams', 'content']);
+      expect(extension.getConfiguration()).to.eql({
+        name: ' SalesforceKnowledgeBodyHTML',
+        description: 'allo',
+        content: 'test',
+        requiredDataStreams: ['BODY_HTML']
+      });
     });
 
     it('Should not allow the creation of an extension instance without a valid configuration', () => {

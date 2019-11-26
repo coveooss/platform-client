@@ -74,6 +74,18 @@ export class ExtensionController extends BaseController {
   graduate(diffResultArray: DiffResultArray<Extension>, options: IGraduateOptions): Promise<any[]> {
     if (diffResultArray.containsItems()) {
       Logger.loadingTask('Graduating Extensions');
+
+      const graduationCleanup = (extensionList: Extension[]) => {
+        _.each(extensionList, extension => {
+          // Strip extension from keys that should not be graduated using whitelist and blacklist strategy
+          // Should apply to "TO_UPDATE" and "TO_CREATE" extensions only because we dont want to graduate all extension parameters by default (e.g. status, language, ...)
+          extension.removeParameters(options.keyBlacklist || [], options.keyWhitelist || []);
+        });
+      };
+
+      graduationCleanup(diffResultArray.TO_CREATE);
+      graduationCleanup(diffResultArray.TO_UPDATE);
+
       return Promise.all(
         _.map(
           this.getAuthorizedOperations(diffResultArray, this.graduateNew, this.graduateUpdated, this.graduateDeleted, options),

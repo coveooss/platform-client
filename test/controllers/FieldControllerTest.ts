@@ -543,42 +543,16 @@ export const FieldControllerTest = () => {
           });
       });
 
-      it('Should throw an error if the original file is invalid', (done: MochaDone) => {
-        scope = nock(UrlService.getDefaultUrl())
-          .get('/rest/organizations/prod/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
-          .reply(RequestUtils.OK, {
-            items: [
-              {
-                name: 'allmetadatavalues',
-                description: 'new description',
-                type: 'STRING'
-              },
-              {
-                name: 'new field',
-                description: 'The attachment depth.',
-                type: 'STRING'
-              }
-            ],
-            totalPages: 1,
-            totalEntries: 2
-          });
-
-        fieldController
-          .diff({
+      it('Should throw an error if the original file is invalid', () => {
+        expect(() =>
+          fieldController.diff({
             originData: {
               name: 'allmetadatavalues',
               description: '',
               type: 'STRING'
             }
           } as any)
-          .then(() => {
-            done('Should not resolve');
-          })
-          .catch((err: any) => {
-            nock.cleanAll();
-            done();
-          });
+        ).to.throw();
       });
     });
 

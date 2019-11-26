@@ -1,0 +1,26 @@
+{
+  "content": "upgraded code in python 3",
+  "language": "PYTHON3",
+  "createdDate": 1523375756000,
+  "description": "blablabla",
+  "enabled": true,
+  "id": "dev-123",
+  "lastModified": 1523375756000,
+  "name": "pythonExtension",
+  "requiredDataStreams": [],
+  "versionId": ".Hvd.k9RniKVoYMvCSHBvdr7TSHD.oyc",
+  "usedBy": [],
+  "status": {
+    "durationHealth": { "healthIndicator": "UNKNOWN" },
+    "dailyStatistics": {
+      "averageDurationInSeconds": 0.0,
+      "numberOfErrors": 0,
+      "numberOfExecutions": 0,
+      "numberOfSkips": 0,
+      "numberOfTimeouts": 0
+    },
+    "disabledStatus": {},
+    "timeoutHealth": { "healthIndicator": "UNKNOWN" },
+    "timeoutLikeliness": "NONE"
+  }
+}

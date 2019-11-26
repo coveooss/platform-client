@@ -30,18 +30,17 @@ export class Extension extends BaseCoveoObject implements IExtention {
     return this.configuration['requiredDataStreams'];
   }
 
+  removeParameters(keysToRemove: string[] = [], exclusiveKeys: string[] = []): void {
+    this.configuration = JsonUtils.removeKeyValuePairsFromJson(this.configuration, keysToRemove, exclusiveKeys);
+  }
+
   /**
    * Returns the extension model containing all necessary properties to create it.
    *
    * @returns {IStringMap<any>}
    */
   getConfiguration(): IStringMap<any> {
-    return {
-      content: this.getContent(),
-      description: this.getDescription(),
-      name: this.getName(),
-      requiredDataStreams: this.getRequiredDataStreams()
-    };
+    return this.configuration;
   }
 
   clone(): Extension {

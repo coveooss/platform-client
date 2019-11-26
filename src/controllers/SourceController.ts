@@ -165,7 +165,7 @@ export class SourceController extends BaseController {
     if (diffResultArray.containsItems()) {
       Logger.loadingTask('Graduating Sources');
 
-      const graduatationCleanup = (sourceList: Source[], stripParams = false) => {
+      const graduationCleanup = (sourceList: Source[], stripParams = false) => {
         _.each(sourceList, source => {
           // Make some assertions here. Return an error if an extension is missing
           // 1. Replacing extensions with destination id
@@ -186,9 +186,9 @@ export class SourceController extends BaseController {
         });
       };
 
-      graduatationCleanup(diffResultArray.TO_CREATE);
-      graduatationCleanup(diffResultArray.TO_UPDATE, true);
-      graduatationCleanup(diffResultArray.TO_DELETE);
+      graduationCleanup(diffResultArray.TO_CREATE);
+      graduationCleanup(diffResultArray.TO_UPDATE, true);
+      graduationCleanup(diffResultArray.TO_DELETE);
 
       return Promise.all(
         _.map(
