@@ -35,6 +35,7 @@ program
         includeOnly: options.onlyKeys,
         silent: options.silent
       },
+      keyWhitelist: options.onlyKeys,
       POST: options.methods.indexOf('POST') > -1,
       PUT: options.methods.indexOf('PUT') > -1,
       DELETE: options.methods.indexOf('DELETE') > -1
