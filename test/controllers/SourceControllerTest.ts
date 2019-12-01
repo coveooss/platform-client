@@ -11,10 +11,10 @@ import { Utils } from '../../src/commons/utils/Utils';
 import { Source } from '../../src/coveoObjects/Source';
 import { Organization } from '../../src/coveoObjects/Organization';
 import { SourceController } from './../../src/controllers/SourceController';
-import { IDiffOptions } from '../../src/commands/DiffCommand';
+import { IDiffOptions } from '../../src/commons/interfaces/IDiffOptions';
 import { Dictionary } from '../../src/commons/collections/Dictionary';
 import { JsonUtils } from '../../src/commons/utils/JsonUtils';
-import { IGraduateOptions } from '../../src/commands/GraduateCommand';
+import { IGraduateOptions } from '../../src/commons/interfaces/IGraduateOptions';
 import { DownloadResultArray } from '../../src/commons/collections/DownloadResultArray';
 
 const allDevSources: Array<{}> = require('./../mocks/setup1/sources/dev/allSources.json');
@@ -305,7 +305,7 @@ export const SourceControllerTest = () => {
         };
 
         controller
-          .diff(diffOptions)
+          .runDiffSequence(diffOptions)
           .then((diffResultArray: DiffResultArray<Source>) => {
             expect(diffResultArray.TO_CREATE.length).to.eql(0);
             expect(diffResultArray.TO_UPDATE.length).to.eql(0);
@@ -453,7 +453,7 @@ export const SourceControllerTest = () => {
         };
 
         controller
-          .diff(diffOptions)
+          .runDiffSequence(diffOptions)
           .then((diffResultArray: DiffResultArray<Source>) => {
             expect(diffResultArray.TO_CREATE.length).to.eql(0);
             expect(diffResultArray.TO_UPDATE.length).to.eql(1);
@@ -513,7 +513,7 @@ export const SourceControllerTest = () => {
         };
 
         controller
-          .diff(diffOptions)
+          .runDiffSequence(diffOptions)
           .then((diffResultArray: DiffResultArray<Source>) => {
             expect(diffResultArray.TO_CREATE.length).to.eql(1);
             expect(diffResultArray.TO_UPDATE.length).to.eql(0);
@@ -552,7 +552,7 @@ export const SourceControllerTest = () => {
           .reply(429, 'SOOOORRY'); // Too many requests
 
         controller
-          .diff()
+          .runDiffSequence()
           .then(() => {
             done('Should not resolve');
           })
@@ -590,7 +590,7 @@ export const SourceControllerTest = () => {
 
         const diffOptions: IDiffOptions = { includeOnly: ['postConversionExtensions'] };
         controllerxy
-          .diff(diffOptions)
+          .runDiffSequence(diffOptions)
           .then((diff: DiffResultArray<Source>) => {
             // No change detected because the extensions were blacklisted
             expect(diff.TO_CREATE.length).to.eql(0);
@@ -641,7 +641,7 @@ export const SourceControllerTest = () => {
 
         const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner'] };
         controllerxy
-          .diff(diffOptions)
+          .runDiffSequence(diffOptions)
           .then((diff: DiffResultArray<Source>) => {
             // We don't care about the diff result here. We just wan to make sure the Diff command ignored the blacklisted sources
             done();
@@ -718,7 +718,7 @@ export const SourceControllerTest = () => {
 
         const diffOptions = { keysToIgnore: ['information', 'resourceId', 'id', 'owner'] };
         controllerxy
-          .diff(diffOptions)
+          .runDiffSequence(diffOptions)
           .then((diff: DiffResultArray<Source>) => {
             expect(diff.TO_CREATE.length).to.eql(0);
             expect(diff.TO_UPDATE.length).to.eql(1);
@@ -855,13 +855,13 @@ export const SourceControllerTest = () => {
           keyBlacklist: keysToIgnore
         };
         controllerxy
-          .diff(diffOptions)
+          .runDiffSequence(diffOptions)
           .then((diff: DiffResultArray<Source>) => {
             expect(diff.TO_CREATE.length).to.eql(0);
             expect(diff.TO_UPDATE.length).to.eql(1);
             expect(diff.TO_DELETE.length).to.eql(0);
             controllerxy
-              .graduate(diff, graduateOptions)
+              .runGraduateSequence(diff, graduateOptions)
               .then((resolved: any[]) => {
                 done();
               })
@@ -1058,13 +1058,13 @@ export const SourceControllerTest = () => {
           keyWhitelist: ['name', 'mappings']
         };
         controllerxy
-          .diff(diffOptions)
+          .runDiffSequence(diffOptions)
           .then((diff: DiffResultArray<Source>) => {
             expect(diff.TO_CREATE.length).to.eql(1);
             expect(diff.TO_UPDATE.length).to.eql(1);
             expect(diff.TO_DELETE.length).to.eql(1);
             controllerxy
-              .graduate(diff, graduateOptions)
+              .runGraduateSequence(diff, graduateOptions)
               .then((resolved: any[]) => {
                 done();
               })
@@ -1232,13 +1232,13 @@ export const SourceControllerTest = () => {
           keyWhitelist: ['name', 'mappings']
         };
         controllerxy
-          .diff(diffOptions)
+          .runDiffSequence(diffOptions)
           .then((diff: DiffResultArray<Source>) => {
             expect(diff.TO_CREATE.length).to.eql(1);
             expect(diff.TO_UPDATE.length).to.eql(1);
             expect(diff.TO_DELETE.length).to.eql(1);
             controllerxy
-              .graduate(diff, graduateOptions)
+              .runGraduateSequence(diff, graduateOptions)
               .then((resolved: any[]) => {
                 done('Should not resolve');
               })
@@ -1275,13 +1275,13 @@ export const SourceControllerTest = () => {
           diffOptions: {}
         };
         controllerxy
-          .diff(diffOptions)
+          .runDiffSequence(diffOptions)
           .then((diff: DiffResultArray<Source>) => {
             expect(diff.TO_CREATE.length).to.eql(0);
             expect(diff.TO_UPDATE.length).to.eql(0);
             expect(diff.TO_DELETE.length).to.eql(0);
             controllerxy
-              .graduate(diff, graduateOptions)
+              .runGraduateSequence(diff, graduateOptions)
               .then((resolved: any[]) => {
                 done();
               })
@@ -1313,7 +1313,7 @@ export const SourceControllerTest = () => {
           .reply(RequestUtils.OK, DEVqtngyd2gvxjxrrkftndaepcngu);
 
         controllerxy
-          .download()
+          .runDownloadSequence()
           .then((downloadResultArray: DownloadResultArray) => {
             expect(downloadResultArray.getCount()).to.be.eql(4);
             done();
@@ -1340,7 +1340,7 @@ export const SourceControllerTest = () => {
           .reply(429, { message: 'Too many requests' });
 
         controllerxy
-          .download()
+          .runDownloadSequence()
           .then(() => {
             done('Should not resolve');
           })
