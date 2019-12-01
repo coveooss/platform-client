@@ -2,7 +2,9 @@ import { IStringMap } from '../commons/interfaces/IStringMap';
 import { Assert } from '../commons/misc/Assert';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 import { BaseCoveoObject } from './BaseCoveoObject';
-import { IExtention } from '../commons/interfaces/IExtension';
+import { ICoveoObject } from '../commons/interfaces/ICoveoObject';
+
+export interface IExtention extends ICoveoObject<Extension> {}
 
 export class Extension extends BaseCoveoObject implements IExtention {
   constructor(private configuration: any) {

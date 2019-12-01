@@ -1,7 +1,8 @@
 import * as _ from 'underscore';
+import { BaseController } from './BaseController';
 import { series } from 'async';
 import { RequestResponse } from 'request';
-import { IGraduateOptions } from '../commands/GraduateCommand';
+import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { DownloadResultArray } from '../commons/collections/DownloadResultArray';
 import { IGenericError, StaticErrorMessage } from '../commons/errors';
@@ -11,20 +12,18 @@ import { ExtensionAPI } from '../commons/rest/ExtensionAPI';
 import { DiffUtils } from '../commons/utils/DiffUtils';
 import { Extension } from '../coveoObjects/Extension';
 import { Organization } from '../coveoObjects/Organization';
-import { IDiffOptions } from './../commands/DiffCommand';
-import { BaseController } from './BaseController';
+import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
 import { Colors } from '../commons/colors';
 import { DownloadUtils } from '../commons/utils/DownloadUtils';
 
 export class ExtensionController extends BaseController {
+  objectName = 'extensions';
   // The second organization can be optional in some cases like the download command for instance.
   constructor(private organization1: Organization, private organization2: Organization = new Organization('', '')) {
     super();
   }
 
-  static CONTROLLER_NAME: string = 'extensions';
-
-  diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Extension>> {
+  runDiffSequence(diffOptions?: IDiffOptions): Promise<DiffResultArray<Extension>> {
     return this.loadExtensionsForBothOrganizations()
       .then(() => {
         const diffResultArray = DiffUtils.getDiffResult(
@@ -53,7 +52,7 @@ export class ExtensionController extends BaseController {
    * @returns {Promise<DownloadResultArray>}
    * @memberof ExtensionController
    */
-  download(): Promise<DownloadResultArray> {
+  runDownloadSequence(): Promise<DownloadResultArray> {
     return ExtensionAPI.loadExtensions(this.organization1)
       .then(() => {
         return DownloadUtils.getDownloadResult(this.organization1.getExtensions());
@@ -71,7 +70,7 @@ export class ExtensionController extends BaseController {
    * @param {IGraduateOptions} options
    * @returns {Promise<any[]>}
    */
-  graduate(diffResultArray: DiffResultArray<Extension>, options: IGraduateOptions): Promise<any[]> {
+  runGraduateSequence(diffResultArray: DiffResultArray<Extension>, options: IGraduateOptions): Promise<any[]> {
     if (diffResultArray.containsItems()) {
       Logger.loadingTask('Graduating Extensions');
 

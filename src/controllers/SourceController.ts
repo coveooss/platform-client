@@ -6,7 +6,7 @@ import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { DownloadResultArray } from '../commons/collections/DownloadResultArray';
 import { Organization } from '../coveoObjects/Organization';
 import { Source } from '../coveoObjects/Source';
-import { IDiffOptions } from './../commands/DiffCommand';
+import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
 import { BaseController } from './BaseController';
 import { IGenericError, StaticErrorMessage } from '../commons/errors';
 import { DiffUtils } from '../commons/utils/DiffUtils';
@@ -17,7 +17,7 @@ import { IStringMap } from '../commons/interfaces/IStringMap';
 import { Assert } from '../commons/misc/Assert';
 import { ExtensionAPI } from '../commons/rest/ExtensionAPI';
 import { RequestResponse } from 'request';
-import { IGraduateOptions } from '../commands/GraduateCommand';
+import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { Colors } from '../commons/colors';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 import { DownloadUtils } from '../commons/utils/DownloadUtils';
@@ -25,15 +25,13 @@ import { DownloadUtils } from '../commons/utils/DownloadUtils';
 export class SourceController extends BaseController {
   private extensionList: Array<Array<{}>> = [];
   private mappingIds: IStringMap<string[]> = {};
+  objectName = 'sources';
 
   // The second organization can be optional in some cases like the download command for instance.
   constructor(private organization1: Organization, private organization2: Organization = new Organization('', '')) {
     super();
   }
-
-  static CONTROLLER_NAME: string = 'sources';
-
-  diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Source>> {
+  runDiffSequence(diffOptions?: IDiffOptions): Promise<DiffResultArray<Source>> {
     // Do not load extensions if --skipExtension option is present
     const diffActions = [this.loadSourcesForBothOrganizations(), this.loadExtensionsListForBothOrganizations()];
     return Promise.all(diffActions)
@@ -137,19 +135,35 @@ export class SourceController extends BaseController {
     extensionReplacer(source.getPreConversionExtensions());
   }
 
-  /**
-   *
-   * @param {string} organization
-   * @returns {Promise<DownloadResultArray>}
-   * @memberof SourceController
-   */
-  download(): Promise<DownloadResultArray> {
+  duplicateSource(sourceId: string, destinationSourceName: string) {
+    // TODO: to implement
+  }
+
+  rebuildSource(sourceId: string): Promise<any[]> {
+    return SourceAPI.rebuildSource(this.organization1, sourceId)
+      .then(() => {
+        return [];
+      })
+      .catch((err: IGenericError) => {
+        this.errorHandler(err, StaticErrorMessage.UNABLE_TO_REBUILD_SOURCE);
+        return Promise.reject(err);
+      });
+  }
+
+  // rebuildSources(sourceNames?: string) {
+  //   SourceAPI.loadSources(this.organization1, sourceNames)
+  // }
+
+  // TODO: make this class private
+  runDownloadSequence(): Promise<DownloadResultArray> {
     return SourceAPI.loadSources(this.organization1)
       .then(() => {
+        // const resultArray = DownloadUtils.getDownloadResult(this.organization1.getSources());
+        // super.downloadCallback(SourceController.CONTROLLER_NAME, resultArray, options);
         return DownloadUtils.getDownloadResult(this.organization1.getSources());
       })
       .catch((err: IGenericError) => {
-        this.errorHandler(err, StaticErrorMessage.UNABLE_TO_LOAD_SOURCES);
+        // super.stopProcess(StaticErrorMessage.UNABLE_TO_LOAD_SOURCES, err);
         return Promise.reject(err);
       });
   }
@@ -161,7 +175,7 @@ export class SourceController extends BaseController {
    * @param {IGraduateOptions} options
    * @returns {Promise<any[]>}
    */
-  graduate(diffResultArray: DiffResultArray<Source>, options: IGraduateOptions): Promise<any[]> {
+  runGraduateSequence(diffResultArray: DiffResultArray<Source>, options: IGraduateOptions): Promise<any[]> {
     if (diffResultArray.containsItems()) {
       Logger.loadingTask('Graduating Sources');
 

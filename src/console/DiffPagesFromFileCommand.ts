@@ -2,8 +2,10 @@ import * as program from 'commander';
 import * as _ from 'underscore';
 import { Logger } from '../commons/logger';
 import { CommanderUtils } from './CommanderUtils';
-import { IDiffOptions, DiffCommand } from '../commands/DiffCommand';
+import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
 import { FileUtils } from '../commons/utils/FileUtils';
+import { Organization } from '../coveoObjects/Organization';
+import { PageController } from '../controllers/PageController';
 
 program
   .command('diff-pages-file <org> <apiKey> <filePathToUpload>')
@@ -45,8 +47,11 @@ program
           pages: options.ignorePages
         };
 
-        const command = new DiffCommand('localFile', org, apiKey, apiKey, blacklistOptions);
-        command.diffPages(diffOptions);
+        const originOrg = new Organization('localFile', '', blacklistOptions);
+        const destinationOrg = new Organization(org, apiKey, blacklistOptions);
+        const controller: PageController = new PageController(originOrg, destinationOrg);
+
+        controller.diff(diffOptions);
       })
       .catch((err: any) => {
         Logger.error('Unable to read file', err);

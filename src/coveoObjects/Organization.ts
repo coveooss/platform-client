@@ -1,6 +1,5 @@
 import * as _ from 'underscore';
 import { Dictionary } from '../commons/collections/Dictionary';
-import { IOrganization } from '../commons/interfaces/IOrganization';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { Assert } from '../commons/misc/Assert';
 import { BaseCoveoObject } from './BaseCoveoObject';
@@ -9,6 +8,14 @@ import { Field } from './Field';
 import { Source } from './Source';
 import { StringUtil } from '../commons/utils/StringUtils';
 import { Page } from './Page';
+import { ICoveoObject } from '../commons/interfaces/ICoveoObject';
+
+export interface IOrganization extends ICoveoObject<Organization> {
+  getApiKey(): string;
+  getFields(): Dictionary<Field>;
+  getSources(): Dictionary<Source>;
+  getExtensions(): Dictionary<Extension>;
+}
 
 // Blacklist all the objects that we do not want to add to the organization.
 export interface IBlacklistObjects {
@@ -62,7 +69,7 @@ export class Organization extends BaseCoveoObject implements IOrganization {
    * @returns {string} API Key
    */
   getApiKey(): string {
-    return this.apiKey;
+    return this.apiKey || '';
   }
 
   /**

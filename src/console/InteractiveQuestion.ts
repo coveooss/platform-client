@@ -4,22 +4,20 @@ import { RequestResponse } from 'request';
 import * as inquirer from 'inquirer';
 import chalk from 'chalk';
 import * as _ from 'underscore';
-import { DiffCommand } from '../commands/DiffCommand';
-import { GraduateCommand } from '../commands/GraduateCommand';
 import { FieldAPI } from '../commons/rest/FieldAPI';
 import { Utils } from '../commons/utils/Utils';
-import { ExtensionController } from '../controllers/ExtensionController';
-import { FieldController } from '../controllers/FieldController';
 import { SourceAPI } from '../commons/rest/SourceAPI';
 import { Organization } from '../coveoObjects/Organization';
-import { SourceController } from '../controllers/SourceController';
 import { ExtensionAPI } from '../commons/rest/ExtensionAPI';
 import { StringUtil } from '../commons/utils/StringUtils';
 import { EnvironmentUtils } from '../commons/utils/EnvironmentUtils';
-import { PageController } from '../controllers/PageController';
 import { PageAPI } from '../commons/rest/PageAPI';
 
 export class InteractiveQuestion {
+  static FIELDS_CONTROLLER_NAME: string = 'fields';
+  static EXTENSIONS_CONTROLLER_NAME: string = 'extensions';
+  static SOURCES_CONTROLLER_NAME: string = 'sources';
+  static PAGES_CONTROLLER_NAME: string = 'pages';
   // Required parameters
   static ORIGIN_ORG_ID: string = 'originOrganizationId';
   static MASTER_API_KEY: string = 'APIKey';
@@ -33,6 +31,7 @@ export class InteractiveQuestion {
   static SETTING_FILENAME: string = 'settingFilename';
   static LOG_FILENAME: string = 'logFilename';
   static SOURCES: string = 'sources';
+  static SOURCES_TO_REBUILD: string = 'sourcesToRebuild';
   static IGNORE_EXTENSIONS: string = 'ignoreExtensions';
   static LOG_LEVEL: string = 'logLevel';
   static KEY_TO_IGNORE: string = 'keyToIgnore';
@@ -41,6 +40,11 @@ export class InteractiveQuestion {
   static BASIC_CONFIGURATION_MODE: string = 'Basic';
   static ADVANCED_CONFIGURATION_MODE: string = 'Advanced';
   // static EXECUTE_COMMAND: string = 'executeCommand';
+
+  static GRADUATE_COMMAND: string = 'graduate';
+  static DIFF_COMMAND: string = 'diff';
+  static DOWNLOAD_COMMAND: string = 'download';
+  static UPLOAD_COMMAND: string = 'upload';
 
   // To answers from previous prompts
   static PREVIOUS_ANSWERS: Answers = {};
@@ -153,7 +157,10 @@ export class InteractiveQuestion {
       type: 'input',
       name: InteractiveQuestion.DESTINATION_ORG_ID,
       message: 'Destination Organization ID: ',
-      validate: this.inputValidator('You need to provide the ID of the Organization')
+      validate: this.inputValidator('You need to provide the ID of the Organization'),
+      when: (answer: Answers) => {
+        return [InteractiveQuestion.GRADUATE_COMMAND, InteractiveQuestion.DIFF_COMMAND].indexOf(answer[InteractiveQuestion.COMMAND]) !== -1;
+      }
     };
   }
 
@@ -181,7 +188,11 @@ export class InteractiveQuestion {
       type: 'list',
       name: InteractiveQuestion.COMMAND,
       message: 'Command to execute?',
-      choices: [{ name: DiffCommand.COMMAND_NAME }, { name: GraduateCommand.COMMAND_NAME }]
+      choices: [
+        { name: InteractiveQuestion.DIFF_COMMAND },
+        { name: InteractiveQuestion.GRADUATE_COMMAND },
+        { name: 'rebuild sources', value: 'rebuild-sources' }
+      ]
     };
   }
 
@@ -205,14 +216,14 @@ export class InteractiveQuestion {
       name: InteractiveQuestion.OBJECT_TO_MANIPULATE,
       message: 'What would you like to diff?',
       choices: [
-        { name: FieldController.CONTROLLER_NAME },
-        { name: ExtensionController.CONTROLLER_NAME },
-        { name: SourceController.CONTROLLER_NAME },
-        { name: PageController.CONTROLLER_NAME }
+        { name: InteractiveQuestion.FIELDS_CONTROLLER_NAME },
+        { name: InteractiveQuestion.EXTENSIONS_CONTROLLER_NAME },
+        { name: InteractiveQuestion.SOURCES_CONTROLLER_NAME },
+        { name: InteractiveQuestion.PAGES_CONTROLLER_NAME }
       ],
       when: (answer: Answers) => {
         answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
-        return answer[InteractiveQuestion.COMMAND].indexOf(DiffCommand.COMMAND_NAME) !== -1;
+        return answer[InteractiveQuestion.COMMAND].indexOf(InteractiveQuestion.DIFF_COMMAND) !== -1;
       }
     };
   }
@@ -223,14 +234,33 @@ export class InteractiveQuestion {
       name: InteractiveQuestion.OBJECT_TO_MANIPULATE,
       message: 'What would you like to graduate?',
       choices: [
-        { name: FieldController.CONTROLLER_NAME },
-        { name: ExtensionController.CONTROLLER_NAME },
-        { name: SourceController.CONTROLLER_NAME },
-        { name: PageController.CONTROLLER_NAME }
+        { name: InteractiveQuestion.FIELDS_CONTROLLER_NAME },
+        { name: InteractiveQuestion.EXTENSIONS_CONTROLLER_NAME },
+        { name: InteractiveQuestion.SOURCES_CONTROLLER_NAME },
+        { name: InteractiveQuestion.PAGES_CONTROLLER_NAME }
       ],
       when: (answer: Answers) => {
         answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
-        return answer[InteractiveQuestion.COMMAND] === GraduateCommand.COMMAND_NAME;
+        return answer[InteractiveQuestion.COMMAND] === InteractiveQuestion.GRADUATE_COMMAND;
+      }
+    };
+  }
+
+  getSourcesToRebuild(sources: string[]): Question {
+    return {
+      type: 'checkbox',
+      name: InteractiveQuestion.SOURCES_TO_REBUILD,
+      message: `Select sources to ${chalk.underline('rebuild')}. You need to select at least one source.`,
+      validate: s => {
+        return s.length > 0 ? true : 'Select at least one source to rebuild';
+      },
+      choices: sources,
+      when: (answer: Answers) => {
+        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        return answer[InteractiveQuestion.COMMAND] === 'rebuild-sources';
+      },
+      filter: (input: string) => {
+        return `"${input}"`;
       }
     };
   }
@@ -255,7 +285,7 @@ export class InteractiveQuestion {
         answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
         return (
           answer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE &&
-          answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === FieldController.CONTROLLER_NAME &&
+          answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === InteractiveQuestion.FIELDS_CONTROLLER_NAME &&
           fieldModel.length > 0
         );
       }
@@ -272,7 +302,7 @@ export class InteractiveQuestion {
         answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
         return (
           answer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE &&
-          answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === FieldController.CONTROLLER_NAME &&
+          answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === InteractiveQuestion.FIELDS_CONTROLLER_NAME &&
           fieldModel.length > 0
         );
       }
@@ -301,8 +331,8 @@ export class InteractiveQuestion {
       when: (answer: Answers) => {
         answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
         return (
-          (answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === SourceController.CONTROLLER_NAME ||
-            answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === ExtensionController.CONTROLLER_NAME) &&
+          (answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === InteractiveQuestion.SOURCES_CONTROLLER_NAME ||
+            answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === InteractiveQuestion.EXTENSIONS_CONTROLLER_NAME) &&
           extensions.length > 0
         );
       },
@@ -320,7 +350,7 @@ export class InteractiveQuestion {
       choices: sources,
       when: (answer: Answers) => {
         answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
-        return answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === FieldController.CONTROLLER_NAME && sources.length > 0;
+        return answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === InteractiveQuestion.FIELDS_CONTROLLER_NAME && sources.length > 0;
       },
       filter: (input: string) => {
         return `"${input}"`;
@@ -336,7 +366,7 @@ export class InteractiveQuestion {
       choices: sources,
       when: (answer: Answers) => {
         answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
-        return answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === SourceController.CONTROLLER_NAME && sources.length > 0;
+        return answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === InteractiveQuestion.SOURCES_CONTROLLER_NAME && sources.length > 0;
       },
       filter: (input: string) => {
         return `"${input}"`;
@@ -352,7 +382,7 @@ export class InteractiveQuestion {
       choices: pages,
       when: (answer: Answers) => {
         answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
-        return answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === PageController.CONTROLLER_NAME && pages.length > 0;
+        return answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === InteractiveQuestion.PAGES_CONTROLLER_NAME && pages.length > 0;
       },
       filter: (input: string) => {
         return `"${input}"`;
@@ -373,7 +403,7 @@ export class InteractiveQuestion {
     return this.getGenericFilename(InteractiveQuestion.LOG_FILENAME, 'logs.json', 'Enter the filename to output logs: ');
   }
 
-  confirmGraduationAction(mes: string = 'Are you sure you want to perform this action?', variable: string): Question {
+  confirmAction(mes: string = 'Are you sure you want to perform this action?', variable: string): Question {
     return {
       type: 'confirm',
       name: variable,
@@ -394,10 +424,10 @@ export class InteractiveQuestion {
   getInitialQuestions(data: any): Question[] {
     return [
       this.getPlatformEnvironment(),
+      this.getCommandList(),
       this.getOriginOrganizationId(),
       this.getDestinationOrganizationId(),
       this.getApiKey(),
-      this.getCommandList(),
 
       // If Graduation
       this.getContentToDiff(),
@@ -415,6 +445,7 @@ export class InteractiveQuestion {
     const questions = [];
 
     if (data && data.sources) {
+      questions.push(this.getSourcesToRebuild(data.sources));
       questions.push(this.selectSourcesForFields(data.sources));
       questions.push(this.selectSourcesToIgnore(data.sources));
     }
@@ -439,7 +470,7 @@ export class InteractiveQuestion {
       validate: this.checkboxValidator('You need to select at least 1 graduate operation.'),
       when: (answer: Answers) => {
         answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
-        return answer[InteractiveQuestion.COMMAND] === GraduateCommand.COMMAND_NAME;
+        return answer[InteractiveQuestion.COMMAND] === InteractiveQuestion.GRADUATE_COMMAND;
       }
     };
   }

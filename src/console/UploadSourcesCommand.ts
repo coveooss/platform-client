@@ -1,9 +1,11 @@
 import * as program from 'commander';
 import * as _ from 'underscore';
 import { Logger } from '../commons/logger';
-import { GraduateCommand, IGraduateOptions } from '../commands/GraduateCommand';
+import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { CommanderUtils } from './CommanderUtils';
 import { FileUtils } from '../commons/utils/FileUtils';
+import { Organization } from '../coveoObjects/Organization';
+import { SourceController } from '../controllers/SourceController';
 
 program
   .command('upload-sources <origin> <apiKey> <filePathToUpload>')
@@ -81,8 +83,11 @@ program
             options.ignoreSources
           )
         };
-        const command = new GraduateCommand('dummyOrg', destination, apiKey, apiKey, blacklistOptions);
-        command.graduateSources(graduateOptions);
+        const originOrg = new Organization('dummyOrg', '', blacklistOptions);
+        const destinationOrg = new Organization(destination, apiKey, blacklistOptions);
+        const controller: SourceController = new SourceController(originOrg, destinationOrg);
+
+        controller.graduate(graduateOptions);
       })
       .catch((err: any) => {
         Logger.error('Unable to read file', err);

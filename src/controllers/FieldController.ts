@@ -1,6 +1,7 @@
 import { RequestResponse } from 'request';
+import { BaseController } from './BaseController';
 import * as _ from 'underscore';
-import { IDiffOptions } from '../commands/DiffCommand';
+import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { DownloadResultArray } from '../commons/collections/DownloadResultArray';
 import { Colors } from '../commons/colors';
@@ -12,19 +13,13 @@ import { DiffUtils } from '../commons/utils/DiffUtils';
 import { DownloadUtils } from '../commons/utils/DownloadUtils';
 import { Field } from '../coveoObjects/Field';
 import { Organization } from '../coveoObjects/Organization';
-import { BaseController } from './BaseController';
-import { IGraduateOptions } from '../commands/GraduateCommand';
+import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { Dictionary } from '../commons/collections/Dictionary';
 
 export class FieldController extends BaseController {
-  /**
-   * To prevent having too large fields batches that can't be processed.
-   * The Maximum allowed number of fields is 500.
-   */
-  static CONTROLLER_NAME: string = 'fields';
-
   private fieldsPerBatch: number = 500;
   private deleteFieldsPerBatch: number = 200;
+  objectName = 'fields';
 
   // The second organization can be optional in some cases like the download command for instance.
   constructor(private organization1: Organization, private organization2: Organization = new Organization('', '')) {
@@ -38,7 +33,7 @@ export class FieldController extends BaseController {
    * changed the "description" property of the field in the destination org and you don't want the diff to tell you that it has changed.
    * @returns {Promise<DiffResultArray<Field>>}
    */
-  diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Field>> {
+  runDiffSequence(diffOptions?: IDiffOptions): Promise<DiffResultArray<Field>> {
     return this.loadDataForDiff(diffOptions)
       .then(() => {
         let org1Fields = this.organization1.getFields();
@@ -105,7 +100,7 @@ export class FieldController extends BaseController {
    * @returns {Promise<DownloadResultArray>}
    * @memberof FieldController
    */
-  download(): Promise<DownloadResultArray> {
+  runDownloadSequence(): Promise<DownloadResultArray> {
     return FieldAPI.loadFields(this.organization1)
       .then(() => {
         return DownloadUtils.getDownloadResult(this.organization1.getFields());
@@ -123,7 +118,7 @@ export class FieldController extends BaseController {
    * @param {IGraduateOptions} options
    * @returns {Promise<any[]>}
    */
-  graduate(diffResultArray: DiffResultArray<Field>, options: IGraduateOptions): Promise<any[]> {
+  runGraduateSequence(diffResultArray: DiffResultArray<Field>, options: IGraduateOptions): Promise<any[]> {
     if (diffResultArray.containsItems()) {
       Logger.loadingTask('Graduating fields');
 

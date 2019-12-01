@@ -3,7 +3,9 @@ import * as program from 'commander';
 import { CommanderUtils } from './CommanderUtils';
 import { FileUtils } from '../commons/utils/FileUtils';
 import { Logger } from '../commons/logger';
-import { IDiffOptions, DiffCommand } from '../commands/DiffCommand';
+import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
+import { Organization } from '../coveoObjects/Organization';
+import { FieldController } from '../controllers/FieldController';
 
 program
   .command('diff-fields-file <org> <apiKey> <filePathToUpload>')
@@ -38,8 +40,11 @@ program
         };
 
         // TODO: find a cleaner way
-        const command = new DiffCommand('localFile', org, apiKey, apiKey);
-        command.diffFields(diffOptions);
+        const originOrg = new Organization('localFile', '');
+        const destinationOrg = new Organization(org, apiKey);
+        const controller: FieldController = new FieldController(originOrg, destinationOrg);
+
+        controller.diff(diffOptions);
       })
       .catch((err: any) => {
         Logger.error('Unable to read file', err);

@@ -1,9 +1,10 @@
 import * as program from 'commander';
 import * as _ from 'underscore';
 import { Logger } from '../commons/logger';
-import { GraduateCommand, IGraduateOptions } from '../commands/GraduateCommand';
+import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { CommanderUtils } from './CommanderUtils';
-import { IBlacklistObjects } from '../coveoObjects/Organization';
+import { IBlacklistObjects, Organization } from '../coveoObjects/Organization';
+import { SourceController } from '../controllers/SourceController';
 
 program
   .command('graduate-sources <origin> <destination> <apiKey...>')
@@ -87,6 +88,10 @@ program
       ),
       sources: options.ignoreSources
     };
-    const command = new GraduateCommand(origin, destination, apiKey[0], apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
-    command.graduateSources(graduateOptions);
+
+    const originOrg = new Organization(origin, apiKey[0], blacklistOptions);
+    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
+    const controller: SourceController = new SourceController(originOrg, destinationOrg);
+
+    controller.graduate(graduateOptions);
   });

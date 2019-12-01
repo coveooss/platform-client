@@ -47,4 +47,5 @@ export class StaticErrorMessage {
   static UNABLE_TO_CREATE_SOURCE: string = 'Unable to create source';
   static UNABLE_TO_UPDATE_SOURCE: string = 'Unable to update source';
   static UNABLE_TO_DELETE_SOURCE: string = 'Unable to delete source';
+  static UNABLE_TO_REBUILD_SOURCE: string = 'Unable to rebuild source';
 }

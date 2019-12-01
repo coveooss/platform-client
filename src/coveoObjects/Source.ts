@@ -1,10 +1,16 @@
 import * as _ from 'underscore';
-import { ISource } from '../commons/interfaces/ISource';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 import { BaseCoveoObject } from './BaseCoveoObject';
 import { Assert } from '../commons/misc/Assert';
 import { StringUtil } from '../commons/utils/StringUtils';
+import { ICoveoObject } from '../commons/interfaces/ICoveoObject';
+
+export interface ISource extends ICoveoObject<Source> {
+  getMappings(): Array<IStringMap<string>>;
+  getPreConversionExtensions(): any[];
+  getPostConversionExtensions(): any[];
+}
 
 export class Source extends BaseCoveoObject implements ISource {
   constructor(private configuration: any) {

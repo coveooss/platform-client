@@ -2,7 +2,9 @@ import * as program from 'commander';
 import * as _ from 'underscore';
 import { Logger } from '../commons/logger';
 import { CommanderUtils } from './CommanderUtils';
-import { IDiffOptions, DiffCommand } from '../commands/DiffCommand';
+import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
+import { Organization } from '../coveoObjects/Organization';
+import { ExtensionController } from '../controllers/ExtensionController';
 
 program
   .command('diff-extensions <origin> <destination> <apiKey...>')
@@ -37,7 +39,11 @@ program
     const blacklistOptions = {
       extensions: _.union(['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'], options.ignoreExtensions)
     };
-    const command = new DiffCommand(origin, destination, apiKey[0], apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
     diffOptions.includeOnly = diffOptions.includeOnly ? diffOptions.includeOnly : ['requiredDataStreams', 'content', 'description', 'name'];
-    command.diffExtensions(diffOptions);
+
+    const originOrg = new Organization(origin, apiKey[0], blacklistOptions);
+    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
+    const controller: ExtensionController = new ExtensionController(originOrg, destinationOrg);
+
+    controller.diff(diffOptions);
   });
