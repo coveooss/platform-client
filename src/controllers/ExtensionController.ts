@@ -24,7 +24,7 @@ export class ExtensionController extends BaseController {
   }
 
   runDiffSequence(diffOptions?: IDiffOptions): Promise<DiffResultArray<Extension>> {
-    return this.loadExtensionsForBothOrganizations()
+    return this.loadDataForDiff()
       .then(() => {
         const diffResultArray = DiffUtils.getDiffResult(
           this.organization1.getExtensions(),
@@ -185,6 +185,24 @@ export class ExtensionController extends BaseController {
         err ? reject(err) : resolve();
       });
     });
+  }
+
+  private loadDataForDiff(diffOptions?: IDiffOptions): Promise<{}> {
+    if (diffOptions && diffOptions.originData) {
+      if (!Array.isArray(diffOptions.originData)) {
+        Logger.error('Should provide an array of extensions');
+        throw { orgId: 'LocalFile', message: 'Should provide an array of extensions' };
+      }
+      try {
+        this.organization1.addExtensionList(diffOptions.originData);
+      } catch (error) {
+        Logger.error('Invalid origin data');
+        throw error;
+      }
+      return ExtensionAPI.loadExtensions(this.organization2);
+    } else {
+      return this.loadExtensionsForBothOrganizations();
+    }
   }
 
   loadExtensionsForBothOrganizations(): Promise<Array<{}>> {

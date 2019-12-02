@@ -67,7 +67,8 @@ program
           diffOptions: {
             silent: options.silent,
             includeOnly: includeOnly,
-            keysToIgnore: keysToIgnore
+            keysToIgnore: keysToIgnore,
+            originData: data
           },
           keyWhitelist: includeOnly,
           keyBlacklist: keysToIgnore,

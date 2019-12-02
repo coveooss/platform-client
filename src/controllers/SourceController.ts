@@ -33,7 +33,7 @@ export class SourceController extends BaseController {
   }
   runDiffSequence(diffOptions?: IDiffOptions): Promise<DiffResultArray<Source>> {
     // Do not load extensions if --skipExtension option is present
-    const diffActions = [this.loadSourcesForBothOrganizations(), this.loadExtensionsListForBothOrganizations()];
+    const diffActions = [this.loadDataForDiff(), this.loadExtensionsListForBothOrganizations()];
     return Promise.all(diffActions)
       .then(values => {
         this.extensionList = values[1] as Array<Array<{}>>; // 2 dim table: extensions per sources
@@ -362,6 +362,24 @@ export class SourceController extends BaseController {
         sourceDiff.push({ [(newSource as Source).getName()]: jsDiff.diffJson(cleanedOldVersion, cleanedNewVersion) });
       });
       return sourceDiff;
+    }
+  }
+
+  private loadDataForDiff(diffOptions?: IDiffOptions): Promise<{}> {
+    if (diffOptions && diffOptions.originData) {
+      if (!Array.isArray(diffOptions.originData)) {
+        Logger.error('Should provide an array of sources');
+        throw { orgId: 'LocalFile', message: 'Should provide an array of sources' };
+      }
+      try {
+        this.organization1.addSourceList(diffOptions.originData);
+      } catch (error) {
+        Logger.error('Invalid origin data');
+        throw error;
+      }
+      return SourceAPI.loadSources(this.organization2);
+    } else {
+      return this.loadSourcesForBothOrganizations();
     }
   }
 

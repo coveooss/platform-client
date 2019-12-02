@@ -100,9 +100,7 @@ export class Organization extends BaseCoveoObject implements IOrganization {
   addFieldList(fields: Array<IStringMap<any>>) {
     fields.forEach((f: IStringMap<any>) => {
       const field = new Field(f);
-      if (!_.contains(this.getfieldBlacklist() || [], StringUtil.lowerAndStripSpaces(field.getName()))) {
-        this.addField(field);
-      }
+      this.addField(field);
     });
   }
 
@@ -114,9 +112,7 @@ export class Organization extends BaseCoveoObject implements IOrganization {
   addPageList(pages: Array<IStringMap<any>>) {
     pages.forEach((p: IStringMap<any>) => {
       const page = new Page(p);
-      if (!_.contains(this.getPageBlacklist() || [], StringUtil.lowerAndStripSpaces(page.getName()))) {
-        this.addPage(page);
-      }
+      this.addPage(page);
     });
   }
 
@@ -139,6 +135,30 @@ export class Organization extends BaseCoveoObject implements IOrganization {
     if (!_.contains(this.getSourceBlacklist() || [], StringUtil.lowerAndStripSpaces(source.getName()))) {
       this.sources.add(source.getName(), source);
     }
+  }
+
+  /**
+   * Takes a source list and, for each item of the list, create a source that will be added to the Organization
+   *
+   * @param {IStringMap<any>[]} sources source list
+   */
+  addSourceList(sources: Array<IStringMap<any>>) {
+    sources.forEach((s: IStringMap<any>) => {
+      const source = new Source(s);
+      this.addSource(source);
+    });
+  }
+
+  /**
+   * Takes a etension list and, for each item of the list, create a etension that will be added to the Organization
+   *
+   * @param {IStringMap<any>[]} extensions extension list
+   */
+  addExtensionList(extensions: Array<IStringMap<any>>) {
+    extensions.forEach((e: IStringMap<any>) => {
+      const extension = new Extension(e);
+      this.addExtension(extension);
+    });
   }
 
   clearSources() {
