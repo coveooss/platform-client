@@ -13,6 +13,11 @@ import { Source } from '../../coveoObjects/Source';
 import { StringUtil } from '../utils/StringUtils';
 
 export class SourceAPI {
+  static rebuildSource(org: Organization, sourceId: string): Promise<RequestResponse> {
+    const url = UrlService.rebuildSource(org.getId(), sourceId);
+    return RequestUtils.post(url, org.getApiKey(), null);
+  }
+
   static createSource(org: Organization, sourceModel: IStringMap<any>): Promise<RequestResponse> {
     const url = UrlService.createSource(org.getId());
     return RequestUtils.post(url, org.getApiKey(), sourceModel);

@@ -139,22 +139,37 @@ export class SourceController extends BaseController {
     // TODO: to implement
   }
 
-  rebuildSource(sourceId: string): Promise<any[]> {
-    return SourceAPI.rebuildSource(this.organization1, sourceId)
-      .then(() => {
-        return [];
-      })
-      .catch((err: IGenericError) => {
-        this.errorHandler(err, StaticErrorMessage.UNABLE_TO_REBUILD_SOURCE);
-        return Promise.reject(err);
-      });
+  rebuildSource(sourceName: string) {
+    return this.getSourceIdWithName(sourceName).then((sourceId: string) => {
+      return SourceAPI.rebuildSource(this.organization1, sourceId);
+    });
   }
 
-  // rebuildSources(sourceNames?: string) {
-  //   SourceAPI.loadSources(this.organization1, sourceNames)
-  // }
+  getSourceIdWithName(sourceName: string): Promise<string> {
+    // First load sources from organization
+    return new Promise((resolve, reject) => {
+      SourceAPI.getAllSources(this.organization1)
+        .then((response: RequestResponse) => {
+          const source: any = _.findWhere(response.body, { name: sourceName });
+          if (source === undefined || source.id === undefined) {
+            reject({ orgId: this.organization1.getId(), message: StaticErrorMessage.NO_SOURCE_FOUND });
+          }
 
-  // TODO: make this class private
+          resolve(source.id);
+
+          const sourceId = this.organization1
+            .getSources() // Loading all sources
+            .getItem(sourceName) // Fetching source object by name
+            .getId(); // Get source ID
+          resolve(sourceId);
+        })
+        .catch(err => {
+          this.errorHandler(err, StaticErrorMessage.UNABLE_TO_GET_SOURCE_NAME);
+          reject(err);
+        });
+    });
+  }
+
   runDownloadSequence(): Promise<DownloadResultArray> {
     return SourceAPI.loadSources(this.organization1)
       .then(() => {

@@ -43,6 +43,8 @@ export class StaticErrorMessage {
   static DUPLICATE_PAGE: string = 'There is already an page with that name in the Organizaton';
 
   // Sources
+  static NO_SOURCE_FOUND: string = 'No source found';
+  static UNABLE_TO_GET_SOURCE_NAME: string = 'Unable to load sources';
   static UNABLE_TO_LOAD_SOURCES: string = 'Unable to load sources';
   static UNABLE_TO_CREATE_SOURCE: string = 'Unable to create source';
   static UNABLE_TO_UPDATE_SOURCE: string = 'Unable to update source';

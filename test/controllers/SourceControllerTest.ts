@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import * as _ from 'underscore';
 import * as nock from 'nock';
 import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
-import { IGenericError } from '../../src/commons/errors';
+import { IGenericError, StaticErrorMessage } from '../../src/commons/errors';
 import { UrlService } from '../../src/commons/rest/UrlService';
 import { RequestUtils } from '../../src/commons/utils/RequestUtils';
 import { Utils } from '../../src/commons/utils/Utils';
@@ -215,6 +215,44 @@ export const SourceControllerTest = () => {
 
         expect(() => sourceController.replaceExtensionIdWithName(sourceDict, [])).to.throw();
         expect(() => sourceController.replaceExtensionNameWithId(source1.clone(), [])).to.throw();
+      });
+    });
+
+    describe('Source Rebuild', () => {
+      it('Should rebuild a source', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          .get('/rest/organizations/dev/sources')
+          .reply(RequestUtils.OK, allDevSources)
+          .post('/rest/organizations/dev/sources/tcytrppteddiqkmboszu4skdoe-dummygroupk5f2dpwl/rebuild')
+          .reply(RequestUtils.OK);
+
+        controller
+          .rebuildSource('My Sitemap Source')
+          .then(() => {
+            done();
+          })
+          .catch(err => {
+            done(err);
+          });
+      });
+
+      it('Should throw an error if trying to rebuild an invalid source', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          .get('/rest/organizations/dev/sources')
+          .reply(RequestUtils.OK, allDevSources);
+
+        controller
+          .rebuildSource('Invalid source')
+          .then(() => {
+            done('Should not resolve');
+          })
+          .catch(err => {
+            if (err.message === StaticErrorMessage.NO_SOURCE_FOUND) {
+              done();
+            } else {
+              done(err);
+            }
+          });
       });
     });
 

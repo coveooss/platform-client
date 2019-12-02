@@ -63,7 +63,7 @@ import './console/UploadPagesCommand';
 /**************************************************/
 /* Source Commands
 /**************************************************/
-// import './console/RebuildSourcesCommand';
+import './console/RebuildSourcesCommand';
 
 // Parsing the arguments
 program.parse(process.argv);
