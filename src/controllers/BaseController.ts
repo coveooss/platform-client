@@ -67,16 +67,17 @@ export abstract class BaseController {
 
   abstract runDownloadSequence(): Promise<DownloadResultArray>;
 
-  abstract extractionMethod(object: BaseCoveoObject | any[], diffOptions?: IDiffOptions, oldVersion?: any[]): any[];
+  abstract extractionMethod(object: any[], diffOptions?: IDiffOptions, oldVersion?: any[]): any[];
 
   download(options: IDownloadOptions) {
+    Logger.startSpinner(`Downloading ${this.objectName}`);
     this.runDownloadSequence()
       .then((downloadResultArray: DownloadResultArray) => {
         // sort the items in the list
         downloadResultArray.sort();
 
         // get the list
-        const items = _.map(downloadResultArray.getItems(), item => this.extractionMethod(item));
+        const items = _.map(downloadResultArray.getItems(), item => item.getConfiguration());
 
         // ensure path
         fs.ensureDirSync(options.outputFolder);
@@ -98,7 +99,7 @@ export abstract class BaseController {
       })
       .catch((err: IGenericError) => {
         // TODO: review this error message
-        Logger.error(StaticErrorMessage.UNABLE_TO_DOWNLOAD);
+        Logger.error(StaticErrorMessage.UNABLE_TO_DOWNLOAD, err);
         Logger.stopSpinner();
         process.exit();
       });
@@ -168,7 +169,7 @@ export abstract class BaseController {
         if (this.objectName === 'source' || this.objectName === 'page') {
           Logger.info('Preparing HTML diff file');
 
-          const cleanVersion = this.getCleanVersion(diffResultArray, options);
+          const cleanVersion = this.getCleanDiffVersion(diffResultArray, options);
 
           const template = require('ejs-loader!./../../views/source-diff.ejs');
 
@@ -195,7 +196,7 @@ export abstract class BaseController {
               process.exit();
             });
         } else {
-          fs.writeJSON(`${this.objectName}Diff.json`, this.getCleanVersion(diffResultArray, options), { spaces: 2 })
+          fs.writeJSON(`${this.objectName}Diff.json`, this.getCleanDiffVersion(diffResultArray, options), { spaces: 2 })
             .then(() => {
               // TODO: do the same for every object types
               Logger.info('Diff operation completed');
@@ -305,7 +306,7 @@ export abstract class BaseController {
    * @param {boolean} [summary=true]
    * @returns {IDiffResultArrayClean} The simplified object
    */
-  getCleanVersion<T>(
+  getCleanDiffVersion<T>(
     diffResultArray: DiffResultArray<T>,
     diffOptions: IDiffOptions = {},
     printOptions: IPrintOptions = {}

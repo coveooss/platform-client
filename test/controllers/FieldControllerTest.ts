@@ -56,10 +56,10 @@ export const FieldControllerTest = () => {
       org2.clearFields();
     });
 
-    describe('GetCleanVersion Method', () => {
+    describe('getCleanDiffVersion Method', () => {
       it('Should return the clean diff version - empty', () => {
         const diffResultArray: DiffResultArray<Field> = new DiffResultArray();
-        const cleanVersion = fieldController.getCleanVersion(diffResultArray);
+        const cleanVersion = fieldController.getCleanDiffVersion(diffResultArray);
         expect(cleanVersion).to.eql({
           summary: { TO_CREATE: 0, TO_UPDATE: 0, TO_DELETE: 0 },
           TO_CREATE: [],
@@ -77,7 +77,7 @@ export const FieldControllerTest = () => {
         const diffOptions: IDiffOptions = {
           keysToIgnore: ['sources']
         };
-        const cleanVersion = fieldController.getCleanVersion(diffResultArray, diffOptions);
+        const cleanVersion = fieldController.getCleanDiffVersion(diffResultArray, diffOptions);
         expect(cleanVersion).to.eql({
           summary: { TO_CREATE: 1, TO_UPDATE: 1, TO_DELETE: 0 },
           TO_CREATE: [

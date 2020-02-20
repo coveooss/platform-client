@@ -1,5 +1,5 @@
 import { IDiffOptions } from './IDiffOptions';
-// TODO: Put this interface somewhere else
+
 export interface IHTTPGraduateOptions {
   POST: boolean;
   PUT: boolean;

@@ -24,7 +24,7 @@ export class ExtensionController extends BaseController {
   }
 
   runDiffSequence(diffOptions?: IDiffOptions): Promise<DiffResultArray<Extension>> {
-    return this.loadDataForDiff()
+    return this.loadDataForDiff(diffOptions)
       .then(() => {
         const diffResultArray = DiffUtils.getDiffResult(
           this.organization1.getExtensions(),
@@ -189,6 +189,7 @@ export class ExtensionController extends BaseController {
 
   private loadDataForDiff(diffOptions?: IDiffOptions): Promise<{}> {
     if (diffOptions && diffOptions.originData) {
+      Logger.verbose('Loading extensions from local file');
       if (!Array.isArray(diffOptions.originData)) {
         Logger.error('Should provide an array of extensions');
         throw { orgId: 'LocalFile', message: 'Should provide an array of extensions' };
@@ -196,6 +197,14 @@ export class ExtensionController extends BaseController {
       try {
         this.organization1.addExtensionList(diffOptions.originData);
       } catch (error) {
+        // if (error && error.message === StaticErrorMessage.MISSING_EXTENSION_ID) {
+        //   // TODO: find a cleaner way to upload local file without error
+        //   // Expected error
+        //   Logger.verbose('Skipping error since the missing id from the local file is expected');
+        // } else {
+        //   Logger.error('Invalid origin data');
+        //   throw error;
+        // }
         Logger.error('Invalid origin data');
         throw error;
       }

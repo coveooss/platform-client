@@ -33,6 +33,11 @@ export class StaticErrorMessage {
   static UNABLE_TO_UPDATE_EXTENSIONS: string = 'Unable to update extension';
   static UNABLE_TO_DELETE_EXTENSIONS: string = 'Unable to delete extension';
   static DUPLICATE_EXTENSION: string = 'There is already an extension with that name in the Organizaton';
+  static MISSING_EXTENSION_ID: string = 'Extension id should not be undefined';
+  static MISSING_EXTENSION_NAME: string = 'Extension name should not be undefined';
+  static MISSING_EXTENSION_CONTENT: string = 'Extension content should not be undefined';
+  static MISSING_EXTENSION_DESCRIPTION: string = 'Extension description should not be undefined';
+  static MISSING_EXTENSION_REQUIREDDATASTREAMS: string = 'Extension requiredDataStreams should not be undefined';
 
   // Pages
   static UNABLE_TO_LOAD_PAGES: string = 'Unable to load page';
@@ -41,6 +46,10 @@ export class StaticErrorMessage {
   static UNABLE_TO_UPDATE_PAGES: string = 'Unable to update page';
   static UNABLE_TO_DELETE_PAGES: string = 'Unable to delete page';
   static DUPLICATE_PAGE: string = 'There is already an page with that name in the Organizaton';
+  static MISSING_PAGE_ID: string = 'Page id should not be undefined';
+  static MISSING_PAGE_TITLE: string = 'Page title should not be undefined';
+  static MISSING_PAGE_NAME: string = 'Page name should not be undefined';
+  static MISSING_PAGE_HTML: string = 'Page html should not be undefined';
 
   // Sources
   static NO_SOURCE_FOUND: string = 'No source found';
@@ -50,4 +59,10 @@ export class StaticErrorMessage {
   static UNABLE_TO_UPDATE_SOURCE: string = 'Unable to update source';
   static UNABLE_TO_DELETE_SOURCE: string = 'Unable to delete source';
   static UNABLE_TO_REBUILD_SOURCE: string = 'Unable to rebuild source';
+  static MISSING_SOURCE_ID: string = 'Missing id from source configuration';
+  static MISSING_SOURCE_NAME: string = 'Missing name from source configuration';
+  static MISSING_SOURCE_MAPPINGS: string = 'Missing mappings from source configuration';
+  static MISSING_SOURCE_SOURCETYPE: string = 'Missing sourceType from source configuration';
+  static MISSING_SOURCE_PRECONVERSIONEXTENSIONS: string = 'Missing preConversionExtensions from source configuration';
+  static MISSING_SOURCE_POSTCONVERSIONEXTENSIONS: string = 'Missing postConversionExtensions from source configuration';
 }

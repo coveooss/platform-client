@@ -64,6 +64,7 @@ export class FieldController extends BaseController {
 
   private loadDataForDiff(diffOptions?: IDiffOptions): Promise<{}> {
     if (diffOptions && diffOptions.originData) {
+      Logger.verbose('Loading fields from local file');
       if (!Array.isArray(diffOptions.originData)) {
         Logger.error('Should provide an array of fields');
         throw { orgId: 'LocalFile', message: 'Should provide an array of fields' };
@@ -227,17 +228,18 @@ export class FieldController extends BaseController {
     return _.map(fields, (field: Field) => field.getConfiguration());
   }
 
+  private stripIdFromSourceParameter(obj: IStringMap<any>) {
+    if (obj['sources']) {
+      obj['sources'] = _.pluck(obj['sources'], 'name');
+    }
+    return obj;
+  }
+
   extractionMethod(object: any[], diffOptions: IDiffOptions, oldVersion?: any[]): any[] {
-    const stripIdFromSourceParameter = (obj: IStringMap<any>) => {
-      if (obj['sources']) {
-        obj['sources'] = _.pluck(obj['sources'], 'name');
-      }
-      return obj;
-    };
     if (oldVersion === undefined) {
       return _.map(object, (f: Field) => {
         const fieldModel = f.getConfiguration();
-        return stripIdFromSourceParameter(fieldModel);
+        return this.stripIdFromSourceParameter(fieldModel);
       });
     } else {
       return _.map(oldVersion, (oldField: Field) => {
@@ -255,7 +257,7 @@ export class FieldController extends BaseController {
             return val;
           }
         });
-        return stripIdFromSourceParameter(updatedFieldModel);
+        return this.stripIdFromSourceParameter(updatedFieldModel);
       });
     }
   }

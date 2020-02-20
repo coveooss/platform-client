@@ -24,7 +24,7 @@ export class PageController extends BaseController {
     super();
   }
   runDiffSequence(diffOptions?: IDiffOptions): Promise<DiffResultArray<Page>> {
-    return this.loadPagesForBothOrganizations()
+    return this.loadDataForDiff(diffOptions)
       .then(() => {
         const diffResultArray = DiffUtils.getDiffResult(this.organization1.getPages(), this.organization2.getPages(), diffOptions);
         if (diffResultArray.containsItems()) {
@@ -165,6 +165,33 @@ export class PageController extends BaseController {
         err ? reject(err) : resolve();
       });
     });
+  }
+
+  private loadDataForDiff(diffOptions?: IDiffOptions): Promise<{}> {
+    if (diffOptions && diffOptions.originData) {
+      Logger.verbose('Loading pages from local file');
+      if (!Array.isArray(diffOptions.originData)) {
+        Logger.error('Should provide an array of pages');
+        throw { orgId: 'LocalFile', message: 'Should provide an array of pages' };
+      }
+      try {
+        this.organization1.addPageList(diffOptions.originData);
+      } catch (error) {
+        // if (error && error.message === StaticErrorMessage.MISSING_PAGE_ID) {
+        //   // TODO: find a cleaner way to upload local file without error
+        //   // Expected error
+        //   Logger.verbose('Skipping error since the missing id from the local file is expected');
+        // } else {
+        // Logger.error('Invalid origin data');
+        // throw error;
+        // }
+        Logger.error('Invalid origin data');
+        throw error;
+      }
+      return PageAPI.loadPages(this.organization2);
+    } else {
+      return this.loadPagesForBothOrganizations();
+    }
   }
 
   loadPagesForBothOrganizations(): Promise<Array<{}>> {

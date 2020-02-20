@@ -224,10 +224,10 @@ export const ExtensionControllerTest = () => {
       nock.cleanAll();
     });
 
-    describe('GetCleanVersion Method', () => {
+    describe('getCleanDiffVersion Method', () => {
       it('Should return the clean diff version - empty', () => {
         const diffResultArray: DiffResultArray<Extension> = new DiffResultArray();
-        const cleanVersion = controller.getCleanVersion(diffResultArray);
+        const cleanVersion = controller.getCleanDiffVersion(diffResultArray);
         expect(cleanVersion).to.eql({
           summary: { TO_CREATE: 0, TO_UPDATE: 0, TO_DELETE: 0 },
           TO_CREATE: [],
@@ -242,7 +242,7 @@ export const ExtensionControllerTest = () => {
         diffResultArray.TO_UPDATE.push(extension2);
         diffResultArray.TO_UPDATE_OLD.push(extension2Old);
 
-        const cleanVersion = controller.getCleanVersion(diffResultArray);
+        const cleanVersion = controller.getCleanDiffVersion(diffResultArray);
         expect(cleanVersion).to.eql({
           summary: { TO_CREATE: 1, TO_UPDATE: 1, TO_DELETE: 0 },
           TO_CREATE: [

@@ -33,7 +33,7 @@ export class SourceController extends BaseController {
   }
   runDiffSequence(diffOptions?: IDiffOptions): Promise<DiffResultArray<Source>> {
     // Do not load extensions if --skipExtension option is present
-    const diffActions = [this.loadDataForDiff(), this.loadExtensionsListForBothOrganizations()];
+    const diffActions = [this.loadDataForDiff(diffOptions), this.loadExtensionsListForBothOrganizations()];
     return Promise.all(diffActions)
       .then(values => {
         this.extensionList = values[1] as Array<Array<{}>>; // 2 dim table: extensions per sources
@@ -367,6 +367,7 @@ export class SourceController extends BaseController {
 
   private loadDataForDiff(diffOptions?: IDiffOptions): Promise<{}> {
     if (diffOptions && diffOptions.originData) {
+      Logger.verbose('Loading sources from local file');
       if (!Array.isArray(diffOptions.originData)) {
         Logger.error('Should provide an array of sources');
         throw { orgId: 'LocalFile', message: 'Should provide an array of sources' };
@@ -374,6 +375,14 @@ export class SourceController extends BaseController {
       try {
         this.organization1.addSourceList(diffOptions.originData);
       } catch (error) {
+        // if (error && error.message === StaticErrorMessage.MISSING_SOURCE_ID) {
+        //   // TODO: find a cleaner way to upload local file without error
+        //   // Expected error
+        //   Logger.verbose('Skipping error since the missing id from the local file is expected');
+        // } else {
+        //   Logger.error('Invalid origin data');
+        //   throw error;
+        // }
         Logger.error('Invalid origin data');
         throw error;
       }

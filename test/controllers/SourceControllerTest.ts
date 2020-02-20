@@ -497,7 +497,7 @@ export const SourceControllerTest = () => {
             expect(diffResultArray.TO_UPDATE.length).to.eql(1);
             expect(diffResultArray.TO_DELETE.length).to.eql(0);
 
-            const cleanVersion = controller.getCleanVersion(diffResultArray, diffOptions);
+            const cleanVersion = controller.getCleanDiffVersion(diffResultArray, diffOptions);
             const updatedSource = cleanVersion.TO_UPDATE[0];
 
             // Make sure the blacklisted keys are not part of the diff
@@ -557,7 +557,7 @@ export const SourceControllerTest = () => {
             expect(diffResultArray.TO_UPDATE.length).to.eql(0);
             expect(diffResultArray.TO_DELETE.length).to.eql(1);
 
-            const cleanVersion = controller.getCleanVersion(diffResultArray, diffOptions);
+            const cleanVersion = controller.getCleanDiffVersion(diffResultArray, diffOptions);
 
             expect(cleanVersion, "only Only print the souce's name if no modification was brought").to.eql({
               summary: {
@@ -769,10 +769,10 @@ export const SourceControllerTest = () => {
       });
     });
 
-    describe('GetCleanVersion Method', () => {
+    describe('getCleanDiffVersion Method', () => {
       it('Should return the clean diff version - empty', () => {
         const diffResultArray: DiffResultArray<Source> = new DiffResultArray();
-        const cleanVersion = controller.getCleanVersion(diffResultArray, {});
+        const cleanVersion = controller.getCleanDiffVersion(diffResultArray, {});
         expect(cleanVersion).to.eql({
           summary: { TO_CREATE: 0, TO_UPDATE: 0, TO_DELETE: 0 },
           TO_CREATE: [],
