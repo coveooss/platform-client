@@ -2,14 +2,14 @@ import * as jsDiff from 'diff';
 import * as _ from 'underscore';
 import { series } from 'async';
 import { RequestResponse } from 'request';
-import { IGraduateOptions } from '../commands/GraduateCommand';
+import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { DownloadResultArray } from '../commons/collections/DownloadResultArray';
 import { IGenericError, StaticErrorMessage } from '../commons/errors';
 import { Logger } from '../commons/logger';
 import { DiffUtils } from '../commons/utils/DiffUtils';
 import { Organization } from '../coveoObjects/Organization';
-import { IDiffOptions } from './../commands/DiffCommand';
+import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
 import { BaseController } from './BaseController';
 import { Colors } from '../commons/colors';
 import { DownloadUtils } from '../commons/utils/DownloadUtils';
@@ -18,15 +18,13 @@ import { PageAPI } from '../commons/rest/PageAPI';
 import { Assert } from '../commons/misc/Assert';
 
 export class PageController extends BaseController {
+  objectName = 'pages';
   // The second organization can be optional in some cases like the download command for instance.
   constructor(private organization1: Organization, private organization2: Organization = new Organization('', '')) {
     super();
   }
-
-  static CONTROLLER_NAME: string = 'pages';
-
-  diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Page>> {
-    return this.loadPagesForBothOrganizations()
+  runDiffSequence(diffOptions?: IDiffOptions): Promise<DiffResultArray<Page>> {
+    return this.loadDataForDiff(diffOptions)
       .then(() => {
         const diffResultArray = DiffUtils.getDiffResult(this.organization1.getPages(), this.organization2.getPages(), diffOptions);
         if (diffResultArray.containsItems()) {
@@ -48,7 +46,7 @@ export class PageController extends BaseController {
    * @returns {Promise<DownloadResultArray>}
    * @memberof PageController
    */
-  download(): Promise<DownloadResultArray> {
+  runDownloadSequence(): Promise<DownloadResultArray> {
     return PageAPI.loadPages(this.organization1)
       .then(() => {
         return DownloadUtils.getDownloadResult(this.organization1.getPages());
@@ -66,7 +64,7 @@ export class PageController extends BaseController {
    * @param {IGraduateOptions} options
    * @returns {Promise<any[]>}
    */
-  graduate(diffResultArray: DiffResultArray<Page>, options: IGraduateOptions): Promise<any[]> {
+  runGraduateSequence(diffResultArray: DiffResultArray<Page>, options: IGraduateOptions): Promise<any[]> {
     if (diffResultArray.containsItems()) {
       Logger.loadingTask('Graduating Pages');
       return Promise.all(
@@ -167,6 +165,33 @@ export class PageController extends BaseController {
         err ? reject(err) : resolve();
       });
     });
+  }
+
+  private loadDataForDiff(diffOptions?: IDiffOptions): Promise<{}> {
+    if (diffOptions && diffOptions.originData) {
+      Logger.verbose('Loading pages from local file');
+      if (!Array.isArray(diffOptions.originData)) {
+        Logger.error('Should provide an array of pages');
+        throw { orgId: 'LocalFile', message: 'Should provide an array of pages' };
+      }
+      try {
+        this.organization1.addPageList(diffOptions.originData);
+      } catch (error) {
+        // if (error && error.message === StaticErrorMessage.MISSING_PAGE_ID) {
+        //   // TODO: find a cleaner way to upload local file without error
+        //   // Expected error
+        //   Logger.verbose('Skipping error since the missing id from the local file is expected');
+        // } else {
+        // Logger.error('Invalid origin data');
+        // throw error;
+        // }
+        Logger.error('Invalid origin data');
+        throw error;
+      }
+      return PageAPI.loadPages(this.organization2);
+    } else {
+      return this.loadPagesForBothOrganizations();
+    }
   }
 
   loadPagesForBothOrganizations(): Promise<Array<{}>> {

@@ -1,10 +1,12 @@
 import * as program from 'commander';
 import * as _ from 'underscore';
 import { Logger } from '../commons/logger';
-import { GraduateCommand, IGraduateOptions } from '../commands/GraduateCommand';
+import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { CommanderUtils } from './CommanderUtils';
-import { IDiffOptions } from '../commands/DiffCommand';
+import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
 import { FileUtils } from '../commons/utils/FileUtils';
+import { Organization } from '../coveoObjects/Organization';
+import { ExtensionController } from '../controllers/ExtensionController';
 
 program
   .command('upload-extensions <origin> <apiKey> <filePathToUpload>')
@@ -44,8 +46,11 @@ program
             options.ignoreExtensions
           )
         };
-        const command = new GraduateCommand('dummyOrg', destination, apiKey, apiKey, blacklistOptions);
-        command.graduateExtensions(graduateOptions);
+        const originOrg = new Organization('dummyOrg', '', blacklistOptions);
+        const destinationOrg = new Organization(destination, apiKey, blacklistOptions);
+        const controller: ExtensionController = new ExtensionController(originOrg, destinationOrg);
+
+        controller.graduate(graduateOptions);
       })
       .catch((err: any) => {
         Logger.error('Unable to read file', err);

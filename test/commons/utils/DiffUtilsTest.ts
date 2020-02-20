@@ -6,7 +6,7 @@ import { DiffResultArray } from '../../../src/commons/collections/DiffResultArra
 import { DiffUtils } from '../../../src/commons/utils/DiffUtils';
 import { Extension } from '../../../src/coveoObjects/Extension';
 import { ClonableTest } from '../../commons/collections/ClonableTest';
-import { IDiffOptions } from './../../../src/commands/DiffCommand';
+import { IDiffOptions } from '../../../src/commons/interfaces/IDiffOptions';
 import { Source } from '../../../src/coveoObjects/Source';
 
 class Car {

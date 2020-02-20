@@ -1,16 +1,19 @@
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { Assert } from '../commons/misc/Assert';
 import { JsonUtils } from '../commons/utils/JsonUtils';
-import { IPage } from '../commons/interfaces/IPage';
 import { BaseCoveoObject } from './BaseCoveoObject';
+import { ICoveoObject } from '../commons/interfaces/ICoveoObject';
+import { StaticErrorMessage } from '../commons/errors';
+
+export interface IPage extends ICoveoObject<Page> {}
 
 export class Page extends BaseCoveoObject implements IPage {
   constructor(private configuration: any) {
     super(configuration['id']);
-    Assert.isNotUndefined(this.configuration['id'], 'Page id should not be undefined.');
-    Assert.isNotUndefined(this.configuration['title'], 'Page title should not be undefined.');
-    Assert.isNotUndefined(this.configuration['name'], 'Page name should not be undefined.');
-    Assert.isNotUndefined(this.configuration['html'], 'Page html should not be undefined.');
+    // Assert.isNotUndefined(this.configuration['id'], StaticErrorMessage.MISSING_PAGE_ID);
+    Assert.isNotUndefined(this.configuration['title'], StaticErrorMessage.MISSING_PAGE_TITLE);
+    Assert.isNotUndefined(this.configuration['name'], StaticErrorMessage.MISSING_PAGE_NAME);
+    Assert.isNotUndefined(this.configuration['html'], StaticErrorMessage.MISSING_PAGE_HTML);
   }
 
   getHTML(): string {

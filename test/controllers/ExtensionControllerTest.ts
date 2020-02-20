@@ -1,7 +1,7 @@
 // tslint:disable:no-magic-numbers
 import { assert, expect } from 'chai';
 import * as nock from 'nock';
-import { IGraduateOptions } from '../../src/commands/GraduateCommand';
+import { IGraduateOptions } from '../../src/commons/interfaces/IGraduateOptions';
 import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
 import { IGenericError } from '../../src/commons/errors';
 import { UrlService } from '../../src/commons/rest/UrlService';
@@ -11,7 +11,7 @@ import { Extension } from '../../src/coveoObjects/Extension';
 import { Organization } from '../../src/coveoObjects/Organization';
 import { ExtensionController } from './../../src/controllers/ExtensionController';
 import { DownloadResultArray } from '../../src/commons/collections/DownloadResultArray';
-import { IDiffOptions } from '../../src/commands/DiffCommand';
+import { IDiffOptions } from '../../src/commons/interfaces/IDiffOptions';
 
 const allDevExtensions: {} = require('./../mocks/setup1/extensions/dev/allExtensions.json');
 
@@ -224,10 +224,10 @@ export const ExtensionControllerTest = () => {
       nock.cleanAll();
     });
 
-    describe('GetCleanVersion Method', () => {
+    describe('getCleanDiffVersion Method', () => {
       it('Should return the clean diff version - empty', () => {
         const diffResultArray: DiffResultArray<Extension> = new DiffResultArray();
-        const cleanVersion = controller.getCleanVersion(diffResultArray);
+        const cleanVersion = controller.getCleanDiffVersion(diffResultArray);
         expect(cleanVersion).to.eql({
           summary: { TO_CREATE: 0, TO_UPDATE: 0, TO_DELETE: 0 },
           TO_CREATE: [],
@@ -242,7 +242,7 @@ export const ExtensionControllerTest = () => {
         diffResultArray.TO_UPDATE.push(extension2);
         diffResultArray.TO_UPDATE_OLD.push(extension2Old);
 
-        const cleanVersion = controller.getCleanVersion(diffResultArray);
+        const cleanVersion = controller.getCleanDiffVersion(diffResultArray);
         expect(cleanVersion).to.eql({
           summary: { TO_CREATE: 1, TO_UPDATE: 1, TO_DELETE: 0 },
           TO_CREATE: [
@@ -286,7 +286,7 @@ export const ExtensionControllerTest = () => {
           .reply(RequestUtils.OK, prodmuo9dsuop8fuihmfdjshjd);
 
         controller
-          .diff()
+          .runDiffSequence()
           .then((diffResultArray: DiffResultArray<Extension>) => {
             done('This function should not resolve');
           })
@@ -321,7 +321,7 @@ export const ExtensionControllerTest = () => {
           .reply(RequestUtils.OK, prodmuo9dsuop8fuihmfdjshjd);
 
         controller
-          .diff()
+          .runDiffSequence()
           .then((diff: DiffResultArray<Extension>) => {
             expect(diff.containsItems()).to.be.true;
             expect(diff.TO_CREATE.length).to.equal(2, 'Should have 2 new extensions');
@@ -354,7 +354,7 @@ export const ExtensionControllerTest = () => {
           .reply(RequestUtils.OK, prodmuo9dsuop8fuihmfdjshjd);
 
         controller
-          .diff()
+          .runDiffSequence()
           .then((diffResultArray: DiffResultArray<Extension>) => {
             done();
           })
@@ -387,7 +387,7 @@ export const ExtensionControllerTest = () => {
           .reply(RequestUtils.OK, prodmuo9dsuop8fuihmfdjshjd);
 
         controllerxy
-          .diff()
+          .runDiffSequence()
           .then((diffResultArray: DiffResultArray<Extension>) => {
             done();
           })
@@ -416,9 +416,9 @@ export const ExtensionControllerTest = () => {
           diffOptions: {}
         };
 
-        controller.diff().then((diffResultArray: DiffResultArray<Extension>) => {
+        controller.runDiffSequence().then((diffResultArray: DiffResultArray<Extension>) => {
           controller
-            .graduate(diffResultArray, graduateOptions)
+            .runGraduateSequence(diffResultArray, graduateOptions)
             .then((resolved: any[]) => {
               expect(resolved).to.be.empty;
               done();
@@ -526,7 +526,7 @@ export const ExtensionControllerTest = () => {
         };
 
         controller
-          .graduate(extensionDiff, graduateOptions)
+          .runGraduateSequence(extensionDiff, graduateOptions)
           .then((resolved: any[]) => {
             // expect(resolved).to.be.empty;
             done();
@@ -625,7 +625,7 @@ export const ExtensionControllerTest = () => {
         };
 
         controller
-          .graduate(extensionDiff, graduateOptions)
+          .runGraduateSequence(extensionDiff, graduateOptions)
           .then((resolved: any[]) => {
             done('Should not resolve');
           })
@@ -678,13 +678,13 @@ export const ExtensionControllerTest = () => {
           keyWhitelist: whitelist
         };
         controllerxy
-          .diff(diffOptions)
+          .runDiffSequence(diffOptions)
           .then((diff: DiffResultArray<Extension>) => {
             expect(diff.TO_CREATE.length).to.eql(0, 'No extension to CREATE');
             expect(diff.TO_UPDATE.length).to.eql(1, '1 extension to UPDATE');
             expect(diff.TO_DELETE.length).to.eql(0, 'No extension to DELETE');
             controllerxy
-              .graduate(diff, graduateOptions)
+              .runGraduateSequence(diff, graduateOptions)
               .then((resolved: any[]) => {
                 done();
               })
@@ -722,7 +722,7 @@ export const ExtensionControllerTest = () => {
           .reply(RequestUtils.OK, DEVxuklmyqaujg3gj2ivcynor2adq);
 
         controllerxy
-          .download()
+          .runDownloadSequence()
           .then((downloadResultArray: DownloadResultArray) => {
             expect(downloadResultArray.getCount()).to.be.eql(7);
             done();
@@ -749,7 +749,7 @@ export const ExtensionControllerTest = () => {
           .reply(429, 'SOOOORRY'); // Too many requests. Stop the rest of the flow
 
         controllerxy
-          .download()
+          .runDownloadSequence()
           .then(() => {
             done('Should not resolve');
           })

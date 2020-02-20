@@ -1,10 +1,12 @@
 import * as _ from 'underscore';
-import { IField } from '../commons/interfaces/IField';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 import { BaseCoveoObject } from './BaseCoveoObject';
 import { StringUtil } from '../commons/utils/StringUtils';
 import { Assert } from '../commons/misc/Assert';
+import { ICoveoObject } from '../commons/interfaces/ICoveoObject';
+
+export interface IField extends ICoveoObject<Field> {}
 
 export class Field extends BaseCoveoObject implements IField {
   constructor(private fieldModel: IStringMap<any>) {

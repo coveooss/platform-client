@@ -1,20 +1,27 @@
 import * as _ from 'underscore';
-import { ISource } from '../commons/interfaces/ISource';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 import { BaseCoveoObject } from './BaseCoveoObject';
 import { Assert } from '../commons/misc/Assert';
 import { StringUtil } from '../commons/utils/StringUtils';
+import { ICoveoObject } from '../commons/interfaces/ICoveoObject';
+import { StaticErrorMessage } from '../commons/errors';
+
+export interface ISource extends ICoveoObject<Source> {
+  getMappings(): Array<IStringMap<string>>;
+  getPreConversionExtensions(): any[];
+  getPostConversionExtensions(): any[];
+}
 
 export class Source extends BaseCoveoObject implements ISource {
   constructor(private configuration: any) {
     super(configuration['id']);
-    Assert.isNotUndefined(this.configuration['id'], 'Missing id from source configuration.');
-    Assert.isNotUndefined(this.configuration['name'], 'Missing name from source configuration.');
-    Assert.isNotUndefined(this.configuration['mappings'], 'Missing mappings from source configuration.');
-    Assert.isNotUndefined(this.configuration['sourceType'], 'Missing sourceType from source configuration.');
-    Assert.isNotUndefined(this.configuration['preConversionExtensions'], 'Missing preConversionExtensions from source configuration.');
-    Assert.isNotUndefined(this.configuration['postConversionExtensions'], 'Missing postConversionExtensions from source configuration.');
+    // Assert.isNotUndefined(this.configuration['id'], StaticErrorMessage.MISSING_SOURCE_ID);
+    Assert.isNotUndefined(this.configuration['name'], StaticErrorMessage.MISSING_SOURCE_NAME);
+    Assert.isNotUndefined(this.configuration['mappings'], StaticErrorMessage.MISSING_SOURCE_MAPPINGS);
+    Assert.isNotUndefined(this.configuration['sourceType'], StaticErrorMessage.MISSING_SOURCE_SOURCETYPE);
+    Assert.isNotUndefined(this.configuration['preConversionExtensions'], StaticErrorMessage.MISSING_SOURCE_PRECONVERSIONEXTENSIONS);
+    Assert.isNotUndefined(this.configuration['postConversionExtensions'], StaticErrorMessage.MISSING_SOURCE_POSTCONVERSIONEXTENSIONS);
   }
 
   // This will be useful specialy for Salesforce sources

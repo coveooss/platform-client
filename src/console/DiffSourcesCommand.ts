@@ -2,8 +2,9 @@ import * as program from 'commander';
 import * as _ from 'underscore';
 import { Logger } from '../commons/logger';
 import { CommanderUtils } from './CommanderUtils';
-import { IDiffOptions, DiffCommand } from '../commands/DiffCommand';
-import { IBlacklistObjects } from '../coveoObjects/Organization';
+import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
+import { IBlacklistObjects, Organization } from '../coveoObjects/Organization';
+import { SourceController } from '../controllers/SourceController';
 
 program
   .command('diff-sources <origin> <destination> <apiKey...>')
@@ -77,6 +78,10 @@ program
       extensions: _.union(['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'], options.ignoreExtensions),
       sources: options.ignoreSources
     };
-    const command = new DiffCommand(origin, destination, apiKey[0], apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
-    command.diffSources(diffOptions);
+
+    const originOrg = new Organization(origin, apiKey[0], blacklistOptions);
+    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
+    const controller: SourceController = new SourceController(originOrg, destinationOrg);
+
+    controller.diff(diffOptions);
   });

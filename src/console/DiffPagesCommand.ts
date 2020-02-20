@@ -2,7 +2,9 @@ import * as program from 'commander';
 import * as _ from 'underscore';
 import { Logger } from '../commons/logger';
 import { CommanderUtils } from './CommanderUtils';
-import { IDiffOptions, DiffCommand } from '../commands/DiffCommand';
+import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
+import { Organization } from '../coveoObjects/Organization';
+import { PageController } from '../controllers/PageController';
 
 program
   .command('diff-pages <origin> <destination> <apiKey...>')
@@ -34,6 +36,10 @@ program
     const blacklistOptions = {
       pages: options.ignorePages
     };
-    const command = new DiffCommand(origin, destination, apiKey[0], apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
-    command.diffPages(diffOptions);
+
+    const originOrg = new Organization(origin, apiKey[0], blacklistOptions);
+    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
+    const controller: PageController = new PageController(originOrg, destinationOrg);
+
+    controller.diff(diffOptions);
   });

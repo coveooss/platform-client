@@ -2,7 +2,7 @@
 import { assert, expect } from 'chai';
 import * as nock from 'nock';
 import * as _ from 'underscore';
-import { IGraduateOptions } from '../../src/commands/GraduateCommand';
+import { IGraduateOptions } from '../../src/commons/interfaces/IGraduateOptions';
 import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
 import { IGenericError } from '../../src/commons/errors';
 import { UrlService } from '../../src/commons/rest/UrlService';
@@ -11,7 +11,7 @@ import { Utils } from '../../src/commons/utils/Utils';
 import { Field } from '../../src/coveoObjects/Field';
 import { FieldController } from './../../src/controllers/FieldController';
 import { Organization } from './../../src/coveoObjects/Organization';
-import { IDiffOptions } from '../../src/commands/DiffCommand';
+import { IDiffOptions } from '../../src/commons/interfaces/IDiffOptions';
 
 export const FieldControllerTest = () => {
   describe('Field Controller', () => {
@@ -56,10 +56,10 @@ export const FieldControllerTest = () => {
       org2.clearFields();
     });
 
-    describe('GetCleanVersion Method', () => {
+    describe('getCleanDiffVersion Method', () => {
       it('Should return the clean diff version - empty', () => {
         const diffResultArray: DiffResultArray<Field> = new DiffResultArray();
-        const cleanVersion = fieldController.getCleanVersion(diffResultArray);
+        const cleanVersion = fieldController.getCleanDiffVersion(diffResultArray);
         expect(cleanVersion).to.eql({
           summary: { TO_CREATE: 0, TO_UPDATE: 0, TO_DELETE: 0 },
           TO_CREATE: [],
@@ -77,7 +77,7 @@ export const FieldControllerTest = () => {
         const diffOptions: IDiffOptions = {
           keysToIgnore: ['sources']
         };
-        const cleanVersion = fieldController.getCleanVersion(diffResultArray, diffOptions);
+        const cleanVersion = fieldController.getCleanDiffVersion(diffResultArray, diffOptions);
         expect(cleanVersion).to.eql({
           summary: { TO_CREATE: 1, TO_UPDATE: 1, TO_DELETE: 0 },
           TO_CREATE: [
@@ -147,7 +147,7 @@ export const FieldControllerTest = () => {
           });
 
         fieldController
-          .diff()
+          .runDiffSequence()
           .then((diff: DiffResultArray<Field>) => {
             expect(diff.containsItems()).to.be.false;
             done();
@@ -200,7 +200,7 @@ export const FieldControllerTest = () => {
           keysToIgnore: ['sources']
         };
         fieldController
-          .diff(diffOptions)
+          .runDiffSequence(diffOptions)
           .then((diff: DiffResultArray<Field>) => {
             expect(diff.containsItems()).to.be.false;
             done();
@@ -294,7 +294,7 @@ export const FieldControllerTest = () => {
           sources: ['source2', 'source3']
         };
         fieldController
-          .diff(diffOptions)
+          .runDiffSequence(diffOptions)
           .then((diff: DiffResultArray<Field>) => {
             expect(diff.TO_UPDATE.length).to.eql(2);
             expect(_.map(diff.TO_UPDATE, f => f.getName())).to.contain('field2');
@@ -395,7 +395,7 @@ export const FieldControllerTest = () => {
           keysToIgnore: ['sources']
         };
         controllerxy
-          .diff(diffOptions)
+          .runDiffSequence(diffOptions)
           .then((diff: DiffResultArray<Field>) => {
             expect(diff.TO_UPDATE.length).to.eql(2);
             expect(_.map(diff.TO_UPDATE, f => f.getName())).to.contain('field2');
@@ -420,7 +420,7 @@ export const FieldControllerTest = () => {
           .reply(RequestUtils.ACCESS_DENIED, { message: 'Access is denied.', errorCode: 'ACCESS_DENIED' });
 
         fieldController
-          .diff()
+          .runDiffSequence()
           .then(() => {
             done('This function should not resolve');
           })
@@ -479,7 +479,7 @@ export const FieldControllerTest = () => {
           });
 
         fieldController
-          .diff()
+          .runDiffSequence()
           .then(() => {
             expect(org1.getFields().getCount()).to.be.eql(3);
             expect(org2.getFields().getCount()).to.be.eql(2);
@@ -532,7 +532,7 @@ export const FieldControllerTest = () => {
         };
 
         fieldController
-          .diff(diffOptions)
+          .runDiffSequence(diffOptions)
           .then(() => {
             expect(org1.getFields().getCount()).to.be.eql(3);
             expect(org2.getFields().getCount()).to.be.eql(2);
@@ -545,7 +545,7 @@ export const FieldControllerTest = () => {
 
       it('Should throw an error if the original file is invalid', () => {
         expect(() =>
-          fieldController.diff({
+          fieldController.runDiffSequence({
             originData: {
               name: 'allmetadatavalues',
               description: '',
@@ -638,10 +638,10 @@ export const FieldControllerTest = () => {
         };
 
         fieldController
-          .diff()
+          .runDiffSequence()
           .then((diffResultArray: DiffResultArray<Field>) => {
             fieldController
-              .graduate(diffResultArray, graduateOptions)
+              .runGraduateSequence(diffResultArray, graduateOptions)
               .then(() => {
                 done();
               })
@@ -747,12 +747,12 @@ export const FieldControllerTest = () => {
         };
 
         fieldController
-          .diff(diffOptions)
+          .runDiffSequence(diffOptions)
           .then((diffResultArray: DiffResultArray<Field>) => {
             expect(diffResultArray.TO_UPDATE.length).to.equal(1, 'Should only have one field to update');
 
             fieldController
-              .graduate(diffResultArray, graduateOptions)
+              .runGraduateSequence(diffResultArray, graduateOptions)
               .then(() => {
                 done();
               })
@@ -877,13 +877,13 @@ export const FieldControllerTest = () => {
         };
 
         fieldController
-          .diff(diffOptions)
+          .runDiffSequence(diffOptions)
           .then((diffResultArray: DiffResultArray<Field>) => {
             expect(diffResultArray.TO_UPDATE.length).to.equal(0);
             expect(diffResultArray.TO_CREATE.length).to.equal(1);
 
             fieldController
-              .graduate(diffResultArray, graduateOptions)
+              .runGraduateSequence(diffResultArray, graduateOptions)
               .then(() => {
                 done();
               })
@@ -977,10 +977,10 @@ export const FieldControllerTest = () => {
         };
 
         fieldController
-          .diff()
+          .runDiffSequence()
           .then((diffResultArray: DiffResultArray<Field>) => {
             fieldController
-              .graduate(diffResultArray, graduateOptions)
+              .runGraduateSequence(diffResultArray, graduateOptions)
               .then((resolved: any[]) => {
                 done('Should not resolve');
               })
@@ -1050,9 +1050,9 @@ export const FieldControllerTest = () => {
           diffOptions: {}
         };
 
-        fieldController.diff().then((diffResultArray: DiffResultArray<Field>) => {
+        fieldController.runDiffSequence().then((diffResultArray: DiffResultArray<Field>) => {
           fieldController
-            .graduate(diffResultArray, graduateOptions)
+            .runGraduateSequence(diffResultArray, graduateOptions)
             .then((resolved: any[]) => {
               expect(resolved).to.be.empty;
               done();
@@ -1103,10 +1103,10 @@ export const FieldControllerTest = () => {
         };
 
         fieldController
-          .diff()
+          .runDiffSequence()
           .then((diffResultArray: DiffResultArray<Field>) => {
             fieldController
-              .graduate(diffResultArray, graduateOptions)
+              .runGraduateSequence(diffResultArray, graduateOptions)
               .then((resolved: any[]) => {
                 done('This function should not resolve');
               })
@@ -1184,9 +1184,9 @@ export const FieldControllerTest = () => {
           diffOptions: {}
         };
 
-        fieldController.diff().then((diffResultArray: DiffResultArray<Field>) => {
+        fieldController.runDiffSequence().then((diffResultArray: DiffResultArray<Field>) => {
           fieldController
-            .graduate(diffResultArray, graduateOptions)
+            .runGraduateSequence(diffResultArray, graduateOptions)
             .then(() => {
               done();
             })
@@ -1225,7 +1225,7 @@ export const FieldControllerTest = () => {
           });
 
         fieldController
-          .download()
+          .runDownloadSequence()
           .then(() => {
             expect(org1.getFields().getCount()).to.be.eql(3);
             done();
@@ -1242,7 +1242,7 @@ export const FieldControllerTest = () => {
           .reply(429, 'SOOOORRY'); // Too many requests
 
         fieldController
-          .download()
+          .runDownloadSequence()
           .then(() => {
             done('Should not resolve');
           })

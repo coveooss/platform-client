@@ -1,9 +1,11 @@
 import * as program from 'commander';
 import * as _ from 'underscore';
 import { CommanderUtils } from './CommanderUtils';
-import { IGraduateOptions, GraduateCommand } from '../commands/GraduateCommand';
+import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { FileUtils } from '../commons/utils/FileUtils';
 import { Logger } from '../commons/logger';
+import { FieldController } from '../controllers/FieldController';
+import { Organization } from '../coveoObjects/Organization';
 
 program
   .command('upload-fields <origin> <apiKey> <filePathToUpload>')
@@ -49,8 +51,11 @@ program
           DELETE: options.methods.indexOf('DELETE') > -1
         };
 
-        const command = new GraduateCommand('dummyOrg', destination, apiKey, apiKey);
-        command.graduateFields(graduateOptions);
+        const originOrg = new Organization('dummyOrg', '');
+        const destinationOrg = new Organization(destination, apiKey);
+        const controller: FieldController = new FieldController(originOrg, destinationOrg);
+
+        controller.graduate(graduateOptions);
       })
       .catch((err: any) => {
         Logger.error('Unable to read file', err);

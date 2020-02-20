@@ -1,15 +1,23 @@
-import { RequestResponse } from 'request';
+import * as opn from 'open';
+import * as inquirer from 'inquirer';
+import * as fs from 'fs-extra';
 import * as _ from 'underscore';
-import { IDiffOptions } from '../commands/DiffCommand';
-import { IHTTPGraduateOptions } from '../commands/GraduateCommand';
+import path = require('path');
+import { RequestResponse } from 'request';
+import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
+import { IHTTPGraduateOptions, IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { DownloadResultArray } from '../commons/collections/DownloadResultArray';
 import { Colors } from '../commons/colors';
-import { IGenericError } from '../commons/errors';
+import { IGenericError, StaticErrorMessage } from '../commons/errors';
 import { Logger } from '../commons/logger';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
+import { InteractiveQuestion } from '../console/InteractiveQuestion';
 
+export interface IDownloadOptions {
+  outputFolder: string;
+}
 export interface IDiffResultArrayClean {
   summary?: {
     TO_CREATE: number;
@@ -29,13 +37,191 @@ export interface IPrintOptions {
  * Every Controller ultimately inherits from this base controller class.
  */
 export abstract class BaseController {
-  abstract diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<BaseCoveoObject>>;
+  static DEFAULT_DIFF_OPTIONS: IDiffOptions = {
+    keysToIgnore: [],
+    includeOnly: [],
+    silent: false
+  };
 
-  abstract graduate(diffResultArray: DiffResultArray<BaseCoveoObject>, options: IHTTPGraduateOptions): Promise<any[]>;
+  static DEFAULT_GRADUATE_OPTIONS: IGraduateOptions = {
+    diffOptions: BaseController.DEFAULT_DIFF_OPTIONS,
+    keyWhitelist: [],
+    keyBlacklist: [],
+    rebuild: false,
+    POST: true,
+    PUT: true,
+    DELETE: false
+  };
 
-  abstract download(): Promise<DownloadResultArray>;
+  private InteractiveQuestion: InteractiveQuestion;
+
+  constructor() {
+    this.InteractiveQuestion = new InteractiveQuestion();
+  }
+
+  abstract objectName: string;
+
+  abstract runDiffSequence(diffOptions?: IDiffOptions): Promise<DiffResultArray<BaseCoveoObject>>;
+
+  abstract runGraduateSequence(diffResultArray: DiffResultArray<BaseCoveoObject>, options: IHTTPGraduateOptions): Promise<any[]>;
+
+  abstract runDownloadSequence(): Promise<DownloadResultArray>;
 
   abstract extractionMethod(object: any[], diffOptions?: IDiffOptions, oldVersion?: any[]): any[];
+
+  download(options: IDownloadOptions) {
+    Logger.startSpinner(`Downloading ${this.objectName}`);
+    this.runDownloadSequence()
+      .then((downloadResultArray: DownloadResultArray) => {
+        // sort the items in the list
+        downloadResultArray.sort();
+
+        // get the list
+        const items = _.map(downloadResultArray.getItems(), item => item.getConfiguration());
+
+        // ensure path
+        fs.ensureDirSync(options.outputFolder);
+        // prepare file name
+        const filename = path.join(options.outputFolder, `${this.objectName.toLowerCase()}.json`);
+        // save to file
+        fs.writeJSON(filename, items, { spaces: 2 })
+          .then(() => {
+            Logger.info('Download operation completed');
+            Logger.info(`File saved as ${Colors.filename(filename)}`);
+            Logger.stopSpinner();
+            process.exit();
+          })
+          .catch((err: any) => {
+            Logger.error('Unable to save download file', err);
+            Logger.stopSpinner();
+            process.exit();
+          });
+      })
+      .catch((err: IGenericError) => {
+        // TODO: review this error message
+        Logger.error(StaticErrorMessage.UNABLE_TO_DOWNLOAD, err);
+        Logger.stopSpinner();
+        process.exit();
+      });
+  }
+
+  graduate(opts?: IGraduateOptions) {
+    const options = _.extend(BaseController.DEFAULT_GRADUATE_OPTIONS, opts) as IGraduateOptions;
+
+    const questions = [];
+    const allowedMethods: string[] = _.compact([options.POST ? 'CREATE' : '', options.PUT ? 'UPDATE' : '', options.DELETE ? 'DELETE' : '']);
+
+    let phrase = allowedMethods.length === 1 ? 'only ' : '';
+    phrase += allowedMethods[0];
+    for (let i = 1; i < allowedMethods.length; i++) {
+      if (i === allowedMethods.length - 1) {
+        phrase += ` and ${allowedMethods[i]}`;
+      } else {
+        phrase += `, ${allowedMethods[i]}`;
+      }
+    }
+
+    questions.push(this.InteractiveQuestion.confirmAction(`Are you sure want to ${phrase} ${this.objectName}s?`, 'confirm'));
+    // Make sure the user selects at least one HTTP method
+    inquirer.prompt(questions).then((res: inquirer.Answers) => {
+      if (res.confirm) {
+        Logger.startSpinner(`Performing ${this.objectName} Graduation`);
+
+        this.runDiffSequence(options.diffOptions)
+          .then((diffResultArray: DiffResultArray<BaseCoveoObject>) => {
+            this.runGraduateSequence(diffResultArray, options)
+              .then(() => {
+                Logger.info('Graduation operation completed');
+                Logger.stopSpinner();
+              })
+              .catch((err: any) => {
+                Logger.error(StaticErrorMessage.UNABLE_TO_GRADUATE, err);
+                Logger.stopSpinner();
+              });
+          })
+          .catch((err: any) => {
+            Logger.logOnly(StaticErrorMessage.UNABLE_TO_GRADUATE, err);
+            Logger.error(StaticErrorMessage.UNABLE_TO_GRADUATE, 'Consult the logs for more information');
+            Logger.stopSpinner();
+          });
+      } else {
+        Logger.info(`No ${this.objectName}s were graduated`);
+        Logger.stopSpinner();
+      }
+    });
+  }
+
+  diff(opt?: IDiffOptions) {
+    const options = _.extend(BaseController.DEFAULT_DIFF_OPTIONS, opt) as IDiffOptions;
+
+    Logger.startSpinner('Diff in progress...');
+
+    // Give some useful information
+    options.includeOnly && options.includeOnly.length > 0
+      ? Logger.verbose(`Diff will be applied exclusively to the following keys: ${JSON.stringify(options.includeOnly)}`)
+      : options.keysToIgnore
+      ? Logger.verbose(`Diff will not be applied to the following keys: ${JSON.stringify(options.keysToIgnore)}`)
+      : void 0;
+
+    this.runDiffSequence(options)
+      .then((diffResultArray: DiffResultArray<BaseCoveoObject>) => {
+        Logger.info(`objectName: ${this.objectName}`);
+        if (this.objectName === 'source' || this.objectName === 'page') {
+          Logger.info('Preparing HTML diff file');
+
+          const cleanVersion = this.getCleanDiffVersion(diffResultArray, options);
+
+          const template = require('ejs-loader!./../../views/source-diff.ejs');
+
+          const result = template({
+            DIFF_OBJECT: JSON.stringify(cleanVersion.TO_UPDATE),
+            SOURCES_TO_CREATE: JSON.stringify(cleanVersion.TO_CREATE),
+            SOURCES_TO_DELETE: JSON.stringify(cleanVersion.TO_DELETE),
+            resourceType: this.objectName
+          });
+
+          fs.writeFile(`${this.objectName}Diff.html`, result)
+            .then(() => {
+              Logger.info('Diff operation completed');
+              Logger.info(`File saved as ${Colors.filename(this.objectName + 'Diff.json')}`);
+              Logger.stopSpinner();
+              if (!options.silent) {
+                opn(`${this.objectName}Diff.html`);
+              }
+              process.exit();
+            })
+            .catch((error: any) => {
+              Logger.error('Unable to create html file', error);
+              Logger.stopSpinner();
+              process.exit();
+            });
+        } else {
+          fs.writeJSON(`${this.objectName}Diff.json`, this.getCleanDiffVersion(diffResultArray, options), { spaces: 2 })
+            .then(() => {
+              // TODO: do the same for every object types
+              Logger.info('Diff operation completed');
+              Logger.info(`File saved as ${Colors.filename(this.objectName + 'Diff.json')}`);
+              Logger.stopSpinner();
+              if (!options.silent) {
+                opn(`${this.objectName}Diff.json`);
+              }
+              process.exit();
+            })
+            .catch((err: any) => {
+              Logger.error('Unable to save setting file', err);
+              Logger.stopSpinner();
+              process.exit();
+            });
+        }
+      })
+      .catch((err: any) => {
+        // FIXME: logonly does not seem to log
+        Logger.logOnly(StaticErrorMessage.UNABLE_TO_DIFF, err);
+        Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, 'Consult the logs for more information');
+        Logger.stopSpinner();
+        process.exit();
+      });
+  }
 
   protected successHandler(response: RequestResponse[] | RequestResponse, successMessage: string) {
     const successLog = (rep: RequestResponse) => {
@@ -66,6 +252,12 @@ export abstract class BaseController {
     const regex = /bearer\s[^"]*/gim;
     const subst = 'Bearer xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
     return str.replace(regex, subst);
+  }
+
+  protected stopProcess(message: string, err?: any) {
+    Logger.error(message, err);
+    Logger.stopSpinner();
+    process.exit();
   }
 
   protected errorHandler(error: IGenericError, errorMessage: string) {
@@ -114,7 +306,7 @@ export abstract class BaseController {
    * @param {boolean} [summary=true]
    * @returns {IDiffResultArrayClean} The simplified object
    */
-  getCleanVersion<T>(
+  getCleanDiffVersion<T>(
     diffResultArray: DiffResultArray<T>,
     diffOptions: IDiffOptions = {},
     printOptions: IPrintOptions = {}
