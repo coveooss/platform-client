@@ -166,7 +166,7 @@ export abstract class BaseController {
     this.runDiffSequence(options)
       .then((diffResultArray: DiffResultArray<BaseCoveoObject>) => {
         Logger.info(`objectName: ${this.objectName}`);
-        if (this.objectName === 'source' || this.objectName === 'page') {
+        if (this.objectName === 'sources' || this.objectName === 'pages') {
           Logger.info('Preparing HTML diff file');
 
           const cleanVersion = this.getCleanDiffVersion(diffResultArray, options);
@@ -183,7 +183,7 @@ export abstract class BaseController {
           fs.writeFile(`${this.objectName}Diff.html`, result)
             .then(() => {
               Logger.info('Diff operation completed');
-              Logger.info(`File saved as ${Colors.filename(this.objectName + 'Diff.json')}`);
+              Logger.info(`File saved as ${Colors.filename(this.objectName + 'Diff.html')}`);
               Logger.stopSpinner();
               if (!options.silent) {
                 opn(`${this.objectName}Diff.html`);
