@@ -37,13 +37,13 @@ program
     const graduateOptions: IGraduateOptions = {
       diffOptions: {
         // keysToIgnore: _.union(options.ignoreKeys, ['sources']),
-        keysToIgnore: ['sources'],
+        keysToIgnore: ['sources', 'system'],
         includeOnly: options.onlyKeys,
         silent: options.silent,
         sources: options.sources
       },
       // keyBlacklist: _.union(options.ignoreKeys, ['sources']),
-      keyBlacklist: ['sources'],
+      keyBlacklist: ['sources', 'system'],
       POST: options.methods.indexOf('POST') > -1,
       PUT: options.methods.indexOf('PUT') > -1,
       DELETE: options.methods.indexOf('DELETE') > -1

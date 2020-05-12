@@ -9,7 +9,7 @@ export const UrlServiceTest = () => {
       expect(getFieldsPageUrl).to.equal(
         `${
           EnvironmentUtils.getConfiguration().coveo.platformUrl
-        }/rest/organizations/myOrgId/sources/page/fields?&page=0&perPage=1000&origin=USER&includeMappings=false`
+        }/rest/organizations/myOrgId/sources/page/fields?&page=0&perPage=1000&origin=ALL&includeMappings=false`
       );
     });
 

@@ -114,7 +114,7 @@ export const FieldControllerTest = () => {
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -130,7 +130,7 @@ export const FieldControllerTest = () => {
             ]
           })
           .get('/rest/organizations/prod/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -160,7 +160,7 @@ export const FieldControllerTest = () => {
       it('Should return an empty diff result - even if sources are different', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -178,7 +178,7 @@ export const FieldControllerTest = () => {
             ]
           })
           .get('/rest/organizations/prod/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -214,7 +214,7 @@ export const FieldControllerTest = () => {
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -253,7 +253,7 @@ export const FieldControllerTest = () => {
             ]
           })
           .get('/rest/organizations/prod/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -316,7 +316,7 @@ export const FieldControllerTest = () => {
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -355,7 +355,7 @@ export const FieldControllerTest = () => {
             ]
           })
           .get('/rest/organizations/prod/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -413,10 +413,10 @@ export const FieldControllerTest = () => {
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.ACCESS_DENIED, { message: 'Access is denied.', errorCode: 'ACCESS_DENIED' })
           .get('/rest/organizations/prod/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.ACCESS_DENIED, { message: 'Access is denied.', errorCode: 'ACCESS_DENIED' });
 
         fieldController
@@ -436,7 +436,7 @@ export const FieldControllerTest = () => {
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -460,7 +460,7 @@ export const FieldControllerTest = () => {
           })
           // Second expected request
           .get('/rest/organizations/prod/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -493,7 +493,7 @@ export const FieldControllerTest = () => {
       it('Should diff against local config', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/prod/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -557,10 +557,169 @@ export const FieldControllerTest = () => {
     });
 
     describe('Graduate Method', () => {
+      it('Should not graduate system attribute (POST, PUT)', (done: MochaDone) => {
+        scope = nock(UrlService.getDefaultUrl())
+          .get('/rest/organizations/dev/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'newfield',
+                description: 'The title of the document',
+                type: 'STRING',
+                includeInQuery: true,
+                includeInResults: true,
+                mergeWithLexicon: true,
+                smartDateFacet: false,
+                facet: false,
+                multiValueFacet: false,
+                hierarchicalFacet: false,
+                sort: true,
+                ranking: true,
+                stemming: true,
+                multiValueFacetTokenizers: ';',
+                useCacheForNestedQuery: false,
+                useCacheForSort: false,
+                useCacheForNumericQuery: false,
+                useCacheForComputedFacet: false,
+                dateFormat: '',
+                system: true
+              },
+              {
+                name: 'existingfield',
+                description: 'The title of the document',
+                type: 'STRING',
+                includeInQuery: true,
+                includeInResults: true,
+                mergeWithLexicon: true,
+                smartDateFacet: false,
+                facet: false,
+                multiValueFacet: false,
+                hierarchicalFacet: false,
+                sort: true,
+                ranking: true,
+                stemming: true,
+                multiValueFacetTokenizers: ';',
+                useCacheForNestedQuery: false,
+                useCacheForSort: false,
+                useCacheForNumericQuery: false,
+                useCacheForComputedFacet: false,
+                dateFormat: '',
+                system: true
+              }
+            ],
+            totalPages: 1,
+            totalEntries: 2
+          })
+          .get('/rest/organizations/prod/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'existingfield',
+                description: 'The title of the document',
+                type: 'STRING',
+                includeInQuery: true,
+                includeInResults: true,
+                mergeWithLexicon: true,
+                smartDateFacet: false,
+                facet: false,
+                multiValueFacet: false,
+                hierarchicalFacet: false,
+                sort: false,
+                ranking: true,
+                stemming: true,
+                multiValueFacetTokenizers: ';',
+                useCacheForNestedQuery: false,
+                useCacheForSort: false,
+                useCacheForNumericQuery: false,
+                useCacheForComputedFacet: false,
+                dateFormat: '',
+                system: true
+              }
+            ],
+            totalPages: 1,
+            totalEntries: 1
+          })
+          .post('/rest/organizations/prod/indexes/fields/batch/create', [
+            {
+              name: 'newfield',
+              description: 'The title of the document',
+              type: 'STRING',
+              includeInQuery: true,
+              includeInResults: true,
+              mergeWithLexicon: true,
+              smartDateFacet: false,
+              facet: false,
+              multiValueFacet: false,
+              hierarchicalFacet: false,
+              sort: true,
+              ranking: true,
+              stemming: true,
+              multiValueFacetTokenizers: ';',
+              useCacheForNestedQuery: false,
+              useCacheForSort: false,
+              useCacheForNumericQuery: false,
+              useCacheForComputedFacet: false,
+              dateFormat: ''
+            }
+          ])
+          .reply(RequestUtils.OK)
+          .put('/rest/organizations/prod/indexes/fields/batch/update', [
+            {
+              name: 'existingfield',
+              description: 'The title of the document',
+              type: 'STRING',
+              includeInQuery: true,
+              includeInResults: true,
+              mergeWithLexicon: true,
+              smartDateFacet: false,
+              facet: false,
+              multiValueFacet: false,
+              hierarchicalFacet: false,
+              sort: true,
+              ranking: true,
+              stemming: true,
+              multiValueFacetTokenizers: ';',
+              useCacheForNestedQuery: false,
+              useCacheForSort: false,
+              useCacheForNumericQuery: false,
+              useCacheForComputedFacet: false,
+              dateFormat: ''
+            }
+          ])
+          .reply(RequestUtils.NO_CONTENT);
+
+        const diffOptions = { keysToIgnore: ['sources', 'system'] };
+        const graduateOptions: IGraduateOptions = {
+          POST: true,
+          PUT: true,
+          DELETE: false,
+          keyBlacklist: ['sources', 'system'],
+          diffOptions: diffOptions
+        };
+
+        fieldController
+          .runDiffSequence(diffOptions)
+          .then((diffResultArray: DiffResultArray<Field>) => {
+            fieldController
+              .runGraduateSequence(diffResultArray, graduateOptions)
+              .then(() => {
+                done();
+              })
+              .catch((err: any) => {
+                done(err);
+              });
+          })
+          .catch((err: any) => {
+            done(err);
+          });
+      });
+
       it('Should graduate fields (POST, PUT, DELETE)', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -583,7 +742,7 @@ export const FieldControllerTest = () => {
             totalEntries: 3
           })
           .get('/rest/organizations/prod/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -657,7 +816,7 @@ export const FieldControllerTest = () => {
       it('Should graduate fields using a blacklist option', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -683,7 +842,7 @@ export const FieldControllerTest = () => {
             totalEntries: 3
           })
           .get('/rest/organizations/prod/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -768,7 +927,7 @@ export const FieldControllerTest = () => {
       it('Should only graduate fields for the specified sources', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -800,7 +959,7 @@ export const FieldControllerTest = () => {
             totalEntries: 3
           })
           .get('/rest/organizations/prod/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -899,7 +1058,7 @@ export const FieldControllerTest = () => {
       it('Should not graduate fields: Graduation error', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -922,7 +1081,7 @@ export const FieldControllerTest = () => {
             totalEntries: 3
           })
           .get('/rest/organizations/prod/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -997,7 +1156,7 @@ export const FieldControllerTest = () => {
       it('Should have nothing to graduate: Similar orgs', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -1020,7 +1179,7 @@ export const FieldControllerTest = () => {
             totalEntries: 3
           })
           .get('/rest/organizations/prod/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -1069,10 +1228,10 @@ export const FieldControllerTest = () => {
       it('Should not graduate: failed diff', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.ACCESS_DENIED, 'some message')
           .get('/rest/organizations/prod/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -1126,7 +1285,7 @@ export const FieldControllerTest = () => {
       it('Should have nothing to graduate: No HTTP verbe selected', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -1149,7 +1308,7 @@ export const FieldControllerTest = () => {
             totalEntries: 3
           })
           .get('/rest/organizations/prod/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -1201,7 +1360,7 @@ export const FieldControllerTest = () => {
       it('Should downlaod some fields', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(RequestUtils.OK, {
             items: [
               {
@@ -1238,7 +1397,7 @@ export const FieldControllerTest = () => {
       it('Should catch an error if too many request', (done: MochaDone) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/sources/page/fields')
-          .query({ page: 0, perPage: 1000, origin: 'USER', includeMappings: false })
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
           .reply(429, 'SOOOORRY'); // Too many requests
 
         fieldController
