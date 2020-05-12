@@ -11,8 +11,8 @@ import { RequestUtils } from '../../src/commons/utils/RequestUtils';
 import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
 import { Page } from '../../src/coveoObjects/Page';
 import { IGenericError } from '../../src/commons/errors';
-import { IGraduateOptions } from '../../src/commands/GraduateCommand';
-import { IDiffOptions } from '../../src/commands/DiffCommand';
+import { IGraduateOptions } from '../../src/commons/interfaces/IGraduateOptions';
+import { IDiffOptions } from '../../src/commons/interfaces/IDiffOptions';
 
 export const PageControllerTest = () => {
   // Dev
@@ -93,7 +93,7 @@ export const PageControllerTest = () => {
           includeOnly: ['html']
         };
         controller
-          .diff(diffOptions)
+          .runDiffSequence(diffOptions)
           .then((diff: DiffResultArray<Page>) => {
             expect(diff.containsItems()).to.be.true;
             expect(diff.TO_CREATE.length).to.equal(0, 'Should have 0 new extensions');
@@ -124,7 +124,7 @@ export const PageControllerTest = () => {
           includeOnly: ['html']
         };
         controllerxy
-          .diff(diffOptions)
+          .runDiffSequence(diffOptions)
           .then((diff: DiffResultArray<Page>) => {
             // The diff should not have picked up the sources to create and to delete
             expect(diff.TO_CREATE.length).to.equal(0, 'Should have 0 new extensions');
@@ -146,7 +146,7 @@ export const PageControllerTest = () => {
           .reply(RequestUtils.UNAUTHORIZED, { Message: 'Invalid access token.' });
 
         controller
-          .diff()
+          .runDiffSequence()
           .then(() => {
             done('Should not resolve');
           })
@@ -166,7 +166,7 @@ export const PageControllerTest = () => {
           .reply(RequestUtils.OK, []);
 
         controller
-          .download()
+          .runDownloadSequence()
           .then(() => {
             expect(org1.getPages().getCount()).to.be.eql(0);
             done();
@@ -182,7 +182,7 @@ export const PageControllerTest = () => {
           .reply(RequestUtils.OK, [DEVhighlyCustomized, DEVproManagerPortalSearch]);
 
         controller
-          .download()
+          .runDownloadSequence()
           .then(() => {
             expect(org1.getPages().getCount()).to.be.eql(2);
             done();
@@ -198,7 +198,7 @@ export const PageControllerTest = () => {
           .reply(429, 'SOOOORRY'); // Too many requests
 
         controller
-          .download()
+          .runDownloadSequence()
           .then(() => {
             done('Should not resolve');
           })
@@ -228,12 +228,12 @@ export const PageControllerTest = () => {
         };
 
         controller
-          .diff()
+          .runDiffSequence()
           .then((diffResultArray: DiffResultArray<Page>) => {
             // Nothing to graduate
             expect(diffResultArray.containsItems()).to.be.false;
             controller
-              .graduate(diffResultArray, graduateOptions)
+              .runGraduateSequence(diffResultArray, graduateOptions)
               .then(res => {
                 expect(res).length.to.be.empty;
                 done();
@@ -278,10 +278,10 @@ export const PageControllerTest = () => {
         };
 
         controller
-          .diff()
+          .runDiffSequence()
           .then((diffResultArray: DiffResultArray<Page>) => {
             controller
-              .graduate(diffResultArray, graduateOptions)
+              .runGraduateSequence(diffResultArray, graduateOptions)
               .then((resolved: any[]) => {
                 done('Should not resolve');
               })
@@ -326,10 +326,10 @@ export const PageControllerTest = () => {
         };
 
         controller
-          .diff()
+          .runDiffSequence()
           .then((diffResultArray: DiffResultArray<Page>) => {
             controller
-              .graduate(diffResultArray, graduateOptions)
+              .runGraduateSequence(diffResultArray, graduateOptions)
               .then(() => {
                 done();
               })
@@ -352,7 +352,7 @@ export const PageControllerTest = () => {
           .reply(RequestUtils.ACCESS_DENIED, { message: 'something went wrong' });
 
         controller
-          .diff()
+          .runDiffSequence()
           .then(() => {
             done('Should not resolve');
           })
@@ -378,9 +378,9 @@ export const PageControllerTest = () => {
           diffOptions: {}
         };
 
-        controller.diff().then((diffResultArray: DiffResultArray<Page>) => {
+        controller.runDiffSequence().then((diffResultArray: DiffResultArray<Page>) => {
           controller
-            .graduate(diffResultArray, graduateOptions)
+            .runGraduateSequence(diffResultArray, graduateOptions)
             .then(() => {
               done();
             })

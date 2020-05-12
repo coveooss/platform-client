@@ -1,3 +1,4 @@
+import * as _ from 'underscore';
 import * as fs from 'fs-extra';
 import { Answers } from 'inquirer';
 import { Colors } from '../commons/colors';
@@ -42,7 +43,7 @@ export class InteractionController {
     let command: string[] = [];
 
     // Required parameters
-    command.push(answers[InteractiveQuestion.COMMAND] + '-' + answers[InteractiveQuestion.OBJECT_TO_MANIPULATE]);
+    command.push(_.compact([answers[InteractiveQuestion.COMMAND], answers[InteractiveQuestion.OBJECT_TO_MANIPULATE]]).join('-'));
     command.push(answers[InteractiveQuestion.ORIGIN_ORG_ID]);
     command.push(answers[InteractiveQuestion.DESTINATION_ORG_ID]);
     command.push(answers[InteractiveQuestion.MASTER_API_KEY]);
@@ -56,9 +57,10 @@ export class InteractionController {
       .concat(this.saveOptionIfExists(answers, '-l ', InteractiveQuestion.LOG_LEVEL))
       .concat(this.saveOptionIfExists(answers, '-i ', InteractiveQuestion.KEY_TO_IGNORE))
       .concat(this.saveOptionIfExists(answers, '-o ', InteractiveQuestion.KEY_TO_INCLUDE_ONLY))
+      .concat(this.saveOptionIfExists(answers, '-s ', InteractiveQuestion.SOURCES_TO_REBUILD))
       .concat(this.saveOptionIfExists(answers, '--env ', InteractiveQuestion.ENVIRONMENT));
 
-    return command.join(' ');
+    return _.compact(command).join(' ');
   }
 
   private setShebangLine(): string {

@@ -1,7 +1,9 @@
 import * as program from 'commander';
 import { Logger } from '../commons/logger';
 import { CommanderUtils } from './CommanderUtils';
-import { DownloadCommand } from '../commands/DownloadCommand';
+import { Organization } from '../coveoObjects/Organization';
+import { PageController } from '../controllers/PageController';
+import { IDownloadOptions } from '../controllers/BaseController';
 
 program
   .command('download-pages <origin> <apiKey> <outputFolder>')
@@ -16,6 +18,9 @@ program
   .action((origin: string, apiKey: string, outputFolder: string, options: any) => {
     CommanderUtils.setLogger(options, 'download-pages');
 
-    const command = new DownloadCommand(origin, apiKey, outputFolder);
-    command.downloadPages();
+    const organization = new Organization(origin, apiKey);
+    const controller: PageController = new PageController(organization);
+    const downloadOptions: IDownloadOptions = { outputFolder: outputFolder };
+
+    controller.download(downloadOptions);
   });

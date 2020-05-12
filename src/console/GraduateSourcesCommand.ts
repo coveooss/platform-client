@@ -1,14 +1,16 @@
 import * as program from 'commander';
 import * as _ from 'underscore';
 import { Logger } from '../commons/logger';
-import { GraduateCommand, IGraduateOptions } from '../commands/GraduateCommand';
+import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { CommanderUtils } from './CommanderUtils';
-import { IBlacklistObjects } from '../coveoObjects/Organization';
+import { IBlacklistObjects, Organization } from '../coveoObjects/Organization';
+import { SourceController } from '../controllers/SourceController';
 
 program
   .command('graduate-sources <origin> <destination> <apiKey...>')
   .description('Graduate sources from one organization to another')
   // .option('-r, --rebuild', 'Rebuild the source once created. Default is false', false)
+  .option('-i, --keysToIgnore []', 'Keys to ignore from the JSON configuration. String separated by ","', CommanderUtils.list, [])
   .option(
     '-S, --ignoreSources []',
     'List of sources to ignore. String separated by ",". If no specified, all the sources will be diffed',
@@ -63,14 +65,15 @@ program
       'configuration.parameters.IsSandbox',
       'additionalInfos.salesforceOrg',
       'additionalInfos.salesforceUser',
-      'additionalInfos.salesforceOrgName'
+      'additionalInfos.salesforceOrgName',
+      'crawlingModuleId'
     ];
 
     const graduateOptions: IGraduateOptions = {
       diffOptions: {
         silent: options.silent,
         includeOnly: includeOnly,
-        keysToIgnore: keysToIgnore
+        keysToIgnore: [...options.keysToIgnore, ...keysToIgnore]
       },
       keyWhitelist: includeOnly,
       keyBlacklist: keysToIgnore,
@@ -87,6 +90,10 @@ program
       ),
       sources: options.ignoreSources
     };
-    const command = new GraduateCommand(origin, destination, apiKey[0], apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
-    command.graduateSources(graduateOptions);
+
+    const originOrg = new Organization(origin, apiKey[0], blacklistOptions);
+    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
+    const controller: SourceController = new SourceController(originOrg, destinationOrg);
+
+    controller.graduate(graduateOptions);
   });

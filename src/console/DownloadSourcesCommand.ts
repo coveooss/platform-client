@@ -1,7 +1,9 @@
 import * as program from 'commander';
 import { Logger } from '../commons/logger';
 import { CommanderUtils } from './CommanderUtils';
-import { DownloadCommand } from '../commands/DownloadCommand';
+import { SourceController } from '../controllers/SourceController';
+import { Organization } from '../coveoObjects/Organization';
+import { IDownloadOptions } from '../controllers/BaseController';
 
 program
   .command('download-sources <origin> <apiKey> <outputFolder>')
@@ -16,6 +18,9 @@ program
   .action((origin: string, apiKey: string, outputFolder: string, options: any) => {
     CommanderUtils.setLogger(options, 'download-sources');
 
-    const command = new DownloadCommand(origin, apiKey, outputFolder);
-    command.downloadSources();
+    const organization = new Organization(origin, apiKey);
+    const controller: SourceController = new SourceController(organization);
+    const downloadOptions: IDownloadOptions = { outputFolder: outputFolder };
+
+    controller.download(downloadOptions);
   });

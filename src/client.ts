@@ -60,6 +60,11 @@ import './console/UploadExtensionsCommand';
 import './console/UploadSourcesCommand';
 import './console/UploadPagesCommand';
 
+/**************************************************/
+/* Source Commands
+/**************************************************/
+import './console/RebuildSourcesCommand';
+
 // Parsing the arguments
 program.parse(process.argv);
 

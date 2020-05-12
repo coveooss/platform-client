@@ -1,7 +1,8 @@
 import * as _ from 'underscore';
+import { BaseController } from './BaseController';
 import { series } from 'async';
 import { RequestResponse } from 'request';
-import { IGraduateOptions } from '../commands/GraduateCommand';
+import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { DownloadResultArray } from '../commons/collections/DownloadResultArray';
 import { IGenericError, StaticErrorMessage } from '../commons/errors';
@@ -11,21 +12,19 @@ import { ExtensionAPI } from '../commons/rest/ExtensionAPI';
 import { DiffUtils } from '../commons/utils/DiffUtils';
 import { Extension } from '../coveoObjects/Extension';
 import { Organization } from '../coveoObjects/Organization';
-import { IDiffOptions } from './../commands/DiffCommand';
-import { BaseController } from './BaseController';
+import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
 import { Colors } from '../commons/colors';
 import { DownloadUtils } from '../commons/utils/DownloadUtils';
 
 export class ExtensionController extends BaseController {
+  objectName = 'extensions';
   // The second organization can be optional in some cases like the download command for instance.
   constructor(private organization1: Organization, private organization2: Organization = new Organization('', '')) {
     super();
   }
 
-  static CONTROLLER_NAME: string = 'extensions';
-
-  diff(diffOptions?: IDiffOptions): Promise<DiffResultArray<Extension>> {
-    return this.loadExtensionsForBothOrganizations()
+  runDiffSequence(diffOptions?: IDiffOptions): Promise<DiffResultArray<Extension>> {
+    return this.loadDataForDiff(diffOptions)
       .then(() => {
         const diffResultArray = DiffUtils.getDiffResult(
           this.organization1.getExtensions(),
@@ -53,7 +52,7 @@ export class ExtensionController extends BaseController {
    * @returns {Promise<DownloadResultArray>}
    * @memberof ExtensionController
    */
-  download(): Promise<DownloadResultArray> {
+  runDownloadSequence(): Promise<DownloadResultArray> {
     return ExtensionAPI.loadExtensions(this.organization1)
       .then(() => {
         return DownloadUtils.getDownloadResult(this.organization1.getExtensions());
@@ -71,9 +70,21 @@ export class ExtensionController extends BaseController {
    * @param {IGraduateOptions} options
    * @returns {Promise<any[]>}
    */
-  graduate(diffResultArray: DiffResultArray<Extension>, options: IGraduateOptions): Promise<any[]> {
+  runGraduateSequence(diffResultArray: DiffResultArray<Extension>, options: IGraduateOptions): Promise<any[]> {
     if (diffResultArray.containsItems()) {
       Logger.loadingTask('Graduating Extensions');
+
+      const graduationCleanup = (extensionList: Extension[]) => {
+        _.each(extensionList, extension => {
+          // Strip extension from keys that should not be graduated using whitelist and blacklist strategy
+          // Should apply to "TO_UPDATE" and "TO_CREATE" extensions only because we dont want to graduate all extension parameters by default (e.g. status, language, ...)
+          extension.removeParameters(options.keyBlacklist || [], options.keyWhitelist || []);
+        });
+      };
+
+      graduationCleanup(diffResultArray.TO_CREATE);
+      graduationCleanup(diffResultArray.TO_UPDATE);
+
       return Promise.all(
         _.map(
           this.getAuthorizedOperations(diffResultArray, this.graduateNew, this.graduateUpdated, this.graduateDeleted, options),
@@ -174,6 +185,33 @@ export class ExtensionController extends BaseController {
         err ? reject(err) : resolve();
       });
     });
+  }
+
+  private loadDataForDiff(diffOptions?: IDiffOptions): Promise<{}> {
+    if (diffOptions && diffOptions.originData) {
+      Logger.verbose('Loading extensions from local file');
+      if (!Array.isArray(diffOptions.originData)) {
+        Logger.error('Should provide an array of extensions');
+        throw { orgId: 'LocalFile', message: 'Should provide an array of extensions' };
+      }
+      try {
+        this.organization1.addExtensionList(diffOptions.originData);
+      } catch (error) {
+        // if (error && error.message === StaticErrorMessage.MISSING_EXTENSION_ID) {
+        //   // TODO: find a cleaner way to upload local file without error
+        //   // Expected error
+        //   Logger.verbose('Skipping error since the missing id from the local file is expected');
+        // } else {
+        //   Logger.error('Invalid origin data');
+        //   throw error;
+        // }
+        Logger.error('Invalid origin data');
+        throw error;
+      }
+      return ExtensionAPI.loadExtensions(this.organization2);
+    } else {
+      return this.loadExtensionsForBothOrganizations();
+    }
   }
 
   loadExtensionsForBothOrganizations(): Promise<Array<{}>> {

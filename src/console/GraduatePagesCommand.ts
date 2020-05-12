@@ -1,9 +1,11 @@
 import * as program from 'commander';
 import * as _ from 'underscore';
 import { Logger } from '../commons/logger';
-import { GraduateCommand, IGraduateOptions } from '../commands/GraduateCommand';
+import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { CommanderUtils } from './CommanderUtils';
-import { IDiffOptions } from '../commands/DiffCommand';
+import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
+import { Organization } from '../coveoObjects/Organization';
+import { PageController } from '../controllers/PageController';
 
 program
   .command('graduate-pages <origin> <destination> <apiKey...>')
@@ -43,6 +45,10 @@ program
     const blacklistOptions = {
       pages: options.ignorePages
     };
-    const command = new GraduateCommand(origin, destination, apiKey[0], apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
-    command.graduatePages(graduateOptions);
+
+    const originOrg = new Organization(origin, apiKey[0], blacklistOptions);
+    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
+    const controller: PageController = new PageController(originOrg, destinationOrg);
+
+    controller.graduate(graduateOptions);
   });

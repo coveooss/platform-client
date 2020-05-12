@@ -1,8 +1,10 @@
 import * as program from 'commander';
 import * as _ from 'underscore';
 import { Logger } from '../commons/logger';
-import { GraduateCommand, IGraduateOptions } from '../commands/GraduateCommand';
+import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { CommanderUtils } from './CommanderUtils';
+import { Organization } from '../coveoObjects/Organization';
+import { ExtensionController } from '../controllers/ExtensionController';
 
 program
   .command('graduate-extensions <origin> <destination> <apiKey...>')
@@ -35,6 +37,7 @@ program
         includeOnly: options.onlyKeys,
         silent: options.silent
       },
+      keyWhitelist: options.onlyKeys,
       POST: options.methods.indexOf('POST') > -1,
       PUT: options.methods.indexOf('PUT') > -1,
       DELETE: options.methods.indexOf('DELETE') > -1
@@ -46,6 +49,10 @@ program
         options.ignoreExtensions
       )
     };
-    const command = new GraduateCommand(origin, destination, apiKey[0], apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
-    command.graduateExtensions(graduateOptions);
+
+    const originOrg = new Organization(origin, apiKey[0], blacklistOptions);
+    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
+    const controller: ExtensionController = new ExtensionController(originOrg, destinationOrg);
+
+    controller.graduate(graduateOptions);
   });

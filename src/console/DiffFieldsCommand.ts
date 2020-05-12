@@ -2,8 +2,9 @@
 import * as program from 'commander';
 import { Logger } from '../commons/logger';
 import { CommanderUtils } from './CommanderUtils';
-import { IDiffOptions, DiffCommand } from '../commands/DiffCommand';
-import { IBlacklistObjects } from '../coveoObjects/Organization';
+import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
+import { IBlacklistObjects, Organization } from '../coveoObjects/Organization';
+import { FieldController } from '../controllers/FieldController';
 
 program
   .command('diff-fields <origin> <destination> <apiKey...>')
@@ -48,6 +49,9 @@ program
       fields: options.ignoreFields
     };
 
-    const command = new DiffCommand(origin, destination, apiKey[0], apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
-    command.diffFields(diffOptions);
+    const originOrg = new Organization(origin, apiKey[0], blacklistOptions);
+    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
+    const controller: FieldController = new FieldController(originOrg, destinationOrg);
+
+    controller.diff(diffOptions);
   });

@@ -1,10 +1,12 @@
 import * as program from 'commander';
 import * as _ from 'underscore';
 import { Logger } from '../commons/logger';
-import { GraduateCommand, IGraduateOptions } from '../commands/GraduateCommand';
+import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { CommanderUtils } from './CommanderUtils';
-import { IDiffOptions } from '../commands/DiffCommand';
+import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
 import { FileUtils } from '../commons/utils/FileUtils';
+import { Organization } from '../coveoObjects/Organization';
+import { PageController } from '../controllers/PageController';
 
 program
   .command('upload-pages <origin> <apiKey> <filePathToUpload>')
@@ -47,8 +49,11 @@ program
         const blacklistOptions = {
           pages: options.ignorePages
         };
-        const command = new GraduateCommand('dummyOrg', destination, apiKey, apiKey, blacklistOptions);
-        command.graduatePages(graduateOptions);
+        const originOrg = new Organization('dummyOrg', '', blacklistOptions);
+        const destinationOrg = new Organization(destination, apiKey, blacklistOptions);
+        const controller: PageController = new PageController(originOrg, destinationOrg);
+
+        controller.graduate(graduateOptions);
       })
       .catch((err: any) => {
         Logger.error('Unable to read file', err);

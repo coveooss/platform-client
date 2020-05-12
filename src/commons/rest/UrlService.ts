@@ -53,6 +53,10 @@ export class UrlService {
     return `${this.getOrganizationUrl(organizationId)}/sources/${sourceId}`;
   }
 
+  static rebuildSource(organizationId: string, sourceId: string): string {
+    return `${this.getOrganizationUrl(organizationId)}/sources/${sourceId}/rebuild`;
+  }
+
   static getSingleRawSourceUrl(organizationId: string, sourceId: string): string {
     return `${this.getSingleSourceUrl(organizationId, sourceId)}/raw`;
   }

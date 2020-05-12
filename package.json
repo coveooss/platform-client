@@ -89,7 +89,7 @@
     "cover": "cross-env NODE_ENV=coverage nyc npm run test-ci",
     "release": "semantic-release",
     "posttest": "node node_modules/nyc/bin/nyc.js report --reporter=json && codecov -f coverage/*.json",
-    "tslint-check": "tslint-config-prettier-check ./tslint.json",
+    "tslint-check": "tslint -c ./tslint.json -p ./tsconfig.all.json",
     "postversion": "npm run build",
     "build": "webpack --process --progress --colors",
     "snyk-protect": "snyk protect",
@@ -112,7 +112,7 @@
   "lint-staged": {
     "*.ts": [
       "prettier --write",
-      "tslint -c ./tslint.json -p ./tsconfig.json --fix",
+      "tslint -c ./tslint.json -p ./tsconfig.all.json --fix",
       "git add"
     ],
     "*.{js}": [

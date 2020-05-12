@@ -1,5 +1,5 @@
 import * as _ from 'underscore';
-import { IDiffOptions } from '../../commands/DiffCommand';
+import { IDiffOptions } from '../interfaces/IDiffOptions';
 import { Dictionary } from '../collections/Dictionary';
 import { DiffResultArray } from '../collections/DiffResultArray';
 import { JsonUtils } from './JsonUtils';

@@ -1,7 +1,7 @@
 // tslint:disable:no-magic-numbers
 import { assert, expect } from 'chai';
 import * as nock from 'nock';
-import { IGraduateOptions } from '../../src/commands/GraduateCommand';
+import { IGraduateOptions } from '../../src/commons/interfaces/IGraduateOptions';
 import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
 import { IGenericError } from '../../src/commons/errors';
 import { UrlService } from '../../src/commons/rest/UrlService';
@@ -11,6 +11,7 @@ import { Extension } from '../../src/coveoObjects/Extension';
 import { Organization } from '../../src/coveoObjects/Organization';
 import { ExtensionController } from './../../src/controllers/ExtensionController';
 import { DownloadResultArray } from '../../src/commons/collections/DownloadResultArray';
+import { IDiffOptions } from '../../src/commons/interfaces/IDiffOptions';
 
 const allDevExtensions: {} = require('./../mocks/setup1/extensions/dev/allExtensions.json');
 
@@ -21,6 +22,8 @@ const DEVsr3jny7s5ekuwuyaak45awcaku: {} = require('./../mocks/setup1/extensions/
 const DEVukjs6nvyjvqdn4vozf3ugjkdqe: {} = require('./../mocks/setup1/extensions/dev/ukjs6nvyjvqdn4vozf3ugjkdqe.json');
 const DEVxnnutbu2n6kiwm243iossdsjha: {} = require('./../mocks/setup1/extensions/dev/xnnutbu2n6kiwm243iossdsjha.json');
 const DEVxuklmyqaujg3gj2ivcynor2adq: {} = require('./../mocks/setup1/extensions/dev/xuklmyqaujg3gj2ivcynor2adq.json');
+const DEVPython3: {} = require('./../mocks/setup1/extensions/dev/phyton3.json');
+const PRODPython2: {} = require('./../mocks/setup1/extensions/prod/phyton2.json');
 
 // Prod Exensions
 // const PRODsr3jny7s5ekuwuyaak45awcaku: {} = require('./../mocks/setup1/extensions/prod/sr3jny7s5ekuwuyaak45awcaku.json');
@@ -221,10 +224,10 @@ export const ExtensionControllerTest = () => {
       nock.cleanAll();
     });
 
-    describe('GetCleanVersion Method', () => {
+    describe('getCleanDiffVersion Method', () => {
       it('Should return the clean diff version - empty', () => {
         const diffResultArray: DiffResultArray<Extension> = new DiffResultArray();
-        const cleanVersion = controller.getCleanVersion(diffResultArray);
+        const cleanVersion = controller.getCleanDiffVersion(diffResultArray);
         expect(cleanVersion).to.eql({
           summary: { TO_CREATE: 0, TO_UPDATE: 0, TO_DELETE: 0 },
           TO_CREATE: [],
@@ -239,13 +242,14 @@ export const ExtensionControllerTest = () => {
         diffResultArray.TO_UPDATE.push(extension2);
         diffResultArray.TO_UPDATE_OLD.push(extension2Old);
 
-        const cleanVersion = controller.getCleanVersion(diffResultArray);
+        const cleanVersion = controller.getCleanDiffVersion(diffResultArray);
         expect(cleanVersion).to.eql({
           summary: { TO_CREATE: 1, TO_UPDATE: 1, TO_DELETE: 0 },
           TO_CREATE: [
             {
               content: 'import urlparse\n\nprint "Hello Word"',
               description: 'This is an extension that prints an "Hello Word"',
+              id: 'yifpsa8fgudsihmfshjd',
               name: 'Hello Word',
               requiredDataStreams: []
             }
@@ -258,6 +262,7 @@ export const ExtensionControllerTest = () => {
                 newValue: 'This extension is used to parse urls to extract metadata like categories.',
                 oldValue: 'This extension is the older version, it is used to parse urls to extract metadata like categories.'
               },
+              id: 'yidmuo9dsuop8fuihmfdjshjd',
               name: 'URL Parsing to extract metadata',
               requiredDataStreams: []
             }
@@ -281,7 +286,7 @@ export const ExtensionControllerTest = () => {
           .reply(RequestUtils.OK, prodmuo9dsuop8fuihmfdjshjd);
 
         controller
-          .diff()
+          .runDiffSequence()
           .then((diffResultArray: DiffResultArray<Extension>) => {
             done('This function should not resolve');
           })
@@ -316,7 +321,7 @@ export const ExtensionControllerTest = () => {
           .reply(RequestUtils.OK, prodmuo9dsuop8fuihmfdjshjd);
 
         controller
-          .diff()
+          .runDiffSequence()
           .then((diff: DiffResultArray<Extension>) => {
             expect(diff.containsItems()).to.be.true;
             expect(diff.TO_CREATE.length).to.equal(2, 'Should have 2 new extensions');
@@ -349,7 +354,7 @@ export const ExtensionControllerTest = () => {
           .reply(RequestUtils.OK, prodmuo9dsuop8fuihmfdjshjd);
 
         controller
-          .diff()
+          .runDiffSequence()
           .then((diffResultArray: DiffResultArray<Extension>) => {
             done();
           })
@@ -382,7 +387,7 @@ export const ExtensionControllerTest = () => {
           .reply(RequestUtils.OK, prodmuo9dsuop8fuihmfdjshjd);
 
         controllerxy
-          .diff()
+          .runDiffSequence()
           .then((diffResultArray: DiffResultArray<Extension>) => {
             done();
           })
@@ -411,9 +416,9 @@ export const ExtensionControllerTest = () => {
           diffOptions: {}
         };
 
-        controller.diff().then((diffResultArray: DiffResultArray<Extension>) => {
+        controller.runDiffSequence().then((diffResultArray: DiffResultArray<Extension>) => {
           controller
-            .graduate(diffResultArray, graduateOptions)
+            .runGraduateSequence(diffResultArray, graduateOptions)
             .then((resolved: any[]) => {
               expect(resolved).to.be.empty;
               done();
@@ -464,6 +469,7 @@ export const ExtensionControllerTest = () => {
             content: 'print "all metadata"',
             description: 'This extension is showing all available metadata',
             name: 'All metadata value',
+            ddsadsadsadsa: 'dsa7dhsuiakjd',
             requiredDataStreams: []
           }),
           new Extension({
@@ -483,6 +489,7 @@ export const ExtensionControllerTest = () => {
             content:
               'import urlparse\n\n# Title: URL Parsing to extract metadata\n# Description: This extension is used to parse urls to extract metadata like categories.\n# Required data:\n\n# captures the Web Path\npath = urlparse.urlparse(document.uri).path\n\ncategories = {}\n\nfor i, p in enumerate(path.split("/")):\n    # path will start with /, so the first p (i=0) is usually empty\n    if p:\n        # Add categories as meta1, meta2, meta3.\n        # You can use an array if you want specific names for the categories.\n        categories[\'meta\'+str(i)] = p\n\nif len(categories):\n    # Set the categories\n    document.add_meta_data(categories)\n',
             description: 'This extension is used to parse urls to extract metadata like categories.',
+            ddsadsadsadsa: 'dsa7dhsuiakjd',
             name: 'URL Parsing to extract metadata',
             requiredDataStreams: []
           })
@@ -509,15 +516,17 @@ export const ExtensionControllerTest = () => {
           })
         ];
 
+        const whitelist = ['requiredDataStreams', 'content', 'description', 'name'];
         const graduateOptions: IGraduateOptions = {
           POST: true,
           PUT: true,
           DELETE: true,
-          diffOptions: {}
+          diffOptions: { includeOnly: whitelist },
+          keyWhitelist: whitelist
         };
 
         controller
-          .graduate(extensionDiff, graduateOptions)
+          .runGraduateSequence(extensionDiff, graduateOptions)
           .then((resolved: any[]) => {
             // expect(resolved).to.be.empty;
             done();
@@ -563,6 +572,7 @@ export const ExtensionControllerTest = () => {
             id: 'random-id',
             content: 'print "all metadata"',
             description: 'This extension is showing all available metadata',
+            dsadsa: 'dsafghgghfgds',
             name: 'All metadata value',
             requiredDataStreams: []
           }),
@@ -605,21 +615,85 @@ export const ExtensionControllerTest = () => {
           })
         ];
 
+        const whitelist = ['requiredDataStreams', 'content', 'description', 'name'];
         const graduateOptions: IGraduateOptions = {
           POST: true,
           PUT: true,
           DELETE: true,
-          diffOptions: {}
+          diffOptions: { includeOnly: whitelist },
+          keyWhitelist: whitelist
         };
 
         controller
-          .graduate(extensionDiff, graduateOptions)
+          .runGraduateSequence(extensionDiff, graduateOptions)
           .then((resolved: any[]) => {
             done('Should not resolve');
           })
           .catch((err: any) => {
             expect(err).to.eql('"TOO_MANY_REQUESTS"');
+
+            // removing pending mocks since since
+            nock.cleanAll();
             done();
+          });
+      });
+
+      it('Should graduate using the whitelist strategy', (done: MochaDone) => {
+        const orgx: Organization = new Organization('dev', 'xxx');
+        const orgy: Organization = new Organization('prod', 'yyy');
+        const controllerxy = new ExtensionController(orgx, orgy);
+
+        const localDevExtension = DEVPython3;
+
+        const localProdExtension = PRODPython2;
+
+        scope = nock(UrlService.getDefaultUrl())
+          // Fecth extensions from dev
+          .get('/rest/organizations/dev/extensions')
+          .reply(RequestUtils.OK, [localDevExtension])
+          .get(`/rest/organizations/dev/extensions/dev-123`)
+          .reply(RequestUtils.OK, localDevExtension)
+          // Fecth extensions from Prod
+          .get('/rest/organizations/prod/extensions')
+          .reply(RequestUtils.OK, [localProdExtension])
+          .get(`/rest/organizations/prod/extensions/prod-123`)
+          .reply(RequestUtils.OK, localProdExtension)
+          // Graduation time!
+          .put('/rest/organizations/prod/extensions/prod-123', {
+            content: 'upgraded code in python 3',
+            description: 'blablabla',
+            name: 'pythonExtension',
+            language: 'PYTHON3',
+            requiredDataStreams: []
+          })
+          .reply(RequestUtils.NO_CONTENT);
+
+        const whitelist = ['requiredDataStreams', 'content', 'description', 'name', 'language'];
+        const diffOptions: IDiffOptions = { includeOnly: whitelist };
+        const graduateOptions: IGraduateOptions = {
+          POST: false,
+          PUT: true,
+          DELETE: false,
+          diffOptions: diffOptions,
+          keyWhitelist: whitelist
+        };
+        controllerxy
+          .runDiffSequence(diffOptions)
+          .then((diff: DiffResultArray<Extension>) => {
+            expect(diff.TO_CREATE.length).to.eql(0, 'No extension to CREATE');
+            expect(diff.TO_UPDATE.length).to.eql(1, '1 extension to UPDATE');
+            expect(diff.TO_DELETE.length).to.eql(0, 'No extension to DELETE');
+            controllerxy
+              .runGraduateSequence(diff, graduateOptions)
+              .then((resolved: any[]) => {
+                done();
+              })
+              .catch((err: any) => {
+                done(err);
+              });
+          })
+          .catch((err: IGenericError) => {
+            done(err);
           });
       });
     });
@@ -648,7 +722,7 @@ export const ExtensionControllerTest = () => {
           .reply(RequestUtils.OK, DEVxuklmyqaujg3gj2ivcynor2adq);
 
         controllerxy
-          .download()
+          .runDownloadSequence()
           .then((downloadResultArray: DownloadResultArray) => {
             expect(downloadResultArray.getCount()).to.be.eql(7);
             done();
@@ -675,7 +749,7 @@ export const ExtensionControllerTest = () => {
           .reply(429, 'SOOOORRY'); // Too many requests. Stop the rest of the flow
 
         controllerxy
-          .download()
+          .runDownloadSequence()
           .then(() => {
             done('Should not resolve');
           })

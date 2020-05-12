@@ -1,9 +1,10 @@
 import * as program from 'commander';
 import * as _ from 'underscore';
 import { Logger } from '../commons/logger';
-import { GraduateCommand, IGraduateOptions } from '../commands/GraduateCommand';
+import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { CommanderUtils } from './CommanderUtils';
-import { IBlacklistObjects } from '../coveoObjects/Organization';
+import { IBlacklistObjects, Organization } from '../coveoObjects/Organization';
+import { FieldController } from '../controllers/FieldController';
 
 program
   .command('graduate-fields <origin> <destination> <apiKey...>')
@@ -52,6 +53,9 @@ program
       fields: options.ignoreFields
     };
 
-    const command = new GraduateCommand(origin, destination, apiKey[0], apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
-    command.graduateFields(graduateOptions);
+    const originOrg = new Organization(origin, apiKey[0], blacklistOptions);
+    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
+    const controller: FieldController = new FieldController(originOrg, destinationOrg);
+
+    controller.graduate(graduateOptions);
   });
