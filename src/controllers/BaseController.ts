@@ -121,7 +121,7 @@ export abstract class BaseController {
       }
     }
 
-    questions.push(this.InteractiveQuestion.confirmAction(`Are you sure want to ${phrase} ${this.objectName}s?`, 'confirm'));
+    questions.push(this.InteractiveQuestion.confirmAction(`Are you sure want to ${phrase} ${this.objectName}?`, 'confirm'));
     // Make sure the user selects at least one HTTP method
     inquirer.prompt(questions).then((res: inquirer.Answers) => {
       if (res.confirm) {
@@ -145,7 +145,7 @@ export abstract class BaseController {
             Logger.stopSpinner();
           });
       } else {
-        Logger.info(`No ${this.objectName}s were graduated`);
+        Logger.info(`No ${this.objectName} were graduated`);
         Logger.stopSpinner();
       }
     });
