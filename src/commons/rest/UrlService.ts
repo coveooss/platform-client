@@ -28,7 +28,7 @@ export class UrlService {
   static getFieldsPageUrl(organizationId: string, page: number, perPage: number = 1000): string {
     return `${this.getOrganizationUrl(
       organizationId
-    )}/sources/page/fields?&page=${page}&perPage=${perPage}&origin=USER&includeMappings=false`;
+    )}/sources/page/fields?&page=${page}&perPage=${perPage}&origin=ALL&includeMappings=false`;
   }
 
   static updateFields(organizationId: string): string {
