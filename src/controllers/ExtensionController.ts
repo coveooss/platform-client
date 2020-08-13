@@ -168,7 +168,7 @@ export class ExtensionController extends BaseController {
         ExtensionAPI.deleteExtension(this.organization2, extension.getId())
           .then((response: RequestResponse) => {
             callback(null, response);
-            this.successHandler(response, `Successfully created extension ${Colors.extension(extension.getName())}`);
+            this.successHandler(response, `Successfully deleted extension ${Colors.extension(extension.getName())}`);
           })
           .catch((err: any) => {
             callback(err);
