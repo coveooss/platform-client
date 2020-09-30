@@ -19,6 +19,7 @@ export const FieldControllerTest = () => {
     // Organizations
     const org1: Organization = new TestOrganization('dev', 'xxx');
     const org2: Organization = new TestOrganization('prod', 'yyy');
+    const org2Autralia: Organization = new TestOrganization('prod-au', 'yyy', { platformUrl: 'https://platform-au.cloud.coveo.com' });
 
     // Fields
     const field1WithSource: Field = new Field({
@@ -47,6 +48,7 @@ export const FieldControllerTest = () => {
 
     // Controller
     const fieldController = new FieldController(org1, org2);
+    const fieldControllerCrossRegion = new FieldController(org1, org2Autralia);
 
     let scope: nock.Scope;
 
@@ -529,6 +531,65 @@ export const FieldControllerTest = () => {
           .then(() => {
             expect(org1.getFields().getCount()).to.be.eql(3);
             expect(org2.getFields().getCount()).to.be.eql(2);
+            done();
+          })
+          .catch((err: any) => {
+            done(err);
+          });
+      });
+
+      it('Should return the diff result - cross-region', (done: Mocha.Done) => {
+        nock(UrlService.getDefaultUrl())
+          // First expected request
+          .get('/rest/organizations/dev/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'allmetadatavalues',
+                description: '',
+                type: 'STRING',
+              },
+              {
+                name: 'attachmentdepth',
+                description: 'The attachment depth.',
+                type: 'STRING',
+              },
+              {
+                name: 'attachmentparentid',
+                description: 'The identifier of the attachment"s immediate parent, for parent/child relationship.',
+                type: 'LONG',
+              },
+            ],
+            totalPages: 1,
+            totalEntries: 3,
+          });
+        // Second expected request
+        nock('https://platform-au.cloud.coveo.com')
+          .get('/rest/organizations/prod-au/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'allmetadatavalues',
+                description: 'new description',
+                type: 'STRING',
+              },
+              {
+                name: 'new field',
+                description: 'The attachment depth.',
+                type: 'STRING',
+              },
+            ],
+            totalPages: 1,
+            totalEntries: 2,
+          });
+
+        fieldControllerCrossRegion
+          .runDiffSequence()
+          .then(() => {
+            expect(org1.getFields().getCount()).to.be.eql(3);
+            expect(org2Autralia.getFields().getCount()).to.be.eql(2);
             done();
           })
           .catch((err: any) => {

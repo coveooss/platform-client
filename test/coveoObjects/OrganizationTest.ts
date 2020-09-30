@@ -328,6 +328,18 @@ export const OrganizationTest = () => {
         expect(organization.getPageBlacklist()).to.eql(['test-page']);
       });
 
+      it('Should return the organization platform URL', () => {
+        const organization: Organization = new TestOrganization('rambo1', 'xxx-aaa-123', {
+          platformUrl: 'https://platform-au.cloud.coveo.com',
+        });
+        expect(organization.getPlatformUrl()).to.eql('https://platform-au.cloud.coveo.com');
+      });
+
+      it('Should return the organization default platform URL', () => {
+        const organization: Organization = new TestOrganization('rambo1', 'xxx-aaa-123');
+        expect(organization.getPlatformUrl()).to.eql('https://platform.cloud.coveo.com');
+      });
+
       it('Should add and clear all sources from the organization', () => {
         const organization: Organization = new TestOrganization('rambo1', 'xxx-aaa-123');
         const extension: Extension = new Extension({

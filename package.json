@@ -23,6 +23,7 @@
     "inquirer": "^7.3.3",
     "open": "^7.1.0",
     "ora": "^5.0.0",
+    "request": "^2.88.2",
     "snyk": "^1.373.1",
     "strip-ansi": "^6.0.0",
     "typescript": "^3.9.7",

@@ -41,7 +41,7 @@ program
 
         // TODO: find a cleaner way
         const originOrg = new Organization('localFile', '');
-        const destinationOrg = new Organization(org, apiKey, { platformUrl: options?.platformUrlDestination });
+        const destinationOrg = new Organization(org, apiKey, { platformUrl: program.opts()?.platformUrlDestination });
         const controller: FieldController = new FieldController(originOrg, destinationOrg);
 
         controller.diff(diffOptions);

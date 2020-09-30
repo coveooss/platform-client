@@ -79,10 +79,10 @@ program
       sources: options.ignoreSources,
     };
 
-    const originOrg = new Organization(origin, apiKey[0], { blacklist: blacklistOptions, platformUrl: options?.platformUrlOrigin });
+    const originOrg = new Organization(origin, apiKey[0], { blacklist: blacklistOptions, platformUrl: program.opts()?.platformUrlOrigin });
     const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], {
       blacklist: blacklistOptions,
-      platformUrl: options?.platformUrlDestination,
+      platformUrl: program.opts()?.platformUrlDestination,
     });
     const controller: SourceController = new SourceController(originOrg, destinationOrg);
 

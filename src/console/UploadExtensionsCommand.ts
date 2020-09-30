@@ -46,10 +46,10 @@ program
             options.ignoreExtensions
           ),
         };
-        const originOrg = new Organization('dummyOrg', '', { blacklist: blacklistOptions, platformUrl: options?.platformUrlOrigin });
+        const originOrg = new Organization('dummyOrg', '', { blacklist: blacklistOptions, platformUrl: program.opts()?.platformUrlOrigin });
         const destinationOrg = new Organization(destination, apiKey, {
           blacklist: blacklistOptions,
-          platformUrl: options?.platformUrlDestination,
+          platformUrl: program.opts()?.platformUrlDestination,
         });
         const controller: ExtensionController = new ExtensionController(originOrg, destinationOrg);
 

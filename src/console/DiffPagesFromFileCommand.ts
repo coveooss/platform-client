@@ -48,7 +48,10 @@ program
         };
 
         const originOrg = new Organization('localFile', '', { blacklist: blacklistOptions });
-        const destinationOrg = new Organization(org, apiKey, { blacklist: blacklistOptions, platformUrl: options?.platformUrlDestination });
+        const destinationOrg = new Organization(org, apiKey, {
+          blacklist: blacklistOptions,
+          platformUrl: program.opts()?.platformUrlDestination,
+        });
         const controller: PageController = new PageController(originOrg, destinationOrg);
 
         controller.diff(diffOptions);
