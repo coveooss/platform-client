@@ -58,7 +58,8 @@ export class InteractionController {
       .concat(this.saveOptionIfExists(answers, '-i ', InteractiveQuestion.KEY_TO_IGNORE))
       .concat(this.saveOptionIfExists(answers, '-o ', InteractiveQuestion.KEY_TO_INCLUDE_ONLY))
       .concat(this.saveOptionIfExists(answers, '-s ', InteractiveQuestion.SOURCES_TO_REBUILD))
-      .concat(this.saveOptionIfExists(answers, '--env ', InteractiveQuestion.ENVIRONMENT));
+      .concat(this.saveOptionIfExists(answers, '--platformUrlOrigin ', InteractiveQuestion.ORIGIN_ENVIRONMENT))
+      .concat(this.saveOptionIfExists(answers, '--platformUrlDestination ', InteractiveQuestion.DESTINATION_ENVIRONMENT));
 
     return compact(command).join(' ');
   }

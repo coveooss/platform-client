@@ -12,6 +12,7 @@ import { Page } from '../../src/coveoObjects/Page';
 import { IGenericError } from '../../src/commons/errors';
 import { IGraduateOptions } from '../../src/commons/interfaces/IGraduateOptions';
 import { IDiffOptions } from '../../src/commons/interfaces/IDiffOptions';
+import { TestOrganization } from '../test';
 
 export const PageControllerTest = () => {
   // Dev
@@ -27,8 +28,8 @@ export const PageControllerTest = () => {
 
   describe('Page Controller', () => {
     // Organizations
-    const org1: Organization = new Organization('dev', 'xxx');
-    const org2: Organization = new Organization('prod', 'yyy');
+    const org1: Organization = new TestOrganization('dev', 'xxx');
+    const org2: Organization = new TestOrganization('prod', 'yyy');
 
     // Controller
     const controller = new PageController(org1, org2);
@@ -109,8 +110,8 @@ export const PageControllerTest = () => {
       });
 
       it('Should not load pages that have been blacklisted for the diff', (done: Mocha.Done) => {
-        const orgx: Organization = new Organization('dev', 'xxx', { pages: ['empty'] });
-        const orgy: Organization = new Organization('prod', 'yyy', { pages: ['broken'] });
+        const orgx: Organization = new TestOrganization('dev', 'xxx', { blacklist: { pages: ['empty'] } });
+        const orgy: Organization = new TestOrganization('prod', 'yyy', { blacklist: { pages: ['broken'] } });
         const controllerxy = new PageController(orgx, orgy);
 
         scope = nock(UrlService.getDefaultUrl())

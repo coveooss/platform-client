@@ -1,3 +1,4 @@
+// Same as production.js
 const config = {};
 
 config.color = 'red';

@@ -16,6 +16,7 @@ import { Dictionary } from '../../src/commons/collections/Dictionary';
 import { JsonUtils } from '../../src/commons/utils/JsonUtils';
 import { IGraduateOptions } from '../../src/commons/interfaces/IGraduateOptions';
 import { DownloadResultArray } from '../../src/commons/collections/DownloadResultArray';
+import { TestOrganization } from '../test';
 
 const allDevSources: Array<{}> = require('./../mocks/setup1/sources/dev/allSources.json');
 const DEVrrbbidfxa2ri4usxhzzmhq2hge: {} = require('./../mocks/setup1/sources/dev/web.json');
@@ -48,8 +49,8 @@ const PRODxnnutbu2n6kiwm243iossdsjha: {} = require('./../mocks/setup1/extensions
 export const SourceControllerTest = () => {
   describe('Source Controller', () => {
     // Organizations
-    const org1: Organization = new Organization('dev', 'xxx');
-    const org2: Organization = new Organization('prod', 'yyy');
+    const org1: Organization = new TestOrganization('dev', 'xxx');
+    const org2: Organization = new TestOrganization('prod', 'yyy');
 
     // Controller
     const controller = new SourceController(org1, org2);
@@ -98,7 +99,7 @@ export const SourceControllerTest = () => {
       });
 
       it('Should remove extensions that have been blacklisted form the source configuration', () => {
-        const org3 = new Organization('dev', 'xxx', { extensions: ['SharedVideosNormalization'] });
+        const org3 = new TestOrganization('dev', 'xxx', { blacklist: { extensions: ['SharedVideosNormalization'] } });
         const source1 = new Source(DEVtcytrppteddiqkmboszu4skdoe);
         const source2 = new Source(DEVwyowilfyrpf2qogxm45uhgskri);
         const sourceController = new SourceController(org3, org2);
@@ -600,8 +601,10 @@ export const SourceControllerTest = () => {
       });
 
       it('Should not load extensions that have been blacklisted on the source diff', (done: Mocha.Done) => {
-        const orgx: Organization = new Organization('dev', 'xxx', { extensions: ['SharedVideosNormalization', 'FilterVideos'] });
-        const orgy: Organization = new Organization('prod', 'yyy');
+        const orgx: Organization = new TestOrganization('dev', 'xxx', {
+          blacklist: { extensions: ['SharedVideosNormalization', 'FilterVideos'] },
+        });
+        const orgy: Organization = new TestOrganization('prod', 'yyy');
         const controllerxy = new SourceController(orgx, orgy);
 
         scope = nock(UrlService.getDefaultUrl())
@@ -640,8 +643,8 @@ export const SourceControllerTest = () => {
       });
 
       it('Should not load sources that have been blacklisted for the diff', (done: Mocha.Done) => {
-        const orgx: Organization = new Organization('dev', 'xxx', { sources: ['My web source'] });
-        const orgy: Organization = new Organization('prod', 'yyy', { sources: ['My web source'] });
+        const orgx: Organization = new TestOrganization('dev', 'xxx', { blacklist: { sources: ['My web source'] } });
+        const orgy: Organization = new TestOrganization('prod', 'yyy', { blacklist: { sources: ['My web source'] } });
         const controllerxy = new SourceController(orgx, orgy);
 
         scope = nock(UrlService.getDefaultUrl())
@@ -688,8 +691,8 @@ export const SourceControllerTest = () => {
       });
 
       it('Should take into account new and missing parameters in the source configuration', (done: Mocha.Done) => {
-        const orgx: Organization = new Organization('dev', 'xxx');
-        const orgy: Organization = new Organization('prod', 'yyy');
+        const orgx: Organization = new TestOrganization('dev', 'xxx');
+        const orgy: Organization = new TestOrganization('prod', 'yyy');
         const controllerxy = new SourceController(orgx, orgy);
 
         const localDevSource = {
@@ -782,8 +785,8 @@ export const SourceControllerTest = () => {
 
     describe('Graduate Method', () => {
       it('Should graduate using the blacklist strategy', (done: Mocha.Done) => {
-        const orgx: Organization = new Organization('dev', 'xxx');
-        const orgy: Organization = new Organization('prod', 'yyy');
+        const orgx: Organization = new TestOrganization('dev', 'xxx');
+        const orgy: Organization = new TestOrganization('prod', 'yyy');
         const controllerxy = new SourceController(orgx, orgy);
 
         const localDevSource = {
@@ -911,8 +914,8 @@ export const SourceControllerTest = () => {
       });
 
       it('Should graduate using the whitelist strategy', (done: Mocha.Done) => {
-        const orgx: Organization = new Organization('dev', 'xxx');
-        const orgy: Organization = new Organization('prod', 'yyy');
+        const orgx: Organization = new TestOrganization('dev', 'xxx');
+        const orgy: Organization = new TestOrganization('prod', 'yyy');
         const controllerxy = new SourceController(orgx, orgy);
 
         const localDevSource = {
@@ -1114,8 +1117,8 @@ export const SourceControllerTest = () => {
       });
 
       it('Should graduate using the whitelist strategy', (done: Mocha.Done) => {
-        const orgx: Organization = new Organization('dev', 'xxx');
-        const orgy: Organization = new Organization('prod', 'yyy');
+        const orgx: Organization = new TestOrganization('dev', 'xxx');
+        const orgy: Organization = new TestOrganization('prod', 'yyy');
         const controllerxy = new SourceController(orgx, orgy);
 
         const localDevSource = {
@@ -1289,8 +1292,8 @@ export const SourceControllerTest = () => {
       });
 
       it('Should have nothing to graduate', (done: Mocha.Done) => {
-        const orgx: Organization = new Organization('dev', 'xxx');
-        const orgy: Organization = new Organization('prod', 'yyy');
+        const orgx: Organization = new TestOrganization('dev', 'xxx');
+        const orgy: Organization = new TestOrganization('prod', 'yyy');
         const controllerxy = new SourceController(orgx, orgy);
 
         scope = nock(UrlService.getDefaultUrl())
@@ -1333,7 +1336,7 @@ export const SourceControllerTest = () => {
 
     describe('Download Method', () => {
       it('Should download sources', (done: Mocha.Done) => {
-        const orgx: Organization = new Organization('dev', 'xxx');
+        const orgx: Organization = new TestOrganization('dev', 'xxx');
         const controllerxy = new SourceController(orgx);
 
         scope = nock(UrlService.getDefaultUrl())
@@ -1360,7 +1363,7 @@ export const SourceControllerTest = () => {
       });
 
       it('Should not download if server error', (done: Mocha.Done) => {
-        const orgx: Organization = new Organization('dev', 'xxx');
+        const orgx: Organization = new TestOrganization('dev', 'xxx');
         const controllerxy = new SourceController(orgx);
 
         scope = nock(UrlService.getDefaultUrl())

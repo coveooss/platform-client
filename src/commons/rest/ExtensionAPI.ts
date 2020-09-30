@@ -14,27 +14,27 @@ import { StringUtil } from '../utils/StringUtils';
 
 export class ExtensionAPI {
   static createExtension(org: Organization, extensionModel: IStringMap<any>): Promise<RequestResponse> {
-    const url = UrlService.getExtensionsUrl(org.getId());
+    const url = UrlService.getExtensionsUrl(org);
     return RequestUtils.post(url, org.getApiKey(), extensionModel);
   }
 
   static updateExtension(org: Organization, extensionId: string, extensionModel: IStringMap<any>): Promise<RequestResponse> {
-    const url = UrlService.getSingleExtensionUrl(org.getId(), extensionId);
+    const url = UrlService.getSingleExtensionUrl(org, extensionId);
     return RequestUtils.put(url, org.getApiKey(), extensionModel);
   }
 
   static deleteExtension(org: Organization, extensionId: string): Promise<RequestResponse> {
-    const url = UrlService.getSingleExtensionUrl(org.getId(), extensionId);
+    const url = UrlService.getSingleExtensionUrl(org, extensionId);
     return RequestUtils.delete(url, org.getApiKey());
   }
 
   static getAllExtensions(organization: Organization): Promise<RequestResponse> {
-    return RequestUtils.get(UrlService.getExtensionsUrl(organization.getId()), organization.getApiKey());
+    return RequestUtils.get(UrlService.getExtensionsUrl(organization), organization.getApiKey());
   }
 
   static getSingleExtension(organization: Organization, extensionId: string): Promise<RequestResponse> {
     Assert.isNotUndefined(extensionId, 'Cannot load undefined extension');
-    return RequestUtils.get(UrlService.getSingleExtensionUrl(organization.getId(), extensionId), organization.getApiKey());
+    return RequestUtils.get(UrlService.getSingleExtensionUrl(organization, extensionId), organization.getApiKey());
   }
 
   static loadExtensions(org: Organization): Promise<{}> {

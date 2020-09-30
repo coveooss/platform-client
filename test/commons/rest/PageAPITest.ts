@@ -5,6 +5,7 @@ import { UrlService } from '../../../src/commons/rest/UrlService';
 import { JsonUtils } from '../../../src/commons/utils/JsonUtils';
 import { RequestUtils } from '../../../src/commons/utils/RequestUtils';
 import { Organization } from '../../../src/coveoObjects/Organization';
+import { TestOrganization } from '../../test';
 import { PageAPI } from './../../../src/commons/rest/PageAPI';
 
 export const PageAPITest = () => {
@@ -26,7 +27,7 @@ export const PageAPITest = () => {
     });
 
     it('Should prepare the request to get all the pages', (done: Mocha.Done) => {
-      const organization: Organization = new Organization('qwerty123', 'secret');
+      const organization: Organization = new TestOrganization('qwerty123', 'secret');
 
       scope = nock(UrlService.getDefaultUrl()).get('/rest/organizations/qwerty123/pages').reply(RequestUtils.OK);
 
@@ -36,7 +37,7 @@ export const PageAPITest = () => {
     });
 
     it('Should prepare the 1 request to create a search page', (done: Mocha.Done) => {
-      const organization: Organization = new Organization('qwerty456', 'secret');
+      const organization: Organization = new TestOrganization('qwerty456', 'secret');
 
       scope = nock(UrlService.getDefaultUrl()).post('/rest/organizations/qwerty456/pages', samplePageModel).reply(RequestUtils.OK);
 
@@ -46,7 +47,7 @@ export const PageAPITest = () => {
     });
 
     it('Should prepare the request to update a search page', (done: Mocha.Done) => {
-      const organization: Organization = new Organization('myorg', 'secret');
+      const organization: Organization = new TestOrganization('myorg', 'secret');
 
       const myPage = {
         name: 'sample-page',
@@ -62,7 +63,7 @@ export const PageAPITest = () => {
     });
 
     it('Should prepare the request to delete fields', (done: Mocha.Done) => {
-      const organization: Organization = new Organization('myorg', 'secret');
+      const organization: Organization = new TestOrganization('myorg', 'secret');
 
       scope = nock(UrlService.getDefaultUrl()).delete('/rest/organizations/myorg/pages/x456-y789').reply(RequestUtils.NO_CONTENT);
 
@@ -72,7 +73,7 @@ export const PageAPITest = () => {
     });
 
     it('Should load all pages from the organization', (done: Mocha.Done) => {
-      const organization: Organization = new Organization('hjkmnbfjhj3gfde45', 'xxx-xxx');
+      const organization: Organization = new TestOrganization('hjkmnbfjhj3gfde45', 'xxx-xxx');
       scope = nock(UrlService.getDefaultUrl())
         .get('/rest/organizations/hjkmnbfjhj3gfde45/pages')
         .reply(RequestUtils.OK, [DEVhighlyCustomized, DEVproManagerPortalSearch]);

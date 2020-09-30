@@ -7,19 +7,21 @@ import { IStringMap } from '../interfaces/IStringMap';
 import { Logger } from '../logger';
 import { Assert } from '../misc/Assert';
 import { ArrayUtils } from '../utils/ArrayUtils';
+import { EnvironmentUtils } from '../utils/EnvironmentUtils';
 import { JsonUtils } from '../utils/JsonUtils';
 import { RequestUtils } from '../utils/RequestUtils';
 import { UrlService } from './UrlService';
 
 export class FieldAPI {
-  static getFieldDefinitions(): Promise<RequestResponse> {
-    const url = UrlService.getFieldDocs();
+  static getFieldDefinitions(platformUrl = EnvironmentUtils.getDefaultEnvironment()): Promise<RequestResponse> {
+    // Always load field docs from production as this is not tied to an organization
+    const url = UrlService.getFieldDocs(platformUrl);
     return RequestUtils.get(url, '');
   }
 
   static createFields(org: Organization, fieldModels: Array<IStringMap<any>>, fieldsPerBatch: number): Promise<RequestResponse[]> {
     Assert.isLargerThan(0, fieldModels.length);
-    const url = UrlService.createFields(org.getId());
+    const url = UrlService.createFields(org);
     return Promise.all(
       ArrayUtils.chunkArray(JsonUtils.clone(fieldModels) as Array<IStringMap<any>>, fieldsPerBatch).map((batch: Array<IStringMap<any>>) => {
         return RequestUtils.post(url, org.getApiKey(), batch);
@@ -29,7 +31,7 @@ export class FieldAPI {
 
   static updateFields(org: Organization, fieldModels: Array<IStringMap<any>>, fieldsPerBatch: number): Promise<RequestResponse[]> {
     Assert.isLargerThan(0, fieldModels.length);
-    const url = UrlService.updateFields(org.getId());
+    const url = UrlService.updateFields(org);
     return Promise.all(
       ArrayUtils.chunkArray(fieldModels, fieldsPerBatch).map((batch: Array<IStringMap<any>>) => {
         return RequestUtils.put(url, org.getApiKey(), batch);
@@ -41,7 +43,7 @@ export class FieldAPI {
     Assert.isLargerThan(0, fieldList.length);
     return Promise.all(
       ArrayUtils.chunkArray(fieldList, fieldsPerBatch).map((batch: string[]) => {
-        const url = UrlService.deleteFields(org.getId(), batch);
+        const url = UrlService.deleteFields(org, batch);
         return RequestUtils.delete(url, org.getApiKey());
       })
     );
@@ -50,7 +52,7 @@ export class FieldAPI {
   static getFieldsPage(organization: Organization, page: number): Promise<RequestResponse> {
     Assert.isLargerOrEqualsThan(0, page, 'Parameter "page" cannot be a negative value.');
     Logger.loadingTask(`Fetching field page ${page} from ${Colors.organization(organization.getId())} `);
-    return RequestUtils.get(UrlService.getFieldsPageUrl(organization.getId(), page), organization.getApiKey());
+    return RequestUtils.get(UrlService.getFieldsPageUrl(organization, page), organization.getApiKey());
   }
 
   static loadFields(org: Organization): Promise<{}> {

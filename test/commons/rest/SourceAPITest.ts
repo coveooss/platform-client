@@ -6,6 +6,7 @@ import { UrlService } from '../../../src/commons/rest/UrlService';
 import { RequestUtils } from '../../../src/commons/utils/RequestUtils';
 import { Organization } from '../../../src/coveoObjects/Organization';
 import { SourceAPI } from '../../../src/commons/rest/SourceAPI';
+import { TestOrganization } from '../../test';
 
 export const SourceAPITest = () => {
   describe('Source API', () => {
@@ -23,7 +24,7 @@ export const SourceAPITest = () => {
 
     describe('Get all sources', () => {
       it('Should prepare the request to get all the sources of an organization', (done: Mocha.Done) => {
-        const organization: Organization = new Organization('mydevorg', 'secret');
+        const organization: Organization = new TestOrganization('mydevorg', 'secret');
 
         scope = nock(UrlService.getDefaultUrl()).get('/rest/organizations/mydevorg/sources').reply(RequestUtils.OK);
 
@@ -39,7 +40,7 @@ export const SourceAPITest = () => {
 
     describe('Get Single source', () => {
       it('Should prepare the request to get a specific source of an organization', (done: Mocha.Done) => {
-        const organization: Organization = new Organization('mydevorg', 'secret');
+        const organization: Organization = new TestOrganization('mydevorg', 'secret');
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/mydevorg/sources/tcytrppteddiqkmboszu4skdoe/raw')
           .reply(RequestUtils.OK);
@@ -50,13 +51,13 @@ export const SourceAPITest = () => {
       });
 
       // it('Should throw an error because of an undefined extension id', () => {
-      //   const organization: Organization = new Organization('mydevorg', 'secret');
+      //   const organization: Organization = new TestOrganization('mydevorg', 'secret');
       //   expect(() => SourceAPI.getSingleSource(organization, undefined)).to.throw();
       // });
     });
 
     it('Should prepare the request to create a source', (done: Mocha.Done) => {
-      const organization: Organization = new Organization('qwerty123', 'secret');
+      const organization: Organization = new TestOrganization('qwerty123', 'secret');
 
       scope = nock(UrlService.getDefaultUrl())
         .post('/rest/organizations/qwerty123/sources/raw?rebuild=false', {
@@ -132,7 +133,7 @@ export const SourceAPITest = () => {
     });
 
     it('Should prepare the request to update a source', (done: Mocha.Done) => {
-      const organization: Organization = new Organization('qwerty123', 'secret');
+      const organization: Organization = new TestOrganization('qwerty123', 'secret');
 
       scope = nock(UrlService.getDefaultUrl())
         .put('/rest/organizations/qwerty123/sources/cclidevwcty5v1g-tl2nzqb76il5y3zlsgp4r72aey/raw?rebuild=false', {
@@ -174,7 +175,7 @@ export const SourceAPITest = () => {
     });
 
     it('Should prepare the request to delete a source', (done: Mocha.Done) => {
-      const organization: Organization = new Organization('qwerty123', 'secret');
+      const organization: Organization = new TestOrganization('qwerty123', 'secret');
 
       scope = nock(UrlService.getDefaultUrl())
         .delete('/rest/organizations/qwerty123/sources/cclidevwcty5v1g-tl2nzqb76il5y3zlsgp4r72aey')
@@ -187,7 +188,7 @@ export const SourceAPITest = () => {
 
     describe('Loading sources', () => {
       it('Should prepare the request sequence that will load all the sources', (done: Mocha.Done) => {
-        const organization: Organization = new Organization('qwerty123', 'secret');
+        const organization: Organization = new TestOrganization('qwerty123', 'secret');
 
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
@@ -209,7 +210,7 @@ export const SourceAPITest = () => {
       });
 
       it('Should throw an error if unexpected response', (done: Mocha.Done) => {
-        const organization: Organization = new Organization('qwerty123', 'secret');
+        const organization: Organization = new TestOrganization('qwerty123', 'secret');
 
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
@@ -232,7 +233,7 @@ export const SourceAPITest = () => {
       });
 
       it('Should throw an error if access denied', (done: Mocha.Done) => {
-        const organization: Organization = new Organization('qwerty123', 'secret');
+        const organization: Organization = new TestOrganization('qwerty123', 'secret');
 
         scope = nock(UrlService.getDefaultUrl()).get('/rest/organizations/qwerty123/sources').reply(RequestUtils.ACCESS_DENIED);
 

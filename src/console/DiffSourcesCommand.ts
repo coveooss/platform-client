@@ -79,8 +79,11 @@ program
       sources: options.ignoreSources,
     };
 
-    const originOrg = new Organization(origin, apiKey[0], blacklistOptions);
-    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
+    const originOrg = new Organization(origin, apiKey[0], { blacklist: blacklistOptions, platformUrl: options?.platformUrlOrigin });
+    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], {
+      blacklist: blacklistOptions,
+      platformUrl: options?.platformUrlDestination,
+    });
     const controller: SourceController = new SourceController(originOrg, destinationOrg);
 
     controller.diff(diffOptions);

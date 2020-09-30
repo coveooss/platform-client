@@ -5,6 +5,7 @@ import { IGenericError } from '../../../src/commons/errors';
 import { UrlService } from '../../../src/commons/rest/UrlService';
 import { RequestUtils } from '../../../src/commons/utils/RequestUtils';
 import { Organization } from '../../../src/coveoObjects/Organization';
+import { TestOrganization } from '../../test';
 import { ExtensionAPI } from './../../../src/commons/rest/ExtensionAPI';
 
 export const ExtensionAPITest = () => {
@@ -125,7 +126,7 @@ export const ExtensionAPITest = () => {
 
     describe('Get all extensions', () => {
       it('Should prepare the request to get all the extension of an organization', (done: Mocha.Done) => {
-        const organization: Organization = new Organization('qwerty123', 'secret');
+        const organization: Organization = new TestOrganization('qwerty123', 'secret');
 
         scope = nock(UrlService.getDefaultUrl()).get('/rest/organizations/qwerty123/extensions').reply(RequestUtils.OK);
 
@@ -141,7 +142,7 @@ export const ExtensionAPITest = () => {
 
     describe('Get Single Extension', () => {
       it('Should prepare the request to get a specific extension of an organization', (done: Mocha.Done) => {
-        const organization: Organization = new Organization('qwerty123', 'secret');
+        const organization: Organization = new TestOrganization('qwerty123', 'secret');
 
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/qwerty123/extensions/my-special-extension')
@@ -153,13 +154,13 @@ export const ExtensionAPITest = () => {
       });
 
       // it('Should throw an error because of an undefined extension id', () => {
-      //   const organization: Organization = new Organization('qwerty123', 'secret');
+      //   const organization: Organization = new TestOrganization('qwerty123', 'secret');
       //   expect(() => ExtensionAPI.getSingleExtension(organization, undefined)).to.throw();
       // });
     });
 
     it('Should prepare the request to create an extension', (done: Mocha.Done) => {
-      const organization: Organization = new Organization('qwerty123', 'secret');
+      const organization: Organization = new TestOrganization('qwerty123', 'secret');
 
       scope = nock(UrlService.getDefaultUrl())
         .post('/rest/organizations/qwerty123/extensions', {
@@ -181,7 +182,7 @@ export const ExtensionAPITest = () => {
     });
 
     it('Should prepare the request to update an extension', (done: Mocha.Done) => {
-      const organization: Organization = new Organization('qwerty123', 'secret');
+      const organization: Organization = new TestOrganization('qwerty123', 'secret');
 
       scope = nock(UrlService.getDefaultUrl())
         .put('/rest/organizations/qwerty123/extensions/extension-to-update', {
@@ -203,7 +204,7 @@ export const ExtensionAPITest = () => {
     });
 
     it('Should prepare the request to delete an extension', (done: Mocha.Done) => {
-      const organization: Organization = new Organization('qwerty123', 'secret');
+      const organization: Organization = new TestOrganization('qwerty123', 'secret');
 
       scope = nock(UrlService.getDefaultUrl())
         .delete('/rest/organizations/qwerty123/extensions/extension-to-delete')
@@ -216,7 +217,7 @@ export const ExtensionAPITest = () => {
 
     describe('Loading Extension', () => {
       it('Should prepare the request sequence that will load all the extensions', (done: Mocha.Done) => {
-        const organization: Organization = new Organization('qwerty123', 'secret');
+        const organization: Organization = new TestOrganization('qwerty123', 'secret');
 
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
@@ -236,7 +237,7 @@ export const ExtensionAPITest = () => {
       });
 
       it('Should throw an error if unexpected response', (done: Mocha.Done) => {
-        const organization: Organization = new Organization('qwerty123', 'secret');
+        const organization: Organization = new TestOrganization('qwerty123', 'secret');
 
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
@@ -259,7 +260,7 @@ export const ExtensionAPITest = () => {
       });
 
       it('Should throw an error if access denied', (done: Mocha.Done) => {
-        const organization: Organization = new Organization('qwerty123', 'secret');
+        const organization: Organization = new TestOrganization('qwerty123', 'secret');
 
         scope = nock(UrlService.getDefaultUrl()).get('/rest/organizations/qwerty123/extensions').reply(RequestUtils.ACCESS_DENIED);
 

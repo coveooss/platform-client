@@ -12,6 +12,7 @@ import { Organization } from '../../src/coveoObjects/Organization';
 import { ExtensionController } from './../../src/controllers/ExtensionController';
 import { DownloadResultArray } from '../../src/commons/collections/DownloadResultArray';
 import { IDiffOptions } from '../../src/commons/interfaces/IDiffOptions';
+import { TestOrganization } from '../test';
 
 const allDevExtensions: {} = require('./../mocks/setup1/extensions/dev/allExtensions.json');
 
@@ -32,8 +33,8 @@ const PRODPython2: {} = require('./../mocks/setup1/extensions/prod/phyton2.json'
 export const ExtensionControllerTest = () => {
   describe('Extension Controller', () => {
     // Organizations
-    const org1: Organization = new Organization('dev', 'xxx');
-    const org2: Organization = new Organization('prod', 'yyy');
+    const org1: Organization = new TestOrganization('dev', 'xxx');
+    const org2: Organization = new TestOrganization('prod', 'yyy');
 
     // Controller
     const controller = new ExtensionController(org1, org2);
@@ -364,8 +365,10 @@ export const ExtensionControllerTest = () => {
       });
 
       it('Should not retrieve blacklisted extensions during the diff', (done: Mocha.Done) => {
-        const orgx: Organization = new Organization('dev', 'xxx', { extensions: ['All metadata value', 'reject a Document.'] });
-        const orgy: Organization = new Organization('prod', 'yyy');
+        const orgx: Organization = new TestOrganization('dev', 'xxx', {
+          blacklist: { extensions: ['All metadata value', 'reject a Document.'] },
+        });
+        const orgy: Organization = new TestOrganization('prod', 'yyy');
         const controllerxy = new ExtensionController(orgx, orgy);
 
         scope = nock(UrlService.getDefaultUrl())
@@ -639,8 +642,8 @@ export const ExtensionControllerTest = () => {
       });
 
       it('Should graduate using the whitelist strategy', (done: Mocha.Done) => {
-        const orgx: Organization = new Organization('dev', 'xxx');
-        const orgy: Organization = new Organization('prod', 'yyy');
+        const orgx: Organization = new TestOrganization('dev', 'xxx');
+        const orgy: Organization = new TestOrganization('prod', 'yyy');
         const controllerxy = new ExtensionController(orgx, orgy);
 
         const localDevExtension = DEVPython3;
@@ -700,7 +703,7 @@ export const ExtensionControllerTest = () => {
 
     describe('Download Method', () => {
       it('Should download sources', (done: Mocha.Done) => {
-        const orgx: Organization = new Organization('dev', 'xxx');
+        const orgx: Organization = new TestOrganization('dev', 'xxx');
         const controllerxy = new ExtensionController(orgx);
 
         scope = nock(UrlService.getDefaultUrl())
@@ -733,7 +736,7 @@ export const ExtensionControllerTest = () => {
       });
 
       it('Should not download sources if REST API error', (done: Mocha.Done) => {
-        const orgx: Organization = new Organization('dev', 'xxx');
+        const orgx: Organization = new TestOrganization('dev', 'xxx');
         const controllerxy = new ExtensionController(orgx);
 
         scope = nock(UrlService.getDefaultUrl())

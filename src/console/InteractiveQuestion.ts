@@ -8,7 +8,6 @@ import { SourceAPI } from '../commons/rest/SourceAPI';
 import { Organization } from '../coveoObjects/Organization';
 import { ExtensionAPI } from '../commons/rest/ExtensionAPI';
 import { StringUtil } from '../commons/utils/StringUtils';
-import { EnvironmentUtils } from '../commons/utils/EnvironmentUtils';
 import { PageAPI } from '../commons/rest/PageAPI';
 
 export class InteractiveQuestion {
@@ -21,7 +20,8 @@ export class InteractiveQuestion {
   static MASTER_API_KEY: string = 'APIKey';
   static DESTINATION_ORG_ID: string = 'destinationOrganizationId';
   static COMMAND: string = 'command';
-  static ENVIRONMENT: string = 'environment';
+  static ORIGIN_ENVIRONMENT: string = 'originEnvironment';
+  static DESTINATION_ENVIRONMENT: string = 'destinationEnvironment';
 
   // Options
   static GRADUATE_OPERATIONS: string = 'graduateOperations';
@@ -54,9 +54,6 @@ export class InteractiveQuestion {
         return prompt(this.getInitialQuestions({ fieldModel: model })).then((ans: Answers) => {
           InteractiveQuestion.PREVIOUS_ANSWERS = ans;
           const org = new Organization(ans[InteractiveQuestion.ORIGIN_ORG_ID], ans[InteractiveQuestion.MASTER_API_KEY]);
-
-          // Set Node Environment
-          EnvironmentUtils.setNodeEnvironment(ans[InteractiveQuestion.ENVIRONMENT]);
 
           return Promise.all([this.loadSourceList(org), this.loadExtensionList(org), this.loadPageList(org)])
             .then((values) => {
@@ -93,7 +90,7 @@ export class InteractiveQuestion {
           }
         })
         .catch((err: any) => {
-          reject('Unable to fetch field model');
+          reject(err);
         });
     });
   }
@@ -171,13 +168,37 @@ export class InteractiveQuestion {
     };
   }
 
-  getPlatformEnvironment(): DistinctQuestion {
+  getPlatformOriginEnvironment(): DistinctQuestion {
     return {
       type: 'list',
-      name: InteractiveQuestion.ENVIRONMENT,
-      message: 'Coveo Cloud platform environment',
-      default: 'production',
-      choices: [{ name: 'production' }, { name: 'development' }, { name: 'qa' }, { name: 'hipaa' }],
+      name: InteractiveQuestion.ORIGIN_ENVIRONMENT,
+      message: 'Origin Organization environment',
+      default: 'https://platform.cloud.coveo.com',
+      choices: [
+        { name: 'Production (US)', value: 'https://platform.cloud.coveo.com' },
+        { name: 'Production (Europe)', value: 'https://platform-eu.cloud.coveo.com' },
+        { name: 'Production (Australia)', value: 'https://platform-au.cloud.coveo.com' },
+        { name: 'HIPAA', value: 'https://platformhipaa.cloud.coveo.com' },
+        { name: 'QA', value: 'https://platformqa.cloud.coveo.com' },
+        { name: 'DEV', value: 'https://platformdev.cloud.coveo.com' },
+      ],
+    };
+  }
+
+  getPlatformDestinationEnvironment(): DistinctQuestion {
+    return {
+      type: 'list',
+      name: InteractiveQuestion.DESTINATION_ENVIRONMENT,
+      message: 'Destination Organization environment',
+      default: 'https://platform.cloud.coveo.com',
+      choices: [
+        { name: 'Production (US)', value: 'https://platform.cloud.coveo.com' },
+        { name: 'Production (Europe)', value: 'https://platform.cloud.coveo.com' },
+        { name: 'Production (Australia)', value: 'https://platform-au.cloud.coveo.com' },
+        { name: 'HIPAA', value: 'https://platformhipaa.cloud.coveo.com' },
+        { name: 'QA', value: 'https://platformqa.cloud.coveo.com' },
+        { name: 'DEV', value: 'https://platformdev.cloud.coveo.com' },
+      ],
     };
   }
 
@@ -421,7 +442,8 @@ export class InteractiveQuestion {
 
   getInitialQuestions(data: any): QuestionCollection {
     return [
-      this.getPlatformEnvironment(),
+      this.getPlatformOriginEnvironment(),
+      this.getPlatformDestinationEnvironment(),
       this.getCommandList(),
       this.getOriginOrganizationId(),
       this.getDestinationOrganizationId(),

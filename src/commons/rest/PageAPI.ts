@@ -11,22 +11,22 @@ import { Colors } from '../colors';
 
 export class PageAPI {
   static createPage(org: Organization, pageModel: IStringMap<any>): Promise<RequestResponse> {
-    const url = UrlService.getPagesUrl(org.getId());
+    const url = UrlService.getPagesUrl(org);
     return RequestUtils.post(url, org.getApiKey(), pageModel);
   }
 
   static updatePage(org: Organization, pageId: string, pageModel: IStringMap<any>): Promise<RequestResponse> {
-    const url = UrlService.getSinglePageUrl(org.getId(), pageId);
+    const url = UrlService.getSinglePageUrl(org, pageId);
     return RequestUtils.put(url, org.getApiKey(), pageModel);
   }
 
   static deletePage(org: Organization, pageId: string): Promise<RequestResponse> {
-    const url = UrlService.getSinglePageUrl(org.getId(), pageId);
+    const url = UrlService.getSinglePageUrl(org, pageId);
     return RequestUtils.delete(url, org.getApiKey());
   }
 
   static getAllPages(organization: Organization): Promise<RequestResponse> {
-    return RequestUtils.get(UrlService.getPagesUrl(organization.getId()), organization.getApiKey());
+    return RequestUtils.get(UrlService.getPagesUrl(organization), organization.getApiKey());
   }
 
   static loadPages(org: Organization): Promise<{}> {

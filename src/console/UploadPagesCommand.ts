@@ -49,8 +49,11 @@ program
         const blacklistOptions = {
           pages: options.ignorePages,
         };
-        const originOrg = new Organization('dummyOrg', '', blacklistOptions);
-        const destinationOrg = new Organization(destination, apiKey, blacklistOptions);
+        const originOrg = new Organization('dummyOrg', '', { blacklist: blacklistOptions, platformUrl: options?.platformUrlOrigin });
+        const destinationOrg = new Organization(destination, apiKey, {
+          blacklist: blacklistOptions,
+          platformUrl: options?.platformUrlDestination,
+        });
         const controller: PageController = new PageController(originOrg, destinationOrg);
 
         controller.graduate(graduateOptions);

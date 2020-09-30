@@ -14,32 +14,32 @@ import { StringUtil } from '../utils/StringUtils';
 
 export class SourceAPI {
   static rebuildSource(org: Organization, sourceId: string): Promise<RequestResponse> {
-    const url = UrlService.rebuildSource(org.getId(), sourceId);
+    const url = UrlService.rebuildSource(org, sourceId);
     return RequestUtils.post(url, org.getApiKey(), null);
   }
 
   static createSource(org: Organization, sourceModel: IStringMap<any>): Promise<RequestResponse> {
-    const url = UrlService.createSource(org.getId());
+    const url = UrlService.createSource(org);
     return RequestUtils.post(url, org.getApiKey(), sourceModel);
   }
 
   static updateSource(org: Organization, sourceId: string, sourceModel: IStringMap<any>): Promise<RequestResponse> {
-    const url = UrlService.updateSource(org.getId(), sourceId);
+    const url = UrlService.updateSource(org, sourceId);
     return RequestUtils.put(url, org.getApiKey(), sourceModel);
   }
 
   static deleteSource(org: Organization, sourceId: string): Promise<RequestResponse> {
-    const url = UrlService.getSingleSourceUrl(org.getId(), sourceId);
+    const url = UrlService.getSingleSourceUrl(org, sourceId);
     return RequestUtils.delete(url, org.getApiKey());
   }
 
   static getAllSources(organization: Organization): Promise<RequestResponse> {
-    return RequestUtils.get(UrlService.getSourcesUrl(organization.getId()), organization.getApiKey());
+    return RequestUtils.get(UrlService.getSourcesUrl(organization), organization.getApiKey());
   }
 
   static getSingleSource(organization: Organization, sourceId: string): Promise<RequestResponse> {
     Assert.isNotUndefined(sourceId, 'Cannot load undefined source');
-    return RequestUtils.get(UrlService.getSingleRawSourceUrl(organization.getId(), sourceId), organization.getApiKey());
+    return RequestUtils.get(UrlService.getSingleRawSourceUrl(organization, sourceId), organization.getApiKey());
   }
 
   static loadSources(org: Organization): Promise<{}> {

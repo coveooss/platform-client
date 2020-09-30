@@ -12,9 +12,9 @@ export const RequestUtilsTest = () => {
     });
 
     it('Should send an empty request', (done: Mocha.Done) => {
-      scope = nock(UrlService.getDefaultUrl()).get('/somewhere').reply(RequestUtils.OK);
+      scope = nock('https://custom-domain.com').get('/').reply(RequestUtils.OK);
 
-      RequestUtils.get(UrlService.getDefaultUrl('/somewhere'), 'xxx')
+      RequestUtils.get(UrlService.getDefaultUrl('https://custom-domain.com/'), 'xxx')
         .then(() => {
           done();
         })
@@ -24,11 +24,9 @@ export const RequestUtilsTest = () => {
     });
 
     it('Should handle an error on GET method', (done: Mocha.Done) => {
-      scope = nock(UrlService.getDefaultUrl())
-        .get('/somewhere_bad')
-        .replyWithError({ message: 'something awful happened', code: 'AWFUL_ERROR' });
+      scope = nock(UrlService.getDefaultUrl()).get('/').replyWithError({ message: 'something awful happened', code: 'AWFUL_ERROR' });
 
-      RequestUtils.get(UrlService.getDefaultUrl('/somewhere_bad'), 'xxx')
+      RequestUtils.get(UrlService.getDefaultUrl(), 'xxx')
         .then(() => {
           done('This function should not resolve');
         })
@@ -45,7 +43,7 @@ export const RequestUtilsTest = () => {
         .put('/cat/poems')
         .replyWithError({ message: 'something awful happened', code: 'AWFUL_ERROR' });
 
-      RequestUtils.put(UrlService.getDefaultUrl('/cat/poems'), 'xxx', { something: ['very', 'cool'] })
+      RequestUtils.put(UrlService.getDefaultUrl() + '/cat/poems', 'xxx', { something: ['very', 'cool'] })
         .then(() => {
           done('This function should not resolve');
         })
@@ -62,7 +60,7 @@ export const RequestUtilsTest = () => {
         .post('/the/super/org')
         .replyWithError({ message: 'something awful happened', code: 'AWFUL_ERROR' });
 
-      RequestUtils.post(UrlService.getDefaultUrl('/the/super/org'), 'the_super_api_key', { the: 'super content' })
+      RequestUtils.post(UrlService.getDefaultUrl() + '/the/super/org', 'the_super_api_key', { the: 'super content' })
         .then(() => {
           done('This function should not resolve');
         })
@@ -79,7 +77,7 @@ export const RequestUtilsTest = () => {
         .delete('/somthing/to/delete')
         .replyWithError({ message: 'something awful happened', code: 'AWFUL_ERROR' });
 
-      RequestUtils.delete(UrlService.getDefaultUrl('/somthing/to/delete'), 'xxx')
+      RequestUtils.delete(UrlService.getDefaultUrl() + '/somthing/to/delete', 'xxx')
         .then(() => {
           done('This function should not resolve');
         })

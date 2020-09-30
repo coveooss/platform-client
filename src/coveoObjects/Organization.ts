@@ -9,6 +9,7 @@ import { Source } from './Source';
 import { StringUtil } from '../commons/utils/StringUtils';
 import { Page } from './Page';
 import { ICoveoObject } from '../commons/interfaces/ICoveoObject';
+import { EnvironmentUtils } from '../commons/utils/EnvironmentUtils';
 
 export interface IOrganization extends ICoveoObject<Organization> {
   getApiKey(): string;
@@ -25,6 +26,11 @@ export interface IBlacklistObjects {
   pages?: string[];
 }
 
+export interface IOrganizationOptions {
+  platformUrl?: string;
+  blacklist?: IBlacklistObjects;
+}
+
 /**
  * Organization Class. By default, the organization instance do not contain any field, sources nor extension.
  * This is a way to prevent unecessary HTTP calls to the platform.
@@ -35,11 +41,15 @@ export class Organization extends BaseCoveoObject implements IOrganization {
   private sources: Dictionary<Source> = new Dictionary<Source>();
   private extensions: Dictionary<Extension> = new Dictionary<Extension>();
   private pages: Dictionary<Page> = new Dictionary<Page>();
+  private blacklist: IBlacklistObjects = {};
 
-  constructor(id: string, private apiKey: string, private blacklist: IBlacklistObjects = {}) {
+  constructor(id: string, private apiKey: string, private options: IOrganizationOptions = {}) {
     super(id);
     Assert.exists(id, 'Missing organization id');
     this.apiKey = apiKey;
+
+    // Setup options
+    this.blacklist = options.blacklist || {};
 
     this.blacklist.extensions = (this.blacklist.extensions || []).map((e) => StringUtil.lowerAndStripSpaces(e));
     this.blacklist.fields = (this.blacklist.fields || []).map((f) => StringUtil.lowerAndStripSpaces(f));
@@ -169,6 +179,10 @@ export class Organization extends BaseCoveoObject implements IOrganization {
     return this.extensions.clone();
   }
 
+  getPlatformUrl(): string {
+    return this.options.platformUrl ?? EnvironmentUtils.getDefaultEnvironment();
+  }
+
   getPages(): Dictionary<Page> {
     return this.pages.clone();
   }
@@ -237,7 +251,7 @@ export class Organization extends BaseCoveoObject implements IOrganization {
   }
 
   clone() {
-    const newOrg = new Organization(this.getId(), this.getApiKey());
+    const newOrg = new Organization(this.getId(), this.getApiKey(), JSON.parse(JSON.stringify(this.options)));
     each(this.fields.values(), (field: Field) => {
       newOrg.addField(field.clone());
     });

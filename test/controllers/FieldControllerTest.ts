@@ -12,12 +12,13 @@ import { Field } from '../../src/coveoObjects/Field';
 import { FieldController } from './../../src/controllers/FieldController';
 import { Organization } from './../../src/coveoObjects/Organization';
 import { IDiffOptions } from '../../src/commons/interfaces/IDiffOptions';
+import { TestOrganization } from '../test';
 
 export const FieldControllerTest = () => {
   describe('Field Controller', () => {
     // Organizations
-    const org1: Organization = new Organization('dev', 'xxx');
-    const org2: Organization = new Organization('prod', 'yyy');
+    const org1: Organization = new TestOrganization('dev', 'xxx');
+    const org2: Organization = new TestOrganization('prod', 'yyy');
 
     // Fields
     const field1WithSource: Field = new Field({
@@ -336,8 +337,8 @@ export const FieldControllerTest = () => {
       });
 
       it('Should return fields for specified sources expect for the ones blacklisted', (done: Mocha.Done) => {
-        const orgx: Organization = new Organization('dev', 'xxx', { fields: ['field1', 'field3'] });
-        const orgy: Organization = new Organization('prod', 'yyy', { fields: ['field1', 'field3'] });
+        const orgx: Organization = new TestOrganization('dev', 'xxx', { blacklist: { fields: ['field1', 'field3'] } });
+        const orgy: Organization = new TestOrganization('prod', 'yyy', { blacklist: { fields: ['field1', 'field3'] } });
         const controllerxy = new FieldController(orgx, orgy);
 
         scope = nock(UrlService.getDefaultUrl())

@@ -18,7 +18,7 @@ program
   .action((origin: string, apiKey: string, outputFolder: string, options: any) => {
     CommanderUtils.setLogger(options, 'download-pages');
 
-    const organization = new Organization(origin, apiKey);
+    const organization = new Organization(origin, apiKey, { platformUrl: options?.platformUrlOrigin });
     const controller: PageController = new PageController(organization);
     const downloadOptions: IDownloadOptions = { outputFolder: outputFolder };
 

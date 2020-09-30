@@ -6,6 +6,7 @@ import { UrlService } from '../../../src/commons/rest/UrlService';
 import { JsonUtils } from '../../../src/commons/utils/JsonUtils';
 import { RequestUtils } from '../../../src/commons/utils/RequestUtils';
 import { Organization } from '../../../src/coveoObjects/Organization';
+import { TestOrganization } from '../../test';
 import { FieldAPI } from './../../../src/commons/rest/FieldAPI';
 
 export const FieldAPITest = () => {
@@ -125,7 +126,7 @@ export const FieldAPITest = () => {
     });
 
     it('Should prepare the request to get the first page fields', (done: Mocha.Done) => {
-      const organization: Organization = new Organization('qwerty123', 'secret');
+      const organization: Organization = new TestOrganization('qwerty123', 'secret');
 
       scope = nock(UrlService.getDefaultUrl())
         .get('/rest/organizations/qwerty123/sources/page/fields')
@@ -138,12 +139,12 @@ export const FieldAPITest = () => {
     });
 
     it('Should throw an error', () => {
-      const organization: Organization = new Organization('theorg', 'xxx-xxx');
+      const organization: Organization = new TestOrganization('theorg', 'xxx-xxx');
       expect(() => FieldAPI.getFieldsPage(organization, -1)).to.throw();
     });
 
     it('Should prepare the request to get the second page fields', (done: Mocha.Done) => {
-      const organization: Organization = new Organization('qwerty456', 'secret');
+      const organization: Organization = new TestOrganization('qwerty456', 'secret');
 
       scope = nock(UrlService.getDefaultUrl())
         .get('/rest/organizations/qwerty456/sources/page/fields')
@@ -165,7 +166,7 @@ export const FieldAPITest = () => {
     });
 
     it('Should prepare the 1 request to create fields', (done: Mocha.Done) => {
-      const organization: Organization = new Organization('qwerty456', 'secret');
+      const organization: Organization = new TestOrganization('qwerty456', 'secret');
 
       // First expected request
       scope = nock(UrlService.getDefaultUrl())
@@ -178,7 +179,7 @@ export const FieldAPITest = () => {
     });
 
     it('Should prepare the 2 requests to create fields', (done: Mocha.Done) => {
-      const organization: Organization = new Organization('qwerty456', 'secret');
+      const organization: Organization = new TestOrganization('qwerty456', 'secret');
 
       // First expected request
       scope = nock(UrlService.getDefaultUrl())
@@ -301,7 +302,7 @@ export const FieldAPITest = () => {
     });
 
     it('Should prepare the request to update fields', (done: Mocha.Done) => {
-      const organization: Organization = new Organization('myorg', 'secret');
+      const organization: Organization = new TestOrganization('myorg', 'secret');
 
       scope = nock(UrlService.getDefaultUrl())
         // First expected request
@@ -424,7 +425,7 @@ export const FieldAPITest = () => {
     });
 
     it('Should prepare the request to delete fields', (done: Mocha.Done) => {
-      const organization: Organization = new Organization('theorg', 'xxx-xxx');
+      const organization: Organization = new TestOrganization('theorg', 'xxx-xxx');
       const fieldToDelete = ['allmetadatavalues', 'newfield', 'authorloginname', 'bcc', 'newField'];
 
       scope = nock(UrlService.getDefaultUrl())
@@ -438,7 +439,7 @@ export const FieldAPITest = () => {
     });
 
     it('Should prepare 3 requests to delete fields', (done: Mocha.Done) => {
-      const organization: Organization = new Organization('theorg', 'xxx-xxx');
+      const organization: Organization = new TestOrganization('theorg', 'xxx-xxx');
       const fieldToDelete = ['allmetadatavalues', 'newfield', 'authorloginname', 'bcc', 'newField'];
 
       scope = nock(UrlService.getDefaultUrl())
@@ -461,7 +462,7 @@ export const FieldAPITest = () => {
     });
 
     it('Should prepare the request to load other page field', (done: Mocha.Done) => {
-      const organization: Organization = new Organization('theorg', 'xxx-xxx');
+      const organization: Organization = new TestOrganization('theorg', 'xxx-xxx');
 
       scope = nock(UrlService.getDefaultUrl())
         // First expected request
@@ -503,12 +504,12 @@ export const FieldAPITest = () => {
     });
 
     it('Should throw an error', () => {
-      const organization: Organization = new Organization('theorg', 'xxx-xxx');
+      const organization: Organization = new TestOrganization('theorg', 'xxx-xxx');
       expect(() => FieldAPI.loadOtherPages(organization, -1)).to.throw();
     });
 
     it('Should throw an "Unexpected Response" error ', (done: Mocha.Done) => {
-      const organization: Organization = new Organization('67ujnbgh', 'xxx-xxx');
+      const organization: Organization = new TestOrganization('67ujnbgh', 'xxx-xxx');
       scope = nock(UrlService.getDefaultUrl())
         .get('/rest/organizations/67ujnbgh/sources/page/fields')
         .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
@@ -527,7 +528,7 @@ export const FieldAPITest = () => {
     });
 
     it('Should load all fields from the organization (one page)', (done: Mocha.Done) => {
-      const organization: Organization = new Organization('hjkmnbfjhj3gfde45', 'xxx-xxx');
+      const organization: Organization = new TestOrganization('hjkmnbfjhj3gfde45', 'xxx-xxx');
       scope = nock(UrlService.getDefaultUrl())
         // First expected request
         .get('/rest/organizations/hjkmnbfjhj3gfde45/sources/page/fields')
@@ -565,7 +566,7 @@ export const FieldAPITest = () => {
     });
 
     it('Should load all fields from the organization', (done: Mocha.Done) => {
-      const organization: Organization = new Organization('hello', 'xxx-xxx');
+      const organization: Organization = new TestOrganization('hello', 'xxx-xxx');
       scope = nock(UrlService.getDefaultUrl())
         // First expected request
         .get('/rest/organizations/hello/sources/page/fields')
