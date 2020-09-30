@@ -1,4 +1,4 @@
-// import * as _ from 'underscore';
+// import {} from 'underscore';
 import * as program from 'commander';
 import { Logger } from '../commons/logger';
 import { CommanderUtils } from './CommanderUtils';
@@ -42,11 +42,11 @@ program
       keysToIgnore: ['sources'], // TODO: have precedence over includeOnly. Remove includeOnly!
       includeOnly: options.onlyKeys,
       silent: options.silent,
-      sources: options.sources
+      sources: options.sources,
     };
 
     const blacklistOptions: IBlacklistObjects = {
-      fields: options.ignoreFields
+      fields: options.ignoreFields,
     };
 
     const originOrg = new Organization(origin, apiKey[0], blacklistOptions);

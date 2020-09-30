@@ -1,5 +1,5 @@
-import * as _ from 'underscore';
-import * as fs from 'fs-extra';
+import { compact } from 'underscore';
+import { writeFile } from 'fs-extra';
 import { Answers } from 'inquirer';
 import { Colors } from '../commons/colors';
 import { Logger } from '../commons/logger';
@@ -26,7 +26,7 @@ export class InteractionController {
       .then((answers: Answers) => {
         const commandFilename = answers[InteractiveQuestion.SETTING_FILENAME];
         const command = ['platformclient', this.generateCommand(answers)].join(' ');
-        fs.writeFile(commandFilename, [this.setShebangLine(), command].join('\n'))
+        writeFile(commandFilename, [this.setShebangLine(), command].join('\n'))
           .then(() => {
             console.log(`Intruction saved in ${Colors.filename(commandFilename)}`);
           })
@@ -43,7 +43,7 @@ export class InteractionController {
     let command: string[] = [];
 
     // Required parameters
-    command.push(_.compact([answers[InteractiveQuestion.COMMAND], answers[InteractiveQuestion.OBJECT_TO_MANIPULATE]]).join('-'));
+    command.push(compact([answers[InteractiveQuestion.COMMAND], answers[InteractiveQuestion.OBJECT_TO_MANIPULATE]]).join('-'));
     command.push(answers[InteractiveQuestion.ORIGIN_ORG_ID]);
     command.push(answers[InteractiveQuestion.DESTINATION_ORG_ID]);
     command.push(answers[InteractiveQuestion.MASTER_API_KEY]);
@@ -60,7 +60,7 @@ export class InteractionController {
       .concat(this.saveOptionIfExists(answers, '-s ', InteractiveQuestion.SOURCES_TO_REBUILD))
       .concat(this.saveOptionIfExists(answers, '--env ', InteractiveQuestion.ENVIRONMENT));
 
-    return _.compact(command).join(' ');
+    return compact(command).join(' ');
   }
 
   private setShebangLine(): string {

@@ -1,5 +1,5 @@
 import { RequestResponse } from 'request';
-import * as _ from 'underscore';
+import { each, map } from 'underscore';
 import { Organization } from '../../coveoObjects/Organization';
 import { Colors } from '../colors';
 import { IGenericError, StaticErrorMessage } from '../errors';
@@ -21,12 +21,9 @@ export class FieldAPI {
     Assert.isLargerThan(0, fieldModels.length);
     const url = UrlService.createFields(org.getId());
     return Promise.all(
-      _.map(
-        ArrayUtils.chunkArray(JsonUtils.clone(fieldModels) as Array<IStringMap<any>>, fieldsPerBatch),
-        (batch: Array<IStringMap<any>>) => {
-          return RequestUtils.post(url, org.getApiKey(), batch);
-        }
-      )
+      ArrayUtils.chunkArray(JsonUtils.clone(fieldModels) as Array<IStringMap<any>>, fieldsPerBatch).map((batch: Array<IStringMap<any>>) => {
+        return RequestUtils.post(url, org.getApiKey(), batch);
+      })
     );
   }
 
@@ -34,7 +31,7 @@ export class FieldAPI {
     Assert.isLargerThan(0, fieldModels.length);
     const url = UrlService.updateFields(org.getId());
     return Promise.all(
-      _.map(ArrayUtils.chunkArray(fieldModels, fieldsPerBatch), (batch: Array<IStringMap<any>>) => {
+      ArrayUtils.chunkArray(fieldModels, fieldsPerBatch).map((batch: Array<IStringMap<any>>) => {
         return RequestUtils.put(url, org.getApiKey(), batch);
       })
     );
@@ -43,7 +40,7 @@ export class FieldAPI {
   static deleteFields(org: Organization, fieldList: string[], fieldsPerBatch: number): Promise<RequestResponse[]> {
     Assert.isLargerThan(0, fieldList.length);
     return Promise.all(
-      _.map(ArrayUtils.chunkArray(fieldList, fieldsPerBatch), (batch: string[]) => {
+      ArrayUtils.chunkArray(fieldList, fieldsPerBatch).map((batch: string[]) => {
         const url = UrlService.deleteFields(org.getId(), batch);
         return RequestUtils.delete(url, org.getApiKey());
       })
@@ -90,10 +87,10 @@ export class FieldAPI {
     Assert.isLargerOrEqualsThan(0, totalPages, 'Parameter "totalPages" cannot be a negative value.');
     Logger.loadingTask(`Loading ${totalPages - 1} more pages of fields from ${Colors.organization(org.getId())} `);
     const emptyArray: number[] = new Array(totalPages - 1);
-    const pageArray = _.map(emptyArray, (v: number, idx: number) => idx + 1);
-    return Promise.all(_.map(pageArray, (page: number) => this.getFieldsPage(org, page))).then((otherPages: RequestResponse[]) => {
+    const pageArray = map(emptyArray, (v: number, idx: number) => idx + 1);
+    return Promise.all(map(pageArray, (page: number) => this.getFieldsPage(org, page))).then((otherPages: RequestResponse[]) => {
       Logger.info(`Successfully loaded ${totalPages - 1} additional pages of fields from ${Colors.organization(org.getId())} `);
-      _.each(otherPages, (response: RequestResponse) => {
+      each(otherPages, (response: RequestResponse) => {
         Assert.exists(response.body && response.body.items, StaticErrorMessage.UNEXPECTED_RESPONSE);
         org.addFieldList(response.body.items);
       });

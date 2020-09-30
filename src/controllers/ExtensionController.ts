@@ -1,4 +1,4 @@
-import * as _ from 'underscore';
+import { each, find, isEqual, map, mapObject } from 'underscore';
 import { BaseController } from './BaseController';
 import { series } from 'async';
 import { RequestResponse } from 'request';
@@ -75,7 +75,7 @@ export class ExtensionController extends BaseController {
       Logger.loadingTask('Graduating Extensions');
 
       const graduationCleanup = (extensionList: Extension[]) => {
-        _.each(extensionList, extension => {
+        each(extensionList, (extension) => {
           // Strip extension from keys that should not be graduated using whitelist and blacklist strategy
           // Should apply to "TO_UPDATE" and "TO_CREATE" extensions only because we dont want to graduate all extension parameters by default (e.g. status, language, ...)
           extension.removeParameters(options.keyBlacklist || [], options.keyWhitelist || []);
@@ -86,7 +86,7 @@ export class ExtensionController extends BaseController {
       graduationCleanup(diffResultArray.TO_UPDATE);
 
       return Promise.all(
-        _.map(
+        map(
           this.getAuthorizedOperations(diffResultArray, this.graduateNew, this.graduateUpdated, this.graduateDeleted, options),
           (operation: (diffResult: DiffResultArray<Extension>) => Promise<void>) => {
             return operation.call(this, diffResultArray);
@@ -103,7 +103,7 @@ export class ExtensionController extends BaseController {
     Logger.verbose(
       `Creating ${diffResult.TO_CREATE.length} new extension${diffResult.TO_CREATE.length > 1 ? 's' : ''} in ${this.organization2.getId()} `
     );
-    const asyncArray = _.map(diffResult.TO_CREATE, (extension: Extension) => {
+    const asyncArray = diffResult.TO_CREATE.map((extension: Extension) => {
       return (callback: any) => {
         ExtensionAPI.createExtension(this.organization2, extension.getConfiguration())
           .then((response: RequestResponse) => {
@@ -133,7 +133,7 @@ export class ExtensionController extends BaseController {
         diffResult.TO_UPDATE.length > 1 ? 's' : ''
       } in ${this.organization2.getId()} `
     );
-    const asyncArray = _.map(diffResult.TO_UPDATE, (extension: Extension, idx: number) => {
+    const asyncArray = map(diffResult.TO_UPDATE, (extension: Extension, idx: number) => {
       return (callback: any) => {
         const destinationExtension = diffResult.TO_UPDATE_OLD[idx].getId();
         ExtensionAPI.updateExtension(this.organization2, destinationExtension, extension.getConfiguration())
@@ -163,7 +163,7 @@ export class ExtensionController extends BaseController {
         diffResult.TO_CREATE.length > 1 ? 's' : ''
       } from ${this.organization2.getId()} `
     );
-    const asyncArray = _.map(diffResult.TO_DELETE, (extension: Extension) => {
+    const asyncArray = diffResult.TO_DELETE.map((extension: Extension) => {
       return (callback: any) => {
         ExtensionAPI.deleteExtension(this.organization2, extension.getId())
           .then((response: RequestResponse) => {
@@ -221,10 +221,10 @@ export class ExtensionController extends BaseController {
 
   extractionMethod(object: any[], diffOptions: IDiffOptions, oldVersion?: any[]): any[] {
     if (oldVersion === undefined) {
-      return _.map(object, (e: Extension) => e.getConfiguration());
+      return object.map((e: Extension) => e.getConfiguration());
     } else {
-      return _.map(oldVersion, (oldExtension: Extension) => {
-        const newExtension: Extension = _.find(object, (e: Extension) => {
+      return oldVersion.map((oldExtension: Extension) => {
+        const newExtension: Extension = find(object, (e: Extension) => {
           return e.getName() === oldExtension.getName();
         });
 
@@ -232,8 +232,8 @@ export class ExtensionController extends BaseController {
         const oldExtensionModel = oldExtension.getConfiguration();
 
         // TODO: add keys to ignore here
-        const updatedExtensionModel: IStringMap<any> = _.mapObject(newExtensionModel, (val, key) => {
-          if (!_.isEqual(oldExtensionModel[key], val) && (!diffOptions.keysToIgnore || diffOptions.keysToIgnore.indexOf(key) === -1)) {
+        const updatedExtensionModel: IStringMap<any> = mapObject(newExtensionModel, (val, key) => {
+          if (!isEqual(oldExtensionModel[key], val) && (!diffOptions.keysToIgnore || diffOptions.keysToIgnore.indexOf(key) === -1)) {
             return { newValue: val, oldValue: oldExtensionModel[key] };
           } else {
             return val;

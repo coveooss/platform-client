@@ -30,7 +30,7 @@ export const FieldAPITest = () => {
         useCacheForNumericQuery: false,
         useCacheForComputedFacet: false,
         dateFormat: '',
-        system: false
+        system: false,
       },
       {
         name: 'newfield',
@@ -51,7 +51,7 @@ export const FieldAPITest = () => {
         useCacheForNumericQuery: false,
         useCacheForComputedFacet: false,
         dateFormat: '',
-        system: false
+        system: false,
       },
       {
         name: 'authorloginname',
@@ -72,7 +72,7 @@ export const FieldAPITest = () => {
         useCacheForNumericQuery: false,
         useCacheForComputedFacet: false,
         dateFormat: '',
-        system: false
+        system: false,
       },
       {
         name: 'bcc',
@@ -93,7 +93,7 @@ export const FieldAPITest = () => {
         useCacheForNumericQuery: false,
         useCacheForComputedFacet: false,
         dateFormat: '',
-        system: false
+        system: false,
       },
       {
         name: 'newField',
@@ -114,8 +114,8 @@ export const FieldAPITest = () => {
         useCacheForNumericQuery: false,
         useCacheForComputedFacet: false,
         dateFormat: '',
-        system: false
-      }
+        system: false,
+      },
     ];
 
     let scope: nock.Scope;
@@ -124,7 +124,7 @@ export const FieldAPITest = () => {
       expect(scope.pendingMocks(), scope.pendingMocks().toString()).to.be.empty;
     });
 
-    it('Should prepare the request to get the first page fields', (done: MochaDone) => {
+    it('Should prepare the request to get the first page fields', (done: Mocha.Done) => {
       const organization: Organization = new Organization('qwerty123', 'secret');
 
       scope = nock(UrlService.getDefaultUrl())
@@ -142,7 +142,7 @@ export const FieldAPITest = () => {
       expect(() => FieldAPI.getFieldsPage(organization, -1)).to.throw();
     });
 
-    it('Should prepare the request to get the second page fields', (done: MochaDone) => {
+    it('Should prepare the request to get the second page fields', (done: Mocha.Done) => {
       const organization: Organization = new Organization('qwerty456', 'secret');
 
       scope = nock(UrlService.getDefaultUrl())
@@ -155,18 +155,16 @@ export const FieldAPITest = () => {
         .catch((err: any) => done(err));
     });
 
-    it('Should prepare the 1 request to get field definition', (done: MochaDone) => {
+    it('Should prepare the 1 request to get field definition', (done: Mocha.Done) => {
       // First expected request
-      scope = nock(UrlService.getDefaultUrl())
-        .get('/api-docs/Field?group=public')
-        .reply(RequestUtils.OK);
+      scope = nock(UrlService.getDefaultUrl()).get('/api-docs/Field?group=public').reply(RequestUtils.OK);
 
       FieldAPI.getFieldDefinitions()
         .then(() => done())
         .catch((err: any) => done(err));
     });
 
-    it('Should prepare the 1 request to create fields', (done: MochaDone) => {
+    it('Should prepare the 1 request to create fields', (done: Mocha.Done) => {
       const organization: Organization = new Organization('qwerty456', 'secret');
 
       // First expected request
@@ -179,7 +177,7 @@ export const FieldAPITest = () => {
         .catch((err: any) => done(err));
     });
 
-    it('Should prepare the 2 requests to create fields', (done: MochaDone) => {
+    it('Should prepare the 2 requests to create fields', (done: Mocha.Done) => {
       const organization: Organization = new Organization('qwerty456', 'secret');
 
       // First expected request
@@ -204,7 +202,7 @@ export const FieldAPITest = () => {
             useCacheForNumericQuery: false,
             useCacheForComputedFacet: false,
             dateFormat: '',
-            system: false
+            system: false,
           },
           {
             name: 'newfield',
@@ -225,7 +223,7 @@ export const FieldAPITest = () => {
             useCacheForNumericQuery: false,
             useCacheForComputedFacet: false,
             dateFormat: '',
-            system: false
+            system: false,
           },
           {
             name: 'authorloginname',
@@ -246,8 +244,8 @@ export const FieldAPITest = () => {
             useCacheForNumericQuery: false,
             useCacheForComputedFacet: false,
             dateFormat: '',
-            system: false
-          }
+            system: false,
+          },
         ])
         .reply(RequestUtils.OK)
         // Second expected request
@@ -271,7 +269,7 @@ export const FieldAPITest = () => {
             useCacheForNumericQuery: false,
             useCacheForComputedFacet: false,
             dateFormat: '',
-            system: false
+            system: false,
           },
           {
             name: 'newField',
@@ -292,8 +290,8 @@ export const FieldAPITest = () => {
             useCacheForNumericQuery: false,
             useCacheForComputedFacet: false,
             dateFormat: '',
-            system: false
-          }
+            system: false,
+          },
         ])
         .reply(RequestUtils.OK);
 
@@ -302,7 +300,7 @@ export const FieldAPITest = () => {
         .catch((err: any) => done(err));
     });
 
-    it('Should prepare the request to update fields', (done: MochaDone) => {
+    it('Should prepare the request to update fields', (done: Mocha.Done) => {
       const organization: Organization = new Organization('myorg', 'secret');
 
       scope = nock(UrlService.getDefaultUrl())
@@ -327,7 +325,7 @@ export const FieldAPITest = () => {
             useCacheForNumericQuery: false,
             useCacheForComputedFacet: false,
             dateFormat: '',
-            system: false
+            system: false,
           },
           {
             name: 'newfield',
@@ -348,7 +346,7 @@ export const FieldAPITest = () => {
             useCacheForNumericQuery: false,
             useCacheForComputedFacet: false,
             dateFormat: '',
-            system: false
+            system: false,
           },
           {
             name: 'authorloginname',
@@ -369,8 +367,8 @@ export const FieldAPITest = () => {
             useCacheForNumericQuery: false,
             useCacheForComputedFacet: false,
             dateFormat: '',
-            system: false
-          }
+            system: false,
+          },
         ])
         .reply(RequestUtils.NO_CONTENT)
         // Second expected request
@@ -394,7 +392,7 @@ export const FieldAPITest = () => {
             useCacheForNumericQuery: false,
             useCacheForComputedFacet: false,
             dateFormat: '',
-            system: false
+            system: false,
           },
           {
             name: 'newField',
@@ -415,8 +413,8 @@ export const FieldAPITest = () => {
             useCacheForNumericQuery: false,
             useCacheForComputedFacet: false,
             dateFormat: '',
-            system: false
-          }
+            system: false,
+          },
         ])
         .reply(RequestUtils.NO_CONTENT);
 
@@ -425,7 +423,7 @@ export const FieldAPITest = () => {
         .catch((err: any) => done(err));
     });
 
-    it('Should prepare the request to delete fields', (done: MochaDone) => {
+    it('Should prepare the request to delete fields', (done: Mocha.Done) => {
       const organization: Organization = new Organization('theorg', 'xxx-xxx');
       const fieldToDelete = ['allmetadatavalues', 'newfield', 'authorloginname', 'bcc', 'newField'];
 
@@ -439,7 +437,7 @@ export const FieldAPITest = () => {
         .catch((err: any) => done(err));
     });
 
-    it('Should prepare 3 requests to delete fields', (done: MochaDone) => {
+    it('Should prepare 3 requests to delete fields', (done: Mocha.Done) => {
       const organization: Organization = new Organization('theorg', 'xxx-xxx');
       const fieldToDelete = ['allmetadatavalues', 'newfield', 'authorloginname', 'bcc', 'newField'];
 
@@ -462,7 +460,7 @@ export const FieldAPITest = () => {
         .catch((err: any) => done(err));
     });
 
-    it('Should prepare the request to load other page field', (done: MochaDone) => {
+    it('Should prepare the request to load other page field', (done: Mocha.Done) => {
       const organization: Organization = new Organization('theorg', 'xxx-xxx');
 
       scope = nock(UrlService.getDefaultUrl())
@@ -474,9 +472,9 @@ export const FieldAPITest = () => {
             {
               name: 'field1',
               description: 'Place to put content for metadata discovery.',
-              type: 'STRING'
-            }
-          ]
+              type: 'STRING',
+            },
+          ],
         })
         // Second expected request
         .get('/rest/organizations/theorg/sources/page/fields')
@@ -486,14 +484,14 @@ export const FieldAPITest = () => {
             {
               name: 'field2',
               description: 'Place to put content for metadata discovery.',
-              type: 'STRING'
+              type: 'STRING',
             },
             {
               name: 'field3',
               description: 'Place to put content for metadata discovery.',
-              type: 'STRING'
-            }
-          ]
+              type: 'STRING',
+            },
+          ],
         });
 
       FieldAPI.loadOtherPages(organization, 3)
@@ -509,7 +507,7 @@ export const FieldAPITest = () => {
       expect(() => FieldAPI.loadOtherPages(organization, -1)).to.throw();
     });
 
-    it('Should throw an "Unexpected Response" error ', (done: MochaDone) => {
+    it('Should throw an "Unexpected Response" error ', (done: Mocha.Done) => {
       const organization: Organization = new Organization('67ujnbgh', 'xxx-xxx');
       scope = nock(UrlService.getDefaultUrl())
         .get('/rest/organizations/67ujnbgh/sources/page/fields')
@@ -528,7 +526,7 @@ export const FieldAPITest = () => {
         });
     });
 
-    it('Should load all fields from the organization (one page)', (done: MochaDone) => {
+    it('Should load all fields from the organization (one page)', (done: Mocha.Done) => {
       const organization: Organization = new Organization('hjkmnbfjhj3gfde45', 'xxx-xxx');
       scope = nock(UrlService.getDefaultUrl())
         // First expected request
@@ -539,21 +537,21 @@ export const FieldAPITest = () => {
             {
               name: 'allmetadatavalues',
               description: '',
-              type: 'STRING'
+              type: 'STRING',
             },
             {
               name: 'attachmentdepth',
               description: 'The attachment depth.',
-              type: 'STRING'
+              type: 'STRING',
             },
             {
               name: 'attachmentparentid',
               description: 'The identifier of the attachment"s immediate parent, for parent/child relationship.',
-              type: 'LONG'
-            }
+              type: 'LONG',
+            },
           ],
           totalPages: 1,
-          totalEntries: 3
+          totalEntries: 3,
         });
 
       FieldAPI.loadFields(organization)
@@ -566,7 +564,7 @@ export const FieldAPITest = () => {
         });
     });
 
-    it('Should load all fields from the organization', (done: MochaDone) => {
+    it('Should load all fields from the organization', (done: Mocha.Done) => {
       const organization: Organization = new Organization('hello', 'xxx-xxx');
       scope = nock(UrlService.getDefaultUrl())
         // First expected request
@@ -577,21 +575,21 @@ export const FieldAPITest = () => {
             {
               name: 'allmetadatavalues',
               description: '',
-              type: 'STRING'
+              type: 'STRING',
             },
             {
               name: 'attachmentdepth',
               description: 'The attachment depth.',
-              type: 'STRING'
+              type: 'STRING',
             },
             {
               name: 'attachmentparentid',
               description: 'The identifier of the attachment"s immediate parent, for parent/child relationship.',
-              type: 'LONG'
-            }
+              type: 'LONG',
+            },
           ],
           totalPages: 3,
-          totalEntries: 8
+          totalEntries: 8,
         })
         // Second expected request
         .get('/rest/organizations/hello/sources/page/fields')
@@ -601,21 +599,21 @@ export const FieldAPITest = () => {
             {
               name: 'author',
               description: 'The author of the document',
-              type: 'STRING'
+              type: 'STRING',
             },
             {
               name: 'authorloginname',
               description: 'Login Name of the item author',
-              type: 'STRING'
+              type: 'STRING',
             },
             {
               name: 'bcc',
               description: 'The bcc email field',
-              type: 'STRING'
-            }
+              type: 'STRING',
+            },
           ],
           totalPages: 3,
-          totalEntries: 8
+          totalEntries: 8,
         })
         // Third expected request
         .get('/rest/organizations/hello/sources/page/fields')
@@ -625,16 +623,16 @@ export const FieldAPITest = () => {
             {
               name: 'cc',
               description: 'The cc email field',
-              type: 'STRING'
+              type: 'STRING',
             },
             {
               name: 'clickableuri',
               description: 'The clickable URI of the document',
-              type: 'STRING'
-            }
+              type: 'STRING',
+            },
           ],
           totalPages: 3,
-          totalEntries: 8
+          totalEntries: 8,
         });
 
       FieldAPI.loadFields(organization)

@@ -45,7 +45,7 @@ export const ExtensionControllerTest = () => {
       content: 'A new extension',
       description: 'This extension is used to parse urls to extract metadata like categories.',
       name: 'All metadata value',
-      requiredDataStreams: []
+      requiredDataStreams: [],
     };
 
     const sa2fjv3lwf67va2pbiztb22fsu = {
@@ -54,7 +54,7 @@ export const ExtensionControllerTest = () => {
         'import urlparse\n\n# Title: URL Parsing to extract metadata\n# Description: This extension is used to parse urls to extract metadata like categories.\n# Required data:\n\n# captures the Web Path\npath = urlparse.urlparse(document.uri).path\n\ncategories = {}\n\nfor i, p in enumerate(path.split("/")):\n    # path will start with /, so the first p (i=0) is usually empty\n    if p:\n        # Add categories as meta1, meta2, meta3.\n        # You can use an array if you want specific names for the categories.\n        categories[\'meta\'+str(i)] = p\n\nif len(categories):\n    # Set the categories\n    document.add_meta_data(categories)\n',
       description: 'This extension is used to parse urls to extract metadata like categories.',
       name: 'URL Parsing to extract metadata',
-      requiredDataStreams: []
+      requiredDataStreams: [],
     };
 
     const tknepx33tdhmqibch2uzxhcc44 = {
@@ -63,7 +63,7 @@ export const ExtensionControllerTest = () => {
         '# Title: Reject a document.\n# Description: This extension simply rejects a document.\n# Description: It gets triggered on certain file types in the source configuration\n# Required data: \n\ndocument_api.v1.reject()\n',
       description: 'This extension simply rejects a document. It gets triggered on certain file types in the source configuration',
       name: 'Reject a document.',
-      requiredDataStreams: ['BODY_TEXT']
+      requiredDataStreams: ['BODY_TEXT'],
     };
 
     const prodmuo9dsuop8fuihmfdjshjd = {
@@ -71,7 +71,7 @@ export const ExtensionControllerTest = () => {
       content: 'print "new content"',
       description: 'This extension is used to parse urls to extract metadata like categories.',
       name: 'URL Parsing to extract metadata',
-      requiredDataStreams: []
+      requiredDataStreams: [],
     };
 
     const prodOrganizationExtension = [
@@ -86,21 +86,21 @@ export const ExtensionControllerTest = () => {
         versionId: 'hwnahJ9mql3cBB4PH6qG_9yXEwwFEhgX',
         status: {
           durationHealth: {
-            healthIndicator: 'UNKNOWN'
+            healthIndicator: 'UNKNOWN',
           },
           dailyStatistics: {
             averageDurationInSeconds: 0,
             numberOfErrors: 0,
             numberOfExecutions: 0,
             numberOfSkips: 0,
-            numberOfTimeouts: 0
+            numberOfTimeouts: 0,
           },
           disabledStatus: {},
           timeoutHealth: {
-            healthIndicator: 'UNKNOWN'
-          }
-        }
-      }
+            healthIndicator: 'UNKNOWN',
+          },
+        },
+      },
     ];
 
     const devOrganizationExtension = [
@@ -115,20 +115,20 @@ export const ExtensionControllerTest = () => {
         versionId: 'hwnahJ9mql3cBB4PH6qG_9yXEwwFEhgX',
         status: {
           durationHealth: {
-            healthIndicator: 'UNKNOWN'
+            healthIndicator: 'UNKNOWN',
           },
           dailyStatistics: {
             averageDurationInSeconds: 0,
             numberOfErrors: 0,
             numberOfExecutions: 0,
             numberOfSkips: 0,
-            numberOfTimeouts: 0
+            numberOfTimeouts: 0,
           },
           disabledStatus: {},
           timeoutHealth: {
-            healthIndicator: 'UNKNOWN'
-          }
-        }
+            healthIndicator: 'UNKNOWN',
+          },
+        },
       },
       {
         createdDate: 1511812769000,
@@ -141,20 +141,20 @@ export const ExtensionControllerTest = () => {
         versionId: 'hwnahJ9mql3cBB4PH6qG_9yXEwwFEhgX',
         status: {
           durationHealth: {
-            healthIndicator: 'UNKNOWN'
+            healthIndicator: 'UNKNOWN',
           },
           dailyStatistics: {
             averageDurationInSeconds: 0,
             numberOfErrors: 0,
             numberOfExecutions: 0,
             numberOfSkips: 0,
-            numberOfTimeouts: 0
+            numberOfTimeouts: 0,
           },
           disabledStatus: {},
           timeoutHealth: {
-            healthIndicator: 'UNKNOWN'
-          }
-        }
+            healthIndicator: 'UNKNOWN',
+          },
+        },
       },
       {
         createdDate: 1511812764000,
@@ -167,21 +167,21 @@ export const ExtensionControllerTest = () => {
         versionId: 'a6LyFxn91XW5IcgNMTKOabXcJWp05e7i',
         status: {
           durationHealth: {
-            healthIndicator: 'UNKNOWN'
+            healthIndicator: 'UNKNOWN',
           },
           dailyStatistics: {
             averageDurationInSeconds: 0,
             numberOfErrors: 0,
             numberOfExecutions: 0,
             numberOfSkips: 0,
-            numberOfTimeouts: 0
+            numberOfTimeouts: 0,
           },
           disabledStatus: {},
           timeoutHealth: {
-            healthIndicator: 'UNKNOWN'
-          }
-        }
-      }
+            healthIndicator: 'UNKNOWN',
+          },
+        },
+      },
     ];
 
     const extension1 = new Extension({
@@ -189,7 +189,7 @@ export const ExtensionControllerTest = () => {
       description: 'This is an extension that prints an "Hello Word"',
       name: 'Hello Word',
       id: 'yifpsa8fgudsihmfshjd',
-      requiredDataStreams: []
+      requiredDataStreams: [],
     });
 
     const extension2 = new Extension({
@@ -198,7 +198,7 @@ export const ExtensionControllerTest = () => {
         'import urlparse\n\n# Title: URL Parsing to extract metadata\n# Description: This extension is used to parse urls to extract metadata like categories.\n# Required data:\n\n# captures the Web Path\npath = urlparse.urlparse(document.uri).path\n\ncategories = {}\n\nfor i, p in enumerate(path.split("/")):\n    # path will start with /, so the first p (i=0) is usually empty\n    if p:\n        # Add categories as meta1, meta2, meta3.\n        # You can use an array if you want specific names for the categories.\n        categories[\'meta\'+str(i)] = p\n\nif len(categories):\n    # Set the categories\n    document.add_meta_data(categories)\n',
       description: 'This extension is used to parse urls to extract metadata like categories.',
       name: 'URL Parsing to extract metadata',
-      requiredDataStreams: []
+      requiredDataStreams: [],
     });
 
     const extension2Old = new Extension({
@@ -207,7 +207,7 @@ export const ExtensionControllerTest = () => {
         'import urlparse\n\n# Title: URL Parsing to extract metadata\n# Description: This extension is used to parse urls to extract metadata like categories.\n# Required data:\n\n# captures the Web Path\npath = urlparse.urlparse(document.uri).path\n\ncategories = {}\n\nfor i, p in enumerate(path.split("/")):\n    # path will start with /, so the first p (i=0) is usually empty\n    if p:\n        # Add categories as meta1, meta2, meta3.\n        # You can use an array if you want specific names for the categories.\n        categories[\'meta\'+str(i)] = p\n\nif len(categories):\n    # Set the categories\n    document.add_meta_data(categories)\n',
       description: 'This extension is the older version, it is used to parse urls to extract metadata like categories.',
       name: 'URL Parsing to extract metadata',
-      requiredDataStreams: []
+      requiredDataStreams: [],
     });
 
     afterEach(() => {
@@ -232,7 +232,7 @@ export const ExtensionControllerTest = () => {
           summary: { TO_CREATE: 0, TO_UPDATE: 0, TO_DELETE: 0 },
           TO_CREATE: [],
           TO_UPDATE: [],
-          TO_DELETE: []
+          TO_DELETE: [],
         });
       });
 
@@ -251,8 +251,8 @@ export const ExtensionControllerTest = () => {
               description: 'This is an extension that prints an "Hello Word"',
               id: 'yifpsa8fgudsihmfshjd',
               name: 'Hello Word',
-              requiredDataStreams: []
-            }
+              requiredDataStreams: [],
+            },
           ],
           TO_UPDATE: [
             {
@@ -260,20 +260,20 @@ export const ExtensionControllerTest = () => {
                 'import urlparse\n\n# Title: URL Parsing to extract metadata\n# Description: This extension is used to parse urls to extract metadata like categories.\n# Required data:\n\n# captures the Web Path\npath = urlparse.urlparse(document.uri).path\n\ncategories = {}\n\nfor i, p in enumerate(path.split("/")):\n    # path will start with /, so the first p (i=0) is usually empty\n    if p:\n        # Add categories as meta1, meta2, meta3.\n        # You can use an array if you want specific names for the categories.\n        categories[\'meta\'+str(i)] = p\n\nif len(categories):\n    # Set the categories\n    document.add_meta_data(categories)\n',
               description: {
                 newValue: 'This extension is used to parse urls to extract metadata like categories.',
-                oldValue: 'This extension is the older version, it is used to parse urls to extract metadata like categories.'
+                oldValue: 'This extension is the older version, it is used to parse urls to extract metadata like categories.',
               },
               id: 'yidmuo9dsuop8fuihmfdjshjd',
               name: 'URL Parsing to extract metadata',
-              requiredDataStreams: []
-            }
+              requiredDataStreams: [],
+            },
           ],
-          TO_DELETE: []
+          TO_DELETE: [],
         });
       });
     });
 
     describe('Diff Method', () => {
-      it('Should not diff: ACCESS_DENIED', (done: MochaDone) => {
+      it('Should not diff: ACCESS_DENIED', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           // Fecthing all dev extensions (will return an error)
           .get('/rest/organizations/dev/extensions')
@@ -301,7 +301,7 @@ export const ExtensionControllerTest = () => {
           });
       });
 
-      it('Should not return an empty diff result', (done: MochaDone) => {
+      it('Should not return an empty diff result', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           // Fecthing all dev extensions
           .get('/rest/organizations/dev/extensions')
@@ -334,7 +334,7 @@ export const ExtensionControllerTest = () => {
           });
       });
 
-      it('Should diff', (done: MochaDone) => {
+      it('Should diff', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           // Fecthing all dev extensions
           .get('/rest/organizations/dev/extensions')
@@ -363,7 +363,7 @@ export const ExtensionControllerTest = () => {
           });
       });
 
-      it('Should not retrieve blacklisted extensions during the diff', (done: MochaDone) => {
+      it('Should not retrieve blacklisted extensions during the diff', (done: Mocha.Done) => {
         const orgx: Organization = new Organization('dev', 'xxx', { extensions: ['All metadata value', 'reject a Document.'] });
         const orgy: Organization = new Organization('prod', 'yyy');
         const controllerxy = new ExtensionController(orgx, orgy);
@@ -398,7 +398,7 @@ export const ExtensionControllerTest = () => {
     });
 
     describe('Graduate Method', () => {
-      it('Should have nothing to graduate: Similar orgs', (done: MochaDone) => {
+      it('Should have nothing to graduate: Similar orgs', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/extensions')
           .reply(RequestUtils.OK, prodOrganizationExtension)
@@ -413,7 +413,7 @@ export const ExtensionControllerTest = () => {
           POST: true,
           PUT: true,
           DELETE: true,
-          diffOptions: {}
+          diffOptions: {},
         };
 
         controller.runDiffSequence().then((diffResultArray: DiffResultArray<Extension>) => {
@@ -429,13 +429,13 @@ export const ExtensionControllerTest = () => {
         });
       });
 
-      it('Should graduate', (done: MochaDone) => {
+      it('Should graduate', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           .post('/rest/organizations/prod/extensions', {
             content: 'print "all metadata"',
             description: 'This extension is showing all available metadata',
             name: 'All metadata value',
-            requiredDataStreams: []
+            requiredDataStreams: [],
           })
           .reply(RequestUtils.OK)
           // Creating secon extention in prod
@@ -445,7 +445,7 @@ export const ExtensionControllerTest = () => {
             description:
               'This extension demonstrate how you can call the GraphicsMagick library from the command line in an extension. You could use that on the document body, a thumbnail or a field containing binary  data in base64 format (like an avatar, when indexing users)',
             name: 'Resize images to a smaller size',
-            requiredDataStreams: []
+            requiredDataStreams: [],
           })
           .reply(RequestUtils.OK)
           // Updating one extension in prod
@@ -454,7 +454,7 @@ export const ExtensionControllerTest = () => {
               'import urlparse\n\n# Title: URL Parsing to extract metadata\n# Description: This extension is used to parse urls to extract metadata like categories.\n# Required data:\n\n# captures the Web Path\npath = urlparse.urlparse(document.uri).path\n\ncategories = {}\n\nfor i, p in enumerate(path.split("/")):\n    # path will start with /, so the first p (i=0) is usually empty\n    if p:\n        # Add categories as meta1, meta2, meta3.\n        # You can use an array if you want specific names for the categories.\n        categories[\'meta\'+str(i)] = p\n\nif len(categories):\n    # Set the categories\n    document.add_meta_data(categories)\n',
             description: 'This extension is used to parse urls to extract metadata like categories.',
             name: 'URL Parsing to extract metadata',
-            requiredDataStreams: []
+            requiredDataStreams: [],
           })
           .reply(RequestUtils.NO_CONTENT)
           // Deleting one extension in prod
@@ -470,7 +470,7 @@ export const ExtensionControllerTest = () => {
             description: 'This extension is showing all available metadata',
             name: 'All metadata value',
             ddsadsadsadsa: 'dsa7dhsuiakjd',
-            requiredDataStreams: []
+            requiredDataStreams: [],
           }),
           new Extension({
             id: 'random-id-2',
@@ -479,8 +479,8 @@ export const ExtensionControllerTest = () => {
             description:
               'This extension demonstrate how you can call the GraphicsMagick library from the command line in an extension. You could use that on the document body, a thumbnail or a field containing binary  data in base64 format (like an avatar, when indexing users)',
             name: 'Resize images to a smaller size',
-            requiredDataStreams: []
-          })
+            requiredDataStreams: [],
+          }),
         ];
 
         extensionDiff.TO_UPDATE = [
@@ -491,8 +491,8 @@ export const ExtensionControllerTest = () => {
             description: 'This extension is used to parse urls to extract metadata like categories.',
             ddsadsadsadsa: 'dsa7dhsuiakjd',
             name: 'URL Parsing to extract metadata',
-            requiredDataStreams: []
-          })
+            requiredDataStreams: [],
+          }),
         ];
 
         extensionDiff.TO_UPDATE_OLD = [
@@ -501,8 +501,8 @@ export const ExtensionControllerTest = () => {
             content: '#TODO.....',
             description: 'This extension is used to parse urls to extract metadata like categories.',
             name: 'URL Parsing to extract metadata',
-            requiredDataStreams: []
-          })
+            requiredDataStreams: [],
+          }),
         ];
 
         extensionDiff.TO_DELETE = [
@@ -512,8 +512,8 @@ export const ExtensionControllerTest = () => {
               'import urlparse\n\n# Title: URL Parsing to extract metadata\n# Description: This extension is used to parse urls to extract metadata like categories.\n# Required data:\n\n# captures the Web Path\npath = urlparse.urlparse(document.uri).path\n\ncategories = {}\n\nfor i, p in enumerate(path.split("/")):\n    # path will start with /, so the first p (i=0) is usually empty\n    if p:\n        # Add categories as meta1, meta2, meta3.\n        # You can use an array if you want specific names for the categories.\n        categories[\'meta\'+str(i)] = p\n\nif len(categories):\n    # Set the categories\n    document.add_meta_data(categories)\n',
             description: 'This extension is used to parse urls to extract metadata like categories.',
             name: 'URL Parsing to extract metadata',
-            requiredDataStreams: []
-          })
+            requiredDataStreams: [],
+          }),
         ];
 
         const whitelist = ['requiredDataStreams', 'content', 'description', 'name'];
@@ -522,7 +522,7 @@ export const ExtensionControllerTest = () => {
           PUT: true,
           DELETE: true,
           diffOptions: { includeOnly: whitelist },
-          keyWhitelist: whitelist
+          keyWhitelist: whitelist,
         };
 
         controller
@@ -536,13 +536,13 @@ export const ExtensionControllerTest = () => {
           });
       });
 
-      it('Should not graduate if server error', (done: MochaDone) => {
+      it('Should not graduate if server error', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           .post('/rest/organizations/prod/extensions', {
             content: 'print "all metadata"',
             description: 'This extension is showing all available metadata',
             name: 'All metadata value',
-            requiredDataStreams: []
+            requiredDataStreams: [],
           })
           .reply(RequestUtils.OK)
           // Creating secon extention in prod
@@ -550,7 +550,7 @@ export const ExtensionControllerTest = () => {
             content: '....',
             description: 'some description',
             name: 'Resize images to a smaller size',
-            requiredDataStreams: []
+            requiredDataStreams: [],
           })
           .reply(429, 'TOO_MANY_REQUESTS')
           // Updating one extension in prod
@@ -558,7 +558,7 @@ export const ExtensionControllerTest = () => {
             content: 'new stuff',
             description: 'This extension is used to parse urls to extract metadata like categories.',
             name: 'URL Parsing to extract metadata',
-            requiredDataStreams: []
+            requiredDataStreams: [],
           })
           .reply(429, 'TOO_MANY_REQUESTS')
           // Deleting one extension in prod
@@ -574,15 +574,15 @@ export const ExtensionControllerTest = () => {
             description: 'This extension is showing all available metadata',
             dsadsa: 'dsafghgghfgds',
             name: 'All metadata value',
-            requiredDataStreams: []
+            requiredDataStreams: [],
           }),
           new Extension({
             id: 'random-id-2',
             content: '....',
             description: 'some description',
             name: 'Resize images to a smaller size',
-            requiredDataStreams: []
-          })
+            requiredDataStreams: [],
+          }),
         ];
 
         extensionDiff.TO_UPDATE = [
@@ -591,8 +591,8 @@ export const ExtensionControllerTest = () => {
             content: 'new stuff',
             description: 'This extension is used to parse urls to extract metadata like categories.',
             name: 'URL Parsing to extract metadata',
-            requiredDataStreams: []
-          })
+            requiredDataStreams: [],
+          }),
         ];
 
         extensionDiff.TO_UPDATE_OLD = [
@@ -601,8 +601,8 @@ export const ExtensionControllerTest = () => {
             content: '#TODO.....',
             description: 'This extension is used to parse urls to extract metadata like categories.',
             name: 'URL Parsing to extract metadata',
-            requiredDataStreams: []
-          })
+            requiredDataStreams: [],
+          }),
         ];
 
         extensionDiff.TO_DELETE = [
@@ -611,8 +611,8 @@ export const ExtensionControllerTest = () => {
             content: 'Broken code',
             description: 'extension that breaks stuff',
             name: 'broken extension',
-            requiredDataStreams: []
-          })
+            requiredDataStreams: [],
+          }),
         ];
 
         const whitelist = ['requiredDataStreams', 'content', 'description', 'name'];
@@ -621,7 +621,7 @@ export const ExtensionControllerTest = () => {
           PUT: true,
           DELETE: true,
           diffOptions: { includeOnly: whitelist },
-          keyWhitelist: whitelist
+          keyWhitelist: whitelist,
         };
 
         controller
@@ -638,7 +638,7 @@ export const ExtensionControllerTest = () => {
           });
       });
 
-      it('Should graduate using the whitelist strategy', (done: MochaDone) => {
+      it('Should graduate using the whitelist strategy', (done: Mocha.Done) => {
         const orgx: Organization = new Organization('dev', 'xxx');
         const orgy: Organization = new Organization('prod', 'yyy');
         const controllerxy = new ExtensionController(orgx, orgy);
@@ -664,7 +664,7 @@ export const ExtensionControllerTest = () => {
             description: 'blablabla',
             name: 'pythonExtension',
             language: 'PYTHON3',
-            requiredDataStreams: []
+            requiredDataStreams: [],
           })
           .reply(RequestUtils.NO_CONTENT);
 
@@ -675,7 +675,7 @@ export const ExtensionControllerTest = () => {
           PUT: true,
           DELETE: false,
           diffOptions: diffOptions,
-          keyWhitelist: whitelist
+          keyWhitelist: whitelist,
         };
         controllerxy
           .runDiffSequence(diffOptions)
@@ -699,7 +699,7 @@ export const ExtensionControllerTest = () => {
     });
 
     describe('Download Method', () => {
-      it('Should download sources', (done: MochaDone) => {
+      it('Should download sources', (done: Mocha.Done) => {
         const orgx: Organization = new Organization('dev', 'xxx');
         const controllerxy = new ExtensionController(orgx);
 
@@ -732,7 +732,7 @@ export const ExtensionControllerTest = () => {
           });
       });
 
-      it('Should not download sources if REST API error', (done: MochaDone) => {
+      it('Should not download sources if REST API error', (done: Mocha.Done) => {
         const orgx: Organization = new Organization('dev', 'xxx');
         const controllerxy = new ExtensionController(orgx);
 

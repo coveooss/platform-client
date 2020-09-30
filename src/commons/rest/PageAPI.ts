@@ -1,4 +1,4 @@
-import * as _ from 'underscore';
+import { each } from 'underscore';
 import { RequestResponse } from 'request';
 import { Organization } from '../../coveoObjects/Organization';
 import { IGenericError, StaticErrorMessage } from '../errors';
@@ -44,7 +44,7 @@ export class PageAPI {
           );
           resolve();
 
-          _.each(response.body, (page: IStringMap<any>) => {
+          each(response.body, (page: IStringMap<any>) => {
             Logger.info(`Successfully loaded page ${Colors.page(page['name'])}`);
           });
 

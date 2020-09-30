@@ -1,5 +1,5 @@
 import * as request from 'request';
-import chalk from 'chalk';
+import { underline, bgCyan, bgGreen, bgYellow, bgRed } from 'chalk';
 import { JsonUtils } from './JsonUtils';
 import { Logger } from '../logger';
 export class RequestUtils {
@@ -11,13 +11,13 @@ export class RequestUtils {
   static UNAUTHORIZED: number = 401;
 
   static get(uri: string, apiKey: string): Promise<request.RequestResponse> {
-    Logger.insane(`${chalk.bgCyan.bold('GET')} ${chalk.underline(uri)}`);
+    Logger.insane(`${bgCyan.bold('GET')} ${underline(uri)}`);
     return new Promise((resolve: (value?: any) => void, reject: (error: any) => void) => {
       request(
         uri,
         {
           auth: { bearer: apiKey },
-          json: true
+          json: true,
         },
         (err: any, response: request.RequestResponse) => {
           if (err) {
@@ -35,8 +35,8 @@ export class RequestUtils {
   }
 
   static post(uri: string, apiKey: string, data: any): Promise<request.RequestResponse> {
-    Logger.insane(`${chalk.bgGreen.bold('POST')} ${chalk.underline(uri)}`);
-    Logger.insane(`${chalk.bgYellow.bold('POST')} ${JsonUtils.stringify(data, 0)}`);
+    Logger.insane(`${bgGreen.bold('POST')} ${underline(uri)}`);
+    Logger.insane(`${bgYellow.bold('POST')} ${JsonUtils.stringify(data, 0)}`);
     return new Promise((resolve: (value?: any) => void, reject: (error: any) => void) => {
       request(
         uri,
@@ -44,7 +44,7 @@ export class RequestUtils {
           method: 'POST',
           body: data,
           auth: { bearer: apiKey },
-          json: true
+          json: true,
         },
         (err: any, response: request.RequestResponse) => {
           if (err) {
@@ -62,8 +62,8 @@ export class RequestUtils {
   }
 
   static put(uri: string, apiKey: string, data: any): Promise<request.RequestResponse> {
-    Logger.insane(`${chalk.bgYellow.bold('PUT')} ${chalk.underline(uri)}`);
-    Logger.insane(`${chalk.bgYellow.bold('PUT')} ${JsonUtils.stringify(data, 0)}`);
+    Logger.insane(`${bgYellow.bold('PUT')} ${underline(uri)}`);
+    Logger.insane(`${bgYellow.bold('PUT')} ${JsonUtils.stringify(data, 0)}`);
     return new Promise((resolve: (value?: any) => void, reject: (error: any) => void) => {
       request(
         uri,
@@ -71,7 +71,7 @@ export class RequestUtils {
           method: 'PUT',
           body: data,
           auth: { bearer: apiKey },
-          json: true
+          json: true,
         },
         (err: any, response: request.RequestResponse) => {
           if (err) {
@@ -93,14 +93,14 @@ export class RequestUtils {
   }
 
   static delete(uri: string, apiKey: string): Promise<request.RequestResponse> {
-    Logger.insane(`${chalk.bgRed.bold('DELETE')} ${chalk.underline(uri)}`);
+    Logger.insane(`${bgRed.bold('DELETE')} ${underline(uri)}`);
     return new Promise((resolve: (value?: any) => void, reject: (error: any) => void) => {
       request(
         uri,
         {
           method: 'DELETE',
           auth: { bearer: apiKey },
-          json: true
+          json: true,
         },
         (err: any, response: request.RequestResponse) => {
           if (err) {

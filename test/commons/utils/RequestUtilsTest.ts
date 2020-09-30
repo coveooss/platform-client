@@ -11,10 +11,8 @@ export const RequestUtilsTest = () => {
       expect(scope.pendingMocks(), scope.pendingMocks().toString()).to.be.empty;
     });
 
-    it('Should send an empty request', (done: MochaDone) => {
-      scope = nock(UrlService.getDefaultUrl())
-        .get('/somewhere')
-        .reply(RequestUtils.OK);
+    it('Should send an empty request', (done: Mocha.Done) => {
+      scope = nock(UrlService.getDefaultUrl()).get('/somewhere').reply(RequestUtils.OK);
 
       RequestUtils.get(UrlService.getDefaultUrl('/somewhere'), 'xxx')
         .then(() => {
@@ -25,7 +23,7 @@ export const RequestUtilsTest = () => {
         });
     });
 
-    it('Should handle an error on GET method', (done: MochaDone) => {
+    it('Should handle an error on GET method', (done: Mocha.Done) => {
       scope = nock(UrlService.getDefaultUrl())
         .get('/somewhere_bad')
         .replyWithError({ message: 'something awful happened', code: 'AWFUL_ERROR' });
@@ -42,7 +40,7 @@ export const RequestUtilsTest = () => {
         });
     });
 
-    it('Should handle an error on PUT method', (done: MochaDone) => {
+    it('Should handle an error on PUT method', (done: Mocha.Done) => {
       scope = nock(UrlService.getDefaultUrl())
         .put('/cat/poems')
         .replyWithError({ message: 'something awful happened', code: 'AWFUL_ERROR' });
@@ -59,7 +57,7 @@ export const RequestUtilsTest = () => {
         });
     });
 
-    it('Should handle an error on POST method', (done: MochaDone) => {
+    it('Should handle an error on POST method', (done: Mocha.Done) => {
       scope = nock(UrlService.getDefaultUrl())
         .post('/the/super/org')
         .replyWithError({ message: 'something awful happened', code: 'AWFUL_ERROR' });
@@ -76,7 +74,7 @@ export const RequestUtilsTest = () => {
         });
     });
 
-    it('Should handle an error on Get method', (done: MochaDone) => {
+    it('Should handle an error on Get method', (done: Mocha.Done) => {
       scope = nock(UrlService.getDefaultUrl())
         .delete('/somthing/to/delete')
         .replyWithError({ message: 'something awful happened', code: 'AWFUL_ERROR' });

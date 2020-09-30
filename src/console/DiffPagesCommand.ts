@@ -1,5 +1,5 @@
 import * as program from 'commander';
-import * as _ from 'underscore';
+import {} from 'underscore';
 import { Logger } from '../commons/logger';
 import { CommanderUtils } from './CommanderUtils';
 import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
@@ -24,17 +24,17 @@ program
     const includeOnly = [
       'name', // mandatory
       'title', // mandatory
-      'html'
+      'html',
     ];
 
     // Set diff options
     const diffOptions: IDiffOptions = {
       silent: options.silent,
-      includeOnly: includeOnly
+      includeOnly: includeOnly,
     };
 
     const blacklistOptions = {
-      pages: options.ignorePages
+      pages: options.ignorePages,
     };
 
     const originOrg = new Organization(origin, apiKey[0], blacklistOptions);

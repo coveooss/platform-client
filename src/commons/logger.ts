@@ -1,5 +1,5 @@
 import * as Ora from 'ora';
-import * as _ from 'underscore';
+import { each } from 'underscore';
 import { Assert } from './misc/Assert';
 import { FileUtils } from './utils/FileUtils';
 import { Utils } from './utils/Utils';
@@ -105,7 +105,7 @@ export class LoggerSingleton {
   addToLogFile(level: string, message: string, ...meta: any[]) {
     const today = new Date().toLocaleString();
     FileUtils.appendToFile(this.filename, [today, level, stripAnsi(message), '\n'].join(' | '));
-    _.each(meta, (m: any) => {
+    each(meta, (m: any) => {
       if (!Utils.isEmptyString(m.toString())) {
         FileUtils.appendToFile(this.filename, [today, level, stripAnsi(m).toString(), '\n'].join(' | '));
       }
@@ -114,7 +114,7 @@ export class LoggerSingleton {
 
   log(level: string, logAction: 'succeed' | 'warn' | 'fail' | 'info', message: string, ...meta: any[]) {
     let fullMessage: string = '';
-    _.each(meta, (m: any) => {
+    each(meta, (m: any) => {
       if (!Utils.isEmptyString(m.toString())) {
         fullMessage += `\n${m.toString()}`;
       }

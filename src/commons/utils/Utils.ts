@@ -1,4 +1,4 @@
-import * as _ from 'underscore';
+import { isArray, isString } from 'underscore';
 
 export class Utils {
   static isUndefined(obj: any): boolean {
@@ -18,7 +18,7 @@ export class Utils {
   }
 
   static toNotNullString(str: string): string {
-    return _.isString(str) ? str : '';
+    return isString(str) ? str : '';
   }
 
   static anyTypeToString(value: any): string {
@@ -30,7 +30,7 @@ export class Utils {
   }
 
   static isNonEmptyString(str: string): boolean {
-    return _.isString(str) && str !== '';
+    return isString(str) && str !== '';
   }
 
   static isEmptyString(str: string): boolean {
@@ -42,7 +42,7 @@ export class Utils {
   }
 
   static isNonEmptyArray(obj: any): boolean {
-    return _.isArray(obj) && obj.length > 0;
+    return isArray(obj) && obj.length > 0;
   }
 
   static isEmptyArray(obj: any): boolean {

@@ -1,5 +1,5 @@
 import * as program from 'commander';
-import * as _ from 'underscore';
+import { union } from 'underscore';
 import { Logger } from '../commons/logger';
 import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { CommanderUtils } from './CommanderUtils';
@@ -54,7 +54,7 @@ program
       'configuration.startingAddresses',
       'configuration.sourceSecurityOption',
       'configuration.permissions',
-      'additionalInfos'
+      'additionalInfos',
     ];
 
     const keysToIgnore = [
@@ -66,29 +66,29 @@ program
       'additionalInfos.salesforceOrg',
       'additionalInfos.salesforceUser',
       'additionalInfos.salesforceOrgName',
-      'crawlingModuleId'
+      'crawlingModuleId',
     ];
 
     const graduateOptions: IGraduateOptions = {
       diffOptions: {
         silent: options.silent,
         includeOnly: includeOnly,
-        keysToIgnore: [...options.keysToIgnore, ...keysToIgnore]
+        keysToIgnore: [...options.keysToIgnore, ...keysToIgnore],
       },
       keyWhitelist: includeOnly,
       keyBlacklist: keysToIgnore,
       rebuild: options.rebuild,
       POST: options.methods.indexOf('POST') > -1,
       PUT: options.methods.indexOf('PUT') > -1,
-      DELETE: options.methods.indexOf('DELETE') > -1
+      DELETE: options.methods.indexOf('DELETE') > -1,
     };
 
     const blacklistOptions: IBlacklistObjects = {
-      extensions: _.union(
+      extensions: union(
         ['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues', 'capturemetadata'],
         options.ignoreExtensions
       ),
-      sources: options.ignoreSources
+      sources: options.ignoreSources,
     };
 
     const originOrg = new Organization(origin, apiKey[0], blacklistOptions);

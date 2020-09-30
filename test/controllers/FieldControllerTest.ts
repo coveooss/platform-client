@@ -1,7 +1,7 @@
 // tslint:disable:no-magic-numbers
 import { assert, expect } from 'chai';
 import * as nock from 'nock';
-import * as _ from 'underscore';
+import { map } from 'underscore';
 import { IGraduateOptions } from '../../src/commons/interfaces/IGraduateOptions';
 import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
 import { IGenericError } from '../../src/commons/errors';
@@ -25,20 +25,23 @@ export const FieldControllerTest = () => {
       description: 'The first name of a person',
       type: 'STRING',
       includeInQuery: true,
-      sources: [{ name: 'source1', id: 'x001' }, { name: 'source2', id: 'x002' }]
+      sources: [
+        { name: 'source1', id: 'x001' },
+        { name: 'source2', id: 'x002' },
+      ],
     });
     const field2WithSource: Field = new Field({
       name: 'birth',
       description: 'Day of birth',
       type: 'Date',
       includeInQuery: false,
-      sources: [{ name: 'source3', id: 'y003' }]
+      sources: [{ name: 'source3', id: 'y003' }],
     });
     const field2Old: Field = new Field({
       name: 'birth',
       description: 'Birthday',
       type: 'Date',
-      includeInQuery: true
+      includeInQuery: true,
     });
 
     // Controller
@@ -64,7 +67,7 @@ export const FieldControllerTest = () => {
           summary: { TO_CREATE: 0, TO_UPDATE: 0, TO_DELETE: 0 },
           TO_CREATE: [],
           TO_UPDATE: [],
-          TO_DELETE: []
+          TO_DELETE: [],
         });
       });
 
@@ -75,7 +78,7 @@ export const FieldControllerTest = () => {
         diffResultArray.TO_UPDATE_OLD.push(field2Old);
 
         const diffOptions: IDiffOptions = {
-          keysToIgnore: ['sources']
+          keysToIgnore: ['sources'],
         };
         const cleanVersion = fieldController.getCleanDiffVersion(diffResultArray, diffOptions);
         expect(cleanVersion).to.eql({
@@ -86,31 +89,31 @@ export const FieldControllerTest = () => {
               description: 'The first name of a person',
               type: 'STRING',
               includeInQuery: true,
-              sources: ['source1', 'source2']
-            }
+              sources: ['source1', 'source2'],
+            },
           ],
           TO_UPDATE: [
             {
               name: 'birth',
               description: {
                 newValue: 'Day of birth',
-                oldValue: 'Birthday'
+                oldValue: 'Birthday',
               },
               type: 'Date',
               includeInQuery: {
                 newValue: false,
-                oldValue: true
+                oldValue: true,
               },
-              sources: ['source3']
-            }
+              sources: ['source3'],
+            },
           ],
-          TO_DELETE: []
+          TO_DELETE: [],
         });
       });
     });
 
     describe('Diff Method', () => {
-      it('Should return an empty diff result', (done: MochaDone) => {
+      it('Should return an empty diff result', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources/page/fields')
@@ -120,14 +123,14 @@ export const FieldControllerTest = () => {
               {
                 name: 'allmetadatavalues',
                 description: 'new description',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'new field',
                 description: 'The attachment depth.',
-                type: 'STRING'
-              }
-            ]
+                type: 'STRING',
+              },
+            ],
           })
           .get('/rest/organizations/prod/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
@@ -136,14 +139,14 @@ export const FieldControllerTest = () => {
               {
                 name: 'allmetadatavalues',
                 description: 'new description',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'new field',
                 description: 'The attachment depth.',
-                type: 'STRING'
-              }
-            ]
+                type: 'STRING',
+              },
+            ],
           });
 
         fieldController
@@ -157,7 +160,7 @@ export const FieldControllerTest = () => {
           });
       });
 
-      it('Should return an empty diff result - even if sources are different', (done: MochaDone) => {
+      it('Should return an empty diff result - even if sources are different', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
@@ -167,15 +170,18 @@ export const FieldControllerTest = () => {
                 name: 'allmetadatavalues',
                 description: 'new description',
                 type: 'STRING',
-                sources: [{ name: 'source1', id: 'zxcv' }]
+                sources: [{ name: 'source1', id: 'zxcv' }],
               },
               {
                 name: 'new field',
                 description: 'The attachment depth.',
                 type: 'STRING',
-                sources: [{ name: 'source1', id: 'zxcv' }, { name: 'source2', id: 'wert' }]
-              }
-            ]
+                sources: [
+                  { name: 'source1', id: 'zxcv' },
+                  { name: 'source2', id: 'wert' },
+                ],
+              },
+            ],
           })
           .get('/rest/organizations/prod/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
@@ -185,19 +191,22 @@ export const FieldControllerTest = () => {
                 name: 'allmetadatavalues',
                 description: 'new description',
                 type: 'STRING',
-                sources: []
+                sources: [],
               },
               {
                 name: 'new field',
                 description: 'The attachment depth.',
                 type: 'STRING',
-                sources: [{ name: 'source1', id: 'zxcv-prod' }, { name: 'source2', id: 'wert-prod' }]
-              }
-            ]
+                sources: [
+                  { name: 'source1', id: 'zxcv-prod' },
+                  { name: 'source2', id: 'wert-prod' },
+                ],
+              },
+            ],
           });
 
         const diffOptions: IDiffOptions = {
-          keysToIgnore: ['sources']
+          keysToIgnore: ['sources'],
         };
         fieldController
           .runDiffSequence(diffOptions)
@@ -210,7 +219,7 @@ export const FieldControllerTest = () => {
           });
       });
 
-      it('Should return fields for specified sources', (done: MochaDone) => {
+      it('Should return fields for specified sources', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources/page/fields')
@@ -222,35 +231,44 @@ export const FieldControllerTest = () => {
                 name: 'genericfield',
                 description: '',
                 type: 'STRING',
-                sources: []
+                sources: [],
               },
               {
                 // we don't want to diff this field
                 name: 'field1',
                 description: 'new description',
                 type: 'STRING',
-                sources: [{ name: 'source1', id: 'zxcv' }]
+                sources: [{ name: 'source1', id: 'zxcv' }],
               },
               {
                 name: 'field2',
                 description: 'new description',
                 type: 'STRING',
-                sources: [{ name: 'source1', id: 'zxcv' }, { name: 'source2', id: 'wert' }]
+                sources: [
+                  { name: 'source1', id: 'zxcv' },
+                  { name: 'source2', id: 'wert' },
+                ],
               },
               {
                 name: 'field3',
                 description: 'should upadte this field event if sources attribute is different.',
                 type: 'STRING',
-                sources: [{ name: 'source3', id: 'asdfg' }, { name: 'source2', id: 'wert' }]
+                sources: [
+                  { name: 'source3', id: 'asdfg' },
+                  { name: 'source2', id: 'wert' },
+                ],
               },
               {
                 // we don't want to diff this field
                 name: 'newfield',
                 description: 'new field to create.',
                 type: 'STRING',
-                sources: [{ name: 'source3', id: 'jgfdk' }, { name: 'source6', id: 'fosjd' }]
-              }
-            ]
+                sources: [
+                  { name: 'source3', id: 'jgfdk' },
+                  { name: 'source6', id: 'fosjd' },
+                ],
+              },
+            ],
           })
           .get('/rest/organizations/prod/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
@@ -260,45 +278,54 @@ export const FieldControllerTest = () => {
                 name: 'genericfield',
                 description: 'changed description',
                 type: 'STRING',
-                sources: []
+                sources: [],
               },
               {
                 name: 'field1',
                 description: 'old description',
                 type: 'STRING',
-                sources: [{ name: 'source1', id: 'zxcv-prod' }]
+                sources: [{ name: 'source1', id: 'zxcv-prod' }],
               },
               {
                 name: 'field2',
                 description: '',
                 type: 'STRING',
-                sources: [{ name: 'source1', id: 'zxcv-prod' }, { name: 'source2', id: 'wert-prod' }]
+                sources: [
+                  { name: 'source1', id: 'zxcv-prod' },
+                  { name: 'source2', id: 'wert-prod' },
+                ],
               },
               {
                 name: 'field3',
                 description: '',
                 type: 'STRING',
-                sources: [{ name: 'sourceX', id: 'asdfg' }, { name: 'sourceY', id: 'wert' }]
+                sources: [
+                  { name: 'sourceX', id: 'asdfg' },
+                  { name: 'sourceY', id: 'wert' },
+                ],
               },
               {
                 name: 'fieldtodelete',
                 description: '',
                 type: 'STRING',
-                sources: [{ name: 'source2', id: 'asdfg' }, { name: 'sourceY', id: 'wert' }]
-              }
-            ]
+                sources: [
+                  { name: 'source2', id: 'asdfg' },
+                  { name: 'sourceY', id: 'wert' },
+                ],
+              },
+            ],
           });
 
         const diffOptions: IDiffOptions = {
           keysToIgnore: ['sources'],
-          sources: ['source2', 'source3']
+          sources: ['source2', 'source3'],
         };
         fieldController
           .runDiffSequence(diffOptions)
           .then((diff: DiffResultArray<Field>) => {
             expect(diff.TO_UPDATE.length).to.eql(2);
-            expect(_.map(diff.TO_UPDATE, f => f.getName())).to.contain('field2');
-            expect(_.map(diff.TO_UPDATE, f => f.getName())).to.contain('field3');
+            expect(map(diff.TO_UPDATE, (f) => f.getName())).to.contain('field2');
+            expect(map(diff.TO_UPDATE, (f) => f.getName())).to.contain('field3');
             expect(diff.TO_CREATE.length).to.eql(1);
             expect(diff.TO_DELETE.length).to.eql(1);
             done();
@@ -308,7 +335,7 @@ export const FieldControllerTest = () => {
           });
       });
 
-      it('Should return fields for specified sources expect for the ones blacklisted', (done: MochaDone) => {
+      it('Should return fields for specified sources expect for the ones blacklisted', (done: Mocha.Done) => {
         const orgx: Organization = new Organization('dev', 'xxx', { fields: ['field1', 'field3'] });
         const orgy: Organization = new Organization('prod', 'yyy', { fields: ['field1', 'field3'] });
         const controllerxy = new FieldController(orgx, orgy);
@@ -324,35 +351,44 @@ export const FieldControllerTest = () => {
                 name: 'genericfield',
                 description: '',
                 type: 'STRING',
-                sources: []
+                sources: [],
               },
               {
                 // we don't want to diff this field
                 name: 'field1',
                 description: 'new description',
                 type: 'STRING',
-                sources: [{ name: 'source1', id: 'zxcv' }]
+                sources: [{ name: 'source1', id: 'zxcv' }],
               },
               {
                 name: 'field2',
                 description: 'new description',
                 type: 'STRING',
-                sources: [{ name: 'source1', id: 'zxcv' }, { name: 'source2', id: 'wert' }]
+                sources: [
+                  { name: 'source1', id: 'zxcv' },
+                  { name: 'source2', id: 'wert' },
+                ],
               },
               {
                 name: 'field3',
                 description: 'should upadte this field event if sources attribute is different.',
                 type: 'STRING',
-                sources: [{ name: 'source3', id: 'asdfg' }, { name: 'source2', id: 'wert' }]
+                sources: [
+                  { name: 'source3', id: 'asdfg' },
+                  { name: 'source2', id: 'wert' },
+                ],
               },
               {
                 // we don't want to diff this field
                 name: 'newfield',
                 description: 'new field to create.',
                 type: 'STRING',
-                sources: [{ name: 'source3', id: 'jgfdk' }, { name: 'source6', id: 'fosjd' }]
-              }
-            ]
+                sources: [
+                  { name: 'source3', id: 'jgfdk' },
+                  { name: 'source6', id: 'fosjd' },
+                ],
+              },
+            ],
           })
           .get('/rest/organizations/prod/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
@@ -362,44 +398,53 @@ export const FieldControllerTest = () => {
                 name: 'genericfield',
                 description: 'changed description',
                 type: 'STRING',
-                sources: []
+                sources: [],
               },
               {
                 name: 'field1',
                 description: 'old description',
                 type: 'STRING',
-                sources: [{ name: 'source1', id: 'zxcv-prod' }]
+                sources: [{ name: 'source1', id: 'zxcv-prod' }],
               },
               {
                 name: 'field2',
                 description: '',
                 type: 'STRING',
-                sources: [{ name: 'source1', id: 'zxcv-prod' }, { name: 'source2', id: 'wert-prod' }]
+                sources: [
+                  { name: 'source1', id: 'zxcv-prod' },
+                  { name: 'source2', id: 'wert-prod' },
+                ],
               },
               {
                 name: 'field3',
                 description: '',
                 type: 'STRING',
-                sources: [{ name: 'sourceX', id: 'asdfg' }, { name: 'sourceY', id: 'wert' }]
+                sources: [
+                  { name: 'sourceX', id: 'asdfg' },
+                  { name: 'sourceY', id: 'wert' },
+                ],
               },
               {
                 name: 'fieldtodelete',
                 description: '',
                 type: 'STRING',
-                sources: [{ name: 'source2', id: 'asdfg' }, { name: 'sourceY', id: 'wert' }]
-              }
-            ]
+                sources: [
+                  { name: 'source2', id: 'asdfg' },
+                  { name: 'sourceY', id: 'wert' },
+                ],
+              },
+            ],
           });
 
         const diffOptions: IDiffOptions = {
-          keysToIgnore: ['sources']
+          keysToIgnore: ['sources'],
         };
         controllerxy
           .runDiffSequence(diffOptions)
           .then((diff: DiffResultArray<Field>) => {
             expect(diff.TO_UPDATE.length).to.eql(2);
-            expect(_.map(diff.TO_UPDATE, f => f.getName())).to.contain('field2');
-            expect(_.map(diff.TO_UPDATE, f => f.getName())).to.contain('genericfield');
+            expect(map(diff.TO_UPDATE, (f) => f.getName())).to.contain('field2');
+            expect(map(diff.TO_UPDATE, (f) => f.getName())).to.contain('genericfield');
             expect(diff.TO_CREATE.length).to.eql(1);
             expect(diff.TO_DELETE.length).to.eql(1);
             done();
@@ -409,7 +454,7 @@ export const FieldControllerTest = () => {
           });
       });
 
-      it('Should not return the diff result', (done: MochaDone) => {
+      it('Should not return the diff result', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources/page/fields')
@@ -432,7 +477,7 @@ export const FieldControllerTest = () => {
           });
       });
 
-      it('Should return the diff result', (done: MochaDone) => {
+      it('Should return the diff result', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources/page/fields')
@@ -442,21 +487,21 @@ export const FieldControllerTest = () => {
               {
                 name: 'allmetadatavalues',
                 description: '',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'attachmentdepth',
                 description: 'The attachment depth.',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'attachmentparentid',
                 description: 'The identifier of the attachment"s immediate parent, for parent/child relationship.',
-                type: 'LONG'
-              }
+                type: 'LONG',
+              },
             ],
             totalPages: 1,
-            totalEntries: 3
+            totalEntries: 3,
           })
           // Second expected request
           .get('/rest/organizations/prod/sources/page/fields')
@@ -466,16 +511,16 @@ export const FieldControllerTest = () => {
               {
                 name: 'allmetadatavalues',
                 description: 'new description',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'new field',
                 description: 'The attachment depth.',
-                type: 'STRING'
-              }
+                type: 'STRING',
+              },
             ],
             totalPages: 1,
-            totalEntries: 2
+            totalEntries: 2,
           });
 
         fieldController
@@ -490,7 +535,7 @@ export const FieldControllerTest = () => {
           });
       });
 
-      it('Should diff against local config', (done: MochaDone) => {
+      it('Should diff against local config', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/prod/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
@@ -499,16 +544,16 @@ export const FieldControllerTest = () => {
               {
                 name: 'allmetadatavalues',
                 description: 'new description',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'new field',
                 description: 'The attachment depth.',
-                type: 'STRING'
-              }
+                type: 'STRING',
+              },
             ],
             totalPages: 1,
-            totalEntries: 2
+            totalEntries: 2,
           });
 
         const diffOptions: IDiffOptions = {
@@ -516,19 +561,19 @@ export const FieldControllerTest = () => {
             {
               name: 'allmetadatavalues',
               description: '',
-              type: 'STRING'
+              type: 'STRING',
             },
             {
               name: 'attachmentdepth',
               description: 'The attachment depth.',
-              type: 'STRING'
+              type: 'STRING',
             },
             {
               name: 'attachmentparentid',
               description: 'The identifier of the attachment"s immediate parent, for parent/child relationship.',
-              type: 'LONG'
-            }
-          ]
+              type: 'LONG',
+            },
+          ],
         };
 
         fieldController
@@ -549,15 +594,15 @@ export const FieldControllerTest = () => {
             originData: {
               name: 'allmetadatavalues',
               description: '',
-              type: 'STRING'
-            }
+              type: 'STRING',
+            },
           } as any)
         ).to.throw();
       });
     });
 
     describe('Graduate Method', () => {
-      it('Should not graduate system attribute (POST, PUT)', (done: MochaDone) => {
+      it('Should not graduate system attribute (POST, PUT)', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
@@ -583,7 +628,7 @@ export const FieldControllerTest = () => {
                 useCacheForNumericQuery: false,
                 useCacheForComputedFacet: false,
                 dateFormat: '',
-                system: true
+                system: true,
               },
               {
                 name: 'existingfield',
@@ -605,11 +650,11 @@ export const FieldControllerTest = () => {
                 useCacheForNumericQuery: false,
                 useCacheForComputedFacet: false,
                 dateFormat: '',
-                system: true
-              }
+                system: true,
+              },
             ],
             totalPages: 1,
-            totalEntries: 2
+            totalEntries: 2,
           })
           .get('/rest/organizations/prod/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
@@ -635,11 +680,11 @@ export const FieldControllerTest = () => {
                 useCacheForNumericQuery: false,
                 useCacheForComputedFacet: false,
                 dateFormat: '',
-                system: true
-              }
+                system: true,
+              },
             ],
             totalPages: 1,
-            totalEntries: 1
+            totalEntries: 1,
           })
           .post('/rest/organizations/prod/indexes/fields/batch/create', [
             {
@@ -661,8 +706,8 @@ export const FieldControllerTest = () => {
               useCacheForSort: false,
               useCacheForNumericQuery: false,
               useCacheForComputedFacet: false,
-              dateFormat: ''
-            }
+              dateFormat: '',
+            },
           ])
           .reply(RequestUtils.OK)
           .put('/rest/organizations/prod/indexes/fields/batch/update', [
@@ -685,8 +730,8 @@ export const FieldControllerTest = () => {
               useCacheForSort: false,
               useCacheForNumericQuery: false,
               useCacheForComputedFacet: false,
-              dateFormat: ''
-            }
+              dateFormat: '',
+            },
           ])
           .reply(RequestUtils.NO_CONTENT);
 
@@ -696,7 +741,7 @@ export const FieldControllerTest = () => {
           PUT: true,
           DELETE: false,
           keyBlacklist: ['sources', 'system'],
-          diffOptions: diffOptions
+          diffOptions: diffOptions,
         };
 
         fieldController
@@ -716,7 +761,7 @@ export const FieldControllerTest = () => {
           });
       });
 
-      it('Should graduate fields (POST, PUT, DELETE)', (done: MochaDone) => {
+      it('Should graduate fields (POST, PUT, DELETE)', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
@@ -725,21 +770,21 @@ export const FieldControllerTest = () => {
               {
                 name: 'allmetadatavalues',
                 description: '',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'attachmentdepth',
                 description: 'The attachment depth.',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'newfield',
                 description: 'new description',
-                type: 'LONG'
-              }
+                type: 'LONG',
+              },
             ],
             totalPages: 1,
-            totalEntries: 3
+            totalEntries: 3,
           })
           .get('/rest/organizations/prod/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
@@ -748,41 +793,41 @@ export const FieldControllerTest = () => {
               {
                 name: 'allmetadatavalues',
                 description: 'new description',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'attachmentdepth',
                 description: 'The attachment depth.',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'attachmentparentid',
                 description: 'The identifier of the attachment"s immediate parent, for parent/child relationship.',
-                type: 'LONG'
+                type: 'LONG',
               },
               {
                 name: 'authorloginname',
                 description: 'Login Name of the item author',
-                type: 'STRING'
-              }
+                type: 'STRING',
+              },
             ],
             totalPages: 1,
-            totalEntries: 2
+            totalEntries: 2,
           })
           .post('/rest/organizations/prod/indexes/fields/batch/create', [
             {
               name: 'newfield',
               description: 'new description',
-              type: 'LONG'
-            }
+              type: 'LONG',
+            },
           ])
           .reply(RequestUtils.OK)
           .put('/rest/organizations/prod/indexes/fields/batch/update', [
             {
               name: 'allmetadatavalues',
               description: '',
-              type: 'STRING'
-            }
+              type: 'STRING',
+            },
           ])
           .reply(RequestUtils.NO_CONTENT)
           .delete('/rest/organizations/prod/indexes/fields/batch/delete')
@@ -793,7 +838,7 @@ export const FieldControllerTest = () => {
           POST: true,
           PUT: true,
           DELETE: true,
-          diffOptions: {}
+          diffOptions: {},
         };
 
         fieldController
@@ -813,7 +858,7 @@ export const FieldControllerTest = () => {
           });
       });
 
-      it('Should graduate fields using a blacklist option', (done: MochaDone) => {
+      it('Should graduate fields using a blacklist option', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
@@ -823,23 +868,23 @@ export const FieldControllerTest = () => {
                 name: 'allmetadatavalues',
                 description: '',
                 sources: ['sitemap'],
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'attachmentdepth',
                 description: 'The attachment depth.',
                 sources: ['sitemap'],
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'newfield',
                 description: 'new description',
                 sources: ['sitemap'],
-                type: 'LONG'
-              }
+                type: 'LONG',
+              },
             ],
             totalPages: 1,
-            totalEntries: 3
+            totalEntries: 3,
           })
           .get('/rest/organizations/prod/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
@@ -849,44 +894,44 @@ export const FieldControllerTest = () => {
                 name: 'allmetadatavalues',
                 description: 'new description',
                 sources: ['salesforce', 'sitemap'],
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'attachmentdepth',
                 description: 'The attachment depth.',
                 sources: ['salesforce', 'sitemap'],
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'attachmentparentid',
                 description: 'The identifier of the attachment"s immediate parent, for parent/child relationship.',
                 sources: ['salesforce', 'sitemap'],
-                type: 'LONG'
+                type: 'LONG',
               },
               {
                 name: 'authorloginname',
                 description: 'Login Name of the item author',
                 sources: ['salesforce', 'sitemap'],
-                type: 'STRING'
-              }
+                type: 'STRING',
+              },
             ],
             totalPages: 1,
-            totalEntries: 4
+            totalEntries: 4,
           })
           .post('/rest/organizations/prod/indexes/fields/batch/create', [
             {
               name: 'newfield',
               description: 'new description',
-              type: 'LONG'
-            }
+              type: 'LONG',
+            },
           ])
           .reply(RequestUtils.OK)
           .put('/rest/organizations/prod/indexes/fields/batch/update', [
             {
               name: 'allmetadatavalues',
               description: '',
-              type: 'STRING'
-            }
+              type: 'STRING',
+            },
           ])
           .reply(RequestUtils.NO_CONTENT)
           .delete('/rest/organizations/prod/indexes/fields/batch/delete')
@@ -894,7 +939,7 @@ export const FieldControllerTest = () => {
           .reply(RequestUtils.NO_CONTENT);
 
         const diffOptions: IDiffOptions = {
-          keysToIgnore: ['sources']
+          keysToIgnore: ['sources'],
         };
 
         const graduateOptions: IGraduateOptions = {
@@ -902,7 +947,7 @@ export const FieldControllerTest = () => {
           PUT: true,
           DELETE: true,
           keyBlacklist: ['sources'],
-          diffOptions: diffOptions
+          diffOptions: diffOptions,
         };
 
         fieldController
@@ -924,7 +969,7 @@ export const FieldControllerTest = () => {
           });
       });
 
-      it('Should only graduate fields for the specified sources', (done: MochaDone) => {
+      it('Should only graduate fields for the specified sources', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
@@ -934,29 +979,29 @@ export const FieldControllerTest = () => {
                 name: 'allmetadatavalues',
                 description: '',
                 sources: [{ name: 'random' }, { name: 'test' }],
-                type: 'date'
+                type: 'date',
               },
               {
                 name: 'attachmentdepth',
                 description: 'The attachment depth.',
                 sources: [{ name: 'sitemap' }, { name: 'salesforce' }],
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'randomfield',
                 description: 'This is a random field',
                 sources: [{ name: 'random' }],
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'newfield',
                 description: 'new description',
                 sources: [{ name: 'sitemap' }],
-                type: 'LONG'
-              }
+                type: 'LONG',
+              },
             ],
             totalPages: 1,
-            totalEntries: 3
+            totalEntries: 3,
           })
           .get('/rest/organizations/prod/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
@@ -966,48 +1011,48 @@ export const FieldControllerTest = () => {
                 name: 'allmetadatavalues',
                 description: 'new description',
                 sources: [{ name: 'salesforce' }, { name: 'sitemap' }],
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'fieldtodelete',
                 description: 'dsdsdsa',
                 sources: [{ name: 'random' }],
-                type: 'Date'
+                type: 'Date',
               },
               {
                 name: 'randomfield',
                 description: 'dsdsdsa',
                 sources: [{ name: 'random' }],
-                type: 'Date'
+                type: 'Date',
               },
               {
                 name: 'attachmentdepth',
                 description: 'The attachment depth.',
                 sources: [{ name: 'salesforce' }, { name: 'sitemap' }],
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'attachmentparentid',
                 description: 'The identifier of the attachment"s immediate parent, for parent/child relationship.',
                 sources: [{ name: 'salesforce' }, { name: 'sitemap' }],
-                type: 'LONG'
+                type: 'LONG',
               },
               {
                 name: 'authorloginname',
                 description: 'Login Name of the item author',
                 sources: [{ name: 'salesforce' }, { name: 'sitemap' }],
-                type: 'STRING'
-              }
+                type: 'STRING',
+              },
             ],
             totalPages: 1,
-            totalEntries: 4
+            totalEntries: 4,
           })
           .post('/rest/organizations/prod/indexes/fields/batch/create', [
             {
               name: 'newfield',
               description: 'new description',
-              type: 'LONG'
-            }
+              type: 'LONG',
+            },
           ])
           .reply(RequestUtils.OK)
           // .put('/rest/organizations/prod/indexes/fields/batch/update', [
@@ -1024,7 +1069,7 @@ export const FieldControllerTest = () => {
 
         const diffOptions: IDiffOptions = {
           keysToIgnore: ['sources'],
-          sources: ['sitemap', 'salesforce']
+          sources: ['sitemap', 'salesforce'],
         };
 
         const graduateOptions: IGraduateOptions = {
@@ -1032,7 +1077,7 @@ export const FieldControllerTest = () => {
           PUT: true,
           DELETE: true,
           keyBlacklist: ['sources'],
-          diffOptions: diffOptions
+          diffOptions: diffOptions,
         };
 
         fieldController
@@ -1055,7 +1100,7 @@ export const FieldControllerTest = () => {
           });
       });
 
-      it('Should not graduate fields: Graduation error', (done: MochaDone) => {
+      it('Should not graduate fields: Graduation error', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
@@ -1064,21 +1109,21 @@ export const FieldControllerTest = () => {
               {
                 name: 'allmetadatavalues',
                 description: '',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'attachmentdepth',
                 description: 'The attachment depth.',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'newfield',
                 description: 'new description',
-                type: 'LONG'
-              }
+                type: 'LONG',
+              },
             ],
             totalPages: 1,
-            totalEntries: 3
+            totalEntries: 3,
           })
           .get('/rest/organizations/prod/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
@@ -1087,41 +1132,41 @@ export const FieldControllerTest = () => {
               {
                 name: 'allmetadatavalues',
                 description: 'new description',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'attachmentdepth',
                 description: 'The attachment depth.',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'attachmentparentid',
                 description: 'The identifier of the attachment"s immediate parent, for parent/child relationship.',
-                type: 'LONG'
+                type: 'LONG',
               },
               {
                 name: 'authorloginname',
                 description: 'Login Name of the item author',
-                type: 'STRING'
-              }
+                type: 'STRING',
+              },
             ],
             totalPages: 1,
-            totalEntries: 2
+            totalEntries: 2,
           })
           .post('/rest/organizations/prod/indexes/fields/batch/create', [
             {
               name: 'newfield',
               description: 'new description',
-              type: 'LONG'
-            }
+              type: 'LONG',
+            },
           ])
           .reply(429, 'TOO_MANY_REQUESTS')
           .put('/rest/organizations/prod/indexes/fields/batch/update', [
             {
               name: 'allmetadatavalues',
               description: '',
-              type: 'STRING'
-            }
+              type: 'STRING',
+            },
           ])
           .reply(429, 'TOO_MANY_REQUESTS')
           .delete('/rest/organizations/prod/indexes/fields/batch/delete')
@@ -1132,7 +1177,7 @@ export const FieldControllerTest = () => {
           POST: true,
           PUT: true,
           DELETE: true,
-          diffOptions: {}
+          diffOptions: {},
         };
 
         fieldController
@@ -1153,7 +1198,7 @@ export const FieldControllerTest = () => {
           });
       });
 
-      it('Should have nothing to graduate: Similar orgs', (done: MochaDone) => {
+      it('Should have nothing to graduate: Similar orgs', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
@@ -1162,21 +1207,21 @@ export const FieldControllerTest = () => {
               {
                 name: 'allmetadatavalues',
                 description: '',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'attachmentdepth',
                 description: 'The attachment depth.',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'newfield',
                 description: 'new description',
-                type: 'LONG'
-              }
+                type: 'LONG',
+              },
             ],
             totalPages: 1,
-            totalEntries: 3
+            totalEntries: 3,
           })
           .get('/rest/organizations/prod/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
@@ -1185,28 +1230,28 @@ export const FieldControllerTest = () => {
               {
                 name: 'allmetadatavalues',
                 description: '',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'attachmentdepth',
                 description: 'The attachment depth.',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'newfield',
                 description: 'new description',
-                type: 'LONG'
-              }
+                type: 'LONG',
+              },
             ],
             totalPages: 1,
-            totalEntries: 3
+            totalEntries: 3,
           });
 
         const graduateOptions: IGraduateOptions = {
           POST: true,
           PUT: true,
           DELETE: true,
-          diffOptions: {}
+          diffOptions: {},
         };
 
         fieldController.runDiffSequence().then((diffResultArray: DiffResultArray<Field>) => {
@@ -1225,7 +1270,7 @@ export const FieldControllerTest = () => {
         });
       });
 
-      it('Should not graduate: failed diff', (done: MochaDone) => {
+      it('Should not graduate: failed diff', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
@@ -1237,28 +1282,28 @@ export const FieldControllerTest = () => {
               {
                 name: 'allmetadatavalues',
                 description: '',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'attachmentdepth',
                 description: 'The attachment depth.',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'newfield',
                 description: 'new description',
-                type: 'LONG'
-              }
+                type: 'LONG',
+              },
             ],
             totalPages: 1,
-            totalEntries: 3
+            totalEntries: 3,
           });
 
         const graduateOptions: IGraduateOptions = {
           POST: true,
           PUT: true,
           DELETE: true,
-          diffOptions: {}
+          diffOptions: {},
         };
 
         fieldController
@@ -1282,7 +1327,7 @@ export const FieldControllerTest = () => {
           });
       });
 
-      it('Should have nothing to graduate: No HTTP verbe selected', (done: MochaDone) => {
+      it('Should have nothing to graduate: No HTTP verbe selected', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
@@ -1291,21 +1336,21 @@ export const FieldControllerTest = () => {
               {
                 name: 'allmetadatavalues',
                 description: '',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'attachmentdepth',
                 description: 'The attachment depth.',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'newfield',
                 description: 'new description',
-                type: 'LONG'
-              }
+                type: 'LONG',
+              },
             ],
             totalPages: 1,
-            totalEntries: 3
+            totalEntries: 3,
           })
           .get('/rest/organizations/prod/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
@@ -1314,33 +1359,33 @@ export const FieldControllerTest = () => {
               {
                 name: 'allmetadatavalues',
                 description: 'new description',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'attachmentdepth',
                 description: 'The attachment depth.',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'attachmentparentid',
                 description: 'The identifier of the attachment"s immediate parent, for parent/child relationship.',
-                type: 'LONG'
+                type: 'LONG',
               },
               {
                 name: 'authorloginname',
                 description: 'Login Name of the item author',
-                type: 'STRING'
-              }
+                type: 'STRING',
+              },
             ],
             totalPages: 1,
-            totalEntries: 2
+            totalEntries: 2,
           });
 
         const graduateOptions: IGraduateOptions = {
           POST: false,
           PUT: false,
           DELETE: false,
-          diffOptions: {}
+          diffOptions: {},
         };
 
         fieldController.runDiffSequence().then((diffResultArray: DiffResultArray<Field>) => {
@@ -1357,7 +1402,7 @@ export const FieldControllerTest = () => {
     });
 
     describe('Download Method', () => {
-      it('Should downlaod some fields', (done: MochaDone) => {
+      it('Should downlaod some fields', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
@@ -1366,21 +1411,21 @@ export const FieldControllerTest = () => {
               {
                 name: 'allmetadatavalues',
                 description: '',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'attachmentdepth',
                 description: 'The attachment depth.',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 name: 'attachmentparentid',
                 description: 'The identifier of the attachment"s immediate parent, for parent/child relationship.',
-                type: 'LONG'
-              }
+                type: 'LONG',
+              },
             ],
             totalPages: 1,
-            totalEntries: 3
+            totalEntries: 3,
           });
 
         fieldController
@@ -1394,7 +1439,7 @@ export const FieldControllerTest = () => {
           });
       });
 
-      it('Should catch an error if too many request', (done: MochaDone) => {
+      it('Should catch an error if too many request', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/sources/page/fields')
           .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })

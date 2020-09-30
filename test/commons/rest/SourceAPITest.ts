@@ -22,12 +22,10 @@ export const SourceAPITest = () => {
     });
 
     describe('Get all sources', () => {
-      it('Should prepare the request to get all the sources of an organization', (done: MochaDone) => {
+      it('Should prepare the request to get all the sources of an organization', (done: Mocha.Done) => {
         const organization: Organization = new Organization('mydevorg', 'secret');
 
-        scope = nock(UrlService.getDefaultUrl())
-          .get('/rest/organizations/mydevorg/sources')
-          .reply(RequestUtils.OK);
+        scope = nock(UrlService.getDefaultUrl()).get('/rest/organizations/mydevorg/sources').reply(RequestUtils.OK);
 
         SourceAPI.getAllSources(organization)
           .then(() => done())
@@ -40,7 +38,7 @@ export const SourceAPITest = () => {
     });
 
     describe('Get Single source', () => {
-      it('Should prepare the request to get a specific source of an organization', (done: MochaDone) => {
+      it('Should prepare the request to get a specific source of an organization', (done: Mocha.Done) => {
         const organization: Organization = new Organization('mydevorg', 'secret');
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/mydevorg/sources/tcytrppteddiqkmboszu4skdoe/raw')
@@ -57,7 +55,7 @@ export const SourceAPITest = () => {
       // });
     });
 
-    it('Should prepare the request to create a source', (done: MochaDone) => {
+    it('Should prepare the request to create a source', (done: Mocha.Done) => {
       const organization: Organization = new Organization('qwerty123', 'secret');
 
       scope = nock(UrlService.getDefaultUrl())
@@ -73,8 +71,8 @@ export const SourceAPITest = () => {
               kind: 'COMMON',
               fieldName: 'workemail',
               extractionMethod: 'METADATA',
-              content: '%[workemail]'
-            }
+              content: '%[workemail]',
+            },
           ],
           pushEnabled: false,
           postConversionExtensions: [
@@ -83,16 +81,16 @@ export const SourceAPITest = () => {
               condition: '',
               extensionId: 'cclidevwcty5v1g-xsib6p54yjm37lagma3qvp2aji',
               parameters: {},
-              versionId: ''
-            }
+              versionId: '',
+            },
           ],
           urlFilters: [
             {
               filter: '*',
               includeFilter: true,
-              filterType: 'WILDCARD'
-            }
-          ]
+              filterType: 'WILDCARD',
+            },
+          ],
         })
         .reply(RequestUtils.CREATED);
 
@@ -108,8 +106,8 @@ export const SourceAPITest = () => {
             kind: 'COMMON',
             fieldName: 'workemail',
             extractionMethod: 'METADATA',
-            content: '%[workemail]'
-          }
+            content: '%[workemail]',
+          },
         ],
         pushEnabled: false,
         postConversionExtensions: [
@@ -118,22 +116,22 @@ export const SourceAPITest = () => {
             condition: '',
             extensionId: 'cclidevwcty5v1g-xsib6p54yjm37lagma3qvp2aji',
             parameters: {},
-            versionId: ''
-          }
+            versionId: '',
+          },
         ],
         urlFilters: [
           {
             filter: '*',
             includeFilter: true,
-            filterType: 'WILDCARD'
-          }
-        ]
+            filterType: 'WILDCARD',
+          },
+        ],
       })
         .then(() => done())
         .catch((err: any) => done(err));
     });
 
-    it('Should prepare the request to update a source', (done: MochaDone) => {
+    it('Should prepare the request to update a source', (done: Mocha.Done) => {
       const organization: Organization = new Organization('qwerty123', 'secret');
 
       scope = nock(UrlService.getDefaultUrl())
@@ -149,9 +147,9 @@ export const SourceAPITest = () => {
               kind: 'COMMON',
               extractionMethod: 'METADATA',
               fieldName: 'workemail',
-              content: '%[workemail]'
-            }
-          ]
+              content: '%[workemail]',
+            },
+          ],
         })
         .reply(RequestUtils.CREATED);
 
@@ -167,15 +165,15 @@ export const SourceAPITest = () => {
             kind: 'COMMON',
             extractionMethod: 'METADATA',
             fieldName: 'workemail',
-            content: '%[workemail]'
-          }
-        ]
+            content: '%[workemail]',
+          },
+        ],
       })
         .then(() => done())
         .catch((err: any) => done(err));
     });
 
-    it('Should prepare the request to delete a source', (done: MochaDone) => {
+    it('Should prepare the request to delete a source', (done: Mocha.Done) => {
       const organization: Organization = new Organization('qwerty123', 'secret');
 
       scope = nock(UrlService.getDefaultUrl())
@@ -188,7 +186,7 @@ export const SourceAPITest = () => {
     });
 
     describe('Loading sources', () => {
-      it('Should prepare the request sequence that will load all the sources', (done: MochaDone) => {
+      it('Should prepare the request sequence that will load all the sources', (done: Mocha.Done) => {
         const organization: Organization = new Organization('qwerty123', 'secret');
 
         scope = nock(UrlService.getDefaultUrl())
@@ -210,7 +208,7 @@ export const SourceAPITest = () => {
           .catch((err: any) => done(err));
       });
 
-      it('Should throw an error if unexpected response', (done: MochaDone) => {
+      it('Should throw an error if unexpected response', (done: Mocha.Done) => {
         const organization: Organization = new Organization('qwerty123', 'secret');
 
         scope = nock(UrlService.getDefaultUrl())
@@ -233,12 +231,10 @@ export const SourceAPITest = () => {
           });
       });
 
-      it('Should throw an error if access denied', (done: MochaDone) => {
+      it('Should throw an error if access denied', (done: Mocha.Done) => {
         const organization: Organization = new Organization('qwerty123', 'secret');
 
-        scope = nock(UrlService.getDefaultUrl())
-          .get('/rest/organizations/qwerty123/sources')
-          .reply(RequestUtils.ACCESS_DENIED);
+        scope = nock(UrlService.getDefaultUrl()).get('/rest/organizations/qwerty123/sources').reply(RequestUtils.ACCESS_DENIED);
 
         SourceAPI.loadSources(organization)
           .then(() => {

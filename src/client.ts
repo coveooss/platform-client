@@ -1,5 +1,4 @@
 import * as program from 'commander';
-import * as _ from 'underscore';
 
 // It is important to first set the environment
 import { EnvironmentUtils } from './commons/utils/EnvironmentUtils';
