@@ -11,6 +11,20 @@
 - [Coveo-Platform-Client](#coveo-platform-client)
   - [Description](#description)
   - [Installation](#installation)
+  - [Using from the command line](#using-from-the-command-line)
+    - [Interactive tool](#interactive-tool)
+    - [Commands](#commands)
+      - [Command parameters](#command-parameters)
+      - [Coveo Cloud V2 Platform environment](#coveo-cloud-v2-platform-environment)
+        - [Environments](#environments)
+        - [Regions](#regions)
+      - [Diff](#diff)
+      - [Graduation](#graduation)
+        - [Graduation Order](#graduation-order)
+      - [Download](#download)
+      - [Upload](#upload)
+  - [Development](#development)
+    - [Dev server](#dev-server)
     - [Tests](#tests)
     - [Run the interactive tool in local](#run-the-interactive-tool-in-local)
   - [Available Coveo documentation](#available-coveo-documentation)
@@ -29,12 +43,6 @@ npm install -g coveo-platform-client
 ```
 
 And the Coveo Cloud V2 Platform client will be installed globally to your system path.
-
-<!-- _Alternatively_, if you are using **NPM 5.2+** you can [use `npx`](https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b) instead of installing globally:
-
-```
-npx coveo-platform-client
-``` -->
 
 ## Using from the command line
 
