@@ -1,5 +1,5 @@
 import * as program from 'commander';
-import * as _ from 'underscore';
+import {} from 'underscore';
 import { Logger } from '../commons/logger';
 import { CommanderUtils } from './CommanderUtils';
 import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
@@ -29,26 +29,29 @@ program
     CommanderUtils.setLogger(options, 'diff-pages-file');
 
     FileUtils.readJson(filePathToUpload)
-      .then(data => {
+      .then((data) => {
         const includeOnly = [
           'name', // mandatory
           'title', // mandatory
-          'html'
+          'html',
         ];
 
         // Set diff options
         const diffOptions: IDiffOptions = {
           silent: options.silent,
           includeOnly: includeOnly,
-          originData: data
+          originData: data,
         };
 
         const blacklistOptions = {
-          pages: options.ignorePages
+          pages: options.ignorePages,
         };
 
-        const originOrg = new Organization('localFile', '', blacklistOptions);
-        const destinationOrg = new Organization(org, apiKey, blacklistOptions);
+        const originOrg = new Organization('localFile', '', { blacklist: blacklistOptions });
+        const destinationOrg = new Organization(org, apiKey, {
+          blacklist: blacklistOptions,
+          platformUrl: program.opts()?.platformUrlDestination,
+        });
         const controller: PageController = new PageController(originOrg, destinationOrg);
 
         controller.diff(diffOptions);

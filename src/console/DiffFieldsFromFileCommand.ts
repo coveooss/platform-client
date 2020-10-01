@@ -1,4 +1,4 @@
-import * as _ from 'underscore';
+import { union } from 'underscore';
 import * as program from 'commander';
 import { CommanderUtils } from './CommanderUtils';
 import { FileUtils } from '../commons/utils/FileUtils';
@@ -31,17 +31,17 @@ program
 
     // Set graduation options
     FileUtils.readJson(filePathToUpload)
-      .then(data => {
+      .then((data) => {
         const diffOptions: IDiffOptions = {
-          keysToIgnore: _.union(options.ignoreKeys, ['sources']),
+          keysToIgnore: union(options.ignoreKeys, ['sources']),
           includeOnly: options.onlyKeys,
           silent: options.silent,
-          originData: data
+          originData: data,
         };
 
         // TODO: find a cleaner way
         const originOrg = new Organization('localFile', '');
-        const destinationOrg = new Organization(org, apiKey);
+        const destinationOrg = new Organization(org, apiKey, { platformUrl: program.opts()?.platformUrlDestination });
         const controller: FieldController = new FieldController(originOrg, destinationOrg);
 
         controller.diff(diffOptions);

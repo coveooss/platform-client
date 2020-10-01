@@ -1,8 +1,6 @@
 import * as program from 'commander';
-import * as _ from 'underscore';
 
 // It is important to first set the environment
-import { EnvironmentUtils } from './commons/utils/EnvironmentUtils';
 setEnvironmentIfNecessary();
 import { InteractionController } from './console/InteractionController';
 
@@ -12,7 +10,9 @@ const updateNotifier = require('update-notifier');
 updateNotifier({ pkg }).notify();
 
 program
-  .option('--env [value]', 'Environment (Production by default. Supported environments are: development|qa|production)')
+  .option('--env [value]', '(DEPRECATED) Environment (Production by default. Supported environments are: development|qa|production)')
+  .option('--platformUrlOrigin <env>', 'Platform URL for the Origin org.', 'https://platform.cloud.coveo.com')
+  .option('--platformUrlDestination <env>', 'Platform URL for the Destination org.', 'https://platform.cloud.coveo.com')
   .version(pkg.version);
 
 /**************************************************/
@@ -78,8 +78,9 @@ function setEnvironmentIfNecessary() {
   const i = process.argv.indexOf('--env');
   if (i !== -1 && i + 1 < process.argv.length) {
     const env = process.argv[i + 1];
-    EnvironmentUtils.setNodeEnvironment(env);
-  } else {
-    EnvironmentUtils.setDefaultNodeEnvironment();
+    if (env) {
+      console.error('--env option is deprecated. Instead, use --platformUrlOrigin and --platformUrlDestination');
+      process.exit(0);
+    }
   }
 }

@@ -1,5 +1,5 @@
 import * as program from 'commander';
-import * as _ from 'underscore';
+import { union } from 'underscore';
 import { Logger } from '../commons/logger';
 import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { CommanderUtils } from './CommanderUtils';
@@ -24,12 +24,12 @@ program
     CommanderUtils.setLogger(options, 'upload-extensions');
 
     FileUtils.readJson(filePathToUpload)
-      .then(data => {
+      .then((data) => {
         // Set diff options
         const diffOptions: IDiffOptions = {
           silent: options.silent,
           includeOnly: options.onlyKeys,
-          originData: data
+          originData: data,
         };
 
         // Set graduation options
@@ -37,17 +37,20 @@ program
           diffOptions: diffOptions,
           POST: options.methods.indexOf('POST') > -1,
           PUT: options.methods.indexOf('PUT') > -1,
-          DELETE: options.methods.indexOf('DELETE') > -1
+          DELETE: options.methods.indexOf('DELETE') > -1,
         };
 
         const blacklistOptions = {
-          extensions: _.union(
+          extensions: union(
             ['allfieldvalues', 'allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'],
             options.ignoreExtensions
-          )
+          ),
         };
-        const originOrg = new Organization('dummyOrg', '', blacklistOptions);
-        const destinationOrg = new Organization(destination, apiKey, blacklistOptions);
+        const originOrg = new Organization('dummyOrg', '', { blacklist: blacklistOptions, platformUrl: program.opts()?.platformUrlOrigin });
+        const destinationOrg = new Organization(destination, apiKey, {
+          blacklist: blacklistOptions,
+          platformUrl: program.opts()?.platformUrlDestination,
+        });
         const controller: ExtensionController = new ExtensionController(originOrg, destinationOrg);
 
         controller.graduate(graduateOptions);

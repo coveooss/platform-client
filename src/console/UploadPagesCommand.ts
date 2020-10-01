@@ -1,5 +1,5 @@
 import * as program from 'commander';
-import * as _ from 'underscore';
+import {} from 'underscore';
 import { Logger } from '../commons/logger';
 import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { CommanderUtils } from './CommanderUtils';
@@ -24,18 +24,18 @@ program
     CommanderUtils.setLogger(options, 'upload-pages');
 
     FileUtils.readJson(filePathToUpload)
-      .then(data => {
+      .then((data) => {
         const includeOnly = [
           'name', // mandatory
           'title', // mandatory
-          'html'
+          'html',
         ];
 
         // Set diff options
         const diffOptions: IDiffOptions = {
           silent: options.silent,
           includeOnly: includeOnly,
-          originData: data
+          originData: data,
         };
 
         // Set graduation options
@@ -43,14 +43,17 @@ program
           diffOptions: diffOptions,
           POST: options.methods.indexOf('POST') > -1,
           PUT: options.methods.indexOf('PUT') > -1,
-          DELETE: options.methods.indexOf('DELETE') > -1
+          DELETE: options.methods.indexOf('DELETE') > -1,
         };
 
         const blacklistOptions = {
-          pages: options.ignorePages
+          pages: options.ignorePages,
         };
-        const originOrg = new Organization('dummyOrg', '', blacklistOptions);
-        const destinationOrg = new Organization(destination, apiKey, blacklistOptions);
+        const originOrg = new Organization('dummyOrg', '', { blacklist: blacklistOptions, platformUrl: program.opts()?.platformUrlOrigin });
+        const destinationOrg = new Organization(destination, apiKey, {
+          blacklist: blacklistOptions,
+          platformUrl: program.opts()?.platformUrlDestination,
+        });
         const controller: PageController = new PageController(originOrg, destinationOrg);
 
         controller.graduate(graduateOptions);

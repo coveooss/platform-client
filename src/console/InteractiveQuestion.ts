@@ -1,16 +1,13 @@
-import { Question } from 'inquirer';
-import { Answers } from 'inquirer';
 import { RequestResponse } from 'request';
-import * as inquirer from 'inquirer';
-import chalk from 'chalk';
-import * as _ from 'underscore';
+import { DistinctQuestion, QuestionCollection, createPromptModule, Answers, ListChoiceOptions } from 'inquirer';
+import { bold, underline, red, bgRed } from 'chalk';
+import { extend, keys, pluck, union } from 'underscore';
 import { FieldAPI } from '../commons/rest/FieldAPI';
 import { Utils } from '../commons/utils/Utils';
 import { SourceAPI } from '../commons/rest/SourceAPI';
 import { Organization } from '../coveoObjects/Organization';
 import { ExtensionAPI } from '../commons/rest/ExtensionAPI';
 import { StringUtil } from '../commons/utils/StringUtils';
-import { EnvironmentUtils } from '../commons/utils/EnvironmentUtils';
 import { PageAPI } from '../commons/rest/PageAPI';
 
 export class InteractiveQuestion {
@@ -20,10 +17,14 @@ export class InteractiveQuestion {
   static PAGES_CONTROLLER_NAME: string = 'pages';
   // Required parameters
   static ORIGIN_ORG_ID: string = 'originOrganizationId';
-  static MASTER_API_KEY: string = 'APIKey';
+  static USE_MASTER_API_KEY: string = 'APIKeyStrategy';
+  static MASTER_API_KEY: string = 'masterAPIKey';
+  static ORIGIN_API_KEY: string = 'originAPIKey';
+  static DESTINATION_API_KEY: string = 'destinationAPIKey';
   static DESTINATION_ORG_ID: string = 'destinationOrganizationId';
   static COMMAND: string = 'command';
-  static ENVIRONMENT: string = 'environment';
+  static ORIGIN_ENVIRONMENT: string = 'originEnvironment';
+  static DESTINATION_ENVIRONMENT: string = 'destinationEnvironment';
 
   // Options
   static GRADUATE_OPERATIONS: string = 'graduateOperations';
@@ -50,18 +51,21 @@ export class InteractiveQuestion {
   static PREVIOUS_ANSWERS: Answers = {};
 
   start() {
-    const prompt = inquirer.createPromptModule();
+    const prompt = createPromptModule();
     return this.loadFieldModel()
       .then((model: string[]) => {
         return prompt(this.getInitialQuestions({ fieldModel: model })).then((ans: Answers) => {
           InteractiveQuestion.PREVIOUS_ANSWERS = ans;
-          const org = new Organization(ans[InteractiveQuestion.ORIGIN_ORG_ID], ans[InteractiveQuestion.MASTER_API_KEY]);
+          const key = ans[InteractiveQuestion.USE_MASTER_API_KEY]
+            ? ans[InteractiveQuestion.MASTER_API_KEY]
+            : ans[InteractiveQuestion.ORIGIN_API_KEY];
 
-          // Set Node Environment
-          EnvironmentUtils.setNodeEnvironment(ans[InteractiveQuestion.ENVIRONMENT]);
+          const org = new Organization(ans[InteractiveQuestion.ORIGIN_ORG_ID], key, {
+            platformUrl: ans[InteractiveQuestion.ORIGIN_ENVIRONMENT],
+          });
 
           return Promise.all([this.loadSourceList(org), this.loadExtensionList(org), this.loadPageList(org)])
-            .then(values => {
+            .then((values) => {
               const sources = values[0];
               const extensions = values[1];
               // tslint:disable-next-line: no-magic-numbers
@@ -69,13 +73,13 @@ export class InteractiveQuestion {
               return prompt(this.getFinalQuestions({ sources: sources, extensionsToIgnore: extensions, pagesToIgnore: pages }));
             })
             .catch((err: any) => {
-              console.error(chalk.red('Unable to load sources or extensions.'), chalk.red(err));
+              console.error(red('Unable to load sources or extensions.'), red(err));
               return prompt(this.getFinalQuestions([]));
             });
         });
       })
       .catch((err: any) => {
-        console.error('Unable to load Field model.', chalk.red(err));
+        console.error('Unable to load Field model.', red(err));
         return prompt(this.getInitialQuestions({})).then((ans: Answers) => {
           InteractiveQuestion.PREVIOUS_ANSWERS = ans;
           return prompt(this.getFinalQuestions());
@@ -89,13 +93,13 @@ export class InteractiveQuestion {
       FieldAPI.getFieldDefinitions()
         .then((resp: RequestResponse) => {
           if (resp.body.definitions && resp.body.definitions.FieldModel && resp.body.definitions.FieldModel.properties) {
-            resolve(_.keys(resp.body.definitions.FieldModel.properties));
+            resolve(keys(resp.body.definitions.FieldModel.properties));
           } else {
             reject('Unexpected response when trying to load field model');
           }
         })
         .catch((err: any) => {
-          reject('Unable to fetch field model');
+          reject(err);
         });
     });
   }
@@ -105,7 +109,7 @@ export class InteractiveQuestion {
     return new Promise((resolve, reject) => {
       ExtensionAPI.getAllExtensions(org)
         .then((resp: RequestResponse) => {
-          resolve(_.pluck(resp.body, 'name'));
+          resolve(pluck(resp.body, 'name'));
         })
         .catch((err: any) => {
           reject(err);
@@ -118,7 +122,7 @@ export class InteractiveQuestion {
     return new Promise((resolve, reject) => {
       PageAPI.getAllPages(org)
         .then((resp: RequestResponse) => {
-          resolve(_.pluck(resp.body, 'name'));
+          resolve(pluck(resp.body, 'name'));
         })
         .catch((err: any) => {
           reject(err);
@@ -132,7 +136,7 @@ export class InteractiveQuestion {
       SourceAPI.getAllSources(org)
         .then((resp: RequestResponse) => {
           if (resp.body.length > 0) {
-            resolve(_.pluck(resp.body, 'name'));
+            resolve(pluck(resp.body, 'name'));
           } else {
             reject('No source available in this organization');
           }
@@ -143,16 +147,16 @@ export class InteractiveQuestion {
     });
   }
 
-  getOriginOrganizationId(): Question {
+  getOriginOrganizationId(): DistinctQuestion {
     return {
       type: 'input',
       name: InteractiveQuestion.ORIGIN_ORG_ID,
       message: 'Origin Organization ID: ',
-      validate: this.inputValidator('You need to provide the ID of the Organization')
+      validate: this.inputValidator('You need to provide the ID of the Organization'),
     };
   }
 
-  getDestinationOrganizationId(): Question {
+  getDestinationOrganizationId(): DistinctQuestion {
     return {
       type: 'input',
       name: InteractiveQuestion.DESTINATION_ORG_ID,
@@ -160,30 +164,97 @@ export class InteractiveQuestion {
       validate: this.inputValidator('You need to provide the ID of the Organization'),
       when: (answer: Answers) => {
         return [InteractiveQuestion.GRADUATE_COMMAND, InteractiveQuestion.DIFF_COMMAND].indexOf(answer[InteractiveQuestion.COMMAND]) !== -1;
-      }
+      },
     };
   }
 
-  getApiKey(): Question {
+  getApiKeyStrategy(): DistinctQuestion {
+    return {
+      type: 'list',
+      name: InteractiveQuestion.USE_MASTER_API_KEY,
+      message: 'API key strategy',
+      default: true,
+      choices: [
+        { name: 'One master API key', value: true },
+        { name: '2 API keys (one per organization)', value: false },
+      ],
+    };
+  }
+
+  getMasterApiKey(): DistinctQuestion {
     return {
       type: 'input',
       name: InteractiveQuestion.MASTER_API_KEY,
       message: 'Master API Key: ',
-      validate: this.inputValidator('You need to provide an API Key')
+      validate: this.inputValidator('You need to provide an API Key'),
+      when: (answer: Answers) => {
+        answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        return answer[InteractiveQuestion.USE_MASTER_API_KEY] === true;
+      },
     };
   }
 
-  getPlatformEnvironment(): Question {
+  getOriginApiKey(): DistinctQuestion {
+    return {
+      type: 'input',
+      name: InteractiveQuestion.ORIGIN_API_KEY,
+      message: 'Origin Organization API Key: ',
+      validate: this.inputValidator('You need to provide an API Key'),
+      when: (answer: Answers) => {
+        answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        return answer[InteractiveQuestion.USE_MASTER_API_KEY] === false;
+      },
+    };
+  }
+
+  getDestinationApiKey(): DistinctQuestion {
+    return {
+      type: 'input',
+      name: InteractiveQuestion.DESTINATION_API_KEY,
+      message: 'Destination Organization API Key: ',
+      validate: this.inputValidator('You need to provide an API Key'),
+      when: (answer: Answers) => {
+        answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        return answer[InteractiveQuestion.USE_MASTER_API_KEY] === false;
+      },
+    };
+  }
+
+  getPlatformOriginEnvironment(): DistinctQuestion {
     return {
       type: 'list',
-      name: InteractiveQuestion.ENVIRONMENT,
-      message: 'Coveo Cloud platform environment',
-      default: 'production',
-      choices: [{ name: 'production' }, { name: 'development' }, { name: 'qa' }, { name: 'hipaa' }]
+      name: InteractiveQuestion.ORIGIN_ENVIRONMENT,
+      message: 'Origin Organization environment',
+      default: 'https://platform.cloud.coveo.com',
+      choices: [
+        { name: 'Production (US)', value: 'https://platform.cloud.coveo.com' },
+        { name: 'Production (Europe)', value: 'https://platform-eu.cloud.coveo.com' },
+        { name: 'Production (Australia)', value: 'https://platform-au.cloud.coveo.com' },
+        { name: 'HIPAA', value: 'https://platformhipaa.cloud.coveo.com' },
+        { name: 'QA', value: 'https://platformqa.cloud.coveo.com' },
+        { name: 'DEV', value: 'https://platformdev.cloud.coveo.com' },
+      ],
     };
   }
 
-  getCommandList(): Question {
+  getPlatformDestinationEnvironment(): DistinctQuestion {
+    return {
+      type: 'list',
+      name: InteractiveQuestion.DESTINATION_ENVIRONMENT,
+      message: 'Destination Organization environment',
+      default: 'https://platform.cloud.coveo.com',
+      choices: [
+        { name: 'Production (US)', value: 'https://platform.cloud.coveo.com' },
+        { name: 'Production (Europe)', value: 'https://platform.cloud.coveo.com' },
+        { name: 'Production (Australia)', value: 'https://platform-au.cloud.coveo.com' },
+        { name: 'HIPAA', value: 'https://platformhipaa.cloud.coveo.com' },
+        { name: 'QA', value: 'https://platformqa.cloud.coveo.com' },
+        { name: 'DEV', value: 'https://platformdev.cloud.coveo.com' },
+      ],
+    };
+  }
+
+  getCommandList(): DistinctQuestion {
     return {
       type: 'list',
       name: InteractiveQuestion.COMMAND,
@@ -191,12 +262,12 @@ export class InteractiveQuestion {
       choices: [
         { name: InteractiveQuestion.DIFF_COMMAND },
         { name: InteractiveQuestion.GRADUATE_COMMAND },
-        { name: 'rebuild sources', value: 'rebuild-sources' }
-      ]
+        { name: 'rebuild sources', value: 'rebuild-sources' },
+      ],
     };
   }
 
-  setLogLevel(): Question {
+  setLogLevel(): DistinctQuestion {
     return {
       type: 'list',
       name: InteractiveQuestion.LOG_LEVEL,
@@ -204,13 +275,13 @@ export class InteractiveQuestion {
       default: 'info',
       choices: [{ name: 'nothing' }, { name: 'error' }, { name: 'info' }, { name: 'verbose' }, { name: 'insane' }],
       when: (answer: Answers) => {
-        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
         return answer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE;
-      }
+      },
     };
   }
 
-  getContentToDiff(): Question {
+  getContentToDiff(): DistinctQuestion {
     return {
       type: 'list',
       name: InteractiveQuestion.OBJECT_TO_MANIPULATE,
@@ -219,16 +290,16 @@ export class InteractiveQuestion {
         { name: InteractiveQuestion.FIELDS_CONTROLLER_NAME },
         { name: InteractiveQuestion.EXTENSIONS_CONTROLLER_NAME },
         { name: InteractiveQuestion.SOURCES_CONTROLLER_NAME },
-        { name: InteractiveQuestion.PAGES_CONTROLLER_NAME }
+        { name: InteractiveQuestion.PAGES_CONTROLLER_NAME },
       ],
       when: (answer: Answers) => {
-        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
         return answer[InteractiveQuestion.COMMAND].indexOf(InteractiveQuestion.DIFF_COMMAND) !== -1;
-      }
+      },
     };
   }
 
-  getContentToGraduate(): Question {
+  getContentToGraduate(): DistinctQuestion {
     return {
       type: 'list',
       name: InteractiveQuestion.OBJECT_TO_MANIPULATE,
@@ -237,90 +308,90 @@ export class InteractiveQuestion {
         { name: InteractiveQuestion.FIELDS_CONTROLLER_NAME },
         { name: InteractiveQuestion.EXTENSIONS_CONTROLLER_NAME },
         { name: InteractiveQuestion.SOURCES_CONTROLLER_NAME },
-        { name: InteractiveQuestion.PAGES_CONTROLLER_NAME }
+        { name: InteractiveQuestion.PAGES_CONTROLLER_NAME },
       ],
       when: (answer: Answers) => {
-        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
         return answer[InteractiveQuestion.COMMAND] === InteractiveQuestion.GRADUATE_COMMAND;
-      }
+      },
     };
   }
 
-  getSourcesToRebuild(sources: string[]): Question {
+  getSourcesToRebuild(sources: string[]): DistinctQuestion {
     return {
       type: 'checkbox',
       name: InteractiveQuestion.SOURCES_TO_REBUILD,
-      message: `Select sources to ${chalk.underline('rebuild')}. You need to select at least one source.`,
-      validate: s => {
+      message: `Select sources to ${underline('rebuild')}. You need to select at least one source.`,
+      validate: (s) => {
         return s.length > 0 ? true : 'Select at least one source to rebuild';
       },
       choices: sources,
       when: (answer: Answers) => {
-        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
         return answer[InteractiveQuestion.COMMAND] === 'rebuild-sources';
       },
       filter: (input: string) => {
         return `"${input}"`;
-      }
+      },
     };
   }
 
-  setAdvancedConfiguration(): Question {
+  setAdvancedConfiguration(): DistinctQuestion {
     return {
       type: 'list',
       name: InteractiveQuestion.ADVANCED_MODE,
       message: 'Options Configuration',
       default: InteractiveQuestion.BASIC_CONFIGURATION_MODE,
-      choices: [{ name: InteractiveQuestion.BASIC_CONFIGURATION_MODE }, { name: InteractiveQuestion.ADVANCED_CONFIGURATION_MODE }]
+      choices: [{ name: InteractiveQuestion.BASIC_CONFIGURATION_MODE }, { name: InteractiveQuestion.ADVANCED_CONFIGURATION_MODE }],
     };
   }
 
-  setKeysToIgnore(fieldModel: string[]): Question {
+  setKeysToIgnore(fieldModel: string[]): DistinctQuestion {
     return {
       type: 'checkbox',
       name: InteractiveQuestion.KEY_TO_IGNORE,
       message: `Select the keys that will no be taken in consideration during the diff`,
       choices: fieldModel,
       when: (answer: Answers) => {
-        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
         return (
           answer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE &&
           answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === InteractiveQuestion.FIELDS_CONTROLLER_NAME &&
           fieldModel.length > 0
         );
-      }
+      },
     };
   }
 
-  setKeysToIncludeOnly(fieldModel: string[]): Question {
+  setKeysToIncludeOnly(fieldModel: string[]): DistinctQuestion {
     return {
       type: 'checkbox',
       name: InteractiveQuestion.KEY_TO_INCLUDE_ONLY,
       message: `Select the keys that you only want to perform the diff`,
       choices: fieldModel,
       when: (answer: Answers) => {
-        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
         return (
           answer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE &&
           answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === InteractiveQuestion.FIELDS_CONTROLLER_NAME &&
           fieldModel.length > 0
         );
-      }
+      },
     };
   }
 
-  selectExtensionsToIgnore(extensions: string[]): Question {
+  selectExtensionsToIgnore(extensions: string[]): DistinctQuestion {
     return {
       type: 'checkbox',
       name: InteractiveQuestion.IGNORE_EXTENSIONS,
-      message: `Select extensions to ${chalk.bold('ignore')}.`,
-      choices: _.map(extensions, (extension: string) => {
+      message: `Select extensions to ${bold('ignore')}.`,
+      choices: extensions.map((extension: string) => {
         const isAllMetadataValue =
           ['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'].indexOf(
             StringUtil.lowerAndStripSpaces(extension)
           ) > -1;
-        const choice: inquirer.objects.ChoiceOption = {
-          name: extension
+        const choice: ListChoiceOptions = {
+          name: extension,
           // checked: isAllMetadataValue
         };
         if (isAllMetadataValue) {
@@ -329,7 +400,7 @@ export class InteractiveQuestion {
         return choice;
       }),
       when: (answer: Answers) => {
-        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
         return (
           (answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === InteractiveQuestion.SOURCES_CONTROLLER_NAME ||
             answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === InteractiveQuestion.EXTENSIONS_CONTROLLER_NAME) &&
@@ -338,59 +409,59 @@ export class InteractiveQuestion {
       },
       filter: (input: string) => {
         return `"${input}"`;
-      }
+      },
     };
   }
 
-  selectSourcesForFields(sources: string[]): Question {
+  selectSourcesForFields(sources: string[]): DistinctQuestion {
     return {
       type: 'checkbox',
       name: InteractiveQuestion.SOURCES,
       message: `Select sources from which to load fields. Selecting nothing will load all fields.`,
       choices: sources,
       when: (answer: Answers) => {
-        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
         return answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === InteractiveQuestion.FIELDS_CONTROLLER_NAME && sources.length > 0;
       },
       filter: (input: string) => {
         return `"${input}"`;
-      }
+      },
     };
   }
 
-  selectSourcesToIgnore(sources: string[]): Question {
+  selectSourcesToIgnore(sources: string[]): DistinctQuestion {
     return {
       type: 'checkbox',
       name: InteractiveQuestion.SOURCES,
-      message: `Select sources to ${chalk.underline('ignore')}. Selecting nothing will diff all sources`,
+      message: `Select sources to ${underline('ignore')}. Selecting nothing will diff all sources`,
       choices: sources,
       when: (answer: Answers) => {
-        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
         return answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === InteractiveQuestion.SOURCES_CONTROLLER_NAME && sources.length > 0;
       },
       filter: (input: string) => {
         return `"${input}"`;
-      }
+      },
     };
   }
 
-  selectPagesToIgnore(pages: string[]): Question {
+  selectPagesToIgnore(pages: string[]): DistinctQuestion {
     return {
       type: 'checkbox',
       name: InteractiveQuestion.SOURCES,
-      message: `Select sources to ${chalk.underline('ignore')}. Selecting nothing will diff all sources`,
+      message: `Select sources to ${underline('ignore')}. Selecting nothing will diff all sources`,
       choices: pages,
       when: (answer: Answers) => {
-        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
         return answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === InteractiveQuestion.PAGES_CONTROLLER_NAME && pages.length > 0;
       },
       filter: (input: string) => {
         return `"${input}"`;
-      }
+      },
     };
   }
 
-  getFileNameForSettings(): Question {
+  getFileNameForSettings(): DistinctQuestion {
     return this.getGenericFilename(
       InteractiveQuestion.SETTING_FILENAME,
       'command.sh',
@@ -399,20 +470,20 @@ export class InteractiveQuestion {
     );
   }
 
-  getFileNameForLogs(): Question {
+  getFileNameForLogs(): DistinctQuestion {
     return this.getGenericFilename(InteractiveQuestion.LOG_FILENAME, 'logs.json', 'Enter the filename to output logs: ');
   }
 
-  confirmAction(mes: string = 'Are you sure you want to perform this action?', variable: string): Question {
+  confirmAction(mes: string = 'Are you sure you want to perform this action?', variable: string): DistinctQuestion {
     return {
       type: 'confirm',
       name: variable,
-      message: `${chalk.bgRed(mes)}`,
-      default: false
+      message: `${bgRed(mes)}`,
+      default: false,
     };
   }
 
-  // public executeCommand(): Question {
+  // public executeCommand(): DistinctQuestion {
   //   return {
   //     type: 'confirm',
   //     name: InteractiveQuestion.EXECUTE_COMMAND,
@@ -421,13 +492,17 @@ export class InteractiveQuestion {
   //   };
   // }
 
-  getInitialQuestions(data: any): Question[] {
+  getInitialQuestions(data: any): QuestionCollection {
     return [
-      this.getPlatformEnvironment(),
+      this.getPlatformOriginEnvironment(),
+      this.getPlatformDestinationEnvironment(),
       this.getCommandList(),
       this.getOriginOrganizationId(),
       this.getDestinationOrganizationId(),
-      this.getApiKey(),
+      this.getApiKeyStrategy(),
+      this.getMasterApiKey(),
+      this.getOriginApiKey(),
+      this.getDestinationApiKey(),
 
       // If Graduation
       this.getContentToDiff(),
@@ -437,11 +512,11 @@ export class InteractiveQuestion {
       // Common Options
       this.setAdvancedConfiguration(),
       this.setKeysToIgnore(data['fieldModel'] || []), // only execute when in advanced option
-      this.setKeysToIncludeOnly(data['fieldModel'] || []) // only execute when in advanced option
+      this.setKeysToIncludeOnly(data['fieldModel'] || []), // only execute when in advanced option
     ];
   }
 
-  getFinalQuestions(data?: any): Question[] {
+  getFinalQuestions(data?: any): DistinctQuestion[] {
     const questions = [];
 
     if (data && data.sources) {
@@ -458,10 +533,10 @@ export class InteractiveQuestion {
       questions.push(this.selectPagesToIgnore(data.pagesToIgnore));
     }
 
-    return _.union(questions, [this.setLogLevel(), this.getFileNameForLogs(), this.getFileNameForSettings()]);
+    return union(questions, [this.setLogLevel(), this.getFileNameForLogs(), this.getFileNameForSettings()]);
   }
 
-  private getGraduateOperation(): Question {
+  private getGraduateOperation(): DistinctQuestion {
     return {
       type: 'checkbox',
       name: InteractiveQuestion.GRADUATE_OPERATIONS,
@@ -469,19 +544,19 @@ export class InteractiveQuestion {
       choices: ['POST', 'PUT', 'DELETE'],
       validate: this.checkboxValidator('You need to select at least 1 graduate operation.'),
       when: (answer: Answers) => {
-        answer = _.extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
         return answer[InteractiveQuestion.COMMAND] === InteractiveQuestion.GRADUATE_COMMAND;
-      }
+      },
     };
   }
 
-  private getGenericFilename(nameValue: string, defaultValue: string, messageValue: string, alwaysRun: boolean = false): Question {
+  private getGenericFilename(nameValue: string, defaultValue: string, messageValue: string, alwaysRun: boolean = false): DistinctQuestion {
     return {
       type: 'input',
       name: nameValue,
       default: defaultValue,
       message: messageValue,
-      when: (answer: Answers) => alwaysRun || answer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE
+      when: (answer: Answers) => alwaysRun || answer[InteractiveQuestion.ADVANCED_MODE] === InteractiveQuestion.ADVANCED_CONFIGURATION_MODE,
     };
   }
 

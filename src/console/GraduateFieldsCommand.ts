@@ -1,5 +1,5 @@
 import * as program from 'commander';
-import * as _ from 'underscore';
+import {} from 'underscore';
 import { Logger } from '../commons/logger';
 import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { CommanderUtils } from './CommanderUtils';
@@ -40,21 +40,24 @@ program
         keysToIgnore: ['sources', 'system'],
         includeOnly: options.onlyKeys,
         silent: options.silent,
-        sources: options.sources
+        sources: options.sources,
       },
       // keyBlacklist: _.union(options.ignoreKeys, ['sources']),
       keyBlacklist: ['sources', 'system'],
       POST: options.methods.indexOf('POST') > -1,
       PUT: options.methods.indexOf('PUT') > -1,
-      DELETE: options.methods.indexOf('DELETE') > -1
+      DELETE: options.methods.indexOf('DELETE') > -1,
     };
 
     const blacklistOptions: IBlacklistObjects = {
-      fields: options.ignoreFields
+      fields: options.ignoreFields,
     };
 
-    const originOrg = new Organization(origin, apiKey[0], blacklistOptions);
-    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
+    const originOrg = new Organization(origin, apiKey[0], { blacklist: blacklistOptions, platformUrl: program.opts()?.platformUrlOrigin });
+    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], {
+      blacklist: blacklistOptions,
+      platformUrl: program.opts()?.platformUrlDestination,
+    });
     const controller: FieldController = new FieldController(originOrg, destinationOrg);
 
     controller.graduate(graduateOptions);

@@ -15,7 +15,6 @@ import { FileUtilsTest } from './commons/utils/FileUtilsTest';
 import { JsonUtilsTest } from './commons/utils/JsonUtilsTest';
 import { RequestUtilsTest } from './commons/utils/RequestUtilsTest';
 import { UtilsTest } from './commons/utils/UtilsTest';
-import { configTest } from './config/indexTest';
 import { ExtensionControllerTest } from './controllers/ExtensionControllerTest';
 import { FieldControllerTest } from './controllers/FieldControllerTest';
 import { SourceControllerTest } from './controllers/SourceControllerTest';
@@ -24,15 +23,20 @@ import { FieldTest } from './coveoObjects/FieldTest';
 import { OrganizationTest } from './coveoObjects/OrganizationTest';
 import { SourceTest } from './coveoObjects/SourceTest';
 import { SourceAPITest } from './commons/rest/SourceAPITest';
-import { EnvironmentUtils } from '../src/commons/utils/EnvironmentUtils';
 import { AssertTest } from './commons/misc/AssertTest';
 import { PageControllerTest } from './controllers/PageControllerTest';
 import { PageTest } from './coveoObjects/PageTest';
 import { PageAPITest } from './commons/rest/PageAPITest';
-
-console.log(`Mocking Coveo Cloud Environment: ${EnvironmentUtils.getNodeEnvironment()}\n`);
+import { IOrganizationOptions, Organization } from '../src/coveoObjects/Organization';
 
 Logger.disableSpinner();
+
+// TODO: put this class into a separate file
+export class TestOrganization extends Organization {
+  constructor(id: string, apiKey: string, options: IOrganizationOptions = {}) {
+    super(id, apiKey, options);
+  }
+}
 
 // Coveo Objects
 FieldTest();
@@ -72,9 +76,6 @@ FileUtilsTest();
 JsonUtilsTest();
 RequestUtilsTest();
 UtilsTest();
-
-// Config
-configTest();
 
 // Assert
 AssertTest();

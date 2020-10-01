@@ -1,5 +1,5 @@
 import * as program from 'commander';
-import * as _ from 'underscore';
+import { union } from 'underscore';
 import { CommanderUtils } from './CommanderUtils';
 import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { FileUtils } from '../commons/utils/FileUtils';
@@ -36,19 +36,19 @@ program
 
     // Set graduation options
     FileUtils.readJson(filePathToUpload)
-      .then(data => {
+      .then((data) => {
         const graduateOptions: IGraduateOptions = {
           diffOptions: {
-            keysToIgnore: _.union(options.ignoreKeys, ['sources']),
+            keysToIgnore: union(options.ignoreKeys, ['sources']),
             includeOnly: options.onlyKeys,
             silent: options.silent,
             sources: options.sources,
-            originData: data
+            originData: data,
           },
-          keyBlacklist: _.union(options.ignoreKeys, ['sources']),
+          keyBlacklist: union(options.ignoreKeys, ['sources']),
           POST: options.methods.indexOf('POST') > -1,
           PUT: options.methods.indexOf('PUT') > -1,
-          DELETE: options.methods.indexOf('DELETE') > -1
+          DELETE: options.methods.indexOf('DELETE') > -1,
         };
 
         const originOrg = new Organization('dummyOrg', '');

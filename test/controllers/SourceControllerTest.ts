@@ -1,7 +1,7 @@
 import * as jsDiff from 'diff';
 // tslint:disable:no-magic-numbers
 import { expect } from 'chai';
-import * as _ from 'underscore';
+import { where } from 'underscore';
 import * as nock from 'nock';
 import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
 import { IGenericError, StaticErrorMessage } from '../../src/commons/errors';
@@ -16,6 +16,7 @@ import { Dictionary } from '../../src/commons/collections/Dictionary';
 import { JsonUtils } from '../../src/commons/utils/JsonUtils';
 import { IGraduateOptions } from '../../src/commons/interfaces/IGraduateOptions';
 import { DownloadResultArray } from '../../src/commons/collections/DownloadResultArray';
+import { TestOrganization } from '../test';
 
 const allDevSources: Array<{}> = require('./../mocks/setup1/sources/dev/allSources.json');
 const DEVrrbbidfxa2ri4usxhzzmhq2hge: {} = require('./../mocks/setup1/sources/dev/web.json');
@@ -48,8 +49,8 @@ const PRODxnnutbu2n6kiwm243iossdsjha: {} = require('./../mocks/setup1/extensions
 export const SourceControllerTest = () => {
   describe('Source Controller', () => {
     // Organizations
-    const org1: Organization = new Organization('dev', 'xxx');
-    const org2: Organization = new Organization('prod', 'yyy');
+    const org1: Organization = new TestOrganization('dev', 'xxx');
+    const org2: Organization = new TestOrganization('prod', 'yyy');
 
     // Controller
     const controller = new SourceController(org1, org2);
@@ -78,13 +79,13 @@ export const SourceControllerTest = () => {
         const sourceController = new SourceController(org1, org2);
         const sourceDict: Dictionary<Source> = new Dictionary({
           'Sitemap Source': source1.clone(), // Make a copy of the source
-          Salesforce: source2.clone() // Make a copy of the source
+          Salesforce: source2.clone(), // Make a copy of the source
         });
         const extensionList = [
           DEVukjs6nvyjvqdn4vozf3ugjkdqe,
           DEVsfm7yvhqtiftmfuasrqtpfkio4,
           DEVxnnutbu2n6kiwm243iossdsjha,
-          DEVsr3jny7s5ekuwuyaak45awcaku
+          DEVsr3jny7s5ekuwuyaak45awcaku,
         ];
 
         sourceController.replaceExtensionIdWithName(sourceDict, extensionList);
@@ -98,19 +99,19 @@ export const SourceControllerTest = () => {
       });
 
       it('Should remove extensions that have been blacklisted form the source configuration', () => {
-        const org3 = new Organization('dev', 'xxx', { extensions: ['SharedVideosNormalization'] });
+        const org3 = new TestOrganization('dev', 'xxx', { blacklist: { extensions: ['SharedVideosNormalization'] } });
         const source1 = new Source(DEVtcytrppteddiqkmboszu4skdoe);
         const source2 = new Source(DEVwyowilfyrpf2qogxm45uhgskri);
         const sourceController = new SourceController(org3, org2);
         const sourceDict: Dictionary<Source> = new Dictionary({
           'Sitemap Source': source1.clone(), // Make a copy of the source
-          Salesforce: source2.clone() // Make a copy of the source
+          Salesforce: source2.clone(), // Make a copy of the source
         });
         const extensionList = [
           DEVukjs6nvyjvqdn4vozf3ugjkdqe,
           DEVsfm7yvhqtiftmfuasrqtpfkio4,
           DEVxnnutbu2n6kiwm243iossdsjha,
-          DEVsr3jny7s5ekuwuyaak45awcaku
+          DEVsr3jny7s5ekuwuyaak45awcaku,
         ];
 
         expect(sourceDict.getItem('Sitemap Source').getPostConversionExtensions().length).to.eql(2);
@@ -130,7 +131,7 @@ export const SourceControllerTest = () => {
           'preConversionExtensions',
           'configuration.addressPatterns',
           'configuration.parameters',
-          'configuration.startingAddresses'
+          'configuration.startingAddresses',
         ];
 
         const keyBlacklist = [
@@ -138,7 +139,7 @@ export const SourceControllerTest = () => {
           'configuration.parameters.OrganizationId',
           'configuration.parameters.ClientSecret',
           'configuration.parameters.ClientId',
-          'configuration.parameters.IsSandbox'
+          'configuration.parameters.IsSandbox',
         ];
 
         salesforceSource.removeParameters(keyBlacklist, keyWhitelist);
@@ -150,8 +151,8 @@ export const SourceControllerTest = () => {
             parameters: {
               PauseOnError: { sensitive: false, value: 'true' },
               SchemaVersion: { sensitive: false, value: 'LEGACY' },
-              UseRefreshToken: { sensitive: false, value: 'true' }
-            }
+              UseRefreshToken: { sensitive: false, value: 'true' },
+            },
           },
           preConversionExtensions: [],
           postConversionExtensions: [
@@ -160,17 +161,17 @@ export const SourceControllerTest = () => {
               condition: '',
               extensionId: 'dummygroupproduction-sr3jny7s5ekuwuyaak45awcaku',
               parameters: {},
-              versionId: ''
+              versionId: '',
             },
             {
               actionOnError: 'SKIP_EXTENSION',
               condition: '',
               extensionId: 'dummygroupproduction-xnnutbu2n6kiwm243iossdsjha',
               parameters: {},
-              versionId: ''
-            }
+              versionId: '',
+            },
           ],
-          logicalIndex: 'default'
+          logicalIndex: 'default',
         });
       });
 
@@ -183,13 +184,13 @@ export const SourceControllerTest = () => {
         const sourceController = new SourceController(org1, org2);
         const sourceDict: Dictionary<Source> = new Dictionary({
           'Sitemap Source': source1Clone,
-          Salesforce: source2Clone
+          Salesforce: source2Clone,
         });
         const extensionList = [
           DEVukjs6nvyjvqdn4vozf3ugjkdqe,
           DEVsfm7yvhqtiftmfuasrqtpfkio4,
           DEVxnnutbu2n6kiwm243iossdsjha,
-          DEVsr3jny7s5ekuwuyaak45awcaku
+          DEVsr3jny7s5ekuwuyaak45awcaku,
         ];
 
         sourceController.replaceExtensionIdWithName(sourceDict, extensionList);
@@ -210,7 +211,7 @@ export const SourceControllerTest = () => {
         const sourceController = new SourceController(org1, org2);
         const source1 = new Source(DEVtcytrppteddiqkmboszu4skdoe);
         const sourceDict: Dictionary<Source> = new Dictionary({
-          'Sitemap Source': source1.clone()
+          'Sitemap Source': source1.clone(),
         });
 
         expect(() => sourceController.replaceExtensionIdWithName(sourceDict, [])).to.throw();
@@ -219,7 +220,7 @@ export const SourceControllerTest = () => {
     });
 
     describe('Source Rebuild', () => {
-      it('Should rebuild a source', (done: MochaDone) => {
+      it('Should rebuild a source', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/sources')
           .reply(RequestUtils.OK, allDevSources)
@@ -231,22 +232,20 @@ export const SourceControllerTest = () => {
           .then(() => {
             done();
           })
-          .catch(err => {
+          .catch((err) => {
             done(err);
           });
       });
 
-      it('Should throw an error if trying to rebuild an invalid source', (done: MochaDone) => {
-        scope = nock(UrlService.getDefaultUrl())
-          .get('/rest/organizations/dev/sources')
-          .reply(RequestUtils.OK, allDevSources);
+      it('Should throw an error if trying to rebuild an invalid source', (done: Mocha.Done) => {
+        scope = nock(UrlService.getDefaultUrl()).get('/rest/organizations/dev/sources').reply(RequestUtils.OK, allDevSources);
 
         controller
           .rebuildSource('Invalid source')
           .then(() => {
             done('Should not resolve');
           })
-          .catch(err => {
+          .catch((err) => {
             if (err.message === StaticErrorMessage.NO_SOURCE_FOUND) {
               done();
             } else {
@@ -257,7 +256,7 @@ export const SourceControllerTest = () => {
     });
 
     describe('Diff Method', () => {
-      it('Should support item types mapping', (done: MochaDone) => {
+      it('Should support item types mapping', (done: Mocha.Done) => {
         const devMappings = [
           {
             id: 'rasdf33sgh2evy',
@@ -265,7 +264,7 @@ export const SourceControllerTest = () => {
             type: 'Playlist',
             fieldName: 'videotype',
             extractionMethod: 'LITERAL',
-            content: 'playlist'
+            content: 'playlist',
           },
           {
             id: 'rasdfgh2evy',
@@ -273,15 +272,15 @@ export const SourceControllerTest = () => {
             type: 'Playlist',
             fieldName: 'body',
             extractionMethod: 'LITERAL',
-            content: 'New body value'
+            content: 'New body value',
           },
           {
             id: 'fdkjslfkdsf',
             kind: 'COMMON',
             fieldName: 'body',
             extractionMethod: 'METADATA',
-            content: '%[description]'
-          }
+            content: '%[description]',
+          },
         ];
         const prodMapping = [
           {
@@ -289,7 +288,7 @@ export const SourceControllerTest = () => {
             kind: 'COMMON',
             fieldName: 'body',
             extractionMethod: 'METADATA',
-            content: '%[description]'
+            content: '%[description]',
           },
           {
             id: 'dsadsdsad',
@@ -297,7 +296,7 @@ export const SourceControllerTest = () => {
             type: 'Playlist',
             fieldName: 'videotype',
             extractionMethod: 'LITERAL',
-            content: 'playlist'
+            content: 'playlist',
           },
           {
             id: 'wertghj',
@@ -305,8 +304,8 @@ export const SourceControllerTest = () => {
             type: 'Playlist',
             fieldName: 'body',
             extractionMethod: 'LITERAL',
-            content: 'New body value'
-          }
+            content: 'New body value',
+          },
         ];
 
         const devSource = JsonUtils.clone(DEVtcytrppteddiqkmboszu4skdoe);
@@ -318,7 +317,7 @@ export const SourceControllerTest = () => {
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources')
-          .reply(RequestUtils.OK, _.where(allDevSources, { name: 'My Sitemap Source' })) // Just picking the sitemap for this test
+          .reply(RequestUtils.OK, where(allDevSources, { name: 'My Sitemap Source' })) // Just picking the sitemap for this test
           // Fecth extensions from dev
           .get('/rest/organizations/dev/extensions')
           .reply(RequestUtils.OK, [DEVsfm7yvhqtiftmfuasrqtpfkio4, DEVukjs6nvyjvqdn4vozf3ugjkdqe])
@@ -332,14 +331,14 @@ export const SourceControllerTest = () => {
           .reply(RequestUtils.OK, devSource)
           // Fecthing all prod sources
           .get('/rest/organizations/prod/sources')
-          .reply(RequestUtils.OK, _.where(allProdSources, { name: 'My Sitemap Source' }))
+          .reply(RequestUtils.OK, where(allProdSources, { name: 'My Sitemap Source' }))
           .get('/rest/organizations/prod/sources/tcytrppteddiqkmboszu4skdoe-dummygroupproduction/raw')
           // Replace mappings
           .reply(RequestUtils.OK, prodSource);
 
         // Set diff options
         const diffOptions: IDiffOptions = {
-          includeOnly: ['mappings']
+          includeOnly: ['mappings'],
         };
 
         controller
@@ -367,7 +366,7 @@ export const SourceControllerTest = () => {
               type: 'Playlist',
               fieldName: 'videotype',
               extractionMethod: 'LITERAL',
-              content: 'playlist'
+              content: 'playlist',
             },
             {
               id: 'rasdfgh2evy',
@@ -375,19 +374,19 @@ export const SourceControllerTest = () => {
               type: 'Playlist',
               fieldName: 'body',
               extractionMethod: 'LITERAL',
-              content: 'New body value'
+              content: 'New body value',
             },
             {
               id: 'fdkjslfkdsf',
               kind: 'COMMON',
               fieldName: 'body',
               extractionMethod: 'METADATA',
-              content: '%[description]'
-            }
+              content: '%[description]',
+            },
           ],
           sourceType: 'Dummy',
           preConversionExtensions: [],
-          postConversionExtensions: []
+          postConversionExtensions: [],
         });
 
         const prodSource = new Source({
@@ -399,7 +398,7 @@ export const SourceControllerTest = () => {
               kind: 'COMMON',
               fieldName: 'body',
               extractionMethod: 'METADATA',
-              content: '%[description]'
+              content: '%[description]',
             },
             {
               id: 'dsadsdsad',
@@ -407,7 +406,7 @@ export const SourceControllerTest = () => {
               type: 'Playlist',
               fieldName: 'videotype',
               extractionMethod: 'LITERAL',
-              content: 'playlist'
+              content: 'playlist',
             },
             {
               id: 'wertghj',
@@ -415,16 +414,16 @@ export const SourceControllerTest = () => {
               type: 'Playlist',
               fieldName: 'body',
               extractionMethod: 'LITERAL',
-              content: 'New body value'
-            }
+              content: 'New body value',
+            },
           ],
           sourceType: 'Dummy',
           preConversionExtensions: [],
-          postConversionExtensions: []
+          postConversionExtensions: [],
         });
 
         const diffOptions: IDiffOptions = {
-          includeOnly: ['mappings']
+          includeOnly: ['mappings'],
         };
 
         // These 2 function are being called in the source diff
@@ -441,11 +440,11 @@ export const SourceControllerTest = () => {
         expect(diff[0].removed).to.not.exist;
       });
 
-      it('Should diff sources (updated)', (done: MochaDone) => {
+      it('Should diff sources (updated)', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources')
-          .reply(RequestUtils.OK, _.where(allDevSources, { name: 'My Sitemap Source' })) // Just picking the sitemap for this test
+          .reply(RequestUtils.OK, where(allDevSources, { name: 'My Sitemap Source' })) // Just picking the sitemap for this test
           // Fecth extensions from dev
           .get('/rest/organizations/dev/extensions')
           .reply(RequestUtils.OK, [DEVsfm7yvhqtiftmfuasrqtpfkio4, DEVukjs6nvyjvqdn4vozf3ugjkdqe])
@@ -458,7 +457,7 @@ export const SourceControllerTest = () => {
           .reply(RequestUtils.OK, DEVtcytrppteddiqkmboszu4skdoe)
           // Fecthing all prod sources
           .get('/rest/organizations/prod/sources')
-          .reply(RequestUtils.OK, _.where(allProdSources, { name: 'My Sitemap Source' }))
+          .reply(RequestUtils.OK, where(allProdSources, { name: 'My Sitemap Source' }))
           .get('/rest/organizations/prod/sources/tcytrppteddiqkmboszu4skdoe-dummygroupproduction/raw')
           .reply(RequestUtils.OK, PRODtcytrppteddiqkmboszu4skdoe);
 
@@ -472,7 +471,7 @@ export const SourceControllerTest = () => {
           'configuration.parameters',
           'veryOldParameter',
           'NewParameter',
-          'configuration.startingAddresses'
+          'configuration.startingAddresses',
         ];
 
         const keysToIgnore = [
@@ -481,13 +480,13 @@ export const SourceControllerTest = () => {
           'configuration.parameters.ClientSecret',
           'configuration.parameters.ClientId',
           'configuration.parameters.IsSandbox',
-          'resourceId'
+          'resourceId',
         ];
 
         // Set diff options
         const diffOptions: IDiffOptions = {
           includeOnly: includeOnly,
-          keysToIgnore: keysToIgnore
+          keysToIgnore: keysToIgnore,
         };
 
         controller
@@ -513,11 +512,11 @@ export const SourceControllerTest = () => {
           });
       });
 
-      it('Should diff sources (new - deleted)', (done: MochaDone) => {
+      it('Should diff sources (new - deleted)', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources')
-          .reply(RequestUtils.OK, _.where(allDevSources, { name: 'My Sitemap Source' })) // Just picking the sitemap for this test
+          .reply(RequestUtils.OK, where(allDevSources, { name: 'My Sitemap Source' })) // Just picking the sitemap for this test
           // Fecth extensions from dev
           .get('/rest/organizations/dev/extensions')
           .reply(RequestUtils.OK, [DEVsfm7yvhqtiftmfuasrqtpfkio4, DEVukjs6nvyjvqdn4vozf3ugjkdqe])
@@ -530,7 +529,7 @@ export const SourceControllerTest = () => {
           .reply(RequestUtils.OK, DEVtcytrppteddiqkmboszu4skdoe)
           // Fecthing all prod sources
           .get('/rest/organizations/prod/sources')
-          .reply(RequestUtils.OK, _.where(allProdSources, { name: 'My web source' }))
+          .reply(RequestUtils.OK, where(allProdSources, { name: 'My web source' }))
           .get('/rest/organizations/prod/sources/rrbbidfxa2ri4usxhzzmhq2hge-dummygroupproduction/raw')
           .reply(RequestUtils.OK, PRODrrbbidfxa2ri4usxhzzmhq2hge);
 
@@ -542,12 +541,12 @@ export const SourceControllerTest = () => {
           'configuration.documentConfig',
           'configuration.extendedDataFiles',
           'configuration.parameters',
-          'configuration.startingAddresses'
+          'configuration.startingAddresses',
         ];
 
         // Set diff options
         const diffOptions: IDiffOptions = {
-          includeOnly: keyWhitelist
+          includeOnly: keyWhitelist,
         };
 
         controller
@@ -563,11 +562,11 @@ export const SourceControllerTest = () => {
               summary: {
                 TO_CREATE: 1,
                 TO_UPDATE: 0,
-                TO_DELETE: 1
+                TO_DELETE: 1,
               },
               TO_CREATE: ['My Sitemap Source'],
               TO_UPDATE: [],
-              TO_DELETE: ['My web source']
+              TO_DELETE: ['My web source'],
             });
 
             done();
@@ -577,7 +576,7 @@ export const SourceControllerTest = () => {
           });
       });
 
-      it('Should  throw an error if throttled by the REST API', (done: MochaDone) => {
+      it('Should  throw an error if throttled by the REST API', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources')
@@ -601,15 +600,17 @@ export const SourceControllerTest = () => {
           });
       });
 
-      it('Should not load extensions that have been blacklisted on the source diff', (done: MochaDone) => {
-        const orgx: Organization = new Organization('dev', 'xxx', { extensions: ['SharedVideosNormalization', 'FilterVideos'] });
-        const orgy: Organization = new Organization('prod', 'yyy');
+      it('Should not load extensions that have been blacklisted on the source diff', (done: Mocha.Done) => {
+        const orgx: Organization = new TestOrganization('dev', 'xxx', {
+          blacklist: { extensions: ['SharedVideosNormalization', 'FilterVideos'] },
+        });
+        const orgy: Organization = new TestOrganization('prod', 'yyy');
         const controllerxy = new SourceController(orgx, orgy);
 
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/sources')
-          .reply(RequestUtils.OK, _.where(allDevSources, { name: 'My Sitemap Source' })) // Just picking the sitemap for this test
+          .reply(RequestUtils.OK, where(allDevSources, { name: 'My Sitemap Source' })) // Just picking the sitemap for this test
           // Fecth extensions from dev
           .get('/rest/organizations/dev/extensions')
           .reply(RequestUtils.OK, [DEVsfm7yvhqtiftmfuasrqtpfkio4, DEVukjs6nvyjvqdn4vozf3ugjkdqe])
@@ -622,7 +623,7 @@ export const SourceControllerTest = () => {
           .reply(RequestUtils.OK, DEVtcytrppteddiqkmboszu4skdoe)
           // Fecthing all prod sources
           .get('/rest/organizations/prod/sources')
-          .reply(RequestUtils.OK, _.where(allProdSources, { name: 'My Sitemap Source' })) // Just picking the sitemap for this test
+          .reply(RequestUtils.OK, where(allProdSources, { name: 'My Sitemap Source' })) // Just picking the sitemap for this test
           .get('/rest/organizations/prod/sources/tcytrppteddiqkmboszu4skdoe-dummygroupproduction/raw')
           .reply(RequestUtils.OK, PRODtcytrppteddiqkmboszu4skdoe);
 
@@ -641,9 +642,9 @@ export const SourceControllerTest = () => {
           });
       });
 
-      it('Should not load sources that have been blacklisted for the diff', (done: MochaDone) => {
-        const orgx: Organization = new Organization('dev', 'xxx', { sources: ['My web source'] });
-        const orgy: Organization = new Organization('prod', 'yyy', { sources: ['My web source'] });
+      it('Should not load sources that have been blacklisted for the diff', (done: Mocha.Done) => {
+        const orgx: Organization = new TestOrganization('dev', 'xxx', { blacklist: { sources: ['My web source'] } });
+        const orgy: Organization = new TestOrganization('prod', 'yyy', { blacklist: { sources: ['My web source'] } });
         const controllerxy = new SourceController(orgx, orgy);
 
         scope = nock(UrlService.getDefaultUrl())
@@ -657,7 +658,7 @@ export const SourceControllerTest = () => {
             DEVsr3jny7s5ekuwuyaak45awcaku,
             DEVxnnutbu2n6kiwm243iossdsjha,
             DEVsfm7yvhqtiftmfuasrqtpfkio4,
-            DEVukjs6nvyjvqdn4vozf3ugjkdqe
+            DEVukjs6nvyjvqdn4vozf3ugjkdqe,
           ])
           // Fecth extensions from Prod
           .get('/rest/organizations/prod/extensions')
@@ -689,9 +690,9 @@ export const SourceControllerTest = () => {
           });
       });
 
-      it('Should take into account new and missing parameters in the source configuration', (done: MochaDone) => {
-        const orgx: Organization = new Organization('dev', 'xxx');
-        const orgy: Organization = new Organization('prod', 'yyy');
+      it('Should take into account new and missing parameters in the source configuration', (done: Mocha.Done) => {
+        const orgx: Organization = new TestOrganization('dev', 'xxx');
+        const orgy: Organization = new TestOrganization('prod', 'yyy');
         const controllerxy = new SourceController(orgx, orgy);
 
         const localDevSource = {
@@ -704,13 +705,13 @@ export const SourceControllerTest = () => {
               kind: 'COMMON',
               fieldName: 'printableuri',
               extractionMethod: 'METADATA',
-              content: '%[printableuri]'
-            }
+              content: '%[printableuri]',
+            },
           ],
           preConversionExtensions: [],
           postConversionExtensions: [],
           parameterNotInProduction: 'dsa',
-          resourceId: 'dev-source4'
+          resourceId: 'dev-source4',
         };
 
         const localProdSource = {
@@ -723,15 +724,15 @@ export const SourceControllerTest = () => {
               kind: 'COMMON',
               fieldName: 'printableuri',
               extractionMethod: 'METADATA',
-              content: '%[printableuri]'
-            }
+              content: '%[printableuri]',
+            },
           ],
           preConversionExtensions: [],
           postConversionExtensions: [],
           resourceId: 'prod-source',
           enableJavaScript: false,
           javaScriptLoadingDelayInMilliseconds: 0,
-          requestsTimeoutInSeconds: 100
+          requestsTimeoutInSeconds: 100,
         };
 
         scope = nock(UrlService.getDefaultUrl())
@@ -777,15 +778,15 @@ export const SourceControllerTest = () => {
           summary: { TO_CREATE: 0, TO_UPDATE: 0, TO_DELETE: 0 },
           TO_CREATE: [],
           TO_UPDATE: [],
-          TO_DELETE: []
+          TO_DELETE: [],
         });
       });
     });
 
     describe('Graduate Method', () => {
-      it('Should graduate using the blacklist strategy', (done: MochaDone) => {
-        const orgx: Organization = new Organization('dev', 'xxx');
-        const orgy: Organization = new Organization('prod', 'yyy');
+      it('Should graduate using the blacklist strategy', (done: Mocha.Done) => {
+        const orgx: Organization = new TestOrganization('dev', 'xxx');
+        const orgy: Organization = new TestOrganization('prod', 'yyy');
         const controllerxy = new SourceController(orgx, orgy);
 
         const localDevSource = {
@@ -799,20 +800,20 @@ export const SourceControllerTest = () => {
               kind: 'COMMON',
               fieldName: 'uri',
               extractionMethod: 'METADATA',
-              content: '%[printableuri]'
+              content: '%[printableuri]',
             },
             {
               id: 'xxxxxa',
               kind: 'COMMON',
               fieldName: 'printableuri',
               extractionMethod: 'METADATA',
-              content: '%[printableuri]'
-            }
+              content: '%[printableuri]',
+            },
           ],
           preConversionExtensions: [],
           postConversionExtensions: [],
           owner: 'test@coveo.com',
-          resourceId: 'dev-source'
+          resourceId: 'dev-source',
         };
 
         const localProdSource = {
@@ -827,12 +828,12 @@ export const SourceControllerTest = () => {
               kind: 'COMMON',
               fieldName: 'printableuri',
               extractionMethod: 'METADATA',
-              content: '%[printableuri]'
-            }
+              content: '%[printableuri]',
+            },
           ],
           preConversionExtensions: [],
           postConversionExtensions: [],
-          resourceId: 'prod-source'
+          resourceId: 'prod-source',
         };
 
         scope = nock(UrlService.getDefaultUrl())
@@ -867,19 +868,19 @@ export const SourceControllerTest = () => {
                 kind: 'COMMON',
                 fieldName: 'printableuri',
                 extractionMethod: 'METADATA',
-                content: '%[printableuri]'
+                content: '%[printableuri]',
               },
               {
                 id: 'xxxxxb',
                 kind: 'COMMON',
                 fieldName: 'uri',
                 extractionMethod: 'METADATA',
-                content: '%[printableuri]'
-              }
+                content: '%[printableuri]',
+              },
             ],
             preConversionExtensions: [],
             postConversionExtensions: [],
-            resourceId: 'prod-source' // Prod value
+            resourceId: 'prod-source', // Prod value
           })
           .reply(RequestUtils.OK);
 
@@ -890,7 +891,7 @@ export const SourceControllerTest = () => {
           PUT: true,
           DELETE: true,
           diffOptions: diffOptions,
-          keyBlacklist: keysToIgnore
+          keyBlacklist: keysToIgnore,
         };
         controllerxy
           .runDiffSequence(diffOptions)
@@ -912,9 +913,9 @@ export const SourceControllerTest = () => {
           });
       });
 
-      it('Should graduate using the whitelist strategy', (done: MochaDone) => {
-        const orgx: Organization = new Organization('dev', 'xxx');
-        const orgy: Organization = new Organization('prod', 'yyy');
+      it('Should graduate using the whitelist strategy', (done: Mocha.Done) => {
+        const orgx: Organization = new TestOrganization('dev', 'xxx');
+        const orgy: Organization = new TestOrganization('prod', 'yyy');
         const controllerxy = new SourceController(orgx, orgy);
 
         const localDevSource = {
@@ -928,20 +929,20 @@ export const SourceControllerTest = () => {
               kind: 'COMMON',
               fieldName: 'uri',
               extractionMethod: 'METADATA',
-              content: '%[printableuri]'
+              content: '%[printableuri]',
             },
             {
               id: 'xxxxxa',
               kind: 'COMMON',
               fieldName: 'printableuri',
               extractionMethod: 'METADATA',
-              content: '%[printableuri]'
-            }
+              content: '%[printableuri]',
+            },
           ],
           preConversionExtensions: [],
           postConversionExtensions: [],
           owner: 'test@coveo.com',
-          resourceId: 'dev-source'
+          resourceId: 'dev-source',
         };
 
         const localDevSource2 = {
@@ -954,20 +955,20 @@ export const SourceControllerTest = () => {
               kind: 'COMMON',
               fieldName: 'uri',
               extractionMethod: 'METADATA',
-              content: '%[printableuri]'
+              content: '%[printableuri]',
             },
             {
               id: 'abcd',
               kind: 'COMMON',
               fieldName: 'printableuri',
               extractionMethod: 'METADATA',
-              content: '%[printableuri]'
-            }
+              content: '%[printableuri]',
+            },
           ],
           preConversionExtensions: [],
           postConversionExtensions: [],
           owner: 'test@coveo.com',
-          resourceId: 'web-source'
+          resourceId: 'web-source',
         };
 
         const localProdSource = {
@@ -982,12 +983,12 @@ export const SourceControllerTest = () => {
               kind: 'COMMON',
               fieldName: 'printableuri',
               extractionMethod: 'METADATA',
-              content: '%[printableuri]'
-            }
+              content: '%[printableuri]',
+            },
           ],
           preConversionExtensions: [],
           postConversionExtensions: [],
-          resourceId: 'prod-source'
+          resourceId: 'prod-source',
         };
         const localProdSource2 = {
           sourceType: 'SITEMAP',
@@ -999,12 +1000,12 @@ export const SourceControllerTest = () => {
               kind: 'COMMON',
               fieldName: 'printableuri',
               extractionMethod: 'METADATA',
-              content: '%[printableuri]'
-            }
+              content: '%[printableuri]',
+            },
           ],
           preConversionExtensions: [],
           postConversionExtensions: [],
-          resourceId: 'prod-source2'
+          resourceId: 'prod-source2',
         };
 
         scope = nock(UrlService.getDefaultUrl())
@@ -1041,20 +1042,20 @@ export const SourceControllerTest = () => {
                 kind: 'COMMON',
                 fieldName: 'printableuri',
                 extractionMethod: 'METADATA',
-                content: '%[printableuri]'
+                content: '%[printableuri]',
               },
               {
                 id: 'qwert',
                 kind: 'COMMON',
                 fieldName: 'uri',
                 extractionMethod: 'METADATA',
-                content: '%[printableuri]'
-              }
+                content: '%[printableuri]',
+              },
             ],
             preConversionExtensions: [],
             postConversionExtensions: [],
             owner: 'test@coveo.com',
-            resourceId: 'web-source'
+            resourceId: 'web-source',
           })
           .reply(RequestUtils.OK)
           .put('/rest/organizations/prod/sources/prod-source/raw?rebuild=false', {
@@ -1069,19 +1070,19 @@ export const SourceControllerTest = () => {
                 kind: 'COMMON',
                 fieldName: 'printableuri',
                 extractionMethod: 'METADATA',
-                content: '%[printableuri]'
+                content: '%[printableuri]',
               },
               {
                 id: 'xxxxxb',
                 kind: 'COMMON',
                 fieldName: 'uri',
                 extractionMethod: 'METADATA',
-                content: '%[printableuri]'
-              }
+                content: '%[printableuri]',
+              },
             ],
             preConversionExtensions: [],
             postConversionExtensions: [],
-            resourceId: 'prod-source'
+            resourceId: 'prod-source',
           })
           .reply(RequestUtils.OK)
           .delete('/rest/organizations/prod/sources/prod-source2')
@@ -1093,7 +1094,7 @@ export const SourceControllerTest = () => {
           PUT: true,
           DELETE: true,
           diffOptions: diffOptions,
-          keyWhitelist: ['name', 'mappings']
+          keyWhitelist: ['name', 'mappings'],
         };
         controllerxy
           .runDiffSequence(diffOptions)
@@ -1115,9 +1116,9 @@ export const SourceControllerTest = () => {
           });
       });
 
-      it('Should graduate using the whitelist strategy', (done: MochaDone) => {
-        const orgx: Organization = new Organization('dev', 'xxx');
-        const orgy: Organization = new Organization('prod', 'yyy');
+      it('Should graduate using the whitelist strategy', (done: Mocha.Done) => {
+        const orgx: Organization = new TestOrganization('dev', 'xxx');
+        const orgy: Organization = new TestOrganization('prod', 'yyy');
         const controllerxy = new SourceController(orgx, orgy);
 
         const localDevSource = {
@@ -1131,20 +1132,20 @@ export const SourceControllerTest = () => {
               kind: 'COMMON',
               fieldName: 'uri',
               extractionMethod: 'METADATA',
-              content: '%[printableuri]'
+              content: '%[printableuri]',
             },
             {
               id: 'xxxxxa',
               kind: 'COMMON',
               fieldName: 'printableuri',
               extractionMethod: 'METADATA',
-              content: '%[printableuri]'
-            }
+              content: '%[printableuri]',
+            },
           ],
           preConversionExtensions: [],
           postConversionExtensions: [],
           owner: 'test@coveo.com',
-          resourceId: 'dev-source'
+          resourceId: 'dev-source',
         };
 
         const localDevSource2 = {
@@ -1155,7 +1156,7 @@ export const SourceControllerTest = () => {
           preConversionExtensions: [],
           postConversionExtensions: [],
           owner: 'test@coveo.com',
-          resourceId: 'web-source'
+          resourceId: 'web-source',
         };
 
         const localProdSource = {
@@ -1170,12 +1171,12 @@ export const SourceControllerTest = () => {
               kind: 'COMMON',
               fieldName: 'printableuri',
               extractionMethod: 'METADATA',
-              content: '%[printableuri]'
-            }
+              content: '%[printableuri]',
+            },
           ],
           preConversionExtensions: [],
           postConversionExtensions: [],
-          resourceId: 'prod-source'
+          resourceId: 'prod-source',
         };
 
         const localProdSource2 = {
@@ -1188,12 +1189,12 @@ export const SourceControllerTest = () => {
               kind: 'COMMON',
               fieldName: 'printableuri',
               extractionMethod: 'METADATA',
-              content: '%[printableuri]'
-            }
+              content: '%[printableuri]',
+            },
           ],
           preConversionExtensions: [],
           postConversionExtensions: [],
-          resourceId: 'prod-source2'
+          resourceId: 'prod-source2',
         };
 
         scope = nock(UrlService.getDefaultUrl())
@@ -1228,7 +1229,7 @@ export const SourceControllerTest = () => {
             preConversionExtensions: [],
             postConversionExtensions: [],
             owner: 'test@coveo.com',
-            resourceId: 'web-source'
+            resourceId: 'web-source',
           })
           .reply(429, 'TOO_MANY_REQUESTS')
           .put('/rest/organizations/prod/sources/prod-source/raw?rebuild=false', {
@@ -1243,19 +1244,19 @@ export const SourceControllerTest = () => {
                 kind: 'COMMON',
                 fieldName: 'printableuri',
                 extractionMethod: 'METADATA',
-                content: '%[printableuri]'
+                content: '%[printableuri]',
               },
               {
                 id: 'xxxxxb',
                 kind: 'COMMON',
                 fieldName: 'uri',
                 extractionMethod: 'METADATA',
-                content: '%[printableuri]'
-              }
+                content: '%[printableuri]',
+              },
             ],
             preConversionExtensions: [],
             postConversionExtensions: [],
-            resourceId: 'prod-source'
+            resourceId: 'prod-source',
           })
           .reply(429, 'TOO_MANY_REQUESTS')
           .delete('/rest/organizations/prod/sources/prod-source2')
@@ -1267,7 +1268,7 @@ export const SourceControllerTest = () => {
           PUT: true,
           DELETE: true,
           diffOptions: diffOptions,
-          keyWhitelist: ['name', 'mappings']
+          keyWhitelist: ['name', 'mappings'],
         };
         controllerxy
           .runDiffSequence(diffOptions)
@@ -1290,9 +1291,9 @@ export const SourceControllerTest = () => {
           });
       });
 
-      it('Should have nothing to graduate', (done: MochaDone) => {
-        const orgx: Organization = new Organization('dev', 'xxx');
-        const orgy: Organization = new Organization('prod', 'yyy');
+      it('Should have nothing to graduate', (done: Mocha.Done) => {
+        const orgx: Organization = new TestOrganization('dev', 'xxx');
+        const orgy: Organization = new TestOrganization('prod', 'yyy');
         const controllerxy = new SourceController(orgx, orgy);
 
         scope = nock(UrlService.getDefaultUrl())
@@ -1310,7 +1311,7 @@ export const SourceControllerTest = () => {
           POST: true,
           PUT: true,
           DELETE: true,
-          diffOptions: {}
+          diffOptions: {},
         };
         controllerxy
           .runDiffSequence(diffOptions)
@@ -1334,8 +1335,8 @@ export const SourceControllerTest = () => {
     });
 
     describe('Download Method', () => {
-      it('Should download sources', (done: MochaDone) => {
-        const orgx: Organization = new Organization('dev', 'xxx');
+      it('Should download sources', (done: Mocha.Done) => {
+        const orgx: Organization = new TestOrganization('dev', 'xxx');
         const controllerxy = new SourceController(orgx);
 
         scope = nock(UrlService.getDefaultUrl())
@@ -1361,8 +1362,8 @@ export const SourceControllerTest = () => {
           });
       });
 
-      it('Should not download if server error', (done: MochaDone) => {
-        const orgx: Organization = new Organization('dev', 'xxx');
+      it('Should not download if server error', (done: Mocha.Done) => {
+        const orgx: Organization = new TestOrganization('dev', 'xxx');
         const controllerxy = new SourceController(orgx);
 
         scope = nock(UrlService.getDefaultUrl())

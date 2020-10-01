@@ -1,4 +1,4 @@
-// import * as _ from 'underscore';
+// import {} from 'underscore';
 import * as program from 'commander';
 import { Logger } from '../commons/logger';
 import { CommanderUtils } from './CommanderUtils';
@@ -42,15 +42,18 @@ program
       keysToIgnore: ['sources'], // TODO: have precedence over includeOnly. Remove includeOnly!
       includeOnly: options.onlyKeys,
       silent: options.silent,
-      sources: options.sources
+      sources: options.sources,
     };
 
     const blacklistOptions: IBlacklistObjects = {
-      fields: options.ignoreFields
+      fields: options.ignoreFields,
     };
 
-    const originOrg = new Organization(origin, apiKey[0], blacklistOptions);
-    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
+    const originOrg = new Organization(origin, apiKey[0], { blacklist: blacklistOptions, platformUrl: program.opts()?.platformUrlOrigin });
+    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], {
+      blacklist: blacklistOptions,
+      platformUrl: program.opts()?.platformUrlDestination,
+    });
     const controller: FieldController = new FieldController(originOrg, destinationOrg);
 
     controller.diff(diffOptions);

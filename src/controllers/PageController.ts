@@ -1,5 +1,5 @@
 import * as jsDiff from 'diff';
-import * as _ from 'underscore';
+import { find, map } from 'underscore';
 import { series } from 'async';
 import { RequestResponse } from 'request';
 import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
@@ -68,7 +68,7 @@ export class PageController extends BaseController {
     if (diffResultArray.containsItems()) {
       Logger.loadingTask('Graduating Pages');
       return Promise.all(
-        _.map(
+        map(
           this.getAuthorizedOperations(diffResultArray, this.graduateNew, this.graduateUpdated, this.graduateDeleted, options),
           (operation: (diffResult: DiffResultArray<Page>) => Promise<void>) => {
             return operation.call(this, diffResultArray);
@@ -85,7 +85,7 @@ export class PageController extends BaseController {
     Logger.verbose(
       `Creating ${diffResult.TO_CREATE.length} new page${diffResult.TO_CREATE.length > 1 ? 's' : ''} in ${this.organization2.getId()} `
     );
-    const asyncArray = _.map(diffResult.TO_CREATE, (page: Page) => {
+    const asyncArray = diffResult.TO_CREATE.map((page: Page) => {
       return (callback: any) => {
         PageAPI.createPage(this.organization2, page.getConfiguration())
           .then((response: RequestResponse) => {
@@ -113,7 +113,7 @@ export class PageController extends BaseController {
     Logger.verbose(
       `Updating ${diffResult.TO_UPDATE.length} existing page${diffResult.TO_UPDATE.length > 1 ? 's' : ''} in ${this.organization2.getId()} `
     );
-    const asyncArray = _.map(diffResult.TO_UPDATE, (page: Page, idx: number) => {
+    const asyncArray = diffResult.TO_UPDATE.map((page: Page, idx: number) => {
       return (callback: any) => {
         const destinationPage = diffResult.TO_UPDATE_OLD[idx].getId();
         PageAPI.updatePage(this.organization2, destinationPage, page.getConfiguration())
@@ -143,7 +143,7 @@ export class PageController extends BaseController {
         diffResult.TO_CREATE.length > 1 ? 's' : ''
       } from ${this.organization2.getId()} `
     );
-    const asyncArray = _.map(diffResult.TO_DELETE, (page: Page) => {
+    const asyncArray = diffResult.TO_DELETE.map((page: Page) => {
       return (callback: any) => {
         PageAPI.deletePage(this.organization2, page.getId())
           .then((response: RequestResponse) => {
@@ -206,11 +206,11 @@ export class PageController extends BaseController {
   ): string[] | Array<{ [pageName: string]: jsDiff.Change[] }> {
     if (oldVersion === undefined) {
       // returning pages to create and to delete
-      return _.map(object, (e: Page) => e.getName());
+      return object.map((e: Page) => e.getName());
     } else {
       const pageDiff: Array<{ [pageName: string]: jsDiff.Change[] }> = [];
-      _.map(oldVersion, (oldPage: Page) => {
-        const newPage: Page | undefined = _.find(object, (e: Page) => {
+      oldVersion.map((oldPage: Page) => {
+        const newPage: Page | undefined = find(object, (e: Page) => {
           return e.getName() === oldPage.getName();
         });
         Assert.isNotUndefined(newPage, `Something went wrong in the page diff. Unable to find ${oldPage.getName()}`);

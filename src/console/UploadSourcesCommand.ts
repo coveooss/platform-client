@@ -1,5 +1,5 @@
 import * as program from 'commander';
-import * as _ from 'underscore';
+import { union } from 'underscore';
 import { Logger } from '../commons/logger';
 import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { CommanderUtils } from './CommanderUtils';
@@ -46,7 +46,7 @@ program
       'configuration.startingAddresses',
       'configuration.sourceSecurityOption',
       'configuration.permissions',
-      'additionalInfos'
+      'additionalInfos',
     ];
 
     const keysToIgnore = [
@@ -57,35 +57,38 @@ program
       'configuration.parameters.IsSandbox',
       'additionalInfos.salesforceOrg',
       'additionalInfos.salesforceUser',
-      'additionalInfos.salesforceOrgName'
+      'additionalInfos.salesforceOrgName',
     ];
 
     FileUtils.readJson(filePathToUpload)
-      .then(data => {
+      .then((data) => {
         // Set graduation options
         const graduateOptions: IGraduateOptions = {
           diffOptions: {
             silent: options.silent,
             includeOnly: includeOnly,
             keysToIgnore: keysToIgnore,
-            originData: data
+            originData: data,
           },
           keyWhitelist: includeOnly,
           keyBlacklist: keysToIgnore,
           rebuild: options.rebuild,
           POST: options.methods.indexOf('POST') > -1,
           PUT: options.methods.indexOf('PUT') > -1,
-          DELETE: options.methods.indexOf('DELETE') > -1
+          DELETE: options.methods.indexOf('DELETE') > -1,
         };
 
         const blacklistOptions = {
-          sources: _.union(
+          sources: union(
             ['allfieldvalues', 'allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'],
             options.ignoreSources
-          )
+          ),
         };
-        const originOrg = new Organization('dummyOrg', '', blacklistOptions);
-        const destinationOrg = new Organization(destination, apiKey, blacklistOptions);
+        const originOrg = new Organization('dummyOrg', '', { blacklist: blacklistOptions, platformUrl: program.opts()?.platformUrlOrigin });
+        const destinationOrg = new Organization(destination, apiKey, {
+          blacklist: blacklistOptions,
+          platformUrl: program.opts()?.platformUrlDestination,
+        });
         const controller: SourceController = new SourceController(originOrg, destinationOrg);
 
         controller.graduate(graduateOptions);
