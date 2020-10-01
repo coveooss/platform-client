@@ -17,7 +17,10 @@ export class InteractiveQuestion {
   static PAGES_CONTROLLER_NAME: string = 'pages';
   // Required parameters
   static ORIGIN_ORG_ID: string = 'originOrganizationId';
-  static MASTER_API_KEY: string = 'APIKey';
+  static USE_MASTER_API_KEY: string = 'APIKeyStrategy';
+  static MASTER_API_KEY: string = 'masterAPIKey';
+  static ORIGIN_API_KEY: string = 'originAPIKey';
+  static DESTINATION_API_KEY: string = 'destinationAPIKey';
   static DESTINATION_ORG_ID: string = 'destinationOrganizationId';
   static COMMAND: string = 'command';
   static ORIGIN_ENVIRONMENT: string = 'originEnvironment';
@@ -53,7 +56,13 @@ export class InteractiveQuestion {
       .then((model: string[]) => {
         return prompt(this.getInitialQuestions({ fieldModel: model })).then((ans: Answers) => {
           InteractiveQuestion.PREVIOUS_ANSWERS = ans;
-          const org = new Organization(ans[InteractiveQuestion.ORIGIN_ORG_ID], ans[InteractiveQuestion.MASTER_API_KEY]);
+          const key = ans[InteractiveQuestion.USE_MASTER_API_KEY]
+            ? ans[InteractiveQuestion.MASTER_API_KEY]
+            : ans[InteractiveQuestion.ORIGIN_API_KEY];
+
+          const org = new Organization(ans[InteractiveQuestion.ORIGIN_ORG_ID], key, {
+            platformUrl: ans[InteractiveQuestion.ORIGIN_ENVIRONMENT],
+          });
 
           return Promise.all([this.loadSourceList(org), this.loadExtensionList(org), this.loadPageList(org)])
             .then((values) => {
@@ -159,12 +168,55 @@ export class InteractiveQuestion {
     };
   }
 
-  getApiKey(): DistinctQuestion {
+  getApiKeyStrategy(): DistinctQuestion {
+    return {
+      type: 'list',
+      name: InteractiveQuestion.USE_MASTER_API_KEY,
+      message: 'API key strategy',
+      default: true,
+      choices: [
+        { name: 'One master API key', value: true },
+        { name: '2 API keys (one per organization)', value: false },
+      ],
+    };
+  }
+
+  getMasterApiKey(): DistinctQuestion {
     return {
       type: 'input',
       name: InteractiveQuestion.MASTER_API_KEY,
       message: 'Master API Key: ',
       validate: this.inputValidator('You need to provide an API Key'),
+      when: (answer: Answers) => {
+        answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        return answer[InteractiveQuestion.USE_MASTER_API_KEY] === true;
+      },
+    };
+  }
+
+  getOriginApiKey(): DistinctQuestion {
+    return {
+      type: 'input',
+      name: InteractiveQuestion.ORIGIN_API_KEY,
+      message: 'Origin Organization API Key: ',
+      validate: this.inputValidator('You need to provide an API Key'),
+      when: (answer: Answers) => {
+        answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        return answer[InteractiveQuestion.USE_MASTER_API_KEY] === false;
+      },
+    };
+  }
+
+  getDestinationApiKey(): DistinctQuestion {
+    return {
+      type: 'input',
+      name: InteractiveQuestion.DESTINATION_API_KEY,
+      message: 'Destination Organization API Key: ',
+      validate: this.inputValidator('You need to provide an API Key'),
+      when: (answer: Answers) => {
+        answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        return answer[InteractiveQuestion.USE_MASTER_API_KEY] === false;
+      },
     };
   }
 
@@ -447,7 +499,10 @@ export class InteractiveQuestion {
       this.getCommandList(),
       this.getOriginOrganizationId(),
       this.getDestinationOrganizationId(),
-      this.getApiKey(),
+      this.getApiKeyStrategy(),
+      this.getMasterApiKey(),
+      this.getOriginApiKey(),
+      this.getDestinationApiKey(),
 
       // If Graduation
       this.getContentToDiff(),
