@@ -11,18 +11,6 @@
 - [Coveo-Platform-Client](#coveo-platform-client)
   - [Description](#description)
   - [Installation](#installation)
-  - [Using from the command line](#using-from-the-command-line)
-    - [Interactive tool](#interactive-tool)
-    - [Commands](#commands)
-      - [Command parameters](#command-parameters)
-      - [Coveo Cloud V2 Platform environment](#coveo-cloud-v2-platform-environment)
-      - [Diff](#diff)
-      - [Graduation](#graduation)
-        - [Graduation Order](#graduation-order)
-      - [Download](#download)
-      - [Upload](#upload)
-  - [Development](#development)
-    - [Dev server](#dev-server)
     - [Tests](#tests)
     - [Run the interactive tool in local](#run-the-interactive-tool-in-local)
   - [Available Coveo documentation](#available-coveo-documentation)
@@ -93,7 +81,7 @@ platformclient <command> [options] <origin> <destination> <apiKey...>
 
  **API Privileges table**
 
- |     **Command**      |                  Access Level                  |
+ | **Command**          | Access Level                                   |
  | :------------------- | :--------------------------------------------- |
  | download-fields      | Fields (View All)                              |
  | upload-fields        | Fields (Edit All)                              |
@@ -118,17 +106,23 @@ platformclient <command> [options] <origin> <destination> <apiKey...>
 
 #### Coveo Cloud V2 Platform environment
 
-You can target any of the 3 Coveo Cloud environments by using the `--env` option.
+You can deploy resources across environments and regions using the options `--platformUrlOrigin` and  `--platformUrlDestination`.
 
+##### Environments
 1. [production](https://platform.cloud.coveo.com) (default)
 1. [development](https://platformdev.cloud.coveo.com)
 1. [qa](https://platformqa.cloud.coveo.com)
 1. [hipaa](https://platformhipaa.cloud.coveo.com) (beta)
 
-So if you want to diff sources within the https://platformdev.cloud.coveo.com environment, you would run:
+##### Regions
+1. [US](https://platform.cloud.coveo.com) (default)
+2. [Europe](https://platform-eu.cloud.coveo.com)
+3. [Australia](https://platform-au.cloud.coveo.com)
+
+Example: To graduate sources from the US Data Center to the Australian Data Center, the command would be:
 
 ```
-platformclient diff-sources ... --env development
+platformclient graduate-sources ... --platformUrlDestination https://platform-au.cloud.coveo.com.
 ```
 
 #### Diff
