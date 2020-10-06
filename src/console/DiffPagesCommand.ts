@@ -1,5 +1,5 @@
 import * as program from 'commander';
-import * as _ from 'underscore';
+import {} from 'underscore';
 import { Logger } from '../commons/logger';
 import { CommanderUtils } from './CommanderUtils';
 import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
@@ -24,21 +24,24 @@ program
     const includeOnly = [
       'name', // mandatory
       'title', // mandatory
-      'html'
+      'html',
     ];
 
     // Set diff options
     const diffOptions: IDiffOptions = {
       silent: options.silent,
-      includeOnly: includeOnly
+      includeOnly: includeOnly,
     };
 
     const blacklistOptions = {
-      pages: options.ignorePages
+      pages: options.ignorePages,
     };
 
-    const originOrg = new Organization(origin, apiKey[0], blacklistOptions);
-    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
+    const originOrg = new Organization(origin, apiKey[0], { blacklist: blacklistOptions, platformUrl: program.opts()?.platformUrlOrigin });
+    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], {
+      blacklist: blacklistOptions,
+      platformUrl: program.opts()?.platformUrlDestination,
+    });
     const controller: PageController = new PageController(originOrg, destinationOrg);
 
     controller.diff(diffOptions);

@@ -1,4 +1,4 @@
-import * as _ from 'underscore';
+import { extend, isEqual } from 'underscore';
 import { IDiffOptions } from '../interfaces/IDiffOptions';
 import { Dictionary } from '../collections/Dictionary';
 import { DiffResultArray } from '../collections/DiffResultArray';
@@ -8,7 +8,7 @@ import { ICoveoObject } from '../interfaces/ICoveoObject';
 export class DiffUtils {
   static defaultOptions: IDiffOptions = {
     keysToIgnore: [],
-    includeOnly: []
+    includeOnly: [],
   };
 
   /**
@@ -26,7 +26,7 @@ export class DiffUtils {
     dict2: Dictionary<T>,
     diffOptions?: IDiffOptions
   ): DiffResultArray<T> {
-    const options: IDiffOptions = _.extend({}, DiffUtils.defaultOptions, diffOptions);
+    const options: IDiffOptions = extend({}, DiffUtils.defaultOptions, diffOptions);
 
     // Make sure we don't alter the initial Dictionaries
     const dict2Copy = dict2.clone();
@@ -48,7 +48,7 @@ export class DiffUtils {
           options.keysToIgnore,
           options.includeOnly
         );
-        if (!_.isEqual(dict1CopyCleanedItem, dict2CopyCleanedItem)) {
+        if (!isEqual(dict1CopyCleanedItem, dict2CopyCleanedItem)) {
           diffResult.TO_UPDATE.push(value);
           diffResult.TO_UPDATE_OLD.push(dict2Copy.getItem(key));
         }

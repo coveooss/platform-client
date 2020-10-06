@@ -1,6 +1,6 @@
 import * as inquirer from 'inquirer';
 import * as program from 'commander';
-import * as _ from 'underscore';
+import {} from 'underscore';
 import { Logger } from '../commons/logger';
 import { CommanderUtils } from './CommanderUtils';
 import { Organization } from '../coveoObjects/Organization';
@@ -44,7 +44,7 @@ program
         if (res.confirm) {
           Logger.startSpinner(`Rebuilding source${options.sources.length > 1 ? 's' : ''}`);
           const massRebuild = Promise.all(
-            _.map(options.sources, (sourceName: string) => {
+            options.sources.map((sourceName: string) => {
               sourceController.rebuildSource(sourceName);
             })
           );

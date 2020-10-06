@@ -1,5 +1,5 @@
 import * as program from 'commander';
-import * as _ from 'underscore';
+import { union } from 'underscore';
 import { Logger } from '../commons/logger';
 import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { CommanderUtils } from './CommanderUtils';
@@ -13,7 +13,7 @@ program
     'requiredDataStreams',
     'content',
     'description',
-    'name'
+    'name',
   ])
   .option(
     '-E, --ignoreExtensions []',
@@ -35,23 +35,26 @@ program
     const graduateOptions: IGraduateOptions = {
       diffOptions: {
         includeOnly: options.onlyKeys,
-        silent: options.silent
+        silent: options.silent,
       },
       keyWhitelist: options.onlyKeys,
       POST: options.methods.indexOf('POST') > -1,
       PUT: options.methods.indexOf('PUT') > -1,
-      DELETE: options.methods.indexOf('DELETE') > -1
+      DELETE: options.methods.indexOf('DELETE') > -1,
     };
 
     const blacklistOptions = {
-      extensions: _.union(
+      extensions: union(
         ['allfieldvalues', 'allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'],
         options.ignoreExtensions
-      )
+      ),
     };
 
-    const originOrg = new Organization(origin, apiKey[0], blacklistOptions);
-    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
+    const originOrg = new Organization(origin, apiKey[0], { blacklist: blacklistOptions, platformUrl: program.opts()?.platformUrlOrigin });
+    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], {
+      blacklist: blacklistOptions,
+      platformUrl: program.opts()?.platformUrlDestination,
+    });
     const controller: ExtensionController = new ExtensionController(originOrg, destinationOrg);
 
     controller.graduate(graduateOptions);

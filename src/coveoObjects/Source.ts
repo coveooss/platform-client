@@ -1,4 +1,4 @@
-import * as _ from 'underscore';
+import { compact, each, omit, reject, sortBy } from 'underscore';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 import { BaseCoveoObject } from './BaseCoveoObject';
@@ -51,7 +51,7 @@ export class Source extends BaseCoveoObject implements ISource {
       mappingIds.length === sourceMappings.length,
       `The number of ids (${mappingIds.length}) should match the number of mappings in the source (${sourceMappings.length})`
     );
-    _.each(sourceMappings, (mapping: IStringMap<string>, idx: number) => {
+    each(sourceMappings, (mapping: IStringMap<string>, idx: number) => {
       mapping['id'] = mappingIds[idx];
     });
   }
@@ -65,14 +65,14 @@ export class Source extends BaseCoveoObject implements ISource {
   sortMappingsAndStripIds(): string[] {
     const mappingIds: string[] = [];
     // Sort mappings
-    let cleanedMappings: Array<IStringMap<string>> = _.sortBy(this.getMappings(), (mapping: IStringMap<string>) =>
-      _.compact([mapping.fieldName, mapping.type, mapping.id]).join('-')
+    let cleanedMappings: Array<IStringMap<string>> = sortBy(this.getMappings(), (mapping: IStringMap<string>) =>
+      compact([mapping.fieldName, mapping.type, mapping.id]).join('-')
     );
 
     // Remove id from mappings
-    cleanedMappings = _.map(cleanedMappings, (mapping: IStringMap<string>) => {
+    cleanedMappings = cleanedMappings.map((mapping: IStringMap<string>) => {
       mappingIds.push(mapping['id']);
-      return _.omit(mapping, 'id');
+      return omit(mapping, 'id');
     });
 
     this.configuration['mappings'] = cleanedMappings;
@@ -84,7 +84,7 @@ export class Source extends BaseCoveoObject implements ISource {
   }
 
   removeExtension(extensionId: string, stage: 'pre' | 'post') {
-    this.configuration[`${stage}ConversionExtensions`] = _.reject(
+    this.configuration[`${stage}ConversionExtensions`] = reject(
       this.configuration[`${stage}ConversionExtensions`],
       (extension: IStringMap<string>) =>
         StringUtil.lowerAndStripSpaces(extension.extensionId) === StringUtil.lowerAndStripSpaces(extensionId)

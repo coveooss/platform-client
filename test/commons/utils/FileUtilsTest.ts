@@ -14,7 +14,7 @@ export const FileUtilsTest = () => {
       fs.removeSync(TEST_FILE);
     });
 
-    it('Should append content to file', (done: MochaDone) => {
+    it('Should append content to file', (done: Mocha.Done) => {
       FileUtils.appendToFile(TEST_FILE, 'Ut eiusmod fugiat ea cillum tempor sunt esse.')
         .then(() => {
           const content = fs.readFileSync(TEST_FILE);
@@ -24,10 +24,10 @@ export const FileUtilsTest = () => {
         .catch((err: any) => done(err));
     });
 
-    it('Should write JSON to file', (done: MochaDone) => {
+    it('Should write JSON to file', (done: Mocha.Done) => {
       const obj = {
         a: 1,
-        b: { c: 2, d: 3 }
+        b: { c: 2, d: 3 },
       };
       FileUtils.writeJson(TEST_FILE, obj)
         .then(() => {

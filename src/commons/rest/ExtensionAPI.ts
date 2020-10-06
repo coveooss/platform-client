@@ -1,4 +1,4 @@
-import * as _ from 'underscore';
+import { contains, reject } from 'underscore';
 import { series } from 'async';
 import { RequestResponse } from 'request';
 import { Extension } from '../../coveoObjects/Extension';
@@ -14,32 +14,32 @@ import { StringUtil } from '../utils/StringUtils';
 
 export class ExtensionAPI {
   static createExtension(org: Organization, extensionModel: IStringMap<any>): Promise<RequestResponse> {
-    const url = UrlService.getExtensionsUrl(org.getId());
+    const url = UrlService.getExtensionsUrl(org);
     return RequestUtils.post(url, org.getApiKey(), extensionModel);
   }
 
   static updateExtension(org: Organization, extensionId: string, extensionModel: IStringMap<any>): Promise<RequestResponse> {
-    const url = UrlService.getSingleExtensionUrl(org.getId(), extensionId);
+    const url = UrlService.getSingleExtensionUrl(org, extensionId);
     return RequestUtils.put(url, org.getApiKey(), extensionModel);
   }
 
   static deleteExtension(org: Organization, extensionId: string): Promise<RequestResponse> {
-    const url = UrlService.getSingleExtensionUrl(org.getId(), extensionId);
+    const url = UrlService.getSingleExtensionUrl(org, extensionId);
     return RequestUtils.delete(url, org.getApiKey());
   }
 
   static getAllExtensions(organization: Organization): Promise<RequestResponse> {
-    return RequestUtils.get(UrlService.getExtensionsUrl(organization.getId()), organization.getApiKey());
+    return RequestUtils.get(UrlService.getExtensionsUrl(organization), organization.getApiKey());
   }
 
   static getSingleExtension(organization: Organization, extensionId: string): Promise<RequestResponse> {
     Assert.isNotUndefined(extensionId, 'Cannot load undefined extension');
-    return RequestUtils.get(UrlService.getSingleExtensionUrl(organization.getId(), extensionId), organization.getApiKey());
+    return RequestUtils.get(UrlService.getSingleExtensionUrl(organization, extensionId), organization.getApiKey());
   }
 
   static loadExtensions(org: Organization): Promise<{}> {
     // tslint:disable-next-line:typedef
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, subreject) => {
       // Load all extensions
       this.getAllExtensions(org)
         .then((response: RequestResponse) => {
@@ -49,30 +49,30 @@ export class ExtensionAPI {
               resolve();
             })
             .catch((err: any) => {
-              reject({ orgId: org.getId(), message: err } as IGenericError);
+              subreject({ orgId: org.getId(), message: err } as IGenericError);
             });
         })
         .catch((err: any) => {
-          reject({ orgId: org.getId(), message: err } as IGenericError);
+          subreject({ orgId: org.getId(), message: err } as IGenericError);
         });
     });
   }
 
   static getExtensionList(org: Organization): Promise<Array<{}>> {
     // tslint:disable-next-line:typedef
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, subreject) => {
       this.getAllExtensions(org)
         .then((response: RequestResponse) => {
           if (!Array.isArray(response.body)) {
-            reject({
+            subreject({
               orgId: org.getId(),
-              message: 'Unexpected response from the API. An array of extensions was expected'
+              message: 'Unexpected response from the API. An array of extensions was expected',
             } as IGenericError);
           }
           resolve(response.body as Array<{}>);
         })
         .catch((err: any) => {
-          reject({ orgId: org.getId(), message: err } as IGenericError);
+          subreject({ orgId: org.getId(), message: err } as IGenericError);
         });
     });
   }
@@ -82,16 +82,16 @@ export class ExtensionAPI {
     Logger.verbose(`${count} extension${count > 1 ? 's' : ''} from ${Colors.organization(org.getId())} to load`);
 
     // Reject all extensions that have been blacklisted. Do not load blacklisted extensions for nothing
-    response.body = _.reject(response.body, (extension: any) => {
+    response.body = reject(response.body, (extension: any) => {
       const extensionName: string = extension['name'] || '';
-      const condition = _.contains(org.getExtensionBlacklist(), StringUtil.lowerAndStripSpaces(extensionName));
+      const condition = contains(org.getExtensionBlacklist(), StringUtil.lowerAndStripSpaces(extensionName));
       if (condition) {
         Logger.info(`Skipping extension ${Colors.extension(extensionName)}`);
       }
       return condition;
     });
 
-    const asyncArray = _.map(response.body, (extension: any) => {
+    const asyncArray = response.body.map((extension: any) => {
       return (callback: any) => {
         Assert.exists(extension['id'], StaticErrorMessage.MISSING_EXTENSION_ID_FROM_THE_RESPONSE);
         Logger.loadingTask(`Loading extension ${Colors.extension(extension['name'])} from ${Colors.organization(org.getId())}`);
@@ -107,9 +107,9 @@ export class ExtensionAPI {
       };
     });
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, subreject) => {
       series(asyncArray, (err, results) => {
-        err ? reject(err) : resolve();
+        err ? subreject(err) : resolve();
       });
     });
   }
