@@ -1,7 +1,6 @@
 // tslint:disable:no-magic-numbers
 import * as jsDiff from 'diff';
 import * as nock from 'nock';
-import * as _ from 'underscore';
 import { expect } from 'chai';
 import { Utils } from '../../src/commons/utils/Utils';
 import { Organization } from '../../src/coveoObjects/Organization';
@@ -13,6 +12,7 @@ import { Page } from '../../src/coveoObjects/Page';
 import { IGenericError } from '../../src/commons/errors';
 import { IGraduateOptions } from '../../src/commons/interfaces/IGraduateOptions';
 import { IDiffOptions } from '../../src/commons/interfaces/IDiffOptions';
+import { TestOrganization } from '../test';
 
 export const PageControllerTest = () => {
   // Dev
@@ -28,8 +28,8 @@ export const PageControllerTest = () => {
 
   describe('Page Controller', () => {
     // Organizations
-    const org1: Organization = new Organization('dev', 'xxx');
-    const org2: Organization = new Organization('prod', 'yyy');
+    const org1: Organization = new TestOrganization('dev', 'xxx');
+    const org2: Organization = new TestOrganization('prod', 'yyy');
 
     // Controller
     const controller = new PageController(org1, org2);
@@ -56,18 +56,18 @@ export const PageControllerTest = () => {
           id: '001',
           name: 'mysource',
           title: 'my source',
-          html: '<html>...'
+          html: '<html>...',
         });
 
         const prodPage = new Page({
           id: '002',
           name: 'mysource',
           title: 'my source',
-          html: '<html>...'
+          html: '<html>...',
         });
 
         const diffOptions: IDiffOptions = {
-          includeOnly: ['html']
+          includeOnly: ['html'],
         };
 
         const cleanVersion: any = controller.extractionMethod([devPage], diffOptions, [prodPage]);
@@ -80,7 +80,7 @@ export const PageControllerTest = () => {
         expect(diff[0].removed).to.not.exist;
       });
 
-      it('Should not return an empty diff result', (done: MochaDone) => {
+      it('Should not return an empty diff result', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           // Fecthing all dev pages
           .get('/rest/organizations/dev/pages')
@@ -90,7 +90,7 @@ export const PageControllerTest = () => {
           .reply(RequestUtils.OK, [PRODhighlyCustomized, PRODproManagerPortalSearch]);
 
         const diffOptions: IDiffOptions = {
-          includeOnly: ['html']
+          includeOnly: ['html'],
         };
         controller
           .runDiffSequence(diffOptions)
@@ -109,9 +109,9 @@ export const PageControllerTest = () => {
           });
       });
 
-      it('Should not load pages that have been blacklisted for the diff', (done: MochaDone) => {
-        const orgx: Organization = new Organization('dev', 'xxx', { pages: ['empty'] });
-        const orgy: Organization = new Organization('prod', 'yyy', { pages: ['broken'] });
+      it('Should not load pages that have been blacklisted for the diff', (done: Mocha.Done) => {
+        const orgx: Organization = new TestOrganization('dev', 'xxx', { blacklist: { pages: ['empty'] } });
+        const orgy: Organization = new TestOrganization('prod', 'yyy', { blacklist: { pages: ['broken'] } });
         const controllerxy = new PageController(orgx, orgy);
 
         scope = nock(UrlService.getDefaultUrl())
@@ -121,7 +121,7 @@ export const PageControllerTest = () => {
           .reply(RequestUtils.OK, [PRODhighlyCustomized, PRODproManagerPortalSearch, PRODbrokenPage]);
 
         const diffOptions: IDiffOptions = {
-          includeOnly: ['html']
+          includeOnly: ['html'],
         };
         controllerxy
           .runDiffSequence(diffOptions)
@@ -137,7 +137,7 @@ export const PageControllerTest = () => {
           });
       });
 
-      it('Should  throw an error if throttled by the REST API', (done: MochaDone) => {
+      it('Should  throw an error if throttled by the REST API', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           // First expected request
           .get('/rest/organizations/dev/pages')
@@ -152,7 +152,7 @@ export const PageControllerTest = () => {
           })
           .catch((err: IGenericError) => {
             expect(JSON.parse(err.message)).to.eql({
-              Message: 'Invalid access token.'
+              Message: 'Invalid access token.',
             });
             done();
           });
@@ -160,10 +160,8 @@ export const PageControllerTest = () => {
     });
 
     describe('Download Method', () => {
-      it('Should return an empty array of pages if the org has no pages', (done: MochaDone) => {
-        scope = nock(UrlService.getDefaultUrl())
-          .get('/rest/organizations/dev/pages')
-          .reply(RequestUtils.OK, []);
+      it('Should return an empty array of pages if the org has no pages', (done: Mocha.Done) => {
+        scope = nock(UrlService.getDefaultUrl()).get('/rest/organizations/dev/pages').reply(RequestUtils.OK, []);
 
         controller
           .runDownloadSequence()
@@ -176,7 +174,7 @@ export const PageControllerTest = () => {
           });
       });
 
-      it('Should download some pages', (done: MochaDone) => {
+      it('Should download some pages', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/pages')
           .reply(RequestUtils.OK, [DEVhighlyCustomized, DEVproManagerPortalSearch]);
@@ -192,10 +190,8 @@ export const PageControllerTest = () => {
           });
       });
 
-      it('Should catch an error if too many request', (done: MochaDone) => {
-        scope = nock(UrlService.getDefaultUrl())
-          .get('/rest/organizations/dev/pages')
-          .reply(429, 'SOOOORRY'); // Too many requests
+      it('Should catch an error if too many request', (done: Mocha.Done) => {
+        scope = nock(UrlService.getDefaultUrl()).get('/rest/organizations/dev/pages').reply(429, 'SOOOORRY'); // Too many requests
 
         controller
           .runDownloadSequence()
@@ -211,7 +207,7 @@ export const PageControllerTest = () => {
     });
 
     describe('Graduate Method', () => {
-      it('Should do not graduate anything', (done: MochaDone) => {
+      it('Should do not graduate anything', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           // Fecthing all dev pages
           .get('/rest/organizations/dev/pages')
@@ -224,7 +220,7 @@ export const PageControllerTest = () => {
           POST: true,
           PUT: false,
           DELETE: false,
-          diffOptions: {}
+          diffOptions: {},
         };
 
         controller
@@ -234,7 +230,7 @@ export const PageControllerTest = () => {
             expect(diffResultArray.containsItems()).to.be.false;
             controller
               .runGraduateSequence(diffResultArray, graduateOptions)
-              .then(res => {
+              .then((res) => {
                 expect(res).length.to.be.empty;
                 done();
               })
@@ -247,7 +243,7 @@ export const PageControllerTest = () => {
           });
       });
 
-      it('Should NOT graduate pages if "too many requests" error', (done: MochaDone) => {
+      it('Should NOT graduate pages if "too many requests" error', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           // Fecthing all dev pages
           .get('/rest/organizations/dev/pages')
@@ -258,13 +254,13 @@ export const PageControllerTest = () => {
           .post('/rest/organizations/prod/pages', {
             title: (DEVemptyPage as any).title,
             name: (DEVemptyPage as any).name,
-            html: (DEVemptyPage as any).html
+            html: (DEVemptyPage as any).html,
           })
           .reply(429, 'TOO_MANY_REQUESTS')
           .put('/rest/organizations/prod/pages/66b7e0e6-f067-482c-9563-accbe20f17cd', {
             title: (DEVhighlyCustomized as any).title,
             name: (DEVhighlyCustomized as any).name,
-            html: (DEVhighlyCustomized as any).html
+            html: (DEVhighlyCustomized as any).html,
           })
           .reply(429, 'TOO_MANY_REQUESTS')
           .delete('/rest/organizations/prod/pages/2b34dc4a-5411-4606-9f93-03c27ca89e7a')
@@ -274,7 +270,7 @@ export const PageControllerTest = () => {
           POST: true,
           PUT: true,
           DELETE: true,
-          diffOptions: {}
+          diffOptions: {},
         };
 
         controller
@@ -295,7 +291,7 @@ export const PageControllerTest = () => {
           });
       });
 
-      it('Should graduate pages (POST, PUT, DELETE)', (done: MochaDone) => {
+      it('Should graduate pages (POST, PUT, DELETE)', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           // Fecthing all dev pages
           .get('/rest/organizations/dev/pages')
@@ -306,13 +302,13 @@ export const PageControllerTest = () => {
           .post('/rest/organizations/prod/pages', {
             title: (DEVemptyPage as any).title,
             name: (DEVemptyPage as any).name,
-            html: (DEVemptyPage as any).html
+            html: (DEVemptyPage as any).html,
           })
           .reply(RequestUtils.OK)
           .put('/rest/organizations/prod/pages/66b7e0e6-f067-482c-9563-accbe20f17cd', {
             title: (DEVhighlyCustomized as any).title,
             name: (DEVhighlyCustomized as any).name,
-            html: (DEVhighlyCustomized as any).html
+            html: (DEVhighlyCustomized as any).html,
           })
           .reply(RequestUtils.NO_CONTENT)
           .delete('/rest/organizations/prod/pages/2b34dc4a-5411-4606-9f93-03c27ca89e7a')
@@ -322,7 +318,7 @@ export const PageControllerTest = () => {
           POST: true,
           PUT: true,
           DELETE: true,
-          diffOptions: {}
+          diffOptions: {},
         };
 
         controller
@@ -342,7 +338,7 @@ export const PageControllerTest = () => {
           });
       });
 
-      it('Should not graduate pages: Graduation error', (done: MochaDone) => {
+      it('Should not graduate pages: Graduation error', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           // Fecthing all dev pages
           .get('/rest/organizations/dev/pages')
@@ -358,13 +354,13 @@ export const PageControllerTest = () => {
           })
           .catch((err: IGenericError) => {
             expect(JSON.parse(err.message)).to.eql({
-              message: 'something went wrong'
+              message: 'something went wrong',
             });
             done();
           });
       });
 
-      it('Should have nothing to graduate: No HTTP verbe selected', (done: MochaDone) => {
+      it('Should have nothing to graduate: No HTTP verbe selected', (done: Mocha.Done) => {
         scope = nock(UrlService.getDefaultUrl())
           .get('/rest/organizations/dev/pages')
           .reply(RequestUtils.OK, [DEVhighlyCustomized, DEVproManagerPortalSearch, DEVemptyPage])
@@ -375,7 +371,7 @@ export const PageControllerTest = () => {
           POST: false,
           PUT: false,
           DELETE: false,
-          diffOptions: {}
+          diffOptions: {},
         };
 
         controller.runDiffSequence().then((diffResultArray: DiffResultArray<Page>) => {

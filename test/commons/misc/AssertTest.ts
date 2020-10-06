@@ -1,5 +1,5 @@
 // tslint:disable:no-magic-numbers
-import * as _ from 'underscore';
+import { isArray } from 'underscore';
 import { expect } from 'chai';
 import { Assert } from '../../../src/commons/misc/Assert';
 
@@ -30,7 +30,7 @@ export const AssertTest = () => {
       expect(() => Assert.isString(NaN)).to.throw('Value should be a string.');
       expect(() => Assert.isNumber('')).to.throw('Value should be a number.');
 
-      expect(() => Assert.check(_.isArray({}))).to.throw();
+      expect(() => Assert.check(isArray({}))).to.throw();
     });
   });
 };

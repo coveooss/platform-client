@@ -5,7 +5,7 @@ config.env = 'production';
 
 // Coveo Config
 config.coveo = {};
-config.coveo.region = 'US';
-config.coveo.platformUrl = 'https://platform.cloud.coveo.com';
+config.coveo.region = 'Australia';
+config.coveo.platformUrl = 'https://platform-au.cloud.coveo.com';
 
 module.exports = config;

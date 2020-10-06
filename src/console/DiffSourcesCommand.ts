@@ -1,5 +1,5 @@
 import * as program from 'commander';
-import * as _ from 'underscore';
+import { union } from 'underscore';
 import { Logger } from '../commons/logger';
 import { CommanderUtils } from './CommanderUtils';
 import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
@@ -53,7 +53,7 @@ program
       'configuration.startingAddresses',
       'configuration.sourceSecurityOption',
       'configuration.permissions',
-      'additionalInfos'
+      'additionalInfos',
     ];
 
     const keysToIgnore = [
@@ -64,23 +64,26 @@ program
       'configuration.parameters.IsSandbox',
       'additionalInfos.salesforceOrg',
       'additionalInfos.salesforceUser',
-      'additionalInfos.salesforceOrgName'
+      'additionalInfos.salesforceOrgName',
     ];
 
     // Set diff options
     const diffOptions: IDiffOptions = {
       silent: options.silent,
       includeOnly: includeOnly,
-      keysToIgnore: keysToIgnore
+      keysToIgnore: keysToIgnore,
     };
 
     const blacklistOptions: IBlacklistObjects = {
-      extensions: _.union(['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'], options.ignoreExtensions),
-      sources: options.ignoreSources
+      extensions: union(['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'], options.ignoreExtensions),
+      sources: options.ignoreSources,
     };
 
-    const originOrg = new Organization(origin, apiKey[0], blacklistOptions);
-    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
+    const originOrg = new Organization(origin, apiKey[0], { blacklist: blacklistOptions, platformUrl: program.opts()?.platformUrlOrigin });
+    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], {
+      blacklist: blacklistOptions,
+      platformUrl: program.opts()?.platformUrlDestination,
+    });
     const controller: SourceController = new SourceController(originOrg, destinationOrg);
 
     controller.diff(diffOptions);

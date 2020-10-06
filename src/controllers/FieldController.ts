@@ -1,6 +1,6 @@
 import { RequestResponse } from 'request';
 import { BaseController } from './BaseController';
-import * as _ from 'underscore';
+import { each, find, isEqual, map, mapObject, pluck, union } from 'underscore';
 import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
 import { DownloadResultArray } from '../commons/collections/DownloadResultArray';
@@ -86,7 +86,7 @@ export class FieldController extends BaseController {
     sources: string[],
     extraFields?: Dictionary<Field>
   ): Dictionary<Field> {
-    _.each(fieldDict.values(), field => {
+    each(fieldDict.values(), (field) => {
       if (!field.isPartOfTheSources(sources) && !(extraFields && extraFields.containsKey(field.getName()))) {
         fieldDict.remove(field.getName());
       }
@@ -123,13 +123,13 @@ export class FieldController extends BaseController {
     if (diffResultArray.containsItems()) {
       Logger.loadingTask('Graduating fields');
 
-      _.each(_.union(diffResultArray.TO_CREATE, diffResultArray.TO_UPDATE), field => {
+      each(union(diffResultArray.TO_CREATE, diffResultArray.TO_UPDATE), (field) => {
         // Strip parameters that should not be graduated
         field.removeParameters(options.keyBlacklist || [], options.keyWhitelist || []);
       });
 
       return Promise.all(
-        _.map(
+        map(
           this.getAuthorizedOperations(diffResultArray, this.graduateNew, this.graduateUpdated, this.graduateDeleted, options),
           (operation: (diffResult: DiffResultArray<Field>) => Promise<void>) => {
             return operation.call(this, diffResultArray);
@@ -197,7 +197,7 @@ export class FieldController extends BaseController {
     return new Promise((resolve, reject) => {
       return FieldAPI.deleteFields(
         this.organization2,
-        _.map(diffResult.TO_DELETE, (field: Field) => field.getName()),
+        diffResult.TO_DELETE.map((field: Field) => field.getName()),
         this.deleteFieldsPerBatch
       )
         .then((responses: RequestResponse[]) => {
@@ -225,33 +225,33 @@ export class FieldController extends BaseController {
   }
 
   private extractFieldModel(fields: Field[]): Array<IStringMap<any>> {
-    return _.map(fields, (field: Field) => field.getConfiguration());
+    return fields.map((field: Field) => field.getConfiguration());
   }
 
   private stripIdFromSourceParameter(obj: IStringMap<any>) {
     if (obj['sources']) {
-      obj['sources'] = _.pluck(obj['sources'], 'name');
+      obj['sources'] = pluck(obj['sources'], 'name');
     }
     return obj;
   }
 
   extractionMethod(object: any[], diffOptions: IDiffOptions, oldVersion?: any[]): any[] {
     if (oldVersion === undefined) {
-      return _.map(object, (f: Field) => {
+      return object.map((f: Field) => {
         const fieldModel = f.getConfiguration();
         return this.stripIdFromSourceParameter(fieldModel);
       });
     } else {
-      return _.map(oldVersion, (oldField: Field) => {
-        const newField: Field = _.find(object, (f: Field) => {
+      return oldVersion.map((oldField: Field) => {
+        const newField: Field = find(object, (f: Field) => {
           return f.getName() === oldField.getName();
         });
 
         const newFieldModel = newField.getConfiguration();
         const oldFieldModel = oldField.getConfiguration();
 
-        const updatedFieldModel: IStringMap<any> = _.mapObject(newFieldModel, (val, key) => {
-          if (!_.isEqual(oldFieldModel[key], val) && (!diffOptions.keysToIgnore || diffOptions.keysToIgnore.indexOf(key) === -1)) {
+        const updatedFieldModel: IStringMap<any> = mapObject(newFieldModel, (val, key) => {
+          if (!isEqual(oldFieldModel[key], val) && (!diffOptions.keysToIgnore || diffOptions.keysToIgnore.indexOf(key) === -1)) {
             return { newValue: val, oldValue: oldFieldModel[key] };
           } else {
             return val;

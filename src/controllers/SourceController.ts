@@ -1,5 +1,5 @@
 import * as jsDiff from 'diff';
-import * as _ from 'underscore';
+import { each, find, findWhere, map } from 'underscore';
 import * as deepExtend from 'deep-extend';
 import { series } from 'async';
 import { DiffResultArray } from '../commons/collections/DiffResultArray';
@@ -35,7 +35,7 @@ export class SourceController extends BaseController {
     // Do not load extensions if --skipExtension option is present
     const diffActions = [this.loadDataForDiff(diffOptions), this.loadExtensionsListForBothOrganizations()];
     return Promise.all(diffActions)
-      .then(values => {
+      .then((values) => {
         this.extensionList = values[1] as Array<Array<{}>>; // 2 dim table: extensions per sources
         const source1 = this.organization1.getSources();
         const source2 = this.organization2.getSources();
@@ -48,12 +48,12 @@ export class SourceController extends BaseController {
         this.removeExtensionFromSource(source1, this.organization1);
         this.removeExtensionFromSource(source2, this.organization2);
 
-        _.each(source1.values(), source => {
+        each(source1.values(), (source) => {
           const mappingIds = source.sortMappingsAndStripIds();
           // Storing the mapping ids for graduation
           this.mappingIds[source.getName()] = mappingIds;
         });
-        _.each(source2.values(), source => {
+        each(source2.values(), (source) => {
           source.sortMappingsAndStripIds();
         });
 
@@ -72,8 +72,8 @@ export class SourceController extends BaseController {
   }
 
   removeExtensionFromSource(sourceList: Dictionary<Source>, org: Organization) {
-    _.each(sourceList.values(), (source: Source) => {
-      _.each(org.getExtensionBlacklist(), (extensionToRemove: string) => {
+    each(sourceList.values(), (source: Source) => {
+      each(org.getExtensionBlacklist(), (extensionToRemove: string) => {
         source.removeExtension(extensionToRemove, 'pre');
         source.removeExtension(extensionToRemove, 'post');
       });
@@ -82,13 +82,13 @@ export class SourceController extends BaseController {
 
   replaceExtensionIdWithName(sourceList: Dictionary<Source>, extensionList: Array<{}>) {
     // TODO: Can be optimized
-    _.each(sourceList.values(), (source: Source) => {
+    each(sourceList.values(), (source: Source) => {
       // Get all extensions associated to the source
       const extensionReplacer = (sourceExtensionsList: Array<IStringMap<string>>) => {
-        _.each(sourceExtensionsList, (sourceExt: IStringMap<string>) => {
+        each(sourceExtensionsList, (sourceExt: IStringMap<string>) => {
           Assert.exists(sourceExt.extensionId, 'Missing extensionId value from extension');
           // For each extension associated to the source, replace its id by its name
-          const extensionFound = _.find(extensionList, (extension: IStringMap<string>) => {
+          const extensionFound = find(extensionList, (extension: IStringMap<string>) => {
             return extension['id'] === sourceExt.extensionId;
           });
 
@@ -112,10 +112,10 @@ export class SourceController extends BaseController {
   replaceExtensionNameWithId(source: Source, extensionList: Array<{}>) {
     // Get all extensions associated to the source
     const extensionReplacer = (sourceExtensionsList: Array<IStringMap<string>>) => {
-      _.each(sourceExtensionsList, (sourceExt: IStringMap<string>) => {
+      each(sourceExtensionsList, (sourceExt: IStringMap<string>) => {
         Assert.exists(sourceExt.extensionId, 'Missing extensionId value from extension');
         // For each extension associated to the source, replace its id by its name
-        const extensionFound = _.find(extensionList, extension => {
+        const extensionFound = find(extensionList, (extension) => {
           return (extension as any)['name'] === sourceExt.extensionId;
         });
 
@@ -150,7 +150,7 @@ export class SourceController extends BaseController {
     return new Promise((resolve, reject) => {
       SourceAPI.getAllSources(this.organization1)
         .then((response: RequestResponse) => {
-          const source: any = _.findWhere(response.body, { name: sourceName });
+          const source: any = findWhere(response.body, { name: sourceName });
           if (source === undefined || source.id === undefined) {
             reject({ orgId: this.organization1.getId(), message: StaticErrorMessage.NO_SOURCE_FOUND });
           }
@@ -163,7 +163,7 @@ export class SourceController extends BaseController {
             .getId(); // Get source ID
           resolve(sourceId);
         })
-        .catch(err => {
+        .catch((err) => {
           this.errorHandler(err, StaticErrorMessage.UNABLE_TO_GET_SOURCE_NAME);
           reject(err);
         });
@@ -195,7 +195,7 @@ export class SourceController extends BaseController {
       Logger.loadingTask('Graduating Sources');
 
       const graduationCleanup = (sourceList: Source[], stripParams = false) => {
-        _.each(sourceList, source => {
+        each(sourceList, (source) => {
           // Make some assertions here. Return an error if an extension is missing
           // 1. Replacing extensions with destination id
           this.replaceExtensionNameWithId(source, this.extensionList[1]);
@@ -220,7 +220,7 @@ export class SourceController extends BaseController {
       graduationCleanup(diffResultArray.TO_DELETE);
 
       return Promise.all(
-        _.map(
+        map(
           this.getAuthorizedOperations(diffResultArray, this.graduateNew, this.graduateUpdated, this.graduateDeleted, options),
           (operation: (diffResult: DiffResultArray<Source>) => Promise<void>) => {
             return operation.call(this, diffResultArray);
@@ -237,7 +237,7 @@ export class SourceController extends BaseController {
     Logger.verbose(
       `Creating ${diffResult.TO_CREATE.length} new source${diffResult.TO_CREATE.length > 1 ? 's' : ''} in ${this.organization2.getId()} `
     );
-    const asyncArray = _.map(diffResult.TO_CREATE, (source: Source) => {
+    const asyncArray = diffResult.TO_CREATE.map((source: Source) => {
       return (callback: any) => {
         SourceAPI.createSource(this.organization2, source.getConfiguration())
           .then((response: RequestResponse) => {
@@ -267,7 +267,7 @@ export class SourceController extends BaseController {
         diffResult.TO_UPDATE.length > 1 ? 's' : ''
       } in ${this.organization2.getId()} `
     );
-    const asyncArray = _.map(diffResult.TO_UPDATE, (source: Source, idx: number) => {
+    const asyncArray = diffResult.TO_UPDATE.map((source: Source, idx: number) => {
       return (callback: any) => {
         const destinationSource = diffResult.TO_UPDATE_OLD[idx];
         // Update the source by extending the old source config with the new conifg
@@ -303,7 +303,7 @@ export class SourceController extends BaseController {
         diffResult.TO_CREATE.length > 1 ? 's' : ''
       } from ${this.organization2.getId()} `
     );
-    const asyncArray = _.map(diffResult.TO_DELETE, (source: Source) => {
+    const asyncArray = diffResult.TO_DELETE.map((source: Source) => {
       return (callback: any) => {
         SourceAPI.deleteSource(this.organization2, source.getId())
           .then((response: RequestResponse) => {
@@ -339,11 +339,11 @@ export class SourceController extends BaseController {
   ): string[] | Array<{ [sourceName: string]: jsDiff.Change[] }> {
     if (oldVersion === undefined) {
       // returning sources to create and to delete
-      return _.map(object, (e: Source) => e.getName());
+      return object.map((e: Source) => e.getName());
     } else {
       const sourceDiff: Array<{ [sourceName: string]: jsDiff.Change[] }> = [];
-      _.map(oldVersion, (oldSource: Source) => {
-        const newSource: Source | undefined = _.find(object, (e: Source) => {
+      oldVersion.map((oldSource: Source) => {
+        const newSource: Source | undefined = find(object, (e: Source) => {
           return e.getName() === oldSource.getName();
         });
         Assert.isNotUndefined(newSource, `Something went wrong in the source diff. Unable to find ${oldSource.getName()}`);

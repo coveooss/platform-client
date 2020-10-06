@@ -1,5 +1,5 @@
 import { flatten, unflatten } from 'flat';
-import * as _ from 'underscore';
+import { intersection, omit } from 'underscore';
 import { isObject } from 'util';
 import { Logger } from '../logger';
 import { Assert } from '../misc/Assert';
@@ -35,12 +35,12 @@ export class JsonUtils {
     }
 
     Assert.check(!Array.isArray(obj), 'Should not flatten arrays');
-    let map = flatten(obj);
+    let map = flatten(obj) as {};
 
-    const omit = (keys: string[], initialMatchCondition: boolean) => {
-      return _.omit(map, (value: any, key: string) => {
+    const omitFunction = (keys: string[], initialMatchCondition: boolean) => {
+      return omit(map, (value: any, key: string) => {
         const _key = key.split('.');
-        let match;
+        let match = false;
 
         for (let i = 0; i < keys.length; i++) {
           match = initialMatchCondition;
@@ -61,12 +61,12 @@ export class JsonUtils {
 
     // First pass - whitelist strategy
     if (exclusiveKeys.length > 0) {
-      map = omit(exclusiveKeys, false);
+      map = omitFunction(exclusiveKeys, false);
     }
 
     // Second pass - blacklist strategy
     if (keysToRemove.length > 0) {
-      map = omit(keysToRemove, true);
+      map = omitFunction(keysToRemove, true);
     }
 
     return unflatten(map);
@@ -84,7 +84,7 @@ export class JsonUtils {
     const map: {} = flatten(obj);
     const noCommonElements = Object.keys(map).every((key: string) => {
       const keys = key.split('.');
-      return _.intersection(keys, keysToFind).length === 0;
+      return intersection(keys, keysToFind).length === 0;
     });
 
     return !noCommonElements;

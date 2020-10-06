@@ -1,4 +1,4 @@
-import * as _ from 'underscore';
+import { each } from 'underscore';
 import { IDictionary } from '../interfaces/IDictionary';
 import { IStringMap } from '../interfaces/IStringMap';
 import { Assert } from '../misc/Assert';
@@ -20,7 +20,7 @@ export class Dictionary<T extends IClonable<T>> implements IDictionary<T> {
 
   constructor(obj?: IStringMap<T>) {
     if (obj) {
-      _.each(obj, (v: T, k: string) => {
+      each(obj, (v: T, k: string) => {
         this.add(k, v);
       });
     }

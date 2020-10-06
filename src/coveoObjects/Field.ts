@@ -1,4 +1,4 @@
-import * as _ from 'underscore';
+import {} from 'underscore';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 import { BaseCoveoObject } from './BaseCoveoObject';
@@ -28,7 +28,7 @@ export class Field extends BaseCoveoObject implements IField {
   }
 
   isPartOfTheSources(sources: string[]): boolean {
-    sources = _.map(sources, source => StringUtil.lowerAndStripSpaces(source));
+    sources = sources.map((source) => StringUtil.lowerAndStripSpaces(source));
 
     for (let i = 0; i < (this.fieldModel.sources || []).length; i++) {
       const fieldSource: { name: string } = this.fieldModel.sources[i];

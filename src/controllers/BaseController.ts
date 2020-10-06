@@ -1,8 +1,9 @@
 import * as opn from 'open';
 import * as inquirer from 'inquirer';
-import * as fs from 'fs-extra';
-import * as _ from 'underscore';
+import { compact, each, extend } from 'underscore';
 import path = require('path');
+import { ensureDirSync, writeJSON, writeFile } from 'fs-extra';
+import { renderFile } from 'ejs';
 import { RequestResponse } from 'request';
 import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
 import { IHTTPGraduateOptions, IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
@@ -40,7 +41,7 @@ export abstract class BaseController {
   static DEFAULT_DIFF_OPTIONS: IDiffOptions = {
     keysToIgnore: [],
     includeOnly: [],
-    silent: false
+    silent: false,
   };
 
   static DEFAULT_GRADUATE_OPTIONS: IGraduateOptions = {
@@ -50,7 +51,7 @@ export abstract class BaseController {
     rebuild: false,
     POST: true,
     PUT: true,
-    DELETE: false
+    DELETE: false,
   };
 
   private InteractiveQuestion: InteractiveQuestion;
@@ -77,14 +78,14 @@ export abstract class BaseController {
         downloadResultArray.sort();
 
         // get the list
-        const items = _.map(downloadResultArray.getItems(), item => item.getConfiguration());
+        const items = downloadResultArray.getItems().map((item) => item.getConfiguration());
 
         // ensure path
-        fs.ensureDirSync(options.outputFolder);
+        ensureDirSync(options.outputFolder);
         // prepare file name
         const filename = path.join(options.outputFolder, `${this.objectName.toLowerCase()}.json`);
         // save to file
-        fs.writeJSON(filename, items, { spaces: 2 })
+        writeJSON(filename, items, { spaces: 2 })
           .then(() => {
             Logger.info('Download operation completed');
             Logger.info(`File saved as ${Colors.filename(filename)}`);
@@ -106,10 +107,10 @@ export abstract class BaseController {
   }
 
   graduate(opts?: IGraduateOptions) {
-    const options = _.extend(BaseController.DEFAULT_GRADUATE_OPTIONS, opts) as IGraduateOptions;
+    const options = extend(BaseController.DEFAULT_GRADUATE_OPTIONS, opts) as IGraduateOptions;
 
     const questions = [];
-    const allowedMethods: string[] = _.compact([options.POST ? 'CREATE' : '', options.PUT ? 'UPDATE' : '', options.DELETE ? 'DELETE' : '']);
+    const allowedMethods: string[] = compact([options.POST ? 'CREATE' : '', options.PUT ? 'UPDATE' : '', options.DELETE ? 'DELETE' : '']);
 
     let phrase = allowedMethods.length === 1 ? 'only ' : '';
     phrase += allowedMethods[0];
@@ -152,7 +153,7 @@ export abstract class BaseController {
   }
 
   diff(opt?: IDiffOptions) {
-    const options = _.extend(BaseController.DEFAULT_DIFF_OPTIONS, opt) as IDiffOptions;
+    const options = extend(BaseController.DEFAULT_DIFF_OPTIONS, opt) as IDiffOptions;
 
     Logger.startSpinner('Diff in progress...');
 
@@ -171,32 +172,40 @@ export abstract class BaseController {
 
           const cleanVersion = this.getCleanDiffVersion(diffResultArray, options);
 
-          const template = require('ejs-loader!./../../views/source-diff.ejs');
-
-          const result = template({
-            DIFF_OBJECT: JSON.stringify(cleanVersion.TO_UPDATE),
-            SOURCES_TO_CREATE: JSON.stringify(cleanVersion.TO_CREATE),
-            SOURCES_TO_DELETE: JSON.stringify(cleanVersion.TO_DELETE),
-            resourceType: this.objectName
-          });
-
-          fs.writeFile(`${this.objectName}Diff.html`, result)
-            .then(() => {
-              Logger.info('Diff operation completed');
-              Logger.info(`File saved as ${Colors.filename(this.objectName + 'Diff.html')}`);
-              Logger.stopSpinner();
-              if (!options.silent) {
-                opn(`${this.objectName}Diff.html`);
+          renderFile(
+            './views/source-diff.ejs',
+            {
+              DIFF_OBJECT: JSON.stringify(cleanVersion.TO_UPDATE),
+              SOURCES_TO_CREATE: JSON.stringify(cleanVersion.TO_CREATE),
+              SOURCES_TO_DELETE: JSON.stringify(cleanVersion.TO_DELETE),
+              resourceType: this.objectName,
+            },
+            {},
+            (err, str) => {
+              if (err) {
+                Logger.error('Unable to render diff');
+                return;
               }
-              process.exit();
-            })
-            .catch((error: any) => {
-              Logger.error('Unable to create html file', error);
-              Logger.stopSpinner();
-              process.exit();
-            });
+
+              writeFile(`${this.objectName}Diff.html`, str)
+                .then(() => {
+                  Logger.info('Diff operation completed');
+                  Logger.info(`File saved as ${Colors.filename(this.objectName + 'Diff.html')}`);
+                  Logger.stopSpinner();
+                  if (!options.silent) {
+                    opn(`${this.objectName}Diff.html`);
+                  }
+                  process.exit();
+                })
+                .catch((error: any) => {
+                  Logger.error('Unable to create html file', error);
+                  Logger.stopSpinner();
+                  process.exit();
+                });
+            }
+          );
         } else {
-          fs.writeJSON(`${this.objectName}Diff.json`, this.getCleanDiffVersion(diffResultArray, options), { spaces: 2 })
+          writeJSON(`${this.objectName}Diff.json`, this.getCleanDiffVersion(diffResultArray, options), { spaces: 2 })
             .then(() => {
               // TODO: do the same for every object types
               Logger.info('Diff operation completed');
@@ -236,7 +245,7 @@ export abstract class BaseController {
     };
 
     if (Array.isArray(response)) {
-      _.each(response, (rep: RequestResponse) => {
+      each(response, (rep: RequestResponse) => {
         successLog(rep);
       });
     } else {
@@ -311,31 +320,31 @@ export abstract class BaseController {
     diffOptions: IDiffOptions = {},
     printOptions: IPrintOptions = {}
   ): IDiffResultArrayClean {
-    printOptions = _.extend(printOptions, { includeSummary: true });
+    printOptions = extend(printOptions, { includeSummary: true });
 
     const cleanerVersion: IDiffResultArrayClean = {
       summary: {
         TO_CREATE: 0,
         TO_UPDATE: 0,
-        TO_DELETE: 0
+        TO_DELETE: 0,
       },
       TO_CREATE: [],
       TO_UPDATE: [],
-      TO_DELETE: []
+      TO_DELETE: [],
     };
 
     if (printOptions.includeSummary) {
       cleanerVersion.summary = {
         TO_CREATE: diffResultArray.TO_CREATE.length,
         TO_UPDATE: diffResultArray.TO_UPDATE.length,
-        TO_DELETE: diffResultArray.TO_DELETE.length
+        TO_DELETE: diffResultArray.TO_DELETE.length,
       };
     }
 
-    _.extend(cleanerVersion, {
+    extend(cleanerVersion, {
       TO_CREATE: this.extractionMethod(diffResultArray.TO_CREATE, diffOptions),
       TO_UPDATE: this.extractionMethod(diffResultArray.TO_UPDATE, diffOptions, diffResultArray.TO_UPDATE_OLD),
-      TO_DELETE: this.extractionMethod(diffResultArray.TO_DELETE, diffOptions)
+      TO_DELETE: this.extractionMethod(diffResultArray.TO_DELETE, diffOptions),
     });
 
     return cleanerVersion as IDiffResultArrayClean;

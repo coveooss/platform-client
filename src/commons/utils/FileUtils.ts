@@ -1,15 +1,15 @@
-import * as fs from 'fs-extra';
+import { appendFile, writeJson, readJson } from 'fs-extra';
 
 export class FileUtils {
   static appendToFile(outputFile: string, data: any): Promise<void> {
-    return fs.appendFile(outputFile, data);
+    return appendFile(outputFile, data);
   }
 
   static writeJson(outputFile: string, data: any, space: number = 2): Promise<void> {
-    return fs.writeJson(outputFile, data, { spaces: space });
+    return writeJson(outputFile, data, { spaces: space });
   }
 
   static readJson(inputFile: string): Promise<any> {
-    return fs.readJson(inputFile);
+    return readJson(inputFile);
   }
 }

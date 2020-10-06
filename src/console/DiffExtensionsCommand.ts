@@ -1,5 +1,5 @@
 import * as program from 'commander';
-import * as _ from 'underscore';
+import { union } from 'underscore';
 import { Logger } from '../commons/logger';
 import { CommanderUtils } from './CommanderUtils';
 import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
@@ -33,16 +33,22 @@ program
     // Set diff options
     const diffOptions: IDiffOptions = {
       includeOnly: options.onlyKeys,
-      silent: options.silent
+      silent: options.silent,
     };
 
     const blacklistOptions = {
-      extensions: _.union(['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'], options.ignoreExtensions)
+      extensions: union(['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'], options.ignoreExtensions),
     };
     diffOptions.includeOnly = diffOptions.includeOnly ? diffOptions.includeOnly : ['requiredDataStreams', 'content', 'description', 'name'];
 
-    const originOrg = new Organization(origin, apiKey[0], blacklistOptions);
-    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
+    const originOrg = new Organization(origin, apiKey[0], {
+      blacklist: blacklistOptions,
+      platformUrl: program.opts()?.platformUrlOrigin,
+    });
+    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], {
+      blacklist: blacklistOptions,
+      platformUrl: program.opts()?.platformUrlDestination,
+    });
     const controller: ExtensionController = new ExtensionController(originOrg, destinationOrg);
 
     controller.diff(diffOptions);
