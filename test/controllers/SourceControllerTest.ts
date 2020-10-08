@@ -1292,6 +1292,221 @@ export const SourceControllerTest = () => {
           });
       });
 
+      it('Should graduate using and respect field integrity', (done: Mocha.Done) => {
+        const orgx: Organization = new TestOrganization('dev', 'xxx');
+        const orgy: Organization = new TestOrganization('prod', 'yyy');
+        const controllerxy = new SourceController(orgx, orgy);
+
+        const localDevSource = {
+          sourceType: 'SITEMAP',
+          id: 'dev-source',
+          name: 'sitemap test',
+          parameters: { prodParameter: 'DEV value that should not be graduated' },
+          mappings: [
+            {
+              id: 'xxxxxb',
+              kind: 'COMMON',
+              fieldName: 'uri',
+              extractionMethod: 'METADATA',
+              content: '%[printableuri]',
+            },
+            {
+              id: 'xxxxxa',
+              kind: 'COMMON',
+              fieldName: 'printableuri',
+              extractionMethod: 'METADATA',
+              content: '%[printableuri]',
+            },
+          ],
+          preConversionExtensions: [],
+          postConversionExtensions: [],
+          owner: 'test@coveo.com',
+          resourceId: 'dev-source',
+        };
+
+        const localDevSource2 = {
+          sourceType: 'WEB',
+          id: 'web-source',
+          name: 'web test',
+          mappings: [
+            {
+              id: 'xxxxxb',
+              kind: 'COMMON',
+              fieldName: 'anotherfield',
+              extractionMethod: 'METADATA',
+              content: '%[anotherfield]',
+            },
+          ],
+          preConversionExtensions: [],
+          postConversionExtensions: [],
+          owner: 'test@coveo.com',
+          resourceId: 'web-source',
+        };
+
+        const localProdSource = {
+          sourceType: 'SITEMAP',
+          id: 'prod-source',
+          name: 'sitemap test',
+          parameters: { prodParameter: 'something' },
+          owner: 'prod-owner@coveo.com',
+          mappings: [
+            {
+              id: 'yyyyyyb',
+              kind: 'COMMON',
+              fieldName: 'printableuri',
+              extractionMethod: 'METADATA',
+              content: '%[printableuri]',
+            },
+          ],
+          preConversionExtensions: [],
+          postConversionExtensions: [],
+          resourceId: 'prod-source',
+        };
+
+        const localProdSource2 = {
+          sourceType: 'SITEMAP',
+          id: 'prod-source2',
+          name: 'websource test',
+          mappings: [
+            {
+              id: 'yyyyyyb',
+              kind: 'COMMON',
+              fieldName: 'printableuri',
+              extractionMethod: 'METADATA',
+              content: '%[printableuri]',
+            },
+          ],
+          preConversionExtensions: [],
+          postConversionExtensions: [],
+          resourceId: 'prod-source2',
+        };
+
+        scope = nock(UrlService.getDefaultUrl())
+          // First expected request
+          .get('/rest/organizations/dev/sources')
+          .reply(RequestUtils.OK, [localDevSource, localDevSource2])
+          // Fecth extensions from dev
+          .get('/rest/organizations/dev/extensions')
+          .reply(RequestUtils.OK, [])
+          // Fecth extensions from Prod
+          .get('/rest/organizations/prod/extensions')
+          // Rename extension Ids
+          .reply(RequestUtils.OK, [])
+          // Fetching dev sources one by one
+          .get('/rest/organizations/dev/sources/dev-source/raw')
+          .reply(RequestUtils.OK, localDevSource)
+          .get('/rest/organizations/dev/sources/web-source/raw')
+          .reply(RequestUtils.OK, localDevSource2)
+          // Fecthing all prod sources
+          .get('/rest/organizations/prod/sources')
+          .reply(RequestUtils.OK, [localProdSource, localProdSource2])
+          .get('/rest/organizations/prod/sources/prod-source/raw')
+          .reply(RequestUtils.OK, localProdSource)
+          .get('/rest/organizations/prod/sources/prod-source2/raw')
+          .reply(RequestUtils.OK, localProdSource2)
+          .get('/rest/organizations/prod/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'uri',
+                description: 'new description',
+                type: 'STRING',
+              },
+              {
+                name: 'printableuri',
+                description: 'The attachment depth.',
+                type: 'STRING',
+              },
+              {
+                name: 'anotherfield',
+                description: '',
+                type: 'STRING',
+              },
+            ],
+            totalPages: 1,
+            totalEntries: 2,
+          })
+          // Graduation time!
+          .post('/rest/organizations/prod/sources/raw?rebuild=false', {
+            sourceType: 'WEB',
+            id: 'web-source',
+            name: 'web test',
+            mappings: [
+              {
+                id: 'xxxxxb',
+                kind: 'COMMON',
+                fieldName: 'anotherfield',
+                extractionMethod: 'METADATA',
+                content: '%[anotherfield]',
+              },
+            ],
+            preConversionExtensions: [],
+            postConversionExtensions: [],
+            owner: 'test@coveo.com',
+            resourceId: 'web-source',
+          })
+          .reply(429, 'TOO_MANY_REQUESTS')
+          .put('/rest/organizations/prod/sources/prod-source/raw?rebuild=false', {
+            sourceType: 'SITEMAP',
+            id: 'prod-source',
+            name: 'sitemap test',
+            parameters: { prodParameter: 'something' },
+            owner: 'prod-owner@coveo.com',
+            mappings: [
+              {
+                id: 'xxxxxa',
+                kind: 'COMMON',
+                fieldName: 'printableuri',
+                extractionMethod: 'METADATA',
+                content: '%[printableuri]',
+              },
+              {
+                id: 'xxxxxb',
+                kind: 'COMMON',
+                fieldName: 'uri',
+                extractionMethod: 'METADATA',
+                content: '%[printableuri]',
+              },
+            ],
+            preConversionExtensions: [],
+            postConversionExtensions: [],
+            resourceId: 'prod-source',
+          })
+          .reply(429, 'TOO_MANY_REQUESTS')
+          .delete('/rest/organizations/prod/sources/prod-source2')
+          .reply(429, 'TOO_MANY_REQUESTS');
+
+        const diffOptions: IDiffOptions = { includeOnly: ['name', 'mappings'] };
+        const graduateOptions: IGraduateOptions = {
+          POST: true,
+          PUT: true,
+          DELETE: true,
+          diffOptions: diffOptions,
+          keyWhitelist: ['name', 'mappings'],
+          ensureFieldIntegrity: true,
+        };
+        controllerxy
+          .runDiffSequence(diffOptions)
+          .then((diff: DiffResultArray<Source>) => {
+            expect(diff.TO_CREATE.length).to.eql(1);
+            expect(diff.TO_UPDATE.length).to.eql(1);
+            expect(diff.TO_DELETE.length).to.eql(1);
+            controllerxy
+              .runGraduateSequence(diff, graduateOptions)
+              .then((resolved: any[]) => {
+                done('Should not resolve');
+              })
+              .catch((err: any) => {
+                expect(err).to.eql('"TOO_MANY_REQUESTS"');
+                done();
+              });
+          })
+          .catch((err: IGenericError) => {
+            done(err);
+          });
+      });
+
       // it('Should not graduate because field integrity is not preserved (PUT only)', (done: Mocha.Done) => {
       //   // TODO:
       // });
