@@ -17,6 +17,7 @@ import { JsonUtils } from '../../src/commons/utils/JsonUtils';
 import { IGraduateOptions } from '../../src/commons/interfaces/IGraduateOptions';
 import { DownloadResultArray } from '../../src/commons/collections/DownloadResultArray';
 import { TestOrganization } from '../test';
+import { Colors } from '../../src/commons/colors';
 
 const allDevSources: Array<{}> = require('./../mocks/setup1/sources/dev/allSources.json');
 const DEVrrbbidfxa2ri4usxhzzmhq2hge: {} = require('./../mocks/setup1/sources/dev/web.json');
@@ -1284,6 +1285,128 @@ export const SourceControllerTest = () => {
               .catch((err: any) => {
                 expect(err).to.eql('"TOO_MANY_REQUESTS"');
                 done();
+              });
+          })
+          .catch((err: IGenericError) => {
+            done(err);
+          });
+      });
+
+      // it('Should not graduate because field integrity is not preserved (PUT only)', (done: Mocha.Done) => {
+      //   // TODO:
+      // });
+
+      it('Should not graduate because field integrity is not preserved (POST only)', (done: Mocha.Done) => {
+        const orgx: Organization = new TestOrganization('dev', 'xxx');
+        const orgy: Organization = new TestOrganization('prod', 'yyy');
+        const controllerxy = new SourceController(orgx, orgy);
+
+        const localDevSource = {
+          sourceType: 'SITEMAP',
+          id: 'dev-source',
+          name: 'sitemap test',
+          parameters: { prodParameter: 'DEV value that should not be graduated' },
+          mappings: [
+            {
+              id: 'xxxxxb',
+              kind: 'COMMON',
+              fieldName: 'uri',
+              extractionMethod: 'METADATA',
+              content: '%[printableuri]',
+            },
+            {
+              id: 'xxxxxa',
+              kind: 'COMMON',
+              fieldName: 'printableuri',
+              extractionMethod: 'METADATA',
+              content: '%[printableuri]',
+            },
+            // This last mapping should trigger a graduation error because the fields does not exist in the source
+            {
+              id: 'xxxxxa',
+              kind: 'COMMON',
+              fieldName: 'lastrebuilddate',
+              extractionMethod: 'METADATA',
+              content: '%[lastrebuilddate]',
+            },
+            {
+              id: 'xxxxxa',
+              kind: 'COMMON',
+              fieldName: 'anothernewfield',
+              extractionMethod: 'METADATA',
+              content: '%[lastrebuilddate]',
+            },
+          ],
+          preConversionExtensions: [],
+          postConversionExtensions: [],
+          owner: 'test@coveo.com',
+          resourceId: 'dev-source',
+        };
+
+        scope = nock(UrlService.getDefaultUrl())
+          // First expected request
+          .get('/rest/organizations/dev/sources')
+          .reply(RequestUtils.OK, [localDevSource])
+          // Fecth extensions from dev
+          .get('/rest/organizations/dev/extensions')
+          .reply(RequestUtils.OK, [])
+          // Fecth extensions from Prod
+          .get('/rest/organizations/prod/extensions')
+          // Rename extension Ids
+          .reply(RequestUtils.OK, [])
+          // Fetching dev sources one by one
+          .get('/rest/organizations/dev/sources/dev-source/raw')
+          .reply(RequestUtils.OK, localDevSource)
+          // Fecthing all prod sources
+          .get('/rest/organizations/prod/sources')
+          .reply(RequestUtils.OK, [])
+          // Fecthing all prod fields
+          .get('/rest/organizations/prod/sources/page/fields')
+          .query({ page: 0, perPage: 1000, origin: 'ALL', includeMappings: false })
+          .reply(RequestUtils.OK, {
+            items: [
+              {
+                name: 'printableuri',
+                description: '',
+                type: 'STRING',
+              },
+              {
+                name: 'uri',
+                description: '',
+                type: 'STRING',
+              },
+            ],
+            totalPages: 1,
+            totalEntries: 2,
+          });
+        // No graduation this time
+
+        const graduateOptions: IGraduateOptions = {
+          POST: true,
+          PUT: true,
+          DELETE: true,
+          diffOptions: {},
+          ensureFieldIntegrity: true,
+        };
+        controllerxy
+          .runDiffSequence({})
+          .then((diff: DiffResultArray<Source>) => {
+            controllerxy
+              .runGraduateSequence(diff, graduateOptions)
+              .then(() => {
+                done('Should not resolve');
+              })
+              .catch((err) => {
+                if (
+                  err.message ===
+                  `You are attempting to graduate a source that references unavailable fields. Source ${Colors.source(
+                    'sitemap test'
+                  )} requires the following field(s): anothernewfield, lastrebuilddate`
+                ) {
+                  done();
+                } else {
+                  done(err);
+                }
               });
           })
           .catch((err: IGenericError) => {

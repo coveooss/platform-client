@@ -1,4 +1,4 @@
-import { contains, each } from 'underscore';
+import { contains, each, filter } from 'underscore';
 import { Dictionary } from '../commons/collections/Dictionary';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { Assert } from '../commons/misc/Assert';
@@ -248,6 +248,11 @@ export class Organization extends BaseCoveoObject implements IOrganization {
       sources: this.getSources(),
       extensions: this.getExtensions(),
     };
+  }
+
+  getMissingFieldsBasedOnSourceMapping(source: Source): string[] {
+    const mappingFields = source.getFieldsFromMappings();
+    return filter(mappingFields, (f: string) => this.getFields().getItem(f) === undefined);
   }
 
   clone() {

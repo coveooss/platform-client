@@ -21,6 +21,7 @@ import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { Colors } from '../commons/colors';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 import { DownloadUtils } from '../commons/utils/DownloadUtils';
+import { FieldAPI } from '../commons/rest/FieldAPI';
 
 export class SourceController extends BaseController {
   private extensionList: Array<Array<{}>> = [];
@@ -190,7 +191,7 @@ export class SourceController extends BaseController {
    * @param {IGraduateOptions} options
    * @returns {Promise<any[]>}
    */
-  runGraduateSequence(diffResultArray: DiffResultArray<Source>, options: IGraduateOptions): Promise<any[]> {
+  async runGraduateSequence(diffResultArray: DiffResultArray<Source>, options: IGraduateOptions): Promise<any[]> {
     if (diffResultArray.containsItems()) {
       Logger.loadingTask('Graduating Sources');
 
@@ -219,6 +220,10 @@ export class SourceController extends BaseController {
       graduationCleanup(diffResultArray.TO_UPDATE, true);
       graduationCleanup(diffResultArray.TO_DELETE);
 
+      if (options.ensureFieldIntegrity) {
+        await this.loadFieldsFromOnlyOneOrganization(this.organization2);
+      }
+
       return Promise.all(
         map(
           this.getAuthorizedOperations(diffResultArray, this.graduateNew, this.graduateUpdated, this.graduateDeleted, options),
@@ -239,6 +244,19 @@ export class SourceController extends BaseController {
     );
     const asyncArray = diffResult.TO_CREATE.map((source: Source) => {
       return (callback: any) => {
+        const missingFields = this.organization2.getMissingFieldsBasedOnSourceMapping(source);
+        if (this.organization2.getFields().values().length > 0 && missingFields.length > 0) {
+          const message = `You are attempting to graduate a source that references unavailable fields. Source ${Colors.source(
+            source.getName()
+          )} requires the following field(s): ${missingFields.join(', ')}`;
+          const err = new Error(message);
+          callback(err);
+          this.errorHandler(
+            { orgId: this.organization2.getId(), message: err } as IGenericError,
+            StaticErrorMessage.FIELD_INTEGRITY_BROKEN
+          );
+          return;
+        }
         SourceAPI.createSource(this.organization2, source.getConfiguration())
           .then((response: RequestResponse) => {
             callback(null, response);
@@ -270,6 +288,19 @@ export class SourceController extends BaseController {
     const asyncArray = diffResult.TO_UPDATE.map((source: Source, idx: number) => {
       return (callback: any) => {
         const destinationSource = diffResult.TO_UPDATE_OLD[idx];
+        const missingFields = this.organization2.getMissingFieldsBasedOnSourceMapping(source);
+        if (this.organization2.getFields().values().length > 0 && missingFields.length > 0) {
+          const message = `You are attempting to graduate a source that references unavailable fields. Source ${Colors.source(
+            source.getName()
+          )} requires the following fields: ${missingFields.join(', ')}`;
+          const err = new Error(message);
+          callback(err);
+          this.errorHandler(
+            { orgId: this.organization2.getId(), message: err } as IGenericError,
+            StaticErrorMessage.FIELD_INTEGRITY_BROKEN
+          );
+          return;
+        }
         // Update the source by extending the old source config with the new conifg
         SourceAPI.updateSource(
           this.organization2,
@@ -405,5 +436,10 @@ export class SourceController extends BaseController {
   loadSourcesForBothOrganizations(): Promise<Array<{}>> {
     Logger.verbose('Loading sources from both organizations.');
     return Promise.all([SourceAPI.loadSources(this.organization1), SourceAPI.loadSources(this.organization2)]);
+  }
+
+  loadFieldsFromOnlyOneOrganization(organization: Organization): Promise<{}> {
+    Logger.loadingTask(`Loading fields from organization ${Colors.organization(organization.getId())}`);
+    return FieldAPI.loadFields(organization);
   }
 }

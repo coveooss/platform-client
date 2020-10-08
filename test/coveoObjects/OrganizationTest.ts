@@ -495,7 +495,22 @@ export const OrganizationTest = () => {
           sourceSecurityOption: 'Specified',
           postConversionExtensions: [],
           preConversionExtensions: [],
-          mappings: [],
+          mappings: [
+            {
+              id: 'q6q72sozl73yjobkrl64cusemq',
+              kind: 'COMMON',
+              extractionMethod: 'METADATA',
+              fieldName: 'field1',
+              content: '%[dsadsa]',
+            },
+            {
+              id: 'dsaf3fdsfds',
+              kind: 'COMMON',
+              extractionMethod: 'METADATA',
+              fieldName: 'field2',
+              content: '%[cccc]',
+            },
+          ],
           addressPatterns: [
             {
               expression: '*',
@@ -548,6 +563,112 @@ export const OrganizationTest = () => {
         expect(copy.getFields().getCount()).to.equal(3);
         expect(copy.getExtensions().getCount()).to.equal(1);
         expect(copy.getSources().getCount()).to.equal(1);
+        // Preserving source integrity
+        expect(copy.getMissingFieldsBasedOnSourceMapping(copy.getSources().values()[0])).to.eql([]);
+      });
+
+      it('Should detect source integrity breach (missing fields)', () => {
+        const organization: Organization = new TestOrganization('org321', 'xxx-aaa-123');
+
+        const source: Source = new Source({
+          id: 'r6ud7iksjhafgjpiokjh-sdfgr3e',
+          name: 'testSource',
+          sourceType: 'SITEMAP',
+          sourceSecurityOption: 'Specified',
+          postConversionExtensions: [],
+          preConversionExtensions: [],
+          mappings: [
+            {
+              id: 'q6q72sozl73yjobkrl64cusemq',
+              kind: 'COMMON',
+              extractionMethod: 'METADATA',
+              fieldName: 'field1',
+              content: '%[dsadsa]',
+            },
+            {
+              id: 'dsaf3fdsfds',
+              kind: 'COMMON',
+              extractionMethod: 'METADATA',
+              fieldName: 'field2',
+              content: '%[cccc]',
+            },
+            {
+              id: 'vcxvcxvcx',
+              kind: 'COMMON',
+              extractionMethod: 'METADATA',
+              fieldName: 'lastrebuilddate',
+              content: 'Juste pour toi mon eric',
+            },
+            {
+              id: 'vcxvcxvcx2',
+              kind: 'COMMON',
+              extractionMethod: 'METADATA',
+              fieldName: 'lastrebuilddate2',
+              content: 'Juste pour toi mon eric',
+            },
+            {
+              id: 'vcxvcxvcx3',
+              kind: 'COMMON',
+              extractionMethod: 'METADATA',
+              fieldName: 'lastrebuilddate3',
+              content: 'Juste pour toi mon eric',
+            },
+          ],
+          addressPatterns: [
+            {
+              expression: '*',
+              patternType: 'Wildcard',
+              allowed: true,
+            },
+          ],
+          permissions: [
+            {
+              permissionSets: [
+                {
+                  allowedPermissions: [
+                    {
+                      identityType: 'Group',
+                      securityProvider: 'Email Security Provider',
+                      identity: '*@*',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
+        const fields = [
+          {
+            name: 'field1',
+            description: 'Place to put content for metadata discovery.',
+            type: 'STRING',
+          },
+          {
+            name: 'field2',
+            description: 'Place to put content for metadata discovery.',
+            type: 'STRING',
+          },
+          {
+            name: 'field3',
+            description: 'Place to put content for metadata discovery.',
+            type: 'STRING',
+          },
+        ];
+        organization.addFieldList(fields);
+        organization.addSource(source);
+
+        const copy = organization.clone();
+        // clear orginial organization and make sure it does not affect the copy
+        organization.clearAll();
+        // expect(copy.getId()).to.equal('org321');
+        // expect(copy.getApiKey()).to.equal('xxx-aaa-123');
+        expect(copy.getFields().getCount()).to.equal(3);
+        expect(copy.getSources().getCount()).to.equal(1);
+        expect(copy.getMissingFieldsBasedOnSourceMapping(copy.getSources().values()[0])).to.eql([
+          'lastrebuilddate',
+          'lastrebuilddate2',
+          'lastrebuilddate3',
+        ]);
       });
     });
   });

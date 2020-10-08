@@ -1,4 +1,4 @@
-import { compact, each, omit, reject, sortBy } from 'underscore';
+import { compact, each, omit, pluck, reject, sortBy } from 'underscore';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 import { BaseCoveoObject } from './BaseCoveoObject';
@@ -35,6 +35,10 @@ export class Source extends BaseCoveoObject implements ISource {
 
   getMappings(): Array<IStringMap<string>> {
     return this.configuration['mappings'];
+  }
+
+  getFieldsFromMappings(): string[] {
+    return pluck(this.getMappings(), 'fieldName');
   }
 
   getPostConversionExtensions(): Array<IStringMap<string>> {

@@ -59,6 +59,7 @@ export class StaticErrorMessage {
   static UNABLE_TO_UPDATE_SOURCE: string = 'Unable to update source';
   static UNABLE_TO_DELETE_SOURCE: string = 'Unable to delete source';
   static UNABLE_TO_REBUILD_SOURCE: string = 'Unable to rebuild source';
+  static FIELD_INTEGRITY_BROKEN: string = 'Field integrity broken';
   static MISSING_SOURCE_ID: string = 'Missing id from source configuration';
   static MISSING_SOURCE_NAME: string = 'Missing name from source configuration';
   static MISSING_SOURCE_MAPPINGS: string = 'Missing mappings from source configuration';
