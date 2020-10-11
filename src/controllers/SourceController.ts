@@ -244,6 +244,20 @@ export class SourceController extends BaseController {
     );
     const asyncArray = diffResult.TO_CREATE.map((source: Source) => {
       return (callback: any) => {
+        // Check if source contains security provider. That is the case for sources like Salesforce.
+        if (source.sourceContainsSecurityProvider()) {
+          const err = new Error(
+            'Cannot create source with security provider. Please create the source manually in the destination org first.'
+          );
+          callback(err);
+          this.errorHandler(
+            { orgId: this.organization2.getId(), message: err } as IGenericError,
+            StaticErrorMessage.CANNOT_CREATE_SECURITY_PROVIDER_SOURCE
+          );
+          return;
+        }
+
+        // Check if field integrity is preserved
         const missingFields = this.organization2.getMissingFieldsBasedOnSourceMapping(source);
         if (this.organization2.getFields().values().length > 0 && missingFields.length > 0) {
           const message = `You are attempting to graduate a source that references unavailable fields. Source ${Colors.source(
@@ -257,6 +271,7 @@ export class SourceController extends BaseController {
           );
           return;
         }
+
         SourceAPI.createSource(this.organization2, source.getConfiguration())
           .then((response: RequestResponse) => {
             callback(null, response);

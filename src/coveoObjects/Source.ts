@@ -49,6 +49,11 @@ export class Source extends BaseCoveoObject implements ISource {
     return this.configuration['preConversionExtensions'];
   }
 
+  sourceContainsSecurityProvider(): boolean {
+    const secProv = this.getConfiguration()?.configuration?.securityProviders;
+    return secProv !== {} && secProv !== undefined; // undefined for unit tests
+  }
+
   restoreMappingIds(mappingIds: string[] = []) {
     const sourceMappings = this.getMappings();
     Assert.check(

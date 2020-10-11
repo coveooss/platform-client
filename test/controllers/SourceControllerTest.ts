@@ -1117,7 +1117,7 @@ export const SourceControllerTest = () => {
           });
       });
 
-      it('Should graduate using the whitelist strategy', (done: Mocha.Done) => {
+      it('Should handle too many request in graduation', (done: Mocha.Done) => {
         const orgx: Organization = new TestOrganization('dev', 'xxx');
         const orgy: Organization = new TestOrganization('prod', 'yyy');
         const controllerxy = new SourceController(orgx, orgy);
@@ -1285,6 +1285,81 @@ export const SourceControllerTest = () => {
               .catch((err: any) => {
                 expect(err).to.eql('"TOO_MANY_REQUESTS"');
                 done();
+              });
+          })
+          .catch((err: IGenericError) => {
+            done(err);
+          });
+      });
+
+      it('Should not graduate source with security providers', (done: Mocha.Done) => {
+        const orgx: Organization = new TestOrganization('dev', 'xxx');
+        const orgy: Organization = new TestOrganization('prod', 'yyy');
+        const controllerxy = new SourceController(orgx, orgy);
+
+        const localDevSource = {
+          sourceType: 'SITEMAP',
+          id: 'dev-source',
+          name: 'security provider source',
+          configuration: {
+            parameters: { isSandbox: { value: true }, customParam: 'new-param' },
+            securityProviders: {
+              SecurityProvider: {
+                name: 'SALESFORCE-23456789098765',
+                typeName: 'Salesforce',
+              },
+            },
+          },
+          mappings: [],
+          preConversionExtensions: [],
+          postConversionExtensions: [],
+          owner: 'test@coveo.com',
+          resourceId: 'dev-source',
+        };
+
+        scope = nock(UrlService.getDefaultUrl())
+          // First expected request
+          .get('/rest/organizations/dev/sources')
+          .reply(RequestUtils.OK, [localDevSource])
+          // Fecth extensions from dev
+          .get('/rest/organizations/dev/extensions')
+          .reply(RequestUtils.OK, [])
+          // Fecth extensions from Prod
+          .get('/rest/organizations/prod/extensions')
+          // Rename extension Ids
+          .reply(RequestUtils.OK, [])
+          // Fetching dev sources one by one
+          .get('/rest/organizations/dev/sources/dev-source/raw')
+          .reply(RequestUtils.OK, localDevSource)
+          // Fecthing all prod sources
+          .get('/rest/organizations/prod/sources')
+          .reply(RequestUtils.OK, []);
+        // Nothing to graduate!
+
+        const diffOptions = {};
+        const graduateOptions: IGraduateOptions = {
+          POST: true,
+          PUT: false,
+          DELETE: false,
+          diffOptions: diffOptions,
+        };
+        controllerxy
+          .runDiffSequence(diffOptions)
+          .then((diff: DiffResultArray<Source>) => {
+            controllerxy
+              .runGraduateSequence(diff, graduateOptions)
+              .then(() => {
+                done('Should not resolve');
+              })
+              .catch((err) => {
+                if (
+                  err.message ===
+                  'Cannot create source with security provider. Please create the source manually in the destination org first.'
+                ) {
+                  done();
+                } else {
+                  done(err);
+                }
               });
           })
           .catch((err: IGenericError) => {
