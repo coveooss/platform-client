@@ -11,7 +11,7 @@ const plugins = [
   new CopyPlugin({
     patterns: [
       { from: 'environments/**/*.js', to: '.' },
-      { from: 'views/**/*.ejs', to: '.' },
+      // { from: 'views/**/*.ejs', to: '.' },
       { from: 'client-global.js', to: '.' },
     ],
   }),

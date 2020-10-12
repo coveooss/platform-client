@@ -1,9 +1,8 @@
 import * as opn from 'open';
 import * as inquirer from 'inquirer';
 import { compact, each, extend } from 'underscore';
-import path = require('path');
 import { ensureDirSync, writeJSON, writeFile } from 'fs-extra';
-import { renderFile } from 'ejs';
+import { render } from 'ejs';
 import { RequestResponse } from 'request';
 import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
 import { IHTTPGraduateOptions, IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
@@ -15,6 +14,8 @@ import { Logger } from '../commons/logger';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 import { BaseCoveoObject } from '../coveoObjects/BaseCoveoObject';
 import { InteractiveQuestion } from '../console/InteractiveQuestion';
+import { join } from 'path';
+import { DiffTemplate } from '../ui/DiffTemplate';
 
 export interface IDownloadOptions {
   outputFolder: string;
@@ -83,7 +84,7 @@ export abstract class BaseController {
         // ensure path
         ensureDirSync(options.outputFolder);
         // prepare file name
-        const filename = path.join(options.outputFolder, `${this.objectName.toLowerCase()}.json`);
+        const filename = join(options.outputFolder, `${this.objectName.toLowerCase()}.json`);
         // save to file
         writeJSON(filename, items, { spaces: 2 })
           .then(() => {
@@ -172,38 +173,32 @@ export abstract class BaseController {
 
           const cleanVersion = this.getCleanDiffVersion(diffResultArray, options);
 
-          renderFile(
-            './views/source-diff.ejs',
-            {
-              DIFF_OBJECT: JSON.stringify(cleanVersion.TO_UPDATE),
-              SOURCES_TO_CREATE: JSON.stringify(cleanVersion.TO_CREATE),
-              SOURCES_TO_DELETE: JSON.stringify(cleanVersion.TO_DELETE),
-              resourceType: this.objectName,
-            },
-            {},
-            (err, str) => {
-              if (err) {
-                Logger.error('Unable to render diff');
-                return;
-              }
+          // TODO: find a better way to load the template
+          // It did not work with ejs.renderFile since it was loading the ejs file from the location the script was executed
+          // Even after enabling __dirname with webpack, I was not able to load the diff-source.ejs file correctly
+          const template = DiffTemplate.diffSource;
+          const data = render(template, {
+            DIFF_OBJECT: JSON.stringify(cleanVersion.TO_UPDATE),
+            SOURCES_TO_CREATE: JSON.stringify(cleanVersion.TO_CREATE),
+            SOURCES_TO_DELETE: JSON.stringify(cleanVersion.TO_DELETE),
+            resourceType: this.objectName,
+          });
 
-              writeFile(`${this.objectName}Diff.html`, str)
-                .then(() => {
-                  Logger.info('Diff operation completed');
-                  Logger.info(`File saved as ${Colors.filename(this.objectName + 'Diff.html')}`);
-                  Logger.stopSpinner();
-                  if (!options.silent) {
-                    opn(`${this.objectName}Diff.html`);
-                  }
-                  process.exit();
-                })
-                .catch((error: any) => {
-                  Logger.error('Unable to create html file', error);
-                  Logger.stopSpinner();
-                  process.exit();
-                });
-            }
-          );
+          writeFile(`${this.objectName}Diff.html`, data)
+            .then(() => {
+              Logger.info('Diff operation completed');
+              Logger.info(`File saved as ${Colors.filename(this.objectName + 'Diff.html')}`);
+              Logger.stopSpinner();
+              if (!options.silent) {
+                opn(`${this.objectName}Diff.html`);
+              }
+              process.exit();
+            })
+            .catch((error: any) => {
+              Logger.error('Unable to create html file', error);
+              Logger.stopSpinner();
+              process.exit();
+            });
         } else {
           writeJSON(`${this.objectName}Diff.json`, this.getCleanDiffVersion(diffResultArray, options), { spaces: 2 })
             .then(() => {
