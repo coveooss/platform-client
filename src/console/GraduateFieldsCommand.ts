@@ -9,8 +9,15 @@ import { FieldController } from '../controllers/FieldController';
 program
   .command('graduate-fields <origin> <destination> <apiKey...>')
   .description('Graduate fields from one organization to another')
-  .option('-i, --ignoreFields []', 'Keys to ignore. String separated by ","', CommanderUtils.list, [])
-  .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', CommanderUtils.list, [])
+  .option('-i, --ignoreFields []', 'Fields to ignore. String separated by ","', CommanderUtils.list, [])
+  // TODO: implement whitelist strategy
+  // .option('-i, --onlyFields []', 'Fields to diff only ","', CommanderUtils.list, [])
+  .option(
+    '-o, --onlyKeys []',
+    'Diff only the specified field attributes (ex: sort, facet, stemming, ...). String separated by ","',
+    CommanderUtils.list,
+    []
+  )
   .option(
     '-S, --sources []',
     'If specified, the operation will only graduate fields that are associated to specified sources.',
