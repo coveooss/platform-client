@@ -22,6 +22,7 @@ import { Colors } from '../commons/colors';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 import { DownloadUtils } from '../commons/utils/DownloadUtils';
 import { FieldAPI } from '../commons/rest/FieldAPI';
+import { bold } from 'chalk';
 
 export class SourceController extends BaseController {
   private extensionList: Array<Array<{}>> = [];
@@ -251,7 +252,7 @@ export class SourceController extends BaseController {
           );
           callback(err);
           this.errorHandler(
-            { orgId: this.organization2.getId(), message: err } as IGenericError,
+            { orgId: this.organization2.getId() } as IGenericError,
             StaticErrorMessage.CANNOT_CREATE_SECURITY_PROVIDER_SOURCE
           );
           return;
@@ -260,15 +261,21 @@ export class SourceController extends BaseController {
         // Check if field integrity is preserved
         const missingFields = this.organization2.getMissingFieldsBasedOnSourceMapping(source);
         if (this.organization2.getFields().values().length > 0 && missingFields.length > 0) {
-          const message = `You are attempting to graduate a source that references unavailable fields. Source ${Colors.source(
-            source.getName()
-          )} requires the following field(s): ${missingFields.join(', ')}`;
+          const message = [
+            `You are attempting to graduate a source that references unavailable fields. The source ${Colors.source(
+              source.getName()
+            )} requires the following field(s): ${missingFields.map((f) => bold(f)).join(', ')}.`,
+            '',
+            `${Colors.warn('───────────────────────────────────────────────────────────')}`,
+            `To graduate missing fields, run the following command format:`,
+            `platformclient graduate-fields <origin> <destination> <apiKeys...> -m POST --onlyFields ${missingFields.join(',')}`,
+            `${Colors.warn('───────────────────────────────────────────────────────────')}`,
+          ].join('\n');
           const err = new Error(message);
+
+          // Help user with command to graduate fields.
           callback(err);
-          this.errorHandler(
-            { orgId: this.organization2.getId(), message: err } as IGenericError,
-            StaticErrorMessage.FIELD_INTEGRITY_BROKEN
-          );
+          this.errorHandler({ orgId: this.organization2.getId() } as IGenericError, StaticErrorMessage.FIELD_INTEGRITY_BROKEN);
           return;
         }
 
@@ -279,10 +286,7 @@ export class SourceController extends BaseController {
           })
           .catch((err: any) => {
             callback(err);
-            this.errorHandler(
-              { orgId: this.organization2.getId(), message: err } as IGenericError,
-              StaticErrorMessage.UNABLE_TO_CREATE_SOURCE
-            );
+            this.errorHandler({ orgId: this.organization2.getId() } as IGenericError, StaticErrorMessage.UNABLE_TO_CREATE_SOURCE);
           });
       };
     });
@@ -305,15 +309,21 @@ export class SourceController extends BaseController {
         const destinationSource = diffResult.TO_UPDATE_OLD[idx];
         const missingFields = this.organization2.getMissingFieldsBasedOnSourceMapping(source);
         if (this.organization2.getFields().values().length > 0 && missingFields.length > 0) {
-          const message = `You are attempting to graduate a source that references unavailable fields. Source ${Colors.source(
-            source.getName()
-          )} requires the following fields: ${missingFields.join(', ')}`;
+          const message = [
+            `You are attempting to graduate a source that references unavailable fields. The source ${Colors.source(
+              source.getName()
+            )} requires the following field(s): ${missingFields.map((f) => bold(f)).join(', ')}.`,
+            '',
+            `${Colors.warn('───────────────────────────────────────────────────────────')}`,
+            `To graduate missing fields, run the following command format:`,
+            `platformclient graduate-fields <origin> <destination> <apiKeys...> -m POST --onlyKeys ${missingFields.join(',')}`,
+            `${Colors.warn('───────────────────────────────────────────────────────────')}`,
+          ].join('\n');
           const err = new Error(message);
+
+          // Help user with command to graduate fields.
           callback(err);
-          this.errorHandler(
-            { orgId: this.organization2.getId(), message: err } as IGenericError,
-            StaticErrorMessage.FIELD_INTEGRITY_BROKEN
-          );
+          this.errorHandler({ orgId: this.organization2.getId() } as IGenericError, StaticErrorMessage.FIELD_INTEGRITY_BROKEN);
           return;
         }
         // Update the source by extending the old source config with the new conifg
@@ -328,10 +338,7 @@ export class SourceController extends BaseController {
           })
           .catch((err: any) => {
             callback(err);
-            this.errorHandler(
-              { orgId: this.organization2.getId(), message: err } as IGenericError,
-              StaticErrorMessage.UNABLE_TO_UPDATE_SOURCE
-            );
+            this.errorHandler({ orgId: this.organization2.getId() } as IGenericError, StaticErrorMessage.UNABLE_TO_UPDATE_SOURCE);
           });
       };
     });
@@ -358,10 +365,7 @@ export class SourceController extends BaseController {
           })
           .catch((err: any) => {
             callback(err);
-            this.errorHandler(
-              { orgId: this.organization2.getId(), message: err } as IGenericError,
-              StaticErrorMessage.UNABLE_TO_DELETE_SOURCE
-            );
+            this.errorHandler({ orgId: this.organization2.getId() } as IGenericError, StaticErrorMessage.UNABLE_TO_DELETE_SOURCE);
           });
       };
     });

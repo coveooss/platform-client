@@ -1,9 +1,8 @@
-// import {} from 'underscore';
 import * as program from 'commander';
 import { Logger } from '../commons/logger';
 import { CommanderUtils } from './CommanderUtils';
 import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
-import { IBlacklistObjects, Organization } from '../coveoObjects/Organization';
+import { IOrganizationOptions, Organization } from '../coveoObjects/Organization';
 import { FieldController } from '../controllers/FieldController';
 
 program
@@ -16,8 +15,8 @@ program
     CommanderUtils.list,
     []
   )
-  // .option('-i, --ignoreKeys []', 'Field keys to ignore (e.g. "facet","description").', CommanderUtils.list, [])
-  .option('-i, --ignoreFields []', 'Fields to ignore.', CommanderUtils.list, [])
+  .option('-n, --onlyFields []', 'Only the fields to diff.', CommanderUtils.list, [])
+  .option('-i, --ignoreFields []', 'Fields to ignore (opposite of "onlyFields" option).', CommanderUtils.list, [])
   .option('-o, --onlyKeys []', 'Diff only the specified keys.', CommanderUtils.list, [])
   .option(
     '-l, --logLevel <level>',
@@ -36,6 +35,12 @@ program
   .action((origin: string, destination: string, apiKey: string[], options: any) => {
     CommanderUtils.setLogger(options, 'diff-fields');
 
+    // Validate strategy
+    if (options.onlyFields.length > 0 && options.ignoreFields.length > 0) {
+      Logger.error('Cannot choose both whitelist and blacklist strategy. Please choose one or the other.');
+      process.exit();
+    }
+
     // Set diff options
     const diffOptions: IDiffOptions = {
       // keysToIgnore: _.union(options.ignoreKeys, ['sources']),
@@ -45,15 +50,27 @@ program
       sources: options.sources,
     };
 
-    const blacklistOptions: IBlacklistObjects = {
-      fields: options.ignoreFields,
+    const originOrgOptions: IOrganizationOptions = {
+      platformUrl: program.opts()?.platformUrlOrigin,
+    };
+    const destinationOrgOptions: IOrganizationOptions = {
+      platformUrl: program.opts()?.platformUrlDestination,
     };
 
-    const originOrg = new Organization(origin, apiKey[0], { blacklist: blacklistOptions, platformUrl: program.opts()?.platformUrlOrigin });
-    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], {
-      blacklist: blacklistOptions,
-      platformUrl: program.opts()?.platformUrlDestination,
-    });
+    if (options.ignoreFields && options.ignoreFields.length > 0) {
+      originOrgOptions.blacklist = destinationOrgOptions.blacklist = {
+        fields: options.ignoreFields,
+      };
+    }
+
+    if (options.onlyFields && options.onlyFields.length > 0) {
+      originOrgOptions.whitelist = destinationOrgOptions.whitelist = {
+        fields: options.onlyFields,
+      };
+    }
+
+    const originOrg = new Organization(origin, apiKey[0], originOrgOptions);
+    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], destinationOrgOptions);
     const controller: FieldController = new FieldController(originOrg, destinationOrg);
 
     controller.diff(diffOptions);

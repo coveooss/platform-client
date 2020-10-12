@@ -1,17 +1,15 @@
 import * as program from 'commander';
-import {} from 'underscore';
 import { Logger } from '../commons/logger';
 import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { CommanderUtils } from './CommanderUtils';
-import { IBlacklistObjects, Organization } from '../coveoObjects/Organization';
+import { IOrganizationOptions, Organization } from '../coveoObjects/Organization';
 import { FieldController } from '../controllers/FieldController';
 
 program
   .command('graduate-fields <origin> <destination> <apiKey...>')
   .description('Graduate fields from one organization to another')
+  .option('-n, --onlyFields []', 'Only the fields to diff.', CommanderUtils.list, [])
   .option('-i, --ignoreFields []', 'Fields to ignore. String separated by ","', CommanderUtils.list, [])
-  // TODO: implement whitelist strategy
-  // .option('-i, --onlyFields []', 'Fields to diff only ","', CommanderUtils.list, [])
   .option(
     '-o, --onlyKeys []',
     'Diff only the specified field attributes (ex: sort, facet, stemming, ...). String separated by ","',
@@ -40,6 +38,12 @@ program
   .action((origin: string, destination: string, apiKey: string[], options: any) => {
     CommanderUtils.setLogger(options, 'graduate-fields');
 
+    // Validate strategy
+    if (options.onlyFields.length > 0 && options.ignoreFields.length > 0) {
+      Logger.error('Cannot choose both whitelist and blacklist strategy. Please choose one or the other.');
+      process.exit();
+    }
+
     // Set graduation options
     const graduateOptions: IGraduateOptions = {
       diffOptions: {
@@ -56,15 +60,27 @@ program
       DELETE: options.methods.indexOf('DELETE') > -1,
     };
 
-    const blacklistOptions: IBlacklistObjects = {
-      fields: options.ignoreFields,
+    const originOrgOptions: IOrganizationOptions = {
+      platformUrl: program.opts()?.platformUrlOrigin,
+    };
+    const destinationOrgOptions: IOrganizationOptions = {
+      platformUrl: program.opts()?.platformUrlDestination,
     };
 
-    const originOrg = new Organization(origin, apiKey[0], { blacklist: blacklistOptions, platformUrl: program.opts()?.platformUrlOrigin });
-    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], {
-      blacklist: blacklistOptions,
-      platformUrl: program.opts()?.platformUrlDestination,
-    });
+    if (options.ignoreFields && options.ignoreFields.length > 0) {
+      originOrgOptions.blacklist = destinationOrgOptions.blacklist = {
+        fields: options.ignoreFields,
+      };
+    }
+
+    if (options.onlyFields && options.onlyFields.length > 0) {
+      originOrgOptions.whitelist = destinationOrgOptions.whitelist = {
+        fields: options.onlyFields,
+      };
+    }
+
+    const originOrg = new Organization(origin, apiKey[0], originOrgOptions);
+    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], destinationOrgOptions);
     const controller: FieldController = new FieldController(originOrg, destinationOrg);
 
     controller.graduate(graduateOptions);

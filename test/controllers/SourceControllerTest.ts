@@ -18,6 +18,7 @@ import { IGraduateOptions } from '../../src/commons/interfaces/IGraduateOptions'
 import { DownloadResultArray } from '../../src/commons/collections/DownloadResultArray';
 import { TestOrganization } from '../test';
 import { Colors } from '../../src/commons/colors';
+import { bold } from 'chalk';
 
 const allDevSources: Array<{}> = require('./../mocks/setup1/sources/dev/allSources.json');
 const DEVrrbbidfxa2ri4usxhzzmhq2hge: {} = require('./../mocks/setup1/sources/dev/web.json');
@@ -1686,12 +1687,22 @@ export const SourceControllerTest = () => {
               .then(() => {
                 done('Should not resolve');
               })
-              .catch((err) => {
+              .catch((err: Error) => {
                 if (
                   err.message ===
-                  `You are attempting to graduate a source that references unavailable fields. Source ${Colors.source(
-                    'sitemap test'
-                  )} requires the following field(s): anothernewfield, lastrebuilddate`
+                  [
+                    `You are attempting to graduate a source that references unavailable fields. The source ${Colors.source(
+                      'sitemap test'
+                    )} requires the following field(s): ${['anothernewfield', 'lastrebuilddate'].map((f) => bold(f)).join(', ')}.`,
+                    '',
+                    `${Colors.warn('───────────────────────────────────────────────────────────')}`,
+                    `To graduate missing fields, run the following command format:`,
+                    `platformclient graduate-fields <origin> <destination> <apiKeys...> -m POST --onlyFields ${[
+                      'anothernewfield',
+                      'lastrebuilddate',
+                    ].join(',')}`,
+                    `${Colors.warn('───────────────────────────────────────────────────────────')}`,
+                  ].join('\n')
                 ) {
                   done();
                 } else {

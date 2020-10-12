@@ -20,15 +20,36 @@ export interface IOrganization extends ICoveoObject<Organization> {
 
 // Blacklist all the objects that we do not want to add to the organization.
 export interface IBlacklistObjects {
+  // TODO: merge IBlacklistObjects and IWhitelistObjects interfaces into one interface IAccessControlObject
   fields?: string[];
   extensions?: string[];
   sources?: string[];
   pages?: string[];
 }
+export interface IWhitelistObjects {
+  fields?: string[];
+  extensions?: string[];
+  sources?: string[];
+  pages?: string[];
+}
+// TODO: use this interface instead
+// export interface IAccessControlObject {
+//   fields?: string[];
+//   extensions?: string[];
+//   sources?: string[];
+//   pages?: string[];
+// }
+
+export enum AccessControl {
+  none = 'none',
+  whitelist = 'whitelist',
+  blacklist = 'blacklist',
+}
 
 export interface IOrganizationOptions {
   platformUrl?: string;
   blacklist?: IBlacklistObjects;
+  whitelist?: IWhitelistObjects;
 }
 
 /**
@@ -42,21 +63,71 @@ export class Organization extends BaseCoveoObject implements IOrganization {
   private extensions: Dictionary<Extension> = new Dictionary<Extension>();
   private pages: Dictionary<Page> = new Dictionary<Page>();
   private blacklist: IBlacklistObjects = {};
+  private whitelist: IWhitelistObjects = {};
+  private accessControl: AccessControl = AccessControl.none;
 
   constructor(id: string, private apiKey: string, private options: IOrganizationOptions = {}) {
     super(id);
     Assert.exists(id, 'Missing organization id');
     this.apiKey = apiKey;
 
-    // Setup options
-    this.blacklist = options.blacklist || {};
-
-    this.blacklist.extensions = (this.blacklist.extensions || []).map((e) => StringUtil.lowerAndStripSpaces(e));
-    this.blacklist.fields = (this.blacklist.fields || []).map((f) => StringUtil.lowerAndStripSpaces(f));
-    this.blacklist.sources = (this.blacklist.sources || []).map((s) => StringUtil.lowerAndStripSpaces(s));
-    this.blacklist.pages = (this.blacklist.pages || []).map((p) => StringUtil.lowerAndStripSpaces(p));
+    this.setupStrategy();
   }
 
+  setupStrategy() {
+    if (!!this.options.blacklist && !!!this.options.whitelist) {
+      // Setup blacklist strategy
+      this.accessControl = AccessControl.blacklist;
+      this.blacklist = this.options.blacklist;
+
+      this.blacklist.extensions = (this.blacklist.extensions || []).map((e) => StringUtil.lowerAndStripSpaces(e));
+      this.blacklist.fields = (this.blacklist.fields || []).map((f) => StringUtil.lowerAndStripSpaces(f));
+      this.blacklist.sources = (this.blacklist.sources || []).map((s) => StringUtil.lowerAndStripSpaces(s));
+      this.blacklist.pages = (this.blacklist.pages || []).map((p) => StringUtil.lowerAndStripSpaces(p));
+    } else if (!!this.options.whitelist && !!!this.options.blacklist) {
+      // Setup whitelist strategy
+      this.accessControl = AccessControl.whitelist;
+      this.whitelist = this.options.whitelist;
+
+      // TODO: support whitelist for other resources
+      // this.blacklist.extensions = (this.blacklist.extensions || []).map((e) => StringUtil.lowerAndStripSpaces(e));
+      // this.blacklist.sources = (this.blacklist.sources || []).map((s) => StringUtil.lowerAndStripSpaces(s));
+      // this.blacklist.pages = (this.blacklist.pages || []).map((p) => StringUtil.lowerAndStripSpaces(p));
+      this.whitelist.fields = (this.whitelist.fields || []).map((f) => StringUtil.lowerAndStripSpaces(f));
+    } else if (!!this.options.whitelist && !!this.options.blacklist) {
+      throw new Error('Cannot specify both whitelist and blacklist objects');
+    }
+  }
+
+  isBlackListAccessControl(): boolean {
+    return this.accessControl === AccessControl.blacklist;
+  }
+
+  isWhiteListAccessControl(): boolean {
+    return this.accessControl === AccessControl.whitelist;
+  }
+
+  // Whitelist Getters
+  // TODO: to implement
+  // getExtensionWhitelist(): string[] {
+  //   return this.whitelist.extensions || [];
+  // }
+
+  // getPageWhitelist(): string[] {
+  // TODO: to implement
+  //   return this.whitelist.pages || [];
+  // }
+
+  getfieldWhitelist(): string[] {
+    return this.whitelist.fields || [];
+  }
+
+  // getSourceWhitelist(): string[] {
+  // TODO: to implement
+  //   return this.whitelist.sources || [];
+  // }
+
+  // Blacklist Getters
   getExtensionBlacklist(): string[] {
     return this.blacklist.extensions || [];
   }
@@ -97,7 +168,13 @@ export class Organization extends BaseCoveoObject implements IOrganization {
    * @param {Field} field Field to be added
    */
   addField(field: Field) {
-    if (!contains(this.getfieldBlacklist(), StringUtil.lowerAndStripSpaces(field.getName()))) {
+    let condition = true;
+    if (this.isBlackListAccessControl()) {
+      condition = !contains(this.getfieldBlacklist(), StringUtil.lowerAndStripSpaces(field.getName()));
+    } else if (this.isWhiteListAccessControl()) {
+      condition = contains(this.getfieldWhitelist(), StringUtil.lowerAndStripSpaces(field.getName()));
+    }
+    if (condition) {
       this.fields.add(field.getName(), field);
     }
   }
