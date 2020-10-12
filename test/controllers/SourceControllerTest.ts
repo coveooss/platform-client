@@ -1697,7 +1697,7 @@ export const SourceControllerTest = () => {
                     '',
                     `${Colors.warn('───────────────────────────────────────────────────────────')}`,
                     `To graduate missing fields, run the following command format:`,
-                    `platformclient graduate-fields <origin> <destination> <apiKeys...> -m POST --onlyFields ${[
+                    `platformclient graduate-fields <origin> <destination> <apiKeys...> --onlyFields ${[
                       'anothernewfield',
                       'lastrebuilddate',
                     ].join(',')}`,

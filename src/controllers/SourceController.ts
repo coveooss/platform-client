@@ -268,7 +268,7 @@ export class SourceController extends BaseController {
             '',
             `${Colors.warn('───────────────────────────────────────────────────────────')}`,
             `To graduate missing fields, run the following command format:`,
-            `platformclient graduate-fields <origin> <destination> <apiKeys...> -m POST --onlyFields ${missingFields.join(',')}`,
+            `platformclient graduate-fields <origin> <destination> <apiKeys...> --onlyFields ${missingFields.join(',')}`,
             `${Colors.warn('───────────────────────────────────────────────────────────')}`,
           ].join('\n');
           const err = new Error(message);
@@ -316,7 +316,7 @@ export class SourceController extends BaseController {
             '',
             `${Colors.warn('───────────────────────────────────────────────────────────')}`,
             `To graduate missing fields, run the following command format:`,
-            `platformclient graduate-fields <origin> <destination> <apiKeys...> -m POST --onlyKeys ${missingFields.join(',')}`,
+            `platformclient graduate-fields <origin> <destination> <apiKeys...> --onlyKeys ${missingFields.join(',')}`,
             `${Colors.warn('───────────────────────────────────────────────────────────')}`,
           ].join('\n');
           const err = new Error(message);
