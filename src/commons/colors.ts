@@ -38,4 +38,8 @@ export class Colors {
   static error(value: string): string {
     return red(value);
   }
+
+  static warn(value: string): string {
+    return yellow(value);
+  }
 }

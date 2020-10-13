@@ -1,5 +1,4 @@
 import * as program from 'commander';
-import {} from 'underscore';
 import { Logger } from '../commons/logger';
 import { CommanderUtils } from './CommanderUtils';
 import { IDiffOptions } from '../commons/interfaces/IDiffOptions';

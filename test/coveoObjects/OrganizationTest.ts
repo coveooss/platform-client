@@ -113,6 +113,8 @@ export const OrganizationTest = () => {
         expect(organization.getFields().getCount()).to.equal(0);
         organization.getFields().clear();
         expect(organization.getFields().getCount()).to.equal(0);
+        expect(organization.isBlackListAccessControl()).to.be.false;
+        expect(organization.isWhiteListAccessControl()).to.be.false;
       });
 
       it('Should add a new field to the organization', () => {
@@ -140,6 +142,8 @@ export const OrganizationTest = () => {
         });
         organization.addField(field);
         expect(organization.getFields().getCount()).to.equal(1);
+        expect(organization.isBlackListAccessControl()).to.be.false;
+        expect(organization.isWhiteListAccessControl()).to.be.false;
       });
 
       it('Should not add field that has been blacklisted', () => {
@@ -168,6 +172,68 @@ export const OrganizationTest = () => {
         });
         organization.addField(field);
         expect(organization.getFields().getCount()).to.equal(0);
+        expect(organization.isBlackListAccessControl()).to.be.true;
+        expect(organization.isWhiteListAccessControl()).to.be.false;
+      });
+
+      it('Should not add field if not whitelisted whitelisted', () => {
+        const whitelist = { fields: ['dummyfield'] };
+        const organization: Organization = new TestOrganization('rambo3', 'xxx-aaa-123', { whitelist: whitelist });
+        const field: Field = new Field({
+          name: 'allmetadatavalues',
+          description: 'Place to put content for metadata discovery.',
+          type: 'STRING',
+          includeInQuery: true,
+        });
+        const field2: Field = new Field({
+          name: 'testfield',
+          description: 'Place to put content for metadata discovery.',
+          type: 'STRING',
+          includeInQuery: true,
+        });
+        organization.addField(field);
+        organization.addField(field2);
+
+        expect(organization.getFields().getCount()).to.equal(0);
+        expect(organization.isWhiteListAccessControl()).to.be.true;
+        expect(organization.isBlackListAccessControl()).to.be.false;
+      });
+
+      it('Should not allow using both blacklist and whitelist strategies', () => {
+        const list = { fields: ['dummyfield'] };
+        assert.throws(() => new TestOrganization('rambo3', 'xxx-aaa-123', { whitelist: list, blacklist: list }));
+      });
+
+      it('Should not allow using both blacklist and whitelist strategies 2', () => {
+        const list = { fields: ['dummyfield'] };
+        assert.throws(() => new TestOrganization('rambo3', 'xxx-aaa-123', { whitelist: {}, blacklist: list }));
+        assert.doesNotThrow(() => new TestOrganization('rambo3', 'xxx-aaa-123', { whitelist: undefined, blacklist: list }));
+        assert.doesNotThrow(() => new TestOrganization('rambo3', 'xxx-aaa-123', { whitelist: list, blacklist: undefined }));
+        assert.doesNotThrow(() => new TestOrganization('rambo3', 'xxx-aaa-123', { whitelist: undefined, blacklist: undefined }));
+      });
+
+      it('Should only add field that has been whitelisted', () => {
+        const whitelist = { fields: ['testfield'] };
+        const organization: Organization = new TestOrganization('rambo3', 'xxx-aaa-123', { whitelist: whitelist });
+        const field: Field = new Field({
+          name: 'allmetadatavalues',
+          description: 'Place to put content for metadata discovery.',
+          type: 'STRING',
+          includeInQuery: true,
+        });
+        const field2: Field = new Field({
+          name: 'testfield',
+          description: 'Place to put content for metadata discovery.',
+          type: 'STRING',
+          includeInQuery: true,
+        });
+        organization.addField(field);
+        organization.addField(field2);
+
+        expect(organization.getFields().getCount()).to.equal(1);
+        expect(organization.isWhiteListAccessControl()).to.be.true;
+        expect(organization.isBlackListAccessControl()).to.be.false;
+        expect(organization.getFields().values()[0].getName()).to.equal('testfield');
       });
 
       it('Should add multiple fields in the Organization', () => {
@@ -198,6 +264,8 @@ export const OrganizationTest = () => {
           },
         ]);
         expect(organization.getFields().getCount()).to.be.eql(3);
+        expect(organization.isBlackListAccessControl()).to.be.true;
+        expect(organization.isWhiteListAccessControl()).to.be.false;
       });
 
       it('Should throw an error when adding invalid fields to the Organization', () => {
@@ -495,7 +563,22 @@ export const OrganizationTest = () => {
           sourceSecurityOption: 'Specified',
           postConversionExtensions: [],
           preConversionExtensions: [],
-          mappings: [],
+          mappings: [
+            {
+              id: 'q6q72sozl73yjobkrl64cusemq',
+              kind: 'COMMON',
+              extractionMethod: 'METADATA',
+              fieldName: 'field1',
+              content: '%[dsadsa]',
+            },
+            {
+              id: 'dsaf3fdsfds',
+              kind: 'COMMON',
+              extractionMethod: 'METADATA',
+              fieldName: 'field2',
+              content: '%[cccc]',
+            },
+          ],
           addressPatterns: [
             {
               expression: '*',
@@ -548,6 +631,112 @@ export const OrganizationTest = () => {
         expect(copy.getFields().getCount()).to.equal(3);
         expect(copy.getExtensions().getCount()).to.equal(1);
         expect(copy.getSources().getCount()).to.equal(1);
+        // Preserving source integrity
+        expect(copy.getMissingFieldsBasedOnSourceMapping(copy.getSources().values()[0])).to.eql([]);
+      });
+
+      it('Should detect source integrity breach (missing fields)', () => {
+        const organization: Organization = new TestOrganization('org321', 'xxx-aaa-123');
+
+        const source: Source = new Source({
+          id: 'r6ud7iksjhafgjpiokjh-sdfgr3e',
+          name: 'testSource',
+          sourceType: 'SITEMAP',
+          sourceSecurityOption: 'Specified',
+          postConversionExtensions: [],
+          preConversionExtensions: [],
+          mappings: [
+            {
+              id: 'q6q72sozl73yjobkrl64cusemq',
+              kind: 'COMMON',
+              extractionMethod: 'METADATA',
+              fieldName: 'field1',
+              content: '%[dsadsa]',
+            },
+            {
+              id: 'dsaf3fdsfds',
+              kind: 'COMMON',
+              extractionMethod: 'METADATA',
+              fieldName: 'field2',
+              content: '%[cccc]',
+            },
+            {
+              id: 'vcxvcxvcx',
+              kind: 'COMMON',
+              extractionMethod: 'METADATA',
+              fieldName: 'lastrebuilddate',
+              content: 'Juste pour toi mon eric',
+            },
+            {
+              id: 'vcxvcxvcx2',
+              kind: 'COMMON',
+              extractionMethod: 'METADATA',
+              fieldName: 'lastrebuilddate2',
+              content: 'Juste pour toi mon eric',
+            },
+            {
+              id: 'vcxvcxvcx3',
+              kind: 'COMMON',
+              extractionMethod: 'METADATA',
+              fieldName: 'lastrebuilddate3',
+              content: 'Juste pour toi mon eric',
+            },
+          ],
+          addressPatterns: [
+            {
+              expression: '*',
+              patternType: 'Wildcard',
+              allowed: true,
+            },
+          ],
+          permissions: [
+            {
+              permissionSets: [
+                {
+                  allowedPermissions: [
+                    {
+                      identityType: 'Group',
+                      securityProvider: 'Email Security Provider',
+                      identity: '*@*',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
+        const fields = [
+          {
+            name: 'field1',
+            description: 'Place to put content for metadata discovery.',
+            type: 'STRING',
+          },
+          {
+            name: 'field2',
+            description: 'Place to put content for metadata discovery.',
+            type: 'STRING',
+          },
+          {
+            name: 'field3',
+            description: 'Place to put content for metadata discovery.',
+            type: 'STRING',
+          },
+        ];
+        organization.addFieldList(fields);
+        organization.addSource(source);
+
+        const copy = organization.clone();
+        // clear orginial organization and make sure it does not affect the copy
+        organization.clearAll();
+        // expect(copy.getId()).to.equal('org321');
+        // expect(copy.getApiKey()).to.equal('xxx-aaa-123');
+        expect(copy.getFields().getCount()).to.equal(3);
+        expect(copy.getSources().getCount()).to.equal(1);
+        expect(copy.getMissingFieldsBasedOnSourceMapping(copy.getSources().values()[0])).to.eql([
+          'lastrebuilddate',
+          'lastrebuilddate2',
+          'lastrebuilddate3',
+        ]);
       });
     });
   });

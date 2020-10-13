@@ -1,6 +1,5 @@
 import * as inquirer from 'inquirer';
 import * as program from 'commander';
-import {} from 'underscore';
 import { Logger } from '../commons/logger';
 import { CommanderUtils } from './CommanderUtils';
 import { Organization } from '../coveoObjects/Organization';

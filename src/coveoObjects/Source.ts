@@ -1,4 +1,4 @@
-import { compact, each, omit, reject, sortBy } from 'underscore';
+import { compact, each, omit, pluck, reject, sortBy } from 'underscore';
 import { IStringMap } from '../commons/interfaces/IStringMap';
 import { JsonUtils } from '../commons/utils/JsonUtils';
 import { BaseCoveoObject } from './BaseCoveoObject';
@@ -37,12 +37,21 @@ export class Source extends BaseCoveoObject implements ISource {
     return this.configuration['mappings'];
   }
 
+  getFieldsFromMappings(): string[] {
+    return pluck(this.getMappings(), 'fieldName');
+  }
+
   getPostConversionExtensions(): Array<IStringMap<string>> {
     return this.configuration['postConversionExtensions'];
   }
 
   getPreConversionExtensions(): Array<IStringMap<string>> {
     return this.configuration['preConversionExtensions'];
+  }
+
+  sourceContainsSecurityProvider(): boolean {
+    const secProv = this.getConfiguration()?.configuration?.securityProviders;
+    return secProv !== {} && secProv !== undefined; // undefined for unit tests
   }
 
   restoreMappingIds(mappingIds: string[] = []) {
