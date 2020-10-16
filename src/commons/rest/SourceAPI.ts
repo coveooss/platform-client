@@ -1,4 +1,4 @@
-import * as _ from 'underscore';
+import { contains, reject } from 'underscore';
 import { series } from 'async';
 import { RequestResponse } from 'request';
 import { Organization } from '../../coveoObjects/Organization';
@@ -14,37 +14,37 @@ import { StringUtil } from '../utils/StringUtils';
 
 export class SourceAPI {
   static rebuildSource(org: Organization, sourceId: string): Promise<RequestResponse> {
-    const url = UrlService.rebuildSource(org.getId(), sourceId);
+    const url = UrlService.rebuildSource(org, sourceId);
     return RequestUtils.post(url, org.getApiKey(), null);
   }
 
   static createSource(org: Organization, sourceModel: IStringMap<any>): Promise<RequestResponse> {
-    const url = UrlService.createSource(org.getId());
+    const url = UrlService.createSource(org);
     return RequestUtils.post(url, org.getApiKey(), sourceModel);
   }
 
   static updateSource(org: Organization, sourceId: string, sourceModel: IStringMap<any>): Promise<RequestResponse> {
-    const url = UrlService.updateSource(org.getId(), sourceId);
+    const url = UrlService.updateSource(org, sourceId);
     return RequestUtils.put(url, org.getApiKey(), sourceModel);
   }
 
   static deleteSource(org: Organization, sourceId: string): Promise<RequestResponse> {
-    const url = UrlService.getSingleSourceUrl(org.getId(), sourceId);
+    const url = UrlService.getSingleSourceUrl(org, sourceId);
     return RequestUtils.delete(url, org.getApiKey());
   }
 
   static getAllSources(organization: Organization): Promise<RequestResponse> {
-    return RequestUtils.get(UrlService.getSourcesUrl(organization.getId()), organization.getApiKey());
+    return RequestUtils.get(UrlService.getSourcesUrl(organization), organization.getApiKey());
   }
 
   static getSingleSource(organization: Organization, sourceId: string): Promise<RequestResponse> {
     Assert.isNotUndefined(sourceId, 'Cannot load undefined source');
-    return RequestUtils.get(UrlService.getSingleRawSourceUrl(organization.getId(), sourceId), organization.getApiKey());
+    return RequestUtils.get(UrlService.getSingleRawSourceUrl(organization, sourceId), organization.getApiKey());
   }
 
   static loadSources(org: Organization): Promise<{}> {
     // tslint:disable-next-line:typedef
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, subreject) => {
       // Load all sources
       this.getAllSources(org)
         .then((response: RequestResponse) => {
@@ -52,11 +52,11 @@ export class SourceAPI {
           SourceAPI.loadEachSource(org, response)
             .then(() => resolve())
             .catch((err: any) => {
-              reject({ orgId: org.getId(), message: err } as IGenericError);
+              subreject({ orgId: org.getId(), message: err } as IGenericError);
             });
         })
         .catch((err: any) => {
-          reject({ orgId: org.getId(), message: err } as IGenericError);
+          subreject({ orgId: org.getId(), message: err } as IGenericError);
         });
     });
   }
@@ -66,16 +66,16 @@ export class SourceAPI {
     Logger.verbose(`${count} source${count > 1 ? 's' : ''} from ${Colors.organization(org.getId())} to load`);
 
     // Reject all sources that have been blacklisted. Do not load blacklisted sources for nothing
-    response.body = _.reject(response.body, (source: any) => {
+    response.body = reject(response.body, (source: any) => {
       const sourceName: string = source['name'] || '';
-      const condition = _.contains(org.getSourceBlacklist(), StringUtil.lowerAndStripSpaces(sourceName));
+      const condition = contains(org.getSourceBlacklist(), StringUtil.lowerAndStripSpaces(sourceName));
       if (condition) {
         Logger.info(`Skipping source ${Colors.source(sourceName)}`);
       }
       return condition;
     });
 
-    const asyncArray = _.map(response.body, (source: any) => {
+    const asyncArray = response.body.map((source: any) => {
       return (callback: any) => {
         Assert.exists(source['id'], StaticErrorMessage.MISSING_SOURCE_ID_FROM_THE_RESPONSE);
         Logger.loadingTask(`Loading source ${Colors.source(source['name'])} from ${Colors.organization(org.getId())}`);
@@ -92,9 +92,9 @@ export class SourceAPI {
       };
     });
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, subreject) => {
       series(asyncArray, (err, results) => {
-        err ? reject(err) : resolve();
+        err ? subreject(err) : resolve();
       });
     });
   }

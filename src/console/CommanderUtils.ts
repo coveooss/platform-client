@@ -1,9 +1,9 @@
-import * as _ from 'underscore';
+import { compact, map } from 'underscore';
 import { Logger } from '../commons/logger';
 
 export class CommanderUtils {
   static list(val: string) {
-    return _.map(_.compact(val.split(',')), v => v.trim());
+    return map(compact(val.split(',')), (v) => v.trim());
   }
 
   static setLogger(options: any, command: string) {

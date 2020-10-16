@@ -1,5 +1,5 @@
 import * as program from 'commander';
-import * as _ from 'underscore';
+import { union } from 'underscore';
 import { Logger } from '../commons/logger';
 import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { CommanderUtils } from './CommanderUtils';
@@ -11,6 +11,11 @@ program
   .description('Graduate sources from one organization to another')
   // .option('-r, --rebuild', 'Rebuild the source once created. Default is false', false)
   .option('-i, --keysToIgnore []', 'Keys to ignore from the JSON configuration. String separated by ","', CommanderUtils.list, [])
+  .option(
+    '-I, --skipFieldIntegrity',
+    'When specified, the graduation will not validate field integrity. Otherwise, the graduation will fail if at least one source to graduate references fields that do not exist in the desintation org',
+    false
+  )
   .option(
     '-S, --ignoreSources []',
     'List of sources to ignore. String separated by ",". If no specified, all the sources will be diffed',
@@ -54,7 +59,7 @@ program
       'configuration.startingAddresses',
       'configuration.sourceSecurityOption',
       'configuration.permissions',
-      'additionalInfos'
+      'additionalInfos',
     ];
 
     const keysToIgnore = [
@@ -66,33 +71,37 @@ program
       'additionalInfos.salesforceOrg',
       'additionalInfos.salesforceUser',
       'additionalInfos.salesforceOrgName',
-      'crawlingModuleId'
+      'crawlingModuleId',
     ];
 
     const graduateOptions: IGraduateOptions = {
       diffOptions: {
         silent: options.silent,
         includeOnly: includeOnly,
-        keysToIgnore: [...options.keysToIgnore, ...keysToIgnore]
+        keysToIgnore: [...options.keysToIgnore, ...keysToIgnore],
       },
       keyWhitelist: includeOnly,
       keyBlacklist: keysToIgnore,
+      ensureFieldIntegrity: !options.skipFieldIntegrity,
       rebuild: options.rebuild,
       POST: options.methods.indexOf('POST') > -1,
       PUT: options.methods.indexOf('PUT') > -1,
-      DELETE: options.methods.indexOf('DELETE') > -1
+      DELETE: options.methods.indexOf('DELETE') > -1,
     };
 
     const blacklistOptions: IBlacklistObjects = {
-      extensions: _.union(
+      extensions: union(
         ['allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues', 'capturemetadata'],
         options.ignoreExtensions
       ),
-      sources: options.ignoreSources
+      sources: options.ignoreSources,
     };
 
-    const originOrg = new Organization(origin, apiKey[0], blacklistOptions);
-    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], blacklistOptions);
+    const originOrg = new Organization(origin, apiKey[0], { blacklist: blacklistOptions, platformUrl: program.opts()?.platformUrlOrigin });
+    const destinationOrg = new Organization(destination, apiKey[apiKey.length > 1 ? 1 : 0], {
+      blacklist: blacklistOptions,
+      platformUrl: program.opts()?.platformUrlDestination,
+    });
     const controller: SourceController = new SourceController(originOrg, destinationOrg);
 
     controller.graduate(graduateOptions);

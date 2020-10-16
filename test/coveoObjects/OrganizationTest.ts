@@ -5,36 +5,37 @@ import { Field } from '../../src/coveoObjects/Field';
 import { Organization, IBlacklistObjects } from '../../src/coveoObjects/Organization';
 import { Source } from '../../src/coveoObjects/Source';
 import { Dictionary } from '../../src/commons/collections/Dictionary';
+import { TestOrganization } from '../test';
 
 export const OrganizationTest = () => {
   describe('Organization Model', () => {
     it('Should define organization Id and ApiKey', () => {
-      const organization: Organization = new Organization('org1', 'xxx-aaa-123');
+      const organization: Organization = new TestOrganization('org1', 'xxx-aaa-123');
       expect(organization.getId()).to.equal('org1', 'Invalid organization Id');
       expect(organization.getApiKey()).to.equal('xxx-aaa-123', 'Invalid API Key');
     });
 
     describe('Configuration Methods', () => {
       it('Should return the organization configuration', () => {
-        const organization: Organization = new Organization('org1', 'xxx-aaa-123');
+        const organization: Organization = new TestOrganization('org1', 'xxx-aaa-123');
         expect(organization.getConfiguration()).to.eql({
           fields: new Dictionary<Field>(),
           sources: new Dictionary<Source>(),
-          extensions: new Dictionary<Extension>()
+          extensions: new Dictionary<Extension>(),
         });
       });
 
       it('Should return the organization configuration', () => {
-        const organization: Organization = new Organization('org1', 'xxx-aaa-123');
+        const organization: Organization = new TestOrganization('org1', 'xxx-aaa-123');
         expect(organization.getConfiguration()).to.eql({
           fields: new Dictionary<Field>(),
           sources: new Dictionary<Source>(),
-          extensions: new Dictionary<Extension>()
+          extensions: new Dictionary<Extension>(),
         });
       });
 
       it('Should return the organization configuration', () => {
-        const organization: Organization = new Organization('org1', 'xxx-aaa-123');
+        const organization: Organization = new TestOrganization('org1', 'xxx-aaa-123');
         organization.addField(new Field({ name: 'myfield' }));
 
         const fieldDict = new Dictionary<Field>();
@@ -43,19 +44,19 @@ export const OrganizationTest = () => {
         expect(organization.getConfiguration()).to.eql({
           fields: fieldDict,
           sources: new Dictionary<Source>(),
-          extensions: new Dictionary<Extension>()
+          extensions: new Dictionary<Extension>(),
         });
       });
     });
 
     describe('Fields Methods', () => {
       it('Should return the fields dictionary', () => {
-        const organization: Organization = new Organization('rambo1', 'xxx-aaa-123');
+        const organization: Organization = new TestOrganization('rambo1', 'xxx-aaa-123');
         expect(organization.getFields().getCount()).to.equal(0);
       });
 
       it('Should clear all fields from the organization', () => {
-        const organization: Organization = new Organization('rambo1', 'xxx-aaa-123');
+        const organization: Organization = new TestOrganization('rambo1', 'xxx-aaa-123');
         const field: Field = new Field({
           name: 'allmetadatavalues',
           description: 'Place to put content for metadata discovery.',
@@ -75,7 +76,7 @@ export const OrganizationTest = () => {
           useCacheForNumericQuery: false,
           useCacheForComputedFacet: false,
           dateFormat: '',
-          system: false
+          system: false,
         });
         organization.addField(field);
         expect(organization.getFields().getCount()).to.equal(1);
@@ -84,7 +85,7 @@ export const OrganizationTest = () => {
       });
 
       it('Should not alter the dictionary from getter', () => {
-        const organization: Organization = new Organization('rambo2', 'xxx-aaa-123');
+        const organization: Organization = new TestOrganization('rambo2', 'xxx-aaa-123');
         const field: Field = new Field({
           name: 'allmetadatavalues',
           description: 'Place to put content for metadata discovery.',
@@ -104,7 +105,7 @@ export const OrganizationTest = () => {
           useCacheForNumericQuery: false,
           useCacheForComputedFacet: false,
           dateFormat: '',
-          system: false
+          system: false,
         });
 
         // Getters methods in Organization return a copy.
@@ -112,10 +113,12 @@ export const OrganizationTest = () => {
         expect(organization.getFields().getCount()).to.equal(0);
         organization.getFields().clear();
         expect(organization.getFields().getCount()).to.equal(0);
+        expect(organization.isBlackListAccessControl()).to.be.false;
+        expect(organization.isWhiteListAccessControl()).to.be.false;
       });
 
       it('Should add a new field to the organization', () => {
-        const organization: Organization = new Organization('rambo3', 'xxx-aaa-123');
+        const organization: Organization = new TestOrganization('rambo3', 'xxx-aaa-123');
         const field: Field = new Field({
           name: 'allmetadatavalues',
           description: 'Place to put content for metadata discovery.',
@@ -135,15 +138,17 @@ export const OrganizationTest = () => {
           useCacheForNumericQuery: false,
           useCacheForComputedFacet: false,
           dateFormat: '',
-          system: false
+          system: false,
         });
         organization.addField(field);
         expect(organization.getFields().getCount()).to.equal(1);
+        expect(organization.isBlackListAccessControl()).to.be.false;
+        expect(organization.isWhiteListAccessControl()).to.be.false;
       });
 
       it('Should not add field that has been blacklisted', () => {
         const blacklist = { fields: ['allmetadatavalues'] };
-        const organization: Organization = new Organization('rambo3', 'xxx-aaa-123', blacklist);
+        const organization: Organization = new TestOrganization('rambo3', 'xxx-aaa-123', { blacklist });
         const field: Field = new Field({
           name: 'allmetadatavalues',
           description: 'Place to put content for metadata discovery.',
@@ -163,44 +168,108 @@ export const OrganizationTest = () => {
           useCacheForNumericQuery: false,
           useCacheForComputedFacet: false,
           dateFormat: '',
-          system: false
+          system: false,
         });
         organization.addField(field);
         expect(organization.getFields().getCount()).to.equal(0);
+        expect(organization.isBlackListAccessControl()).to.be.true;
+        expect(organization.isWhiteListAccessControl()).to.be.false;
+      });
+
+      it('Should not add field if not whitelisted whitelisted', () => {
+        const whitelist = { fields: ['dummyfield'] };
+        const organization: Organization = new TestOrganization('rambo3', 'xxx-aaa-123', { whitelist: whitelist });
+        const field: Field = new Field({
+          name: 'allmetadatavalues',
+          description: 'Place to put content for metadata discovery.',
+          type: 'STRING',
+          includeInQuery: true,
+        });
+        const field2: Field = new Field({
+          name: 'testfield',
+          description: 'Place to put content for metadata discovery.',
+          type: 'STRING',
+          includeInQuery: true,
+        });
+        organization.addField(field);
+        organization.addField(field2);
+
+        expect(organization.getFields().getCount()).to.equal(0);
+        expect(organization.isWhiteListAccessControl()).to.be.true;
+        expect(organization.isBlackListAccessControl()).to.be.false;
+      });
+
+      it('Should not allow using both blacklist and whitelist strategies', () => {
+        const list = { fields: ['dummyfield'] };
+        assert.throws(() => new TestOrganization('rambo3', 'xxx-aaa-123', { whitelist: list, blacklist: list }));
+      });
+
+      it('Should not allow using both blacklist and whitelist strategies 2', () => {
+        const list = { fields: ['dummyfield'] };
+        assert.throws(() => new TestOrganization('rambo3', 'xxx-aaa-123', { whitelist: {}, blacklist: list }));
+        assert.doesNotThrow(() => new TestOrganization('rambo3', 'xxx-aaa-123', { whitelist: undefined, blacklist: list }));
+        assert.doesNotThrow(() => new TestOrganization('rambo3', 'xxx-aaa-123', { whitelist: list, blacklist: undefined }));
+        assert.doesNotThrow(() => new TestOrganization('rambo3', 'xxx-aaa-123', { whitelist: undefined, blacklist: undefined }));
+      });
+
+      it('Should only add field that has been whitelisted', () => {
+        const whitelist = { fields: ['testfield'] };
+        const organization: Organization = new TestOrganization('rambo3', 'xxx-aaa-123', { whitelist: whitelist });
+        const field: Field = new Field({
+          name: 'allmetadatavalues',
+          description: 'Place to put content for metadata discovery.',
+          type: 'STRING',
+          includeInQuery: true,
+        });
+        const field2: Field = new Field({
+          name: 'testfield',
+          description: 'Place to put content for metadata discovery.',
+          type: 'STRING',
+          includeInQuery: true,
+        });
+        organization.addField(field);
+        organization.addField(field2);
+
+        expect(organization.getFields().getCount()).to.equal(1);
+        expect(organization.isWhiteListAccessControl()).to.be.true;
+        expect(organization.isBlackListAccessControl()).to.be.false;
+        expect(organization.getFields().values()[0].getName()).to.equal('testfield');
       });
 
       it('Should add multiple fields in the Organization', () => {
         const blacklist = { fields: ['fieldxxx'] };
-        const organization: Organization = new Organization('theorg', 'xxx-xxx', blacklist);
+        const organization: Organization = new TestOrganization('theorg', 'xxx-xxx', { blacklist });
 
         expect(organization.getFields().getCount()).to.be.eql(0);
         organization.addFieldList([
           {
             name: 'field1',
             description: 'Place to put content for metadata discovery.',
-            type: 'STRING'
+            type: 'STRING',
           },
           {
             name: 'field2',
             description: 'Place to put content for metadata discovery.',
-            type: 'STRING'
+            type: 'STRING',
           },
           {
             name: 'fieldxxx',
             description: 'Place to put content for metadata discovery.',
-            type: 'STRING'
+            type: 'STRING',
           },
           {
             name: 'field3',
             description: 'Place to put content for metadata discovery.',
-            type: 'STRING'
-          }
+            type: 'STRING',
+          },
         ]);
         expect(organization.getFields().getCount()).to.be.eql(3);
+        expect(organization.isBlackListAccessControl()).to.be.true;
+        expect(organization.isWhiteListAccessControl()).to.be.false;
       });
 
       it('Should throw an error when adding invalid fields to the Organization', () => {
-        const organization: Organization = new Organization('theorg', 'xxx-xxx');
+        const organization: Organization = new TestOrganization('theorg', 'xxx-xxx');
 
         expect(organization.getFields().getCount()).to.be.eql(0);
 
@@ -210,13 +279,13 @@ export const OrganizationTest = () => {
               {
                 invalidkey: 'invalidfield1',
                 description: 'Place to put content for metadata discovery.',
-                type: 'STRING'
+                type: 'STRING',
               },
               {
                 invalidkey: 'invalidfield2',
                 description: 'Place to put content for metadata discovery.',
-                type: 'STRING'
-              }
+                type: 'STRING',
+              },
             ]),
           'Missing property "name" from fieldModel'
         );
@@ -225,7 +294,7 @@ export const OrganizationTest = () => {
 
     describe('Sources Methods', () => {
       it('Should get the sources of the organisation', () => {
-        const organization: Organization = new Organization('rambo18', 'xxx-aaa-123');
+        const organization: Organization = new TestOrganization('rambo18', 'xxx-aaa-123');
         const sources = organization.getSources();
         expect(sources.values()).to.eql([]);
       });
@@ -233,12 +302,12 @@ export const OrganizationTest = () => {
 
     describe('Extensions Methods', () => {
       it('Should return the extensions dictionary', () => {
-        const organization: Organization = new Organization('rainbow', 'xxx-aaa-123');
+        const organization: Organization = new TestOrganization('rainbow', 'xxx-aaa-123');
         expect(organization.getFields().getCount()).to.equal(0);
       });
 
       it('Should not alter the dictionary from getter', () => {
-        const organization: Organization = new Organization('flower', 'xxx-aaa-123');
+        const organization: Organization = new TestOrganization('flower', 'xxx-aaa-123');
         const extension: Extension = new Extension({
           content: 'random content',
           createdDate: 1511812764000,
@@ -252,20 +321,20 @@ export const OrganizationTest = () => {
           usedBy: [],
           status: {
             durationHealth: {
-              healthIndicator: 'UNKNOWN'
+              healthIndicator: 'UNKNOWN',
             },
             dailyStatistics: {
               averageDurationInSeconds: 0,
               numberOfErrors: 0,
               numberOfExecutions: 0,
               numberOfSkips: 0,
-              numberOfTimeouts: 0
+              numberOfTimeouts: 0,
             },
             disabledStatus: {},
             timeoutHealth: {
-              healthIndicator: 'UNKNOWN'
-            }
-          }
+              healthIndicator: 'UNKNOWN',
+            },
+          },
         });
         organization.getExtensions().add(extension.getName(), extension);
         expect(organization.getExtensions().getCount()).to.equal(0);
@@ -274,7 +343,7 @@ export const OrganizationTest = () => {
       });
 
       it('Should clear all extensions from the organization', () => {
-        const organization: Organization = new Organization('rambo1', 'xxx-aaa-123');
+        const organization: Organization = new TestOrganization('rambo1', 'xxx-aaa-123');
 
         const source: Source = new Source({
           id: 'r6ud7iksjhafgjpiokjh-sdfgr3e',
@@ -288,8 +357,8 @@ export const OrganizationTest = () => {
             {
               expression: '*',
               patternType: 'Wildcard',
-              allowed: true
-            }
+              allowed: true,
+            },
           ],
           permissions: [
             {
@@ -299,13 +368,13 @@ export const OrganizationTest = () => {
                     {
                       identityType: 'Group',
                       securityProvider: 'Email Security Provider',
-                      identity: '*@*'
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
+                      identity: '*@*',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
         });
         organization.addSource(source);
         expect(organization.getSources().getCount()).to.equal(1);
@@ -314,10 +383,12 @@ export const OrganizationTest = () => {
       });
 
       it('Should return the source, fields, and extensions that have been blacklisted', () => {
-        const organization: Organization = new Organization('rambo1', 'xxx-aaa-123', {
-          fields: ['mycustomfield'],
-          sources: ['My Salesforce Source', 'YOUTUBE - source'],
-          pages: ['test-page']
+        const organization: Organization = new TestOrganization('rambo1', 'xxx-aaa-123', {
+          blacklist: {
+            fields: ['mycustomfield'],
+            sources: ['My Salesforce Source', 'YOUTUBE - source'],
+            pages: ['test-page'],
+          },
         });
         expect(organization.getfieldBlacklist()).to.eql(['mycustomfield']);
         expect(organization.getSourceBlacklist()).to.eql(['mysalesforcesource', 'youtube-source']);
@@ -325,8 +396,20 @@ export const OrganizationTest = () => {
         expect(organization.getPageBlacklist()).to.eql(['test-page']);
       });
 
+      it('Should return the organization platform URL', () => {
+        const organization: Organization = new TestOrganization('rambo1', 'xxx-aaa-123', {
+          platformUrl: 'https://platform-au.cloud.coveo.com',
+        });
+        expect(organization.getPlatformUrl()).to.eql('https://platform-au.cloud.coveo.com');
+      });
+
+      it('Should return the organization default platform URL', () => {
+        const organization: Organization = new TestOrganization('rambo1', 'xxx-aaa-123');
+        expect(organization.getPlatformUrl()).to.eql('https://platform.cloud.coveo.com');
+      });
+
       it('Should add and clear all sources from the organization', () => {
-        const organization: Organization = new Organization('rambo1', 'xxx-aaa-123');
+        const organization: Organization = new TestOrganization('rambo1', 'xxx-aaa-123');
         const extension: Extension = new Extension({
           content: 'random content',
           createdDate: 1511812764000,
@@ -340,20 +423,20 @@ export const OrganizationTest = () => {
           usedBy: [],
           status: {
             durationHealth: {
-              healthIndicator: 'UNKNOWN'
+              healthIndicator: 'UNKNOWN',
             },
             dailyStatistics: {
               averageDurationInSeconds: 0,
               numberOfErrors: 0,
               numberOfExecutions: 0,
               numberOfSkips: 0,
-              numberOfTimeouts: 0
+              numberOfTimeouts: 0,
             },
             disabledStatus: {},
             timeoutHealth: {
-              healthIndicator: 'UNKNOWN'
-            }
-          }
+              healthIndicator: 'UNKNOWN',
+            },
+          },
         });
         organization.addExtension(extension);
         expect(organization.getExtensions().getCount()).to.equal(1);
@@ -362,7 +445,7 @@ export const OrganizationTest = () => {
       });
 
       it('Should add 2 extensions to the organization', () => {
-        const organization: Organization = new Organization('flower', 'xxx-aaa-123');
+        const organization: Organization = new TestOrganization('flower', 'xxx-aaa-123');
         const extension1 = {
           content: 'random content',
           createdDate: 1511812764000,
@@ -376,20 +459,20 @@ export const OrganizationTest = () => {
           usedBy: [],
           status: {
             durationHealth: {
-              healthIndicator: 'UNKNOWN'
+              healthIndicator: 'UNKNOWN',
             },
             dailyStatistics: {
               averageDurationInSeconds: 0,
               numberOfErrors: 0,
               numberOfExecutions: 0,
               numberOfSkips: 0,
-              numberOfTimeouts: 0
+              numberOfTimeouts: 0,
             },
             disabledStatus: {},
             timeoutHealth: {
-              healthIndicator: 'UNKNOWN'
-            }
-          }
+              healthIndicator: 'UNKNOWN',
+            },
+          },
         };
         const extension2 = {
           content:
@@ -405,20 +488,20 @@ export const OrganizationTest = () => {
           usedBy: [],
           status: {
             durationHealth: {
-              healthIndicator: 'UNKNOWN'
+              healthIndicator: 'UNKNOWN',
             },
             dailyStatistics: {
               averageDurationInSeconds: 0,
               numberOfErrors: 0,
               numberOfExecutions: 0,
               numberOfSkips: 0,
-              numberOfTimeouts: 0
+              numberOfTimeouts: 0,
             },
             disabledStatus: {},
             timeoutHealth: {
-              healthIndicator: 'UNKNOWN'
-            }
-          }
+              healthIndicator: 'UNKNOWN',
+            },
+          },
         };
         organization.addMultipleExtensions([extension1, extension2]);
         expect(organization.getExtensions().getCount()).to.equal(2);
@@ -426,7 +509,7 @@ export const OrganizationTest = () => {
 
       it('Should not add an extensions that has been blacklisted', () => {
         const blacklist: IBlacklistObjects = { extensions: ['allmetadatavalues'] };
-        const organization: Organization = new Organization('flower', 'xxx-aaa-123', blacklist);
+        const organization: Organization = new TestOrganization('flower', 'xxx-aaa-123', { blacklist });
         const extension1 = {
           content: 'random content',
           createdDate: 1511812764000,
@@ -440,27 +523,27 @@ export const OrganizationTest = () => {
           usedBy: [],
           status: {
             durationHealth: {
-              healthIndicator: 'UNKNOWN'
+              healthIndicator: 'UNKNOWN',
             },
             dailyStatistics: {
               averageDurationInSeconds: 0,
               numberOfErrors: 0,
               numberOfExecutions: 0,
               numberOfSkips: 0,
-              numberOfTimeouts: 0
+              numberOfTimeouts: 0,
             },
             disabledStatus: {},
             timeoutHealth: {
-              healthIndicator: 'UNKNOWN'
-            }
-          }
+              healthIndicator: 'UNKNOWN',
+            },
+          },
         };
         organization.addMultipleExtensions([extension1]);
         expect(organization.getExtensions().getCount()).to.equal(0);
       });
 
       it('Should clone an extension with all its fields, extensions and sources', () => {
-        const organization: Organization = new Organization('org321', 'xxx-aaa-123');
+        const organization: Organization = new TestOrganization('org321', 'xxx-aaa-123');
         const extension: Extension = new Extension({
           content: 'random content',
           createdDate: 1511812764000,
@@ -470,7 +553,7 @@ export const OrganizationTest = () => {
           lastModified: 1511812764000,
           name: 'Reject a document.',
           requiredDataStreams: [],
-          versionId: 'a6LyFxn91XW5IcgNMTKOabXcJWp05e7i'
+          versionId: 'a6LyFxn91XW5IcgNMTKOabXcJWp05e7i',
         });
 
         const source: Source = new Source({
@@ -480,13 +563,28 @@ export const OrganizationTest = () => {
           sourceSecurityOption: 'Specified',
           postConversionExtensions: [],
           preConversionExtensions: [],
-          mappings: [],
+          mappings: [
+            {
+              id: 'q6q72sozl73yjobkrl64cusemq',
+              kind: 'COMMON',
+              extractionMethod: 'METADATA',
+              fieldName: 'field1',
+              content: '%[dsadsa]',
+            },
+            {
+              id: 'dsaf3fdsfds',
+              kind: 'COMMON',
+              extractionMethod: 'METADATA',
+              fieldName: 'field2',
+              content: '%[cccc]',
+            },
+          ],
           addressPatterns: [
             {
               expression: '*',
               patternType: 'Wildcard',
-              allowed: true
-            }
+              allowed: true,
+            },
           ],
           permissions: [
             {
@@ -496,30 +594,30 @@ export const OrganizationTest = () => {
                     {
                       identityType: 'Group',
                       securityProvider: 'Email Security Provider',
-                      identity: '*@*'
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
+                      identity: '*@*',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
         });
         const fields = [
           {
             name: 'field1',
             description: 'Place to put content for metadata discovery.',
-            type: 'STRING'
+            type: 'STRING',
           },
           {
             name: 'field2',
             description: 'Place to put content for metadata discovery.',
-            type: 'STRING'
+            type: 'STRING',
           },
           {
             name: 'field3',
             description: 'Place to put content for metadata discovery.',
-            type: 'STRING'
-          }
+            type: 'STRING',
+          },
         ];
         organization.addFieldList(fields);
         organization.addSource(source);
@@ -533,6 +631,112 @@ export const OrganizationTest = () => {
         expect(copy.getFields().getCount()).to.equal(3);
         expect(copy.getExtensions().getCount()).to.equal(1);
         expect(copy.getSources().getCount()).to.equal(1);
+        // Preserving source integrity
+        expect(copy.getMissingFieldsBasedOnSourceMapping(copy.getSources().values()[0])).to.eql([]);
+      });
+
+      it('Should detect source integrity breach (missing fields)', () => {
+        const organization: Organization = new TestOrganization('org321', 'xxx-aaa-123');
+
+        const source: Source = new Source({
+          id: 'r6ud7iksjhafgjpiokjh-sdfgr3e',
+          name: 'testSource',
+          sourceType: 'SITEMAP',
+          sourceSecurityOption: 'Specified',
+          postConversionExtensions: [],
+          preConversionExtensions: [],
+          mappings: [
+            {
+              id: 'q6q72sozl73yjobkrl64cusemq',
+              kind: 'COMMON',
+              extractionMethod: 'METADATA',
+              fieldName: 'field1',
+              content: '%[dsadsa]',
+            },
+            {
+              id: 'dsaf3fdsfds',
+              kind: 'COMMON',
+              extractionMethod: 'METADATA',
+              fieldName: 'field2',
+              content: '%[cccc]',
+            },
+            {
+              id: 'vcxvcxvcx',
+              kind: 'COMMON',
+              extractionMethod: 'METADATA',
+              fieldName: 'lastrebuilddate',
+              content: 'Juste pour toi mon eric',
+            },
+            {
+              id: 'vcxvcxvcx2',
+              kind: 'COMMON',
+              extractionMethod: 'METADATA',
+              fieldName: 'lastrebuilddate2',
+              content: 'Juste pour toi mon eric',
+            },
+            {
+              id: 'vcxvcxvcx3',
+              kind: 'COMMON',
+              extractionMethod: 'METADATA',
+              fieldName: 'lastrebuilddate3',
+              content: 'Juste pour toi mon eric',
+            },
+          ],
+          addressPatterns: [
+            {
+              expression: '*',
+              patternType: 'Wildcard',
+              allowed: true,
+            },
+          ],
+          permissions: [
+            {
+              permissionSets: [
+                {
+                  allowedPermissions: [
+                    {
+                      identityType: 'Group',
+                      securityProvider: 'Email Security Provider',
+                      identity: '*@*',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
+        const fields = [
+          {
+            name: 'field1',
+            description: 'Place to put content for metadata discovery.',
+            type: 'STRING',
+          },
+          {
+            name: 'field2',
+            description: 'Place to put content for metadata discovery.',
+            type: 'STRING',
+          },
+          {
+            name: 'field3',
+            description: 'Place to put content for metadata discovery.',
+            type: 'STRING',
+          },
+        ];
+        organization.addFieldList(fields);
+        organization.addSource(source);
+
+        const copy = organization.clone();
+        // clear orginial organization and make sure it does not affect the copy
+        organization.clearAll();
+        // expect(copy.getId()).to.equal('org321');
+        // expect(copy.getApiKey()).to.equal('xxx-aaa-123');
+        expect(copy.getFields().getCount()).to.equal(3);
+        expect(copy.getSources().getCount()).to.equal(1);
+        expect(copy.getMissingFieldsBasedOnSourceMapping(copy.getSources().values()[0])).to.eql([
+          'lastrebuilddate',
+          'lastrebuilddate2',
+          'lastrebuilddate3',
+        ]);
       });
     });
   });

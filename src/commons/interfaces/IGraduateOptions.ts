@@ -19,4 +19,8 @@ export interface IGraduateOptions extends IHTTPGraduateOptions {
    * Specify which key to strip before graduating the Object.
    */
   keyBlacklist?: string[];
+  /**
+   * If set to true, the graduation will fail if some source dependencies (fields, extensions) are missings
+   */
+  ensureFieldIntegrity?: boolean;
 }

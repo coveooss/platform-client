@@ -18,7 +18,7 @@ program
   .action((origin: string, apiKey: string, outputFolder: string, options: any) => {
     CommanderUtils.setLogger(options, 'download-fields');
 
-    const organization = new Organization(origin, apiKey);
+    const organization = new Organization(origin, apiKey, { platformUrl: program.opts()?.platformUrlOrigin });
     const controller: FieldController = new FieldController(organization);
     const downloadOptions: IDownloadOptions = { outputFolder: outputFolder };
 

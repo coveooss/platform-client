@@ -1,4 +1,4 @@
-import * as _ from 'underscore';
+import { isNumber, isString } from 'underscore';
 import { Utils } from '../utils/Utils';
 
 /* istanbul ignore next */
@@ -46,7 +46,7 @@ export class Assert {
   }
 
   static isString(obj: any, message: string = 'Value should be a string.') {
-    Assert.check(_.isString(obj), 'Value should be a string.');
+    Assert.check(isString(obj), 'Value should be a string.');
   }
 
   static stringStartsWith(str: string, start: string) {
@@ -60,7 +60,7 @@ export class Assert {
   }
 
   static isNumber(obj: any, message: string = 'Value should be a number.') {
-    Assert.check(_.isNumber(obj), message);
+    Assert.check(isNumber(obj), message);
   }
 
   static isLargerThan(expected: number, actual: number) {

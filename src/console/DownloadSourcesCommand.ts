@@ -18,7 +18,7 @@ program
   .action((origin: string, apiKey: string, outputFolder: string, options: any) => {
     CommanderUtils.setLogger(options, 'download-sources');
 
-    const organization = new Organization(origin, apiKey);
+    const organization = new Organization(origin, apiKey, { platformUrl: program.opts()?.platformUrlOrigin });
     const controller: SourceController = new SourceController(organization);
     const downloadOptions: IDownloadOptions = { outputFolder: outputFolder };
 

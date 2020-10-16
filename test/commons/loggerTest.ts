@@ -1,7 +1,7 @@
 // tslint:disable:no-magic-numbers
 import { expect } from 'chai';
 import * as fs from 'fs-extra';
-import * as _ from 'underscore';
+import { compact } from 'underscore';
 import { Logger, LoggerSingleton } from '../../src/commons/logger';
 
 export const LoggerTest = () => {
@@ -60,11 +60,11 @@ export const LoggerTest = () => {
     });
 
     describe('Should sew Action Method', () => {
-      it('Should append a new action to the log file', (done: MochaDone) => {
+      it('Should append a new action to the log file', (done: Mocha.Done) => {
         Logger.newAction('Test Action')
           .then(() => {
             const content = `${fs.readFileSync(TEST_FILE)}`;
-            const contentArray = _.compact(content.split('\n'));
+            const contentArray = compact(content.split('\n'));
             expect(contentArray[0]).to.match(/\#*/);
             expect(contentArray[1]).to.equal('Test Action');
             expect(contentArray[3]).to.match(/\#*/);
