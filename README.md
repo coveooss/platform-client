@@ -15,6 +15,7 @@
     - [Interactive tool](#interactive-tool)
     - [Commands](#commands)
       - [Command parameters](#command-parameters)
+      - [API Privileges table](#api-privileges-table)
       - [Coveo Cloud V2 Platform environment](#coveo-cloud-v2-platform-environment)
         - [Environments](#environments)
         - [Regions](#regions)
@@ -87,7 +88,7 @@ platformclient <command> [options] <origin> <destination> <apiKey...>
 
  However, the recommended approach is to use 2 API keys that you have first [created on the Coveo Cloud V2 Platform](https://docs.coveo.com/en/1718/cloud-v2-administrators/api-keys---page). If you are using this approach, make sure to provide the appropriate privileges to the API key based on the operation you want to execute (refer to the table below).
 
- **API Privileges table**
+ #### API Privileges table
 
  | **Command**          | Access Level                                   |
  | :------------------- | :--------------------------------------------- |

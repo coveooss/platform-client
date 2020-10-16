@@ -270,6 +270,18 @@ export abstract class BaseController {
       `${error.orgId ? 'Error occurred for ' + Colors.organization(error.orgId) + ': ' : ''}${errorMessage}`,
       error.message ? Colors.error(error.message) : ''
     );
+
+    try {
+      // Provide additional info if possible
+      const parsedError = JSON.parse((error.message || '').replace('\n', ''));
+
+      if (parsedError && parsedError.errorCode === 'ACCESS_DENIED') {
+        Logger.warn('Make sure to give the necessary privileges to your API key');
+        Logger.warn('Consult privileges table: https://github.com/coveooss/platform-client#api-privileges-table');
+      }
+    } catch (error) {
+      // No additional info to provide
+    }
   }
 
   protected getAuthorizedOperations<T, R>(
