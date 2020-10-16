@@ -90,20 +90,17 @@ export abstract class BaseController {
           .then(() => {
             Logger.info('Download operation completed');
             Logger.info(`File saved as ${Colors.filename(filename)}`);
-            Logger.stopSpinner();
-            process.exit();
+            this.stopProcess();
           })
           .catch((err: any) => {
             Logger.error('Unable to save download file', err);
-            Logger.stopSpinner();
-            process.exit();
+            this.stopProcess();
           });
       })
       .catch((err: IGenericError) => {
         // TODO: review this error message
         Logger.error(StaticErrorMessage.UNABLE_TO_DOWNLOAD, err);
-        Logger.stopSpinner();
-        process.exit();
+        this.stopProcess();
       });
   }
 
@@ -127,6 +124,10 @@ export abstract class BaseController {
     // Make sure the user selects at least one HTTP method
     inquirer.prompt(questions).then((res: inquirer.Answers) => {
       if (res.confirm) {
+        console.log();
+        console.log('Graduation Report');
+        console.log(`${Colors.warn('─────────────────')}`);
+
         Logger.startSpinner(`Performing ${this.objectName} Graduation`);
 
         this.runDiffSequence(options.diffOptions)
@@ -134,26 +135,31 @@ export abstract class BaseController {
             this.runGraduateSequence(diffResultArray, options)
               .then(() => {
                 Logger.info('Graduation operation completed');
-                Logger.stopSpinner();
+                this.stopProcess();
               })
               .catch((err: any) => {
-                Logger.error(StaticErrorMessage.UNABLE_TO_GRADUATE, err);
-                Logger.stopSpinner();
+                Logger.logOnly(StaticErrorMessage.SOMETHING_WENT_WRONG_GRADUATION, err);
+                Logger.error(StaticErrorMessage.SOMETHING_WENT_WRONG_GRADUATION);
+                this.stopProcess();
               });
           })
           .catch((err: any) => {
             Logger.logOnly(StaticErrorMessage.UNABLE_TO_GRADUATE, err);
             Logger.error(StaticErrorMessage.UNABLE_TO_GRADUATE, 'Consult the logs for more information');
-            Logger.stopSpinner();
+            this.stopProcess();
           });
       } else {
         Logger.info(`No ${this.objectName} were graduated`);
-        Logger.stopSpinner();
+        this.stopProcess();
       }
     });
   }
 
   diff(opt?: IDiffOptions) {
+    console.log();
+    console.log('Diff Report');
+    console.log(`${Colors.warn('───────────')}`);
+
     const options = extend(BaseController.DEFAULT_DIFF_OPTIONS, opt) as IDiffOptions;
 
     Logger.startSpinner('Diff in progress...');
@@ -167,7 +173,7 @@ export abstract class BaseController {
 
     this.runDiffSequence(options)
       .then((diffResultArray: DiffResultArray<BaseCoveoObject>) => {
-        Logger.info(`objectName: ${this.objectName}`);
+        Logger.verbose(`Diffing ${this.objectName}`);
         if (this.objectName === 'sources' || this.objectName === 'pages') {
           Logger.info('Preparing HTML diff file');
 
@@ -192,12 +198,11 @@ export abstract class BaseController {
               if (!options.silent) {
                 opn(`${this.objectName}Diff.html`);
               }
-              process.exit();
+              this.stopProcess();
             })
             .catch((error: any) => {
               Logger.error('Unable to create html file', error);
-              Logger.stopSpinner();
-              process.exit();
+              this.stopProcess();
             });
         } else {
           writeJSON(`${this.objectName}Diff.json`, this.getCleanDiffVersion(diffResultArray, options), { spaces: 2 })
@@ -209,12 +214,11 @@ export abstract class BaseController {
               if (!options.silent) {
                 opn(`${this.objectName}Diff.json`);
               }
-              process.exit();
+              this.stopProcess();
             })
             .catch((err: any) => {
               Logger.error('Unable to save setting file', err);
-              Logger.stopSpinner();
-              process.exit();
+              this.stopProcess();
             });
         }
       })
@@ -222,8 +226,7 @@ export abstract class BaseController {
         // FIXME: logonly does not seem to log
         Logger.logOnly(StaticErrorMessage.UNABLE_TO_DIFF, err);
         Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, 'Consult the logs for more information');
-        Logger.stopSpinner();
-        process.exit();
+        this.stopProcess();
       });
   }
 
@@ -258,10 +261,9 @@ export abstract class BaseController {
     return str.replace(regex, subst);
   }
 
-  protected stopProcess(message: string, err?: any) {
-    Logger.error(message, err);
+  protected stopProcess() {
     Logger.stopSpinner();
-    process.exit();
+    process.exit(1);
   }
 
   protected errorHandler(error: IGenericError, errorMessage: string) {

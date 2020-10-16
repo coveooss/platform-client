@@ -10,6 +10,7 @@ export class StaticErrorMessage {
   static UNABLE_TO_DIFF: string = 'Diff operation failed';
   static UNABLE_TO_DOWNLOAD: string = 'Download operation failed';
   static UNABLE_TO_GRADUATE: string = 'Graduation operation failed';
+  static SOMETHING_WENT_WRONG_GRADUATION: string = 'An error occurred during the graduation';
 
   // Rest
   static FAILED_API_REQUEST: string = 'Unable to perform API request';
