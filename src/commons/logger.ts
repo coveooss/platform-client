@@ -104,10 +104,10 @@ export class LoggerSingleton {
 
   addToLogFile(level: string, message: string, ...meta: any[]) {
     const today = new Date().toLocaleString();
-    FileUtils.appendToFile(this.filename, [today, level, stripAnsi(message), '\n'].join(' | '));
+    FileUtils.appendFileSync(this.filename, [today, level, stripAnsi(message), '\n'].join(' | '));
     each(meta, (m: any) => {
       if (!Utils.isEmptyString(m.toString())) {
-        FileUtils.appendToFile(this.filename, [today, level, stripAnsi(m).toString(), '\n'].join(' | '));
+        FileUtils.appendFileSync(this.filename, [today, level, stripAnsi(m.toString ? m.toString() : m), '\n'].join(' | '));
       }
     });
   }

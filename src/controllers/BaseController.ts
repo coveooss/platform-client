@@ -223,7 +223,6 @@ export abstract class BaseController {
         }
       })
       .catch((err: any) => {
-        // FIXME: logonly does not seem to log
         Logger.logOnly(StaticErrorMessage.UNABLE_TO_DIFF, err);
         Logger.error(StaticErrorMessage.UNABLE_TO_DIFF, 'Consult the logs for more information');
         this.stopProcess();
