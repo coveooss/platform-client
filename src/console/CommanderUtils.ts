@@ -8,9 +8,13 @@ export class CommanderUtils {
   }
 
   static setLogger(options: any, command: string) {
-    Logger.setLogLevel(options?.logLevel);
-    Logger.setFilename(options?.output);
-    Logger.newAction(command);
+    try {
+      Logger.setLogLevel(options?.logLevel);
+      Logger.setFilename(options?.output);
+      Logger.newAction(command);
+    } catch (error) {
+      // console.error('Something went wrong with the logger', error.message ? `: ${error.message}` : '');
+    }
   }
 
   static async getAccessTokenFromLogingPopup(platformUrlOrigin: string): Promise<string> {

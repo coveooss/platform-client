@@ -141,9 +141,22 @@ export class SourceController extends BaseController {
     // TODO: to implement
   }
 
-  rebuildSource(sourceName: string) {
-    return this.getSourceIdWithName(sourceName).then((sourceId: string) => {
-      return SourceAPI.rebuildSource(this.organization1, sourceId);
+  rebuildSource(sourceName: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.getSourceIdWithName(sourceName)
+        .then((sourceId: string) => {
+          SourceAPI.rebuildSource(this.organization1, sourceId)
+            .then((response) => {
+              Logger.verbose('rebuild complete', response);
+              resolve();
+            })
+            .catch((err) => {
+              reject(err);
+            });
+        })
+        .catch((err) => {
+          reject(err);
+        });
     });
   }
 
@@ -154,16 +167,12 @@ export class SourceController extends BaseController {
         .then((response: RequestResponse) => {
           const source: any = findWhere(response.body, { name: sourceName });
           if (source === undefined || source.id === undefined) {
-            reject({ orgId: this.organization1.getId(), message: StaticErrorMessage.NO_SOURCE_FOUND });
+            const error = { orgId: this.organization1.getId(), message: `No source with the name "${sourceName}" was found` };
+            this.errorHandler(error as IGenericError, StaticErrorMessage.NO_SOURCE_FOUND);
+            reject(error);
+          } else {
+            resolve(source.id);
           }
-
-          resolve(source.id);
-
-          const sourceId = this.organization1
-            .getSources() // Loading all sources
-            .getItem(sourceName) // Fetching source object by name
-            .getId(); // Get source ID
-          resolve(sourceId);
         })
         .catch((err) => {
           this.errorHandler(err, StaticErrorMessage.UNABLE_TO_GET_SOURCE_NAME);

@@ -5,11 +5,13 @@ import { CommanderUtils } from './CommanderUtils';
 import { Organization } from '../coveoObjects/Organization';
 import { SourceController } from '../controllers/SourceController';
 import { InteractiveQuestion } from './InteractiveQuestion';
+import { StaticErrorMessage } from '../commons/errors';
 
 program
-  .command('rebuild-sources <origin> <apiKey>')
+  .command('rebuild-sources <origin> [apiKey]')
   .description('Rebuild sources within an organization.')
   .option('-s, --sources []', 'List of sources to rebuild. String separated by ",".', CommanderUtils.list)
+  .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
   .option(
     '-l, --logLevel <level>',
     'Possible values are: insane, verbose, info, error, nothing',
@@ -22,10 +24,13 @@ program
     console.log('  $ platformclient rebuild-sources --help');
     console.log('  $ platformclient rebuild-sources devOrg apiKey "source A,source B"');
   })
-  .action((origin: string, apiKey: string, options: any) => {
-    // CommanderUtils.setLogger(options, 'rebuild-sources');
+  .action(async (origin: string, apiKey: string, options: any) => {
+    CommanderUtils.setLogger(options, 'rebuild-sources');
+    if (!apiKey) {
+      apiKey = await CommanderUtils.getAccessTokenFromLogingPopup(program.opts()?.platformUrlOrigin);
+    }
 
-    const organization = new Organization(origin, apiKey);
+    const organization = new Organization(origin, apiKey, { platformUrl: program.opts()?.platformUrlOrigin });
     const sourceController = new SourceController(organization);
 
     if (options.sources && options.sources.length > 0) {
@@ -42,18 +47,13 @@ program
       inquirer.prompt(questions).then((res: inquirer.Answers) => {
         if (res.confirm) {
           Logger.startSpinner(`Rebuilding source${options.sources.length > 1 ? 's' : ''}`);
-          const massRebuild = Promise.all(
-            options.sources.map((sourceName: string) => {
-              sourceController.rebuildSource(sourceName);
-            })
-          );
-          massRebuild
-            .then(() => {
-              Logger.info('Rebuild operation completed');
+          Promise.all(options.sources.map((sourceName: string) => sourceController.rebuildSource(sourceName)))
+            .then((response) => {
+              Logger.info(`Rebuild operation${response.length > 0 ? 's' : ''} has been added to the queue`);
               Logger.stopSpinner();
             })
             .catch((err: any) => {
-              Logger.error(err);
+              Logger.error(StaticErrorMessage.UNABLE_TO_REBUILD_SOURCE);
               Logger.stopSpinner();
             });
         } else {
