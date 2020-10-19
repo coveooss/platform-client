@@ -4,6 +4,7 @@ import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { CommanderUtils } from './CommanderUtils';
 import { IOrganizationOptions, Organization } from '../coveoObjects/Organization';
 import { FieldController } from '../controllers/FieldController';
+import { isArray } from 'underscore';
 
 program
   .command('graduate-fields <origin> <destination> <apiKey...>')
@@ -35,8 +36,11 @@ program
     /^(insane|verbose|info|error|nothing)$/i,
     'info'
   )
-  .action((origin: string, destination: string, apiKey: string[], options: any) => {
+  .action(async (origin: string, destination: string, apiKey: string[], options: any) => {
     CommanderUtils.setLogger(options, 'graduate-fields');
+    if (isArray(apiKey) && apiKey.length === 0) {
+      apiKey[0] = await CommanderUtils.getAccessTokenFromLogingPopup(program.opts()?.platformUrlOrigin);
+    }
 
     // Validate strategy
     if (options.onlyFields.length > 0 && options.ignoreFields.length > 0) {

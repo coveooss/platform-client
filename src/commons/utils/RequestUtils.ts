@@ -7,6 +7,7 @@ export class RequestUtils {
   static CREATED: number = 201;
   static NO_CONTENT: number = 204;
   static REDIRECTION: number = 300;
+  static BAD_REQUEST: number = 400;
   static ACCESS_DENIED: number = 403;
   static UNAUTHORIZED: number = 401;
 

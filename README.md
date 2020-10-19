@@ -81,9 +81,10 @@ platformclient <command> [options] <origin> <destination> <apiKey...>
 1. `[options]`: Command options
 1. `<origin>`: The origin organization
 1. `<destination>`: The destination organization
-1. `<apiKey...>`: You can either use a **master API Key** or 2 API keys specific to each Coveo organization. The **master API key** is assigned to you by the Coveo Cloud V2 Platform. You can view that API key by connecting to the [Coveo Cloud V2 Platform](https://platform.cloud.coveo.com/) then opening the developer console.
+1. `[apiKey...]`: You can either use a **master API Key** or 2 API keys specific to each Coveo organization. The **master API key** is assigned to you by the Coveo Cloud V2 Platform. You can view that API key by connecting to the [Coveo Cloud V2 Platform](https://platform.cloud.coveo.com/) then opening the developer console.
+If you don't specify an API key, the program will launch a browser popup to authenticate against the Coveo platform.
 
- ![API key](https://raw.githubusercontent.com/coveooss/platform-client/master/documentation/images/apiKey.png)
+ <!-- ![API key](https://raw.githubusercontent.com/coveooss/platform-client/master/documentation/images/apiKey.png) -->
 
  However, the recommended approach is to use 2 API keys that you have first [created on the Coveo Cloud V2 Platform](https://docs.coveo.com/en/1718/cloud-v2-administrators/api-keys---page). If you are using this approach, make sure to provide the appropriate privileges to the API key based on the operation you want to execute (refer to the table below).
 

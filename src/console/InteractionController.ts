@@ -55,6 +55,7 @@ export class InteractionController {
 
     // Global options
     command = command
+      // FIXME: does not worke. it still saves the option (prefix)
       .concat(this.saveOptionIfExists(answers, '-S ', InteractiveQuestion.SOURCES))
       .concat(this.saveOptionIfExists(answers, '-E ', InteractiveQuestion.IGNORE_EXTENSIONS))
       .concat(this.saveOptionIfExists(answers, '-m ', InteractiveQuestion.GRADUATE_OPERATIONS))

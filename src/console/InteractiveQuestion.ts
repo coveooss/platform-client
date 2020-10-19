@@ -9,6 +9,7 @@ import { Organization } from '../coveoObjects/Organization';
 import { ExtensionAPI } from '../commons/rest/ExtensionAPI';
 import { StringUtil } from '../commons/utils/StringUtils';
 import { PageAPI } from '../commons/rest/PageAPI';
+import { showLoginPopup } from '../ui/login';
 
 export class InteractiveQuestion {
   static FIELDS_CONTROLLER_NAME: string = 'fields';
@@ -50,19 +51,24 @@ export class InteractiveQuestion {
   // To answers from previous prompts
   static PREVIOUS_ANSWERS: Answers = {};
 
-  start() {
+  async start() {
     const prompt = createPromptModule();
     return this.loadFieldModel()
       .then((model: string[]) => {
-        return prompt(this.getInitialQuestions({ fieldModel: model })).then((ans: Answers) => {
+        return prompt(this.getInitialQuestions({ fieldModel: model })).then(async (ans: Answers) => {
           InteractiveQuestion.PREVIOUS_ANSWERS = ans;
-          const key = ans[InteractiveQuestion.USE_MASTER_API_KEY]
-            ? ans[InteractiveQuestion.MASTER_API_KEY]
-            : ans[InteractiveQuestion.ORIGIN_API_KEY];
 
-          const org = new Organization(ans[InteractiveQuestion.ORIGIN_ORG_ID], key, {
-            platformUrl: ans[InteractiveQuestion.ORIGIN_ENVIRONMENT],
-          });
+          if (ans[InteractiveQuestion.USE_MASTER_API_KEY] === true) {
+            ans[InteractiveQuestion.MASTER_API_KEY] = await showLoginPopup(ans[InteractiveQuestion.ORIGIN_ENVIRONMENT]);
+          }
+
+          const org = new Organization(
+            ans[InteractiveQuestion.ORIGIN_ORG_ID],
+            ans[InteractiveQuestion.USE_MASTER_API_KEY] ? ans[InteractiveQuestion.MASTER_API_KEY] : ans[InteractiveQuestion.ORIGIN_API_KEY],
+            {
+              platformUrl: ans[InteractiveQuestion.ORIGIN_ENVIRONMENT],
+            }
+          );
 
           return Promise.all([this.loadSourceList(org), this.loadExtensionList(org), this.loadPageList(org)])
             .then((values) => {
@@ -172,10 +178,10 @@ export class InteractiveQuestion {
     return {
       type: 'list',
       name: InteractiveQuestion.USE_MASTER_API_KEY,
-      message: 'API key strategy',
+      message: 'Authentication strategy',
       default: true,
       choices: [
-        { name: 'One master API key', value: true },
+        { name: 'Web login (one master API key)', value: true },
         { name: '2 API keys (one per organization)', value: false },
       ],
     };
@@ -500,7 +506,7 @@ export class InteractiveQuestion {
       this.getOriginOrganizationId(),
       this.getDestinationOrganizationId(),
       this.getApiKeyStrategy(),
-      this.getMasterApiKey(),
+      // this.getMasterApiKey(),
       this.getOriginApiKey(),
       this.getDestinationApiKey(),
 

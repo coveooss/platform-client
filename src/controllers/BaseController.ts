@@ -167,7 +167,7 @@ export abstract class BaseController {
 
     this.runDiffSequence(options)
       .then((diffResultArray: DiffResultArray<BaseCoveoObject>) => {
-        Logger.info(`objectName: ${this.objectName}`);
+        Logger.info(`Diffing ${this.objectName}`);
         if (this.objectName === 'sources' || this.objectName === 'pages') {
           Logger.info('Preparing HTML diff file');
 
