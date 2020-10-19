@@ -6,10 +6,12 @@ import { FileUtils } from '../commons/utils/FileUtils';
 import { Logger } from '../commons/logger';
 import { FieldController } from '../controllers/FieldController';
 import { Organization } from '../coveoObjects/Organization';
+import { DummyOrganization } from '../coveoObjects/DummyOrganization';
 
 program
-  .command('upload-fields <origin> <apiKey> <filePathToUpload>')
-  .description('(beta) Upload fields to an organization.')
+  .command('upload-fields <origin> [apiKey]')
+  .description('Upload fields to an organization.')
+  .option('-f, --fileToUpload <path>', 'Path to file containing field configuration')
   .option('-i, --ignoreKeys []', 'Keys to ignore. String separated by ","', CommanderUtils.list, [])
   .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', CommanderUtils.list, [])
   .option(
@@ -31,11 +33,19 @@ program
     /^(insane|verbose|info|error|nothing)$/i,
     'info'
   )
-  .action((destination: string, apiKey: string, filePathToUpload: string, options: any) => {
+  .action(async (destination: string, apiKey: string, options: any) => {
     CommanderUtils.setLogger(options, 'upload-fields');
+    if (!options.fileToUpload) {
+      Logger.error("missing required options '--fileToUpload'");
+      process.exit();
+    }
+
+    if (!apiKey) {
+      apiKey = await CommanderUtils.getAccessTokenFromLogingPopup(program.opts()?.platformUrlDestination);
+    }
 
     // Set graduation options
-    FileUtils.readJson(filePathToUpload)
+    FileUtils.readJson(options.fileToUpload)
       .then((data) => {
         const graduateOptions: IGraduateOptions = {
           diffOptions: {
@@ -51,8 +61,8 @@ program
           DELETE: options.methods.indexOf('DELETE') > -1,
         };
 
-        const originOrg = new Organization('dummyOrg', '');
-        const destinationOrg = new Organization(destination, apiKey);
+        const originOrg = new DummyOrganization();
+        const destinationOrg = new Organization(destination, apiKey, { platformUrl: program.opts()?.platformUrlDestination });
         const controller: FieldController = new FieldController(originOrg, destinationOrg);
 
         controller.graduate(graduateOptions);

@@ -23,6 +23,7 @@ import { JsonUtils } from '../commons/utils/JsonUtils';
 import { DownloadUtils } from '../commons/utils/DownloadUtils';
 import { FieldAPI } from '../commons/rest/FieldAPI';
 import { bold } from 'chalk';
+import { DummyOrganization } from '../coveoObjects/DummyOrganization';
 
 export class SourceController extends BaseController {
   private extensionList: Array<Array<{}>> = [];
@@ -35,7 +36,7 @@ export class SourceController extends BaseController {
   }
   runDiffSequence(diffOptions?: IDiffOptions): Promise<DiffResultArray<Source>> {
     // Do not load extensions if --skipExtension option is present
-    const diffActions = [this.loadDataForDiff(diffOptions), this.loadExtensionsListForBothOrganizations()];
+    const diffActions = [this.loadDataForDiff(diffOptions), this.loadRequiredExtensions()];
     return Promise.all(diffActions)
       .then((values) => {
         this.extensionList = values[1] as Array<Array<{}>>; // 2 dim table: extensions per sources
@@ -436,6 +437,7 @@ export class SourceController extends BaseController {
       } catch (error) {
         // if (error && error.message === StaticErrorMessage.MISSING_SOURCE_ID) {
         //   // TODO: find a cleaner way to upload local file without error
+        //  TODO: Maybe use this.organization1 instanceof DummyOrganization
         //   // Expected error
         //   Logger.verbose('Skipping error since the missing id from the local file is expected');
         // } else {
@@ -456,9 +458,14 @@ export class SourceController extends BaseController {
    *
    * @returns {Promise<Array<Array<{}>>>}
    */
-  loadExtensionsListForBothOrganizations(): Promise<Array<Array<{}>>> {
-    Logger.verbose('Loading extensions for both organizations.');
-    return Promise.all([ExtensionAPI.getExtensionList(this.organization1), ExtensionAPI.getExtensionList(this.organization2)]);
+  loadRequiredExtensions(): Promise<Array<Array<{}>>> {
+    Logger.verbose('Loading extensions.');
+    const promiseArray = [];
+    if (this.organization1 instanceof DummyOrganization === false) {
+      promiseArray.push(ExtensionAPI.getExtensionList(this.organization1));
+    }
+    promiseArray.push(ExtensionAPI.getExtensionList(this.organization2));
+    return Promise.all(promiseArray);
   }
 
   loadSourcesForBothOrganizations(): Promise<Array<{}>> {

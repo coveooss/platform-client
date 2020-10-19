@@ -267,7 +267,7 @@ export abstract class BaseController {
 
   protected errorHandler(error: IGenericError, errorMessage: string) {
     Logger.error(
-      `${error.orgId ? 'Error occurred for source ID' + Colors.organization(error.orgId) + ': ' : ''}${errorMessage}`,
+      `${error.orgId ? 'Error occurred for source ' + Colors.organization(error.orgId) + ': ' : ''}${errorMessage}`,
       error.message ? Colors.error(error.message) : ''
     );
 
