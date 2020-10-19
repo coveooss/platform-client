@@ -98,8 +98,8 @@ export abstract class BaseController {
           });
       })
       .catch((err: IGenericError) => {
-        // TODO: review this error message
-        Logger.error(StaticErrorMessage.UNABLE_TO_DOWNLOAD, err);
+        Logger.logOnly(StaticErrorMessage.UNABLE_TO_DOWNLOAD, err);
+        Logger.error(StaticErrorMessage.UNABLE_TO_DOWNLOAD, 'Consult the logs for more information');
         this.stopProcess();
       });
   }
