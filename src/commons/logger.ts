@@ -122,7 +122,8 @@ export class LoggerSingleton {
 
     if (this.isSpinnerEnabled()) {
       this.spinner[logAction](message + fullMessage);
-      this.startSpinner();
+      // TODO: figure out why this was there initially. it just caused the console to print the spinner if an error occurs
+      // this.startSpinner();
     }
   }
 

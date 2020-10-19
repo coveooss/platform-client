@@ -4,6 +4,7 @@ import { CommanderUtils } from './CommanderUtils';
 import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
 import { Organization } from '../coveoObjects/Organization';
 import { PageController } from '../controllers/PageController';
+import { isArray } from 'underscore';
 
 program
   .command('diff-pages <origin> <destination> <apiKey...>')
@@ -17,8 +18,11 @@ program
     'info'
   )
   .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
-  .action((origin: string, destination: string, apiKey: string[], options: any) => {
+  .action(async (origin: string, destination: string, apiKey: string[], options: any) => {
     CommanderUtils.setLogger(options, 'diff-pages');
+    if (isArray(apiKey) && apiKey.length === 0) {
+      apiKey[0] = await CommanderUtils.getAccessTokenFromLogingPopup(program.opts()?.platformUrlOrigin);
+    }
 
     const includeOnly = [
       'name', // mandatory

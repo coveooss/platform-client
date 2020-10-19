@@ -1,5 +1,5 @@
 import * as program from 'commander';
-import { union } from 'underscore';
+import { isArray, union } from 'underscore';
 import { Logger } from '../commons/logger';
 import { CommanderUtils } from './CommanderUtils';
 import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
@@ -34,8 +34,11 @@ program
     'info'
   )
   .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
-  .action((origin: string, destination: string, apiKey: string[], options: any) => {
+  .action(async (origin: string, destination: string, apiKey: string[], options: any) => {
     CommanderUtils.setLogger(options, 'diff-sources');
+    if (isArray(apiKey) && apiKey.length === 0) {
+      apiKey[0] = await CommanderUtils.getAccessTokenFromLogingPopup(program.opts()?.platformUrlOrigin);
+    }
 
     // TODO: add option to modify these options from the command BUT KEEP MANDATORY PARAMETERS
     const includeOnly = [

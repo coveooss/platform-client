@@ -1,5 +1,5 @@
 import * as program from 'commander';
-import { union } from 'underscore';
+import { isArray, union } from 'underscore';
 import { Logger } from '../commons/logger';
 import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { CommanderUtils } from './CommanderUtils';
@@ -28,8 +28,11 @@ program
     /^(insane|verbose|info|error|nothing)$/i,
     'info'
   )
-  .action((origin: string, destination: string, apiKey: string[], options: any) => {
+  .action(async (origin: string, destination: string, apiKey: string[], options: any) => {
     CommanderUtils.setLogger(options, 'graduate-extensions');
+    if (isArray(apiKey) && apiKey.length === 0) {
+      apiKey[0] = await CommanderUtils.getAccessTokenFromLogingPopup(program.opts()?.platformUrlOrigin);
+    }
 
     // Set graduation options
     const graduateOptions: IGraduateOptions = {

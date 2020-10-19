@@ -4,9 +4,10 @@ import { CommanderUtils } from './CommanderUtils';
 import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
 import { IOrganizationOptions, Organization } from '../coveoObjects/Organization';
 import { FieldController } from '../controllers/FieldController';
+import { isArray } from 'underscore';
 
 program
-  .command('diff-fields <origin> <destination> <apiKey...>')
+  .command('diff-fields <origin> <destination> [apiKey...]')
   .description('Diff the "user defined fields" of 2 organizations')
   .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
   .option(
@@ -32,8 +33,11 @@ program
     console.log('  $ platformclient diff-fields devOrg prodOrg masterApiKey');
     console.log('  $ platformclient diff-fields devOrg prodOrg devApiKey prodApiKey --onlyKeys facet,sort');
   })
-  .action((origin: string, destination: string, apiKey: string[], options: any) => {
+  .action(async (origin: string, destination: string, apiKey: string[], options: any) => {
     CommanderUtils.setLogger(options, 'diff-fields');
+    if (isArray(apiKey) && apiKey.length === 0) {
+      apiKey[0] = await CommanderUtils.getAccessTokenFromLogingPopup(program.opts()?.platformUrlOrigin);
+    }
 
     // Validate strategy
     if (options.onlyFields.length > 0 && options.ignoreFields.length > 0) {
