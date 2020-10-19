@@ -8,8 +8,8 @@ export class CommanderUtils {
   }
 
   static setLogger(options: any, command: string) {
-    Logger.setLogLevel(options.logLevel);
-    Logger.setFilename(options.output);
+    Logger.setLogLevel(options?.logLevel);
+    Logger.setFilename(options?.output);
     Logger.newAction(command);
   }
 
