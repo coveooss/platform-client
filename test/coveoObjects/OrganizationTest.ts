@@ -6,9 +6,18 @@ import { Organization, IBlacklistObjects } from '../../src/coveoObjects/Organiza
 import { Source } from '../../src/coveoObjects/Source';
 import { Dictionary } from '../../src/commons/collections/Dictionary';
 import { TestOrganization } from '../test';
+import { DummyOrganization } from '../../src/coveoObjects/DummyOrganization';
 
 export const OrganizationTest = () => {
   describe('Organization Model', () => {
+    it('Should create a dummy org', () => {
+      const dummyOrg = new DummyOrganization();
+      expect(dummyOrg instanceof DummyOrganization).to.equal(true);
+
+      const org = new TestOrganization('org1', 'xxx-aaa-123');
+      expect(org instanceof DummyOrganization).to.equal(false);
+    });
+
     it('Should define organization Id and ApiKey', () => {
       const organization: Organization = new TestOrganization('org1', 'xxx-aaa-123');
       expect(organization.getId()).to.equal('org1', 'Invalid organization Id');

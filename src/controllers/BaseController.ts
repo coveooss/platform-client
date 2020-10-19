@@ -98,8 +98,8 @@ export abstract class BaseController {
           });
       })
       .catch((err: IGenericError) => {
-        // TODO: review this error message
-        Logger.error(StaticErrorMessage.UNABLE_TO_DOWNLOAD, err);
+        Logger.logOnly(StaticErrorMessage.UNABLE_TO_DOWNLOAD, err);
+        Logger.error(StaticErrorMessage.UNABLE_TO_DOWNLOAD, 'Consult the logs for more information');
         this.stopProcess();
       });
   }
@@ -139,7 +139,7 @@ export abstract class BaseController {
               })
               .catch((err: any) => {
                 Logger.logOnly(StaticErrorMessage.SOMETHING_WENT_WRONG_GRADUATION, err);
-                Logger.error(StaticErrorMessage.SOMETHING_WENT_WRONG_GRADUATION);
+                Logger.error(StaticErrorMessage.SOMETHING_WENT_WRONG_GRADUATION, 'Consult the logs for more information');
                 this.stopProcess();
               });
           })
@@ -267,7 +267,7 @@ export abstract class BaseController {
 
   protected errorHandler(error: IGenericError, errorMessage: string) {
     Logger.error(
-      `${error.orgId ? 'Error occurred for ' + Colors.organization(error.orgId) + ': ' : ''}${errorMessage}`,
+      `${error.orgId ? 'Error occurred for source ' + Colors.organization(error.orgId) + ': ' : ''}${errorMessage}`,
       error.message ? Colors.error(error.message) : ''
     );
 

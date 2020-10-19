@@ -6,10 +6,12 @@ import { CommanderUtils } from './CommanderUtils';
 import { FileUtils } from '../commons/utils/FileUtils';
 import { Organization } from '../coveoObjects/Organization';
 import { SourceController } from '../controllers/SourceController';
+import { DummyOrganization } from '../coveoObjects/DummyOrganization';
 
 program
-  .command('upload-sources <origin> <apiKey> <filePathToUpload>')
-  .description('(beta) Upload sources to an organization.')
+  .command('upload-sources <origin> [apiKey]')
+  .description('Upload sources to an organization.')
+  .option('-f, --fileToUpload <path>', 'Path to file containing source configuration')
   .option(
     '-S, --ignoreSources []',
     'List of sources to ignore. String separated by ",". If no specified, all the sources will be diffed',
@@ -29,8 +31,16 @@ program
     /^(insane|verbose|info|error|nothing)$/i,
     'info'
   )
-  .action((destination: string, apiKey: string, filePathToUpload: string, options: any) => {
+  .action(async (destination: string, apiKey: string, options: any) => {
     CommanderUtils.setLogger(options, 'upload-sources');
+    if (!options.fileToUpload) {
+      Logger.error("missing required options '--fileToUpload'");
+      process.exit();
+    }
+
+    if (!apiKey) {
+      apiKey = await CommanderUtils.getAccessTokenFromLogingPopup(program.opts()?.platformUrlDestination);
+    }
 
     const includeOnly = [
       'name', // mandatory
@@ -60,7 +70,7 @@ program
       'additionalInfos.salesforceOrgName',
     ];
 
-    FileUtils.readJson(filePathToUpload)
+    FileUtils.readJson(options.fileToUpload)
       .then((data) => {
         // Set graduation options
         const graduateOptions: IGraduateOptions = {
@@ -84,7 +94,7 @@ program
             options.ignoreSources
           ),
         };
-        const originOrg = new Organization('dummyOrg', '', { blacklist: blacklistOptions, platformUrl: program.opts()?.platformUrlOrigin });
+        const originOrg = new DummyOrganization();
         const destinationOrg = new Organization(destination, apiKey, {
           blacklist: blacklistOptions,
           platformUrl: program.opts()?.platformUrlDestination,

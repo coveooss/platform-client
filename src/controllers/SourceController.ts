@@ -23,6 +23,7 @@ import { JsonUtils } from '../commons/utils/JsonUtils';
 import { DownloadUtils } from '../commons/utils/DownloadUtils';
 import { FieldAPI } from '../commons/rest/FieldAPI';
 import { bold } from 'chalk';
+import { DummyOrganization } from '../coveoObjects/DummyOrganization';
 
 export class SourceController extends BaseController {
   private extensionList: Array<Array<{}>> = [];
@@ -35,7 +36,7 @@ export class SourceController extends BaseController {
   }
   runDiffSequence(diffOptions?: IDiffOptions): Promise<DiffResultArray<Source>> {
     // Do not load extensions if --skipExtension option is present
-    const diffActions = [this.loadDataForDiff(diffOptions), this.loadExtensionsListForBothOrganizations()];
+    const diffActions = [this.loadDataForDiff(diffOptions), this.loadRequiredExtensions()];
     return Promise.all(diffActions)
       .then((values) => {
         this.extensionList = values[1] as Array<Array<{}>>; // 2 dim table: extensions per sources
@@ -141,9 +142,22 @@ export class SourceController extends BaseController {
     // TODO: to implement
   }
 
-  rebuildSource(sourceName: string) {
-    return this.getSourceIdWithName(sourceName).then((sourceId: string) => {
-      return SourceAPI.rebuildSource(this.organization1, sourceId);
+  rebuildSource(sourceName: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.getSourceIdWithName(sourceName)
+        .then((sourceId: string) => {
+          SourceAPI.rebuildSource(this.organization1, sourceId)
+            .then((response) => {
+              Logger.verbose('rebuild complete', response);
+              resolve();
+            })
+            .catch((err) => {
+              reject(err);
+            });
+        })
+        .catch((err) => {
+          reject(err);
+        });
     });
   }
 
@@ -154,16 +168,12 @@ export class SourceController extends BaseController {
         .then((response: RequestResponse) => {
           const source: any = findWhere(response.body, { name: sourceName });
           if (source === undefined || source.id === undefined) {
-            reject({ orgId: this.organization1.getId(), message: StaticErrorMessage.NO_SOURCE_FOUND });
+            const error = { orgId: this.organization1.getId(), message: `No source with the name "${sourceName}" was found` };
+            this.errorHandler(error as IGenericError, StaticErrorMessage.NO_SOURCE_FOUND);
+            reject(error);
+          } else {
+            resolve(source.id);
           }
-
-          resolve(source.id);
-
-          const sourceId = this.organization1
-            .getSources() // Loading all sources
-            .getItem(sourceName) // Fetching source object by name
-            .getId(); // Get source ID
-          resolve(sourceId);
         })
         .catch((err) => {
           this.errorHandler(err, StaticErrorMessage.UNABLE_TO_GET_SOURCE_NAME);
@@ -268,7 +278,7 @@ export class SourceController extends BaseController {
             '',
             `${Colors.warn('───────────────────────────────────────────────────────────')}`,
             `To graduate missing fields, run the following command format:`,
-            `platformclient graduate-fields <origin> <destination> <apiKeys...> --onlyFields ${missingFields.join(',')}`,
+            `platformclient graduate-fields <origin> <destination> [apiKeys...] --onlyFields ${missingFields.join(',')}`,
             `${Colors.warn('───────────────────────────────────────────────────────────')}`,
           ].join('\n');
           const err = new Error(message);
@@ -316,7 +326,7 @@ export class SourceController extends BaseController {
             '',
             `${Colors.warn('───────────────────────────────────────────────────────────')}`,
             `To graduate missing fields, run the following command format:`,
-            `platformclient graduate-fields <origin> <destination> <apiKeys...> --onlyFields ${missingFields.join(',')}`,
+            `platformclient graduate-fields <origin> <destination> [apiKeys...] --onlyFields ${missingFields.join(',')}`,
             `${Colors.warn('───────────────────────────────────────────────────────────')}`,
           ].join('\n');
           const err = new Error(message);
@@ -427,6 +437,7 @@ export class SourceController extends BaseController {
       } catch (error) {
         // if (error && error.message === StaticErrorMessage.MISSING_SOURCE_ID) {
         //   // TODO: find a cleaner way to upload local file without error
+        //  TODO: Maybe use this.organization1 instanceof DummyOrganization
         //   // Expected error
         //   Logger.verbose('Skipping error since the missing id from the local file is expected');
         // } else {
@@ -447,9 +458,14 @@ export class SourceController extends BaseController {
    *
    * @returns {Promise<Array<Array<{}>>>}
    */
-  loadExtensionsListForBothOrganizations(): Promise<Array<Array<{}>>> {
-    Logger.verbose('Loading extensions for both organizations.');
-    return Promise.all([ExtensionAPI.getExtensionList(this.organization1), ExtensionAPI.getExtensionList(this.organization2)]);
+  loadRequiredExtensions(): Promise<Array<Array<{}>>> {
+    Logger.verbose('Loading extensions.');
+    const promiseArray = [];
+    if (this.organization1 instanceof DummyOrganization === false) {
+      promiseArray.push(ExtensionAPI.getExtensionList(this.organization1));
+    }
+    promiseArray.push(ExtensionAPI.getExtensionList(this.organization2));
+    return Promise.all(promiseArray);
   }
 
   loadSourcesForBothOrganizations(): Promise<Array<{}>> {

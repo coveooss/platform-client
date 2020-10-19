@@ -7,7 +7,7 @@ import { Organization } from '../coveoObjects/Organization';
 import { ExtensionController } from '../controllers/ExtensionController';
 
 program
-  .command('graduate-extensions <origin> <destination> <apiKey...>')
+  .command('graduate-extensions <origin> <destination> [apiKey...]')
   .description('Graduate extensions from one organization to another')
   .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', CommanderUtils.list, [
     'requiredDataStreams',

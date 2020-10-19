@@ -44,6 +44,7 @@ export class InteractiveQuestion {
   // static EXECUTE_COMMAND: string = 'executeCommand';
 
   static GRADUATE_COMMAND: string = 'graduate';
+  static REBUILD_COMMAND: string = 'rebuild-sources';
   static DIFF_COMMAND: string = 'diff';
   static DOWNLOAD_COMMAND: string = 'download';
   static UPLOAD_COMMAND: string = 'upload';
@@ -184,6 +185,11 @@ export class InteractiveQuestion {
         { name: 'Web login (one master API key)', value: true },
         { name: '2 API keys (one per organization)', value: false },
       ],
+      when: (answer: Answers) => {
+        answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        answer[InteractiveQuestion.USE_MASTER_API_KEY] = true;
+        return answer[InteractiveQuestion.COMMAND] !== InteractiveQuestion.REBUILD_COMMAND;
+      },
     };
   }
 
@@ -268,7 +274,7 @@ export class InteractiveQuestion {
       choices: [
         { name: InteractiveQuestion.DIFF_COMMAND },
         { name: InteractiveQuestion.GRADUATE_COMMAND },
-        { name: 'rebuild sources', value: 'rebuild-sources' },
+        { name: 'rebuild sources', value: InteractiveQuestion.REBUILD_COMMAND },
       ],
     };
   }
@@ -334,7 +340,7 @@ export class InteractiveQuestion {
       choices: sources,
       when: (answer: Answers) => {
         answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
-        return answer[InteractiveQuestion.COMMAND] === 'rebuild-sources';
+        return answer[InteractiveQuestion.COMMAND] === InteractiveQuestion.REBUILD_COMMAND;
       },
       filter: (input: string) => {
         return `"${input}"`;

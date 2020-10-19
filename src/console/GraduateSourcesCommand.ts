@@ -7,7 +7,7 @@ import { IBlacklistObjects, Organization } from '../coveoObjects/Organization';
 import { SourceController } from '../controllers/SourceController';
 
 program
-  .command('graduate-sources <origin> <destination> <apiKey...>')
+  .command('graduate-sources <origin> <destination> [apiKey...]')
   .description('Graduate sources from one organization to another')
   // .option('-r, --rebuild', 'Rebuild the source once created. Default is false', false)
   .option('-i, --keysToIgnore []', 'Keys to ignore from the JSON configuration. String separated by ","', CommanderUtils.list, [])

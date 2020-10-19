@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { where } from 'underscore';
 import * as nock from 'nock';
 import { DiffResultArray } from '../../src/commons/collections/DiffResultArray';
-import { IGenericError, StaticErrorMessage } from '../../src/commons/errors';
+import { IGenericError } from '../../src/commons/errors';
 import { UrlService } from '../../src/commons/rest/UrlService';
 import { RequestUtils } from '../../src/commons/utils/RequestUtils';
 import { Utils } from '../../src/commons/utils/Utils';
@@ -248,7 +248,7 @@ export const SourceControllerTest = () => {
             done('Should not resolve');
           })
           .catch((err) => {
-            if (err.message === StaticErrorMessage.NO_SOURCE_FOUND) {
+            if (err.message === `No source with the name "Invalid source" was found`) {
               done();
             } else {
               done(err);
@@ -1697,7 +1697,7 @@ export const SourceControllerTest = () => {
                     '',
                     `${Colors.warn('───────────────────────────────────────────────────────────')}`,
                     `To graduate missing fields, run the following command format:`,
-                    `platformclient graduate-fields <origin> <destination> <apiKeys...> --onlyFields ${[
+                    `platformclient graduate-fields <origin> <destination> [apiKeys...] --onlyFields ${[
                       'anothernewfield',
                       'lastrebuilddate',
                     ].join(',')}`,

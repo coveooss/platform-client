@@ -6,10 +6,12 @@ import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
 import { FileUtils } from '../commons/utils/FileUtils';
 import { Organization } from '../coveoObjects/Organization';
 import { PageController } from '../controllers/PageController';
+import { DummyOrganization } from '../coveoObjects/DummyOrganization';
 
 program
-  .command('upload-pages <origin> <apiKey> <filePathToUpload>')
-  .description('(beta) Upload pages to an organization.')
+  .command('upload-pages <origin> [apiKey]')
+  .description('Upload pages to an organization.')
+  .option('-f, --fileToUpload <path>', 'Path to file containing field configuration')
   .option('-E, --ignorePages []', 'Pages to ignore. String separated by ",".', CommanderUtils.list)
   .option('-m, --methods []', 'HTTP method authorized by the Graduation', CommanderUtils.list, ['POST', 'PUT'])
   .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
@@ -19,10 +21,18 @@ program
     /^(insane|verbose|info|error|nothing)$/i,
     'info'
   )
-  .action((destination: string, apiKey: string, filePathToUpload: string, options: any) => {
+  .action(async (destination: string, apiKey: string, options: any) => {
     CommanderUtils.setLogger(options, 'upload-pages');
+    if (!options.fileToUpload) {
+      Logger.error("missing required options '--fileToUpload'");
+      process.exit();
+    }
 
-    FileUtils.readJson(filePathToUpload)
+    if (!apiKey) {
+      apiKey = await CommanderUtils.getAccessTokenFromLogingPopup(program.opts()?.platformUrlDestination);
+    }
+
+    FileUtils.readJson(options.fileToUpload)
       .then((data) => {
         const includeOnly = [
           'name', // mandatory
@@ -48,7 +58,7 @@ program
         const blacklistOptions = {
           pages: options.ignorePages,
         };
-        const originOrg = new Organization('dummyOrg', '', { blacklist: blacklistOptions, platformUrl: program.opts()?.platformUrlOrigin });
+        const originOrg = new DummyOrganization();
         const destinationOrg = new Organization(destination, apiKey, {
           blacklist: blacklistOptions,
           platformUrl: program.opts()?.platformUrlDestination,

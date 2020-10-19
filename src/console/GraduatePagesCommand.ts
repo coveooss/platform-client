@@ -7,7 +7,7 @@ import { Organization } from '../coveoObjects/Organization';
 import { PageController } from '../controllers/PageController';
 
 program
-  .command('graduate-pages <origin> <destination> <apiKey...>')
+  .command('graduate-pages <origin> <destination> [apiKey...]')
   .description('Graduate pages from one organization to another')
   .option('-E, --ignorePages []', 'Pages to ignore. String separated by ",".', CommanderUtils.list)
   .option('-m, --methods []', 'HTTP method authorized by the Graduation', CommanderUtils.list, ['POST', 'PUT'])
