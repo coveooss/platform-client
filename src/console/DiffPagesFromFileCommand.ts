@@ -5,10 +5,12 @@ import { IDiffOptions } from '../commons/interfaces/IDiffOptions';
 import { FileUtils } from '../commons/utils/FileUtils';
 import { Organization } from '../coveoObjects/Organization';
 import { PageController } from '../controllers/PageController';
+import { DummyOrganization } from '../coveoObjects/DummyOrganization';
 
 program
-  .command('diff-pages-file <org> <apiKey> <filePathToUpload>')
+  .command('diff-pages-file <org> [apiKey]')
   .description('Compare pages from an organization to a local configuration file')
+  .option('-f, --fileToDiff <path>', 'Path to file containing page configuration')
   .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
   .option('-E, --ignorePages []', 'Pages to ignore. String separated by ",".', CommanderUtils.list)
   .option(
@@ -24,10 +26,18 @@ program
     console.log('  $ platformclient diff-pages-file --help');
     console.log('  $ platformclient diff-pages-file YourOrg YourApiKey FileToCompare');
   })
-  .action((org: string, apiKey: string, filePathToUpload: string, options: any) => {
+  .action(async (org: string, apiKey: string, options: any) => {
     CommanderUtils.setLogger(options, 'diff-pages-file');
+    if (!options.fileToDiff) {
+      Logger.error("missing required options '--fileToDiff'");
+      process.exit();
+    }
 
-    FileUtils.readJson(filePathToUpload)
+    if (!apiKey) {
+      apiKey = await CommanderUtils.getAccessTokenFromLogingPopup(program.opts()?.platformUrlDestination);
+    }
+
+    FileUtils.readJson(options.fileToDiff)
       .then((data) => {
         const includeOnly = [
           'name', // mandatory
@@ -46,7 +56,7 @@ program
           pages: options.ignorePages,
         };
 
-        const originOrg = new Organization('localFile', '', { blacklist: blacklistOptions });
+        const originOrg = new DummyOrganization();
         const destinationOrg = new Organization(org, apiKey, {
           blacklist: blacklistOptions,
           platformUrl: program.opts()?.platformUrlDestination,
