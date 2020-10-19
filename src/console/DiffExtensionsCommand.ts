@@ -7,7 +7,7 @@ import { Organization } from '../coveoObjects/Organization';
 import { ExtensionController } from '../controllers/ExtensionController';
 
 program
-  .command('diff-extensions <origin> <destination> <apiKey...>')
+  .command('diff-extensions <origin> <destination> [apiKey...]')
   .description('Diff the extensions of 2 organizations')
   .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
   .option(

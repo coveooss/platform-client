@@ -7,7 +7,7 @@ import { IBlacklistObjects, Organization } from '../coveoObjects/Organization';
 import { SourceController } from '../controllers/SourceController';
 
 program
-  .command('diff-sources <origin> <destination> <apiKey...>')
+  .command('diff-sources <origin> <destination> [apiKey...]')
   .description('Diff the sources of 2 organizations')
   .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
   // .option('-r, --rebuild', 'Rebuild the source once created. Default is false', false)

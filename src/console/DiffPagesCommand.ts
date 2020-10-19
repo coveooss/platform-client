@@ -7,7 +7,7 @@ import { PageController } from '../controllers/PageController';
 import { isArray } from 'underscore';
 
 program
-  .command('diff-pages <origin> <destination> <apiKey...>')
+  .command('diff-pages <origin> <destination> [apiKey...]')
   .description('Diff the pages of 2 organizations')
   .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
   .option('-E, --ignorePages []', 'Pages to ignore. String separated by ",".', CommanderUtils.list)

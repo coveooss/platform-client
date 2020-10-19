@@ -7,7 +7,7 @@ import { FieldController } from '../controllers/FieldController';
 import { isArray } from 'underscore';
 
 program
-  .command('graduate-fields <origin> <destination> <apiKey...>')
+  .command('graduate-fields <origin> <destination> [apiKey...]')
   .description('Graduate fields from one organization to another')
   .option('-n, --onlyFields []', 'Only the fields to diff.', CommanderUtils.list, [])
   .option('-i, --ignoreFields []', 'Fields to ignore. String separated by ","', CommanderUtils.list, [])
