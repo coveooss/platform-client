@@ -13,13 +13,13 @@ program
   .description('Upload sources to an organization.')
   .option('-f, --fileToUpload <path>', 'Path to file containing source configuration')
   .option(
-    '-S, --ignoreSources []',
+    '--ignoreSources []',
     'List of sources to ignore. String separated by ",". If no specified, all the sources will be diffed',
     CommanderUtils.list,
     []
   )
   .option(
-    '-E, --ignoreExtensions []',
+    '--ignoreExtensions []',
     'Extensions to ignore. String separated by ",". By default, the diff will ignore the : "All metadata values" extension',
     CommanderUtils.list
   )

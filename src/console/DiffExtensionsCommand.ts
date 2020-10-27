@@ -16,7 +16,7 @@ program
     CommanderUtils.list
   )
   .option(
-    '-E, --ignoreExtensions []',
+    '--ignoreExtensions []',
     'Extensions to ignore. String separated by ",". By default, the diff will ignore the : "All metadata values" extension.',
     CommanderUtils.list
   )

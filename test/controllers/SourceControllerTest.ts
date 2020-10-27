@@ -770,6 +770,10 @@ export const SourceControllerTest = () => {
             done(err);
           });
       });
+
+      // it('Should diff sources (whitelist strategy)', (done: Mocha.Done) => {
+      //   // TODO: to implement
+      // });
     });
 
     describe('getCleanDiffVersion Method', () => {
@@ -915,7 +919,11 @@ export const SourceControllerTest = () => {
           });
       });
 
-      it('Should graduate using the whitelist strategy', (done: Mocha.Done) => {
+      // it('Should graduate sources (whitelist strategy)', (done: Mocha.Done) => {
+      //   // TODO: to implement
+      // });
+
+      it('Should graduate by whitelisting keys', (done: Mocha.Done) => {
         const orgx: Organization = new TestOrganization('dev', 'xxx');
         const orgy: Organization = new TestOrganization('prod', 'yyy');
         const controllerxy = new SourceController(orgx, orgy);
@@ -1779,6 +1787,67 @@ export const SourceControllerTest = () => {
           .runDownloadSequence()
           .then((downloadResultArray: DownloadResultArray) => {
             expect(downloadResultArray.getCount()).to.be.eql(4);
+            done();
+          })
+          .catch((err: any) => {
+            done(err);
+          });
+      });
+
+      it('Should download sources (blacklist strategy)', (done: Mocha.Done) => {
+        const orgx: Organization = new TestOrganization('dev', 'xxx', {
+          blacklist: { sources: ['My Sitemap Source', 'Salesforce', 'SupportVideos'] },
+        });
+        const controllerxy = new SourceController(orgx);
+
+        scope = nock(UrlService.getDefaultUrl())
+          .get('/rest/organizations/dev/sources')
+          .reply(RequestUtils.OK, allDevSources)
+          // Should not retrieve sources that are not whitelisted
+          .get('/rest/organizations/dev/sources/rrbbidfxa2ri4usxhzzmhq2hge-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, DEVrrbbidfxa2ri4usxhzzmhq2hge);
+        // .get('/rest/organizations/dev/sources/tcytrppteddiqkmboszu4skdoe-dummygroupk5f2dpwl/raw')
+        // .reply(RequestUtils.OK, DEVtcytrppteddiqkmboszu4skdoe);
+        // .get('/rest/organizations/dev/sources/wyowilfyrpf2qogxm45uhgskri-dummygroupk5f2dpwl/raw')
+        // .reply(RequestUtils.OK, DEVwyowilfyrpf2qogxm45uhgskri)
+        // .get('/rest/organizations/dev/sources/qtngyd2gvxjxrrkftndaepcngu-dummygroupk5f2dpwl/raw')
+        // .reply(RequestUtils.OK, DEVqtngyd2gvxjxrrkftndaepcngu);
+
+        controllerxy
+          .runDownloadSequence()
+          .then((downloadResultArray: DownloadResultArray) => {
+            expect(downloadResultArray.getCount()).to.be.eql(1);
+            expect(downloadResultArray.getItems()[0].getId()).to.be.eql('rrbbidfxa2ri4usxhzzmhq2hge-dummygroupk5f2dpwl');
+            done();
+          })
+          .catch((err: any) => {
+            done(err);
+          });
+      });
+
+      it('Should download sources (whitelist strategy)', (done: Mocha.Done) => {
+        const orgx: Organization = new TestOrganization('dev', 'xxx', { whitelist: { sources: ['My Sitemap Source', 'SupportVideos'] } });
+        const controllerxy = new SourceController(orgx);
+
+        scope = nock(UrlService.getDefaultUrl())
+          .get('/rest/organizations/dev/sources')
+          .reply(RequestUtils.OK, allDevSources)
+          // Should not retrieve sources that are not whitelisted
+          // .get('/rest/organizations/dev/sources/rrbbidfxa2ri4usxhzzmhq2hge-dummygroupk5f2dpwl/raw')
+          // .reply(RequestUtils.OK, DEVrrbbidfxa2ri4usxhzzmhq2hge)
+          .get('/rest/organizations/dev/sources/tcytrppteddiqkmboszu4skdoe-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, DEVtcytrppteddiqkmboszu4skdoe)
+          // .get('/rest/organizations/dev/sources/wyowilfyrpf2qogxm45uhgskri-dummygroupk5f2dpwl/raw')
+          // .reply(RequestUtils.OK, DEVwyowilfyrpf2qogxm45uhgskri)
+          .get('/rest/organizations/dev/sources/qtngyd2gvxjxrrkftndaepcngu-dummygroupk5f2dpwl/raw')
+          .reply(RequestUtils.OK, DEVqtngyd2gvxjxrrkftndaepcngu);
+
+        controllerxy
+          .runDownloadSequence()
+          .then((downloadResultArray: DownloadResultArray) => {
+            expect(downloadResultArray.getCount()).to.be.eql(2);
+            expect(downloadResultArray.getItems()[0].getId()).to.be.eql('tcytrppteddiqkmboszu4skdoe-dummygroupk5f2dpwl');
+            expect(downloadResultArray.getItems()[1].getId()).to.be.eql('qtngyd2gvxjxrrkftndaepcngu-dummygroupk5f2dpwl');
             done();
           })
           .catch((err: any) => {

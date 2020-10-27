@@ -185,7 +185,7 @@ export const OrganizationTest = () => {
         expect(organization.isWhiteListAccessControl()).to.be.false;
       });
 
-      it('Should not add field if not whitelisted whitelisted', () => {
+      it('Should not add field if not whitelisted', () => {
         const whitelist = { fields: ['dummyfield'] };
         const organization: Organization = new TestOrganization('rambo3', 'xxx-aaa-123', { whitelist: whitelist });
         const field: Field = new Field({
@@ -221,28 +221,155 @@ export const OrganizationTest = () => {
         assert.doesNotThrow(() => new TestOrganization('rambo3', 'xxx-aaa-123', { whitelist: undefined, blacklist: undefined }));
       });
 
-      it('Should only add field that has been whitelisted', () => {
-        const whitelist = { fields: ['testfield'] };
+      it('Should only add extensions that have been whitelisted', () => {
+        const whitelist = { extensions: ['Reject a document.'] };
         const organization: Organization = new TestOrganization('rambo3', 'xxx-aaa-123', { whitelist: whitelist });
-        const field: Field = new Field({
-          name: 'allmetadatavalues',
-          description: 'Place to put content for metadata discovery.',
-          type: 'STRING',
-          includeInQuery: true,
-        });
-        const field2: Field = new Field({
-          name: 'testfield',
-          description: 'Place to put content for metadata discovery.',
-          type: 'STRING',
-          includeInQuery: true,
-        });
-        organization.addField(field);
-        organization.addField(field2);
 
-        expect(organization.getFields().getCount()).to.equal(1);
+        const extension: Extension = new Extension({
+          content: 'random content',
+          createdDate: 1511812764000,
+          description: 'This extension simply rejects a document. It gets triggered on certain file types in the source configuration',
+          enabled: true,
+          id: 'ccli1wq3fmkys-tknepx33tdhmqibch2uzxhcc44',
+          lastModified: 1511812764000,
+          name: 'Reject a document.',
+          requiredDataStreams: [],
+          versionId: 'a6LyFxn91XW5IcgNMTKOabXcJWp05e7i',
+          usedBy: [],
+          status: {},
+        });
+        const extension2: Extension = new Extension({
+          content: '...',
+          createdDate: 1511812754000,
+          description: 'to be rejected',
+          enabled: true,
+          id: 'ccli1dsadsad44',
+          lastModified: 1511812764000,
+          name: 'Redsadsaject a document.',
+          requiredDataStreams: [],
+          versionId: '23456789kjhg',
+          usedBy: [],
+          status: {},
+        });
+
+        organization.addExtension(extension);
+        organization.addExtension(extension2);
+
+        expect(organization.getExtensions().getCount()).to.equal(1);
         expect(organization.isWhiteListAccessControl()).to.be.true;
         expect(organization.isBlackListAccessControl()).to.be.false;
-        expect(organization.getFields().values()[0].getName()).to.equal('testfield');
+        expect(organization.getExtensions().values()[0].getName()).to.equal('Reject a document.');
+      });
+
+      it('Should only add sources that have been whitelisted', () => {
+        const whitelist = { sources: ['mySource'] };
+        const source: Source = new Source({
+          id: 'r6ud7iksjhafgjpiokjh-sdfgr3e',
+          name: 'testSource',
+          sourceType: 'SITEMAP',
+          sourceSecurityOption: 'Specified',
+          postConversionExtensions: [],
+          preConversionExtensions: [],
+          mappings: [],
+        });
+        const source2: Source = new Source({
+          id: 'dsadsadsads-sdfgr3e',
+          name: 'mySource',
+          sourceType: 'SITEMAP',
+          sourceSecurityOption: 'Specified',
+          postConversionExtensions: [],
+          preConversionExtensions: [],
+          mappings: [],
+        });
+
+        const organization: Organization = new TestOrganization('rambo3', 'xxx-aaa-123', { whitelist: whitelist });
+        organization.addSource(source);
+        organization.addSource(source2);
+
+        expect(organization.getSources().getCount()).to.equal(1);
+        expect(organization.isWhiteListAccessControl()).to.be.true;
+        expect(organization.isBlackListAccessControl()).to.be.false;
+        expect(organization.getSources().values()[0].getName()).to.equal('mySource');
+      });
+
+      it('Should not add sources that have been blacklisted', () => {
+        const blacklist = { sources: ['mySource'] };
+        const source: Source = new Source({
+          id: 'r6ud7iksjhdafgjpiokjh-sdfgr3e',
+          name: 'testSource',
+          sourceType: 'SITEMAP',
+          sourceSecurityOption: 'Specified',
+          postConversionExtensions: [],
+          preConversionExtensions: [],
+          mappings: [],
+        });
+        const source2: Source = new Source({
+          id: 'dsadsadsadds-sdfgr3e',
+          name: 'mySource',
+          sourceType: 'SITEMAP',
+          sourceSecurityOption: 'Specified',
+          postConversionExtensions: [],
+          preConversionExtensions: [],
+          mappings: [],
+        });
+
+        const organization: Organization = new TestOrganization('rambo3', 'xxx-aaa-123', { blacklist: blacklist });
+        organization.addSource(source);
+        organization.addSource(source2);
+
+        expect(organization.getSources().getCount()).to.equal(1);
+        expect(organization.isWhiteListAccessControl()).to.be.false;
+        expect(organization.isBlackListAccessControl()).to.be.true;
+        expect(organization.getSources().values()[0].getName()).to.equal('testSource');
+      });
+
+      it('Should not allow blacklist and whitlist strategies at the same time', () => {
+        const blacklist = { sources: ['mySource'] };
+        const whitelist = { sources: ['myOtherSource'] };
+
+        expect(() => {
+          new TestOrganization('rambo3', 'xxx-aaa-123', { blacklist, whitelist });
+        }).to.throw();
+      });
+
+      it('Should not allow blacklist and whitlist strategies at the same time (different resources)', () => {
+        const blacklist = { sources: ['mySource'] };
+        const whitelist = { fields: ['afield'] };
+
+        expect(() => {
+          new TestOrganization('rambo3', 'xxx-aaa-123', { blacklist, whitelist });
+        }).to.throw();
+      });
+
+      it('Should only add sources that have been whitelisted', () => {
+        const whitelist = { sources: ['mySource'] };
+        const source: Source = new Source({
+          id: 'r6ud7iksjhafgjpiokjh-sdfgr3e',
+          name: 'testSource',
+          sourceType: 'SITEMAP',
+          sourceSecurityOption: 'Specified',
+          postConversionExtensions: [],
+          preConversionExtensions: [],
+          mappings: [],
+        });
+        const source2: Source = new Source({
+          id: 'dsadsadsads-sdfgr3e',
+          name: 'mySource',
+          sourceType: 'SITEMAP',
+          sourceSecurityOption: 'Specified',
+          postConversionExtensions: [],
+          preConversionExtensions: [],
+          mappings: [],
+        });
+
+        const organization: Organization = new TestOrganization('rambo3', 'xxx-aaa-123', { whitelist: whitelist });
+        organization.addSource(source);
+        organization.addSource(source2);
+
+        expect(organization.getSources().getCount()).to.equal(1);
+        expect(organization.isWhiteListAccessControl()).to.be.true;
+        expect(organization.isBlackListAccessControl()).to.be.false;
+        expect(organization.getSources().values()[0].getName()).to.equal('mySource');
       });
 
       it('Should add multiple fields in the Organization', () => {

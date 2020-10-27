@@ -89,10 +89,8 @@ export class Organization extends BaseCoveoObject implements IOrganization {
       this.accessControl = AccessControl.whitelist;
       this.whitelist = this.options.whitelist;
 
-      // TODO: support whitelist for other resources
-      // this.blacklist.extensions = (this.blacklist.extensions || []).map((e) => StringUtil.lowerAndStripSpaces(e));
-      // this.blacklist.sources = (this.blacklist.sources || []).map((s) => StringUtil.lowerAndStripSpaces(s));
-      // this.blacklist.pages = (this.blacklist.pages || []).map((p) => StringUtil.lowerAndStripSpaces(p));
+      this.whitelist.extensions = (this.whitelist.extensions || []).map((f) => StringUtil.lowerAndStripSpaces(f));
+      this.whitelist.sources = (this.whitelist.sources || []).map((f) => StringUtil.lowerAndStripSpaces(f));
       this.whitelist.fields = (this.whitelist.fields || []).map((f) => StringUtil.lowerAndStripSpaces(f));
     } else if (!!this.options.whitelist && !!this.options.blacklist) {
       throw new Error('Cannot specify both whitelist and blacklist objects');
@@ -108,24 +106,24 @@ export class Organization extends BaseCoveoObject implements IOrganization {
   }
 
   // Whitelist Getters
-  // TODO: to implement
-  // getExtensionWhitelist(): string[] {
-  //   return this.whitelist.extensions || [];
-  // }
+  getExtensionWhitelist(): string[] {
+    // TODO: to implement
+    return this.whitelist.extensions || [];
+  }
 
-  // getPageWhitelist(): string[] {
-  // TODO: to implement
-  //   return this.whitelist.pages || [];
-  // }
+  getPageWhitelist(): string[] {
+    // TODO: to implement
+    return this.whitelist.pages || [];
+  }
 
-  getfieldWhitelist(): string[] {
+  getFieldWhitelist(): string[] {
     return this.whitelist.fields || [];
   }
 
-  // getSourceWhitelist(): string[] {
-  // TODO: to implement
-  //   return this.whitelist.sources || [];
-  // }
+  getSourceWhitelist(): string[] {
+    // TODO: to implement
+    return this.whitelist.sources || [];
+  }
 
   // Blacklist Getters
   getExtensionBlacklist(): string[] {
@@ -172,7 +170,7 @@ export class Organization extends BaseCoveoObject implements IOrganization {
     if (this.isBlackListAccessControl()) {
       condition = !contains(this.getfieldBlacklist(), StringUtil.lowerAndStripSpaces(field.getName()));
     } else if (this.isWhiteListAccessControl()) {
-      condition = contains(this.getfieldWhitelist(), StringUtil.lowerAndStripSpaces(field.getName()));
+      condition = contains(this.getFieldWhitelist(), StringUtil.lowerAndStripSpaces(field.getName()));
     }
     if (condition) {
       this.fields.add(field.getName(), field);
@@ -219,7 +217,15 @@ export class Organization extends BaseCoveoObject implements IOrganization {
   addSource(source: Source) {
     // Using the source name as the key since the source ID is not the same from on org to another
     Assert.isUndefined(this.sources.getItem(source.getName()), `At least 2 sources are having the same name: ${source.getName()}`);
-    if (!contains(this.getSourceBlacklist() || [], StringUtil.lowerAndStripSpaces(source.getName()))) {
+
+    let condition = true;
+    if (this.isBlackListAccessControl()) {
+      condition = !contains(this.getSourceBlacklist(), StringUtil.lowerAndStripSpaces(source.getName()));
+    } else if (this.isWhiteListAccessControl()) {
+      condition = contains(this.getSourceWhitelist(), StringUtil.lowerAndStripSpaces(source.getName()));
+    }
+
+    if (condition) {
       this.sources.add(source.getName(), source);
     }
   }
@@ -288,7 +294,15 @@ export class Organization extends BaseCoveoObject implements IOrganization {
       this.extensions.getItem(extension.getName()),
       `At least 2 extensions are having the same name: ${extension.getName()}`
     );
-    if (!contains(this.getExtensionBlacklist() || [], StringUtil.lowerAndStripSpaces(extension.getName()))) {
+
+    let condition = true;
+    if (this.isBlackListAccessControl()) {
+      condition = !contains(this.getExtensionBlacklist(), StringUtil.lowerAndStripSpaces(extension.getName()));
+    } else if (this.isWhiteListAccessControl()) {
+      condition = contains(this.getExtensionWhitelist(), StringUtil.lowerAndStripSpaces(extension.getName()));
+    }
+
+    if (condition) {
       this.extensions.add(extension.getName(), extension);
     }
   }

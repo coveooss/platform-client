@@ -13,7 +13,7 @@ program
   .command('upload-extensions <origin> [apiKey]')
   .description('Upload extensions to an organization.')
   .option('-f, --fileToUpload <path>', 'Path to file containing extension configuration')
-  .option('-E, --ignoreExtensions []', 'Extensions to ignore. String separated by ",".', CommanderUtils.list)
+  .option('--ignoreExtensions []', 'Extensions to ignore. String separated by ",".', CommanderUtils.list)
   .option('-m, --methods []', 'HTTP method authorized by the Graduation', CommanderUtils.list, ['POST', 'PUT'])
   .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
   .option(

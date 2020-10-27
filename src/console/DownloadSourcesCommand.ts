@@ -2,12 +2,24 @@ import * as program from 'commander';
 import { Logger } from '../commons/logger';
 import { CommanderUtils } from './CommanderUtils';
 import { SourceController } from '../controllers/SourceController';
-import { Organization } from '../coveoObjects/Organization';
+import { Organization, IOrganizationOptions } from '../coveoObjects/Organization';
 import { IDownloadOptions } from '../controllers/BaseController';
 
 program
   .command('download-sources <origin> [apiKey]')
   .description('Download the sources of an organization.')
+  .option(
+    '-S, --sources []',
+    'List of sources to download. If not specified all sources will be downlaoded. Source names should be separated by a comma',
+    CommanderUtils.list,
+    []
+  )
+  .option(
+    '--ignoreSources []',
+    'List of sources to ignore. If no specified, all the sources will be downloaded. Source names should be separated by a comma',
+    CommanderUtils.list,
+    []
+  )
   .option(
     '-l, --logLevel <level>',
     'Possible values are: insane, verbose, info, error, nothing',
@@ -27,7 +39,22 @@ program
       apiKey = await CommanderUtils.getAccessTokenFromLogingPopup(program.opts()?.platformUrlOrigin);
     }
 
-    const organization = new Organization(origin, apiKey, { platformUrl: program.opts()?.platformUrlOrigin });
+    const orgOptions: IOrganizationOptions = {
+      platformUrl: program.opts()?.platformUrlOrigin,
+    };
+    if (options.ignoreSources.length > 0) {
+      orgOptions.blacklist = { sources: options.ignoreSources };
+    }
+    if (options.sources.length > 0) {
+      orgOptions.whitelist = { sources: options.sources };
+    }
+    if (options.ignoreSources.length > 0 && options.sources.length > 0) {
+      Logger.error('Cannot specify both --sources and --ignoreSources options. Choose one or the other');
+      process.exit();
+    }
+
+    const organization = new Organization(origin, apiKey, orgOptions);
+
     const controller: SourceController = new SourceController(organization);
     const downloadOptions: IDownloadOptions = { outputFolder: options.downloadOutput };
 

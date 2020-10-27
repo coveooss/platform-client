@@ -84,11 +84,18 @@ export class ExtensionAPI {
     // Reject all extensions that have been blacklisted. Do not load blacklisted extensions for nothing
     response.body = reject(response.body, (extension: any) => {
       const extensionName: string = extension['name'] || '';
-      const condition = contains(org.getExtensionBlacklist(), StringUtil.lowerAndStripSpaces(extensionName));
-      if (condition) {
+      let rejectionCondition = false;
+      if (org.isBlackListAccessControl()) {
+        rejectionCondition = contains(org.getExtensionBlacklist(), StringUtil.lowerAndStripSpaces(extensionName));
+      } else if (org.isWhiteListAccessControl()) {
+        rejectionCondition = !contains(org.getExtensionWhitelist(), StringUtil.lowerAndStripSpaces(extensionName));
+      }
+
+      // const condition = contains(org.getExtensionBlacklist(), StringUtil.lowerAndStripSpaces(extensionName));
+      if (rejectionCondition) {
         Logger.info(`Skipping extension ${Colors.extension(extensionName)}`);
       }
-      return condition;
+      return rejectionCondition;
     });
 
     const asyncArray = response.body.map((extension: any) => {

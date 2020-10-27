@@ -53,9 +53,10 @@ export class InteractionController {
 
     // Global options
     command = command
-      // FIXME: does not worke. it still saves the option (prefix)
-      .concat(this.saveOptionIfExists(answers, '-S ', InteractiveQuestion.SOURCES))
-      .concat(this.saveOptionIfExists(answers, '-E ', InteractiveQuestion.IGNORE_EXTENSIONS))
+      .concat(this.saveOptionIfExists(answers, '--sources ', InteractiveQuestion.SOURCES))
+      .concat(this.saveOptionIfExists(answers, '--ignoreSources ', InteractiveQuestion.SOURCES_TO_IGNORE))
+      .concat(this.saveOptionIfExists(answers, '--ignoreExtensions ', InteractiveQuestion.IGNORE_EXTENSIONS))
+      .concat(this.saveOptionIfExists(answers, '-f ', InteractiveQuestion.DOWNLOAD_OUTPUT))
       .concat(this.saveOptionIfExists(answers, '-m ', InteractiveQuestion.GRADUATE_OPERATIONS))
       .concat(this.saveOptionIfExists(answers, '-O ', InteractiveQuestion.LOG_FILENAME))
       .concat(this.saveOptionIfExists(answers, '-l ', InteractiveQuestion.LOG_LEVEL))
@@ -74,12 +75,11 @@ export class InteractionController {
 
   private saveOptionIfExists(answers: Answers, prefix: string, option: string): string[] {
     const answer = answers[option];
-
     return Array.isArray(answer)
       ? Utils.isEmptyArray(answer)
         ? []
         : [`${prefix}${answer}`]
-      : Utils.isEmptyString(answer)
+      : Utils.isEmptyString(answer) || answer === '""'
       ? []
       : [`${prefix}${answer}`];
   }

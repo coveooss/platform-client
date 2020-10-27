@@ -68,11 +68,22 @@ export class SourceAPI {
     // Reject all sources that have been blacklisted. Do not load blacklisted sources for nothing
     response.body = reject(response.body, (source: any) => {
       const sourceName: string = source['name'] || '';
-      const condition = contains(org.getSourceBlacklist(), StringUtil.lowerAndStripSpaces(sourceName));
-      if (condition) {
-        Logger.info(`Skipping source ${Colors.source(sourceName)}`);
+      let rejectionCondition = false;
+      if (org.isBlackListAccessControl()) {
+        rejectionCondition = contains(org.getSourceBlacklist(), StringUtil.lowerAndStripSpaces(sourceName));
+      } else if (org.isWhiteListAccessControl()) {
+        rejectionCondition = !contains(org.getSourceWhitelist(), StringUtil.lowerAndStripSpaces(sourceName));
       }
-      return condition;
+
+      // const condition = contains(org.getSourceBlacklist(), StringUtil.lowerAndStripSpaces(sourceName));
+      if (rejectionCondition) {
+        Logger.info(
+          `Skipping source ${Colors.source(sourceName)}${
+            org.isBlackListAccessControl() ? ' (blacklist strategy)' : org.isWhiteListAccessControl() ? ' (whitelist strategy)' : ''
+          }`
+        );
+      }
+      return rejectionCondition;
     });
 
     const asyncArray = response.body.map((source: any) => {

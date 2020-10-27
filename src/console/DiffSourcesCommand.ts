@@ -12,7 +12,7 @@ program
   .option('-s, --silent', 'Do not open the diff result once the operation has complete', false)
   // .option('-r, --rebuild', 'Rebuild the source once created. Default is false', false)
   .option(
-    '-S, --ignoreSources []',
+    '--ignoreSources []',
     'List of sources to ignore. String separated by ",". If no specified, all the sources will be diffed',
     CommanderUtils.list,
     []
@@ -23,7 +23,7 @@ program
 
   // Not sure ignore keys are relavant here
   .option(
-    '-E, --ignoreExtensions []',
+    '--ignoreExtensions []',
     'Extensions to ignore. String separated by ",". By default, the diff will ignore the : "All metadata values" extension',
     CommanderUtils.list
   )

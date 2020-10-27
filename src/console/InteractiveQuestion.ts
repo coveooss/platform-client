@@ -30,9 +30,11 @@ export class InteractiveQuestion {
   // Options
   static GRADUATE_OPERATIONS: string = 'graduateOperations';
   static OBJECT_TO_MANIPULATE: string = 'objecttToManipulate';
+  static DOWNLOAD_OUTPUT: string = 'downloadOutput';
   static SETTING_FILENAME: string = 'settingFilename';
   static LOG_FILENAME: string = 'logFilename';
   static SOURCES: string = 'sources';
+  static SOURCES_TO_IGNORE: string = 'sourcesToIgnore';
   static SOURCES_TO_REBUILD: string = 'sourcesToRebuild';
   static IGNORE_EXTENSIONS: string = 'ignoreExtensions';
   static LOG_LEVEL: string = 'logLevel';
@@ -41,6 +43,7 @@ export class InteractiveQuestion {
   static ADVANCED_MODE: string = 'advancedMode';
   static BASIC_CONFIGURATION_MODE: string = 'Basic';
   static ADVANCED_CONFIGURATION_MODE: string = 'Advanced';
+  static SOURCE_STRATEGY: string = 'sourceStrategy';
   // static EXECUTE_COMMAND: string = 'executeCommand';
 
   static GRADUATE_COMMAND: string = 'graduate';
@@ -188,7 +191,10 @@ export class InteractiveQuestion {
       when: (answer: Answers) => {
         answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
         answer[InteractiveQuestion.USE_MASTER_API_KEY] = true;
-        return answer[InteractiveQuestion.COMMAND] !== InteractiveQuestion.REBUILD_COMMAND;
+        return (
+          answer[InteractiveQuestion.COMMAND] === InteractiveQuestion.REBUILD_COMMAND ||
+          answer[InteractiveQuestion.COMMAND] === InteractiveQuestion.DIFF_COMMAND
+        );
       },
     };
   }
@@ -274,6 +280,7 @@ export class InteractiveQuestion {
       choices: [
         { name: InteractiveQuestion.DIFF_COMMAND },
         { name: InteractiveQuestion.GRADUATE_COMMAND },
+        { name: InteractiveQuestion.DOWNLOAD_COMMAND },
         { name: 'rebuild sources', value: InteractiveQuestion.REBUILD_COMMAND },
       ],
     };
@@ -325,6 +332,37 @@ export class InteractiveQuestion {
       when: (answer: Answers) => {
         answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
         return answer[InteractiveQuestion.COMMAND] === InteractiveQuestion.GRADUATE_COMMAND;
+      },
+    };
+  }
+
+  getContentToDownload(): DistinctQuestion {
+    return {
+      type: 'list',
+      name: InteractiveQuestion.OBJECT_TO_MANIPULATE,
+      message: 'What would you like to download?',
+      choices: [
+        { name: InteractiveQuestion.FIELDS_CONTROLLER_NAME },
+        { name: InteractiveQuestion.EXTENSIONS_CONTROLLER_NAME },
+        { name: InteractiveQuestion.SOURCES_CONTROLLER_NAME },
+        { name: InteractiveQuestion.PAGES_CONTROLLER_NAME },
+      ],
+      when: (answer: Answers) => {
+        answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        return answer[InteractiveQuestion.COMMAND] === InteractiveQuestion.DOWNLOAD_COMMAND;
+      },
+    };
+  }
+
+  downloadOutput(): DistinctQuestion {
+    return {
+      type: 'input',
+      name: InteractiveQuestion.DOWNLOAD_OUTPUT,
+      message: 'Path to output download: ',
+      validate: this.inputValidator('You need to provide the path to output the download'),
+      when: (answer: Answers) => {
+        answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        return answer[InteractiveQuestion.COMMAND] === InteractiveQuestion.DOWNLOAD_COMMAND;
       },
     };
   }
@@ -428,7 +466,7 @@ export class InteractiveQuestion {
   selectSourcesForFields(sources: string[]): DistinctQuestion {
     return {
       type: 'checkbox',
-      name: InteractiveQuestion.SOURCES,
+      name: InteractiveQuestion.SOURCES_TO_IGNORE,
       message: `Select sources from which to load fields. Selecting nothing will load all fields.`,
       choices: sources,
       when: (answer: Answers) => {
@@ -441,15 +479,55 @@ export class InteractiveQuestion {
     };
   }
 
-  selectSourcesToIgnore(sources: string[]): DistinctQuestion {
+  selectSourcesStrategy(sources: string[]): DistinctQuestion {
+    // Ask whether the user would like to use the whitelist approach or the blacklist
+    return {
+      type: 'list',
+      name: InteractiveQuestion.SOURCE_STRATEGY,
+      message: 'Authentication strategy',
+      default: true,
+      choices: [{ name: 'whitelist' }, { name: 'blacklist' }, { name: 'none' }],
+      when: (answer: Answers) => {
+        answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        // TODO: Apply to extensions as well
+        return answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === InteractiveQuestion.SOURCES_CONTROLLER_NAME && sources.length > 0;
+      },
+    };
+  }
+
+  selectSourcesToWhitelist(sources: string[]): DistinctQuestion {
     return {
       type: 'checkbox',
       name: InteractiveQuestion.SOURCES,
-      message: `Select sources to ${underline('ignore')}. Selecting nothing will diff all sources`,
+      message: `Select sources to ${underline('RETRIEVE')}. Selecting nothing will diff all sources`,
       choices: sources,
       when: (answer: Answers) => {
         answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
-        return answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === InteractiveQuestion.SOURCES_CONTROLLER_NAME && sources.length > 0;
+        return (
+          answer[InteractiveQuestion.SOURCE_STRATEGY] === 'whitelist' &&
+          answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === InteractiveQuestion.SOURCES_CONTROLLER_NAME &&
+          sources.length > 0
+        );
+      },
+      filter: (input: string) => {
+        return `"${input}"`;
+      },
+    };
+  }
+
+  selectSourcesToBlacklist(sources: string[]): DistinctQuestion {
+    return {
+      type: 'checkbox',
+      name: InteractiveQuestion.SOURCES_TO_IGNORE,
+      message: `Select sources to ${underline('IGNORE')}. Selecting nothing will diff all sources`,
+      choices: sources,
+      when: (answer: Answers) => {
+        answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        return (
+          answer[InteractiveQuestion.SOURCE_STRATEGY] === 'blacklist' &&
+          answer[InteractiveQuestion.OBJECT_TO_MANIPULATE] === InteractiveQuestion.SOURCES_CONTROLLER_NAME &&
+          sources.length > 0
+        );
       },
       filter: (input: string) => {
         return `"${input}"`;
@@ -460,7 +538,7 @@ export class InteractiveQuestion {
   selectPagesToIgnore(pages: string[]): DistinctQuestion {
     return {
       type: 'checkbox',
-      name: InteractiveQuestion.SOURCES,
+      name: InteractiveQuestion.SOURCES_TO_IGNORE,
       message: `Select sources to ${underline('ignore')}. Selecting nothing will diff all sources`,
       choices: pages,
       when: (answer: Answers) => {
@@ -519,6 +597,8 @@ export class InteractiveQuestion {
       // If Graduation
       this.getContentToDiff(),
       this.getContentToGraduate(),
+      this.getContentToDownload(),
+      this.downloadOutput(),
       this.getGraduateOperation(),
 
       // Common Options
@@ -534,7 +614,9 @@ export class InteractiveQuestion {
     if (data && data.sources) {
       questions.push(this.getSourcesToRebuild(data.sources));
       questions.push(this.selectSourcesForFields(data.sources));
-      questions.push(this.selectSourcesToIgnore(data.sources));
+      questions.push(this.selectSourcesStrategy(data.sources));
+      questions.push(this.selectSourcesToWhitelist(data.sources));
+      questions.push(this.selectSourcesToBlacklist(data.sources));
     }
 
     if (data && data.extensionsToIgnore) {

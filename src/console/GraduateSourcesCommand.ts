@@ -17,7 +17,7 @@ program
     false
   )
   .option(
-    '-S, --ignoreSources []',
+    '--ignoreSources []',
     'List of sources to ignore. String separated by ",". If no specified, all the sources will be diffed',
     CommanderUtils.list,
     []
@@ -25,7 +25,7 @@ program
   // TODO: provide option to rebuild
   // .option('-r, --rebuild', 'Rebuild source after graduation')
   .option(
-    '-E, --ignoreExtensions []',
+    '--ignoreExtensions []',
     'Extensions to ignore. String separated by ",". By default, the diff will ignore the : "All metadata values" extension',
     CommanderUtils.list
   )
