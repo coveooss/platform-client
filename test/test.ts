@@ -1,3 +1,6 @@
+// import 'whatwg-fetch';
+// import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
+
 import { Logger } from '../src/commons/logger';
 import { DictionaryTest } from './commons/collections/DictionaryTest';
 import { DiffResultArrayTest } from './commons/collections/DiffResultArrayTest';

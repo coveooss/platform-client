@@ -252,6 +252,10 @@ export class InteractiveQuestion {
         { name: 'QA', value: 'https://platformqa.cloud.coveo.com' },
         { name: 'DEV', value: 'https://platformdev.cloud.coveo.com' },
       ],
+      when: (answer: Answers) => {
+        answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        return answer[InteractiveQuestion.COMMAND] !== InteractiveQuestion.UPLOAD_COMMAND;
+      },
     };
   }
 
@@ -269,6 +273,10 @@ export class InteractiveQuestion {
         { name: 'QA', value: 'https://platformqa.cloud.coveo.com' },
         { name: 'DEV', value: 'https://platformdev.cloud.coveo.com' },
       ],
+      when: (answer: Answers) => {
+        answer = extend(answer, InteractiveQuestion.PREVIOUS_ANSWERS);
+        return answer[InteractiveQuestion.COMMAND] !== InteractiveQuestion.DOWNLOAD_COMMAND;
+      },
     };
   }
 
@@ -584,9 +592,9 @@ export class InteractiveQuestion {
 
   getInitialQuestions(data: any): QuestionCollection {
     return [
+      this.getCommandList(),
       this.getPlatformOriginEnvironment(),
       this.getPlatformDestinationEnvironment(),
-      this.getCommandList(),
       this.getOriginOrganizationId(),
       this.getDestinationOrganizationId(),
       this.getApiKeyStrategy(),

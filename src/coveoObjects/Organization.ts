@@ -1,3 +1,4 @@
+// import { PlatformClient } from '@coveord/platform-client';
 import { contains, each, filter } from 'underscore';
 import { Dictionary } from '../commons/collections/Dictionary';
 import { IStringMap } from '../commons/interfaces/IStringMap';
@@ -58,6 +59,8 @@ export interface IOrganizationOptions {
  * The Controllers are responsible to load those
  */
 export class Organization extends BaseCoveoObject implements IOrganization {
+  // platform: PlatformClient;
+
   private fields: Dictionary<Field> = new Dictionary<Field>();
   private sources: Dictionary<Source> = new Dictionary<Source>();
   private extensions: Dictionary<Extension> = new Dictionary<Extension>();
@@ -71,10 +74,13 @@ export class Organization extends BaseCoveoObject implements IOrganization {
     Assert.exists(id, 'Missing organization id');
     this.apiKey = apiKey;
 
+    // this.platform = new PlatformClient({ organizationId: id, accessToken: () => apiKey });
+
     this.setupStrategy();
   }
 
   setupStrategy() {
+    // TODO: setup a accesscontrol strategy for each resource
     if (!!this.options.blacklist && !!!this.options.whitelist) {
       // Setup blacklist strategy
       this.accessControl = AccessControl.blacklist;

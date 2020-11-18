@@ -1,3 +1,21 @@
+// {
+//   "compileOnSave": true,
+//   "compilerOptions": {
+//     "strict": true,
+//     "alwaysStrict": true,
+//     "module": "commonjs",
+//     "declaration": true,
+//     // "experimentalDecorators": true,
+//     "outDir": "./bin",
+//     "target": "ES5",
+//     "moduleResolution": "node",
+//     "forceConsistentCasingInFileNames": true,
+//     "noUnusedLocals": true,
+//     "typeRoots": ["./node_modules/@types"]
+//   },
+//   "include": ["./src/**/*.ts"]
+// }
+
 {
   "compileOnSave": true,
   "compilerOptions": {

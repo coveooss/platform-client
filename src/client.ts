@@ -1,3 +1,7 @@
+// Polyfills
+// import 'whatwg-fetch';
+// import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
+
 import * as program from 'commander';
 
 // It is important to first set the environment

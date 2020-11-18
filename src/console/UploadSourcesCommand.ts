@@ -1,10 +1,10 @@
 import * as program from 'commander';
-import { union } from 'underscore';
+import { extend } from 'underscore';
 import { Logger } from '../commons/logger';
 import { IGraduateOptions } from '../commons/interfaces/IGraduateOptions';
 import { CommanderUtils } from './CommanderUtils';
 import { FileUtils } from '../commons/utils/FileUtils';
-import { Organization } from '../coveoObjects/Organization';
+import { IOrganizationOptions, Organization } from '../coveoObjects/Organization';
 import { SourceController } from '../controllers/SourceController';
 import { DummyOrganization } from '../coveoObjects/DummyOrganization';
 
@@ -13,8 +13,14 @@ program
   .description('Upload sources to an organization.')
   .option('-f, --fileToUpload <path>', 'Path to file containing source configuration')
   .option(
+    '-S, --sources []',
+    'List of sources to upload. If not specified all sources will be downlaoded. Source names should be separated by a comma',
+    CommanderUtils.list,
+    []
+  )
+  .option(
     '--ignoreSources []',
-    'List of sources to ignore. String separated by ",". If no specified, all the sources will be diffed',
+    'List of sources to ignore.  If not specified all sources from file will be diffed. Source names should be separated by a comma',
     CommanderUtils.list,
     []
   )
@@ -88,19 +94,28 @@ program
           DELETE: options.methods.indexOf('DELETE') > -1,
         };
 
-        const blacklistOptions = {
-          sources: union(
-            ['allfieldvalues', 'allfieldsvalue', 'allfieldsvalues', 'allmetadatavalue', 'allmetadatavalues'],
-            options.ignoreSources
-          ),
-        };
-        const originOrg = new DummyOrganization();
-        const destinationOrg = new Organization(destination, apiKey, {
-          blacklist: blacklistOptions,
-          platformUrl: program.opts()?.platformUrlDestination,
-        });
-        const controller: SourceController = new SourceController(originOrg, destinationOrg);
+        const orgOptions: IOrganizationOptions = {};
+        if (options.ignoreSources.length > 0) {
+          orgOptions.blacklist = { sources: options.ignoreSources };
+        }
+        if (options.sources.length > 0) {
+          orgOptions.whitelist = { sources: options.sources };
+        }
+        if (options.ignoreSources.length > 0 && options.sources.length > 0) {
+          Logger.error('Cannot specify both --sources and --ignoreSources options. Choose one or the other');
+          process.exit();
+        }
 
+        const originOrg = new DummyOrganization(orgOptions);
+        const destinationOrg = new Organization(
+          destination,
+          apiKey,
+          extend(orgOptions, {
+            platformUrl: program.opts()?.platformUrlDestination,
+          })
+        );
+
+        const controller: SourceController = new SourceController(originOrg, destinationOrg);
         controller.graduate(graduateOptions);
       })
       .catch((err: any) => {

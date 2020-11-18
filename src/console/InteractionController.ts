@@ -56,7 +56,7 @@ export class InteractionController {
       .concat(this.saveOptionIfExists(answers, '--sources ', InteractiveQuestion.SOURCES))
       .concat(this.saveOptionIfExists(answers, '--ignoreSources ', InteractiveQuestion.SOURCES_TO_IGNORE))
       .concat(this.saveOptionIfExists(answers, '--ignoreExtensions ', InteractiveQuestion.IGNORE_EXTENSIONS))
-      .concat(this.saveOptionIfExists(answers, '-f ', InteractiveQuestion.DOWNLOAD_OUTPUT))
+      .concat(this.saveOptionIfExists(answers, '--downloadOutput ', InteractiveQuestion.DOWNLOAD_OUTPUT))
       .concat(this.saveOptionIfExists(answers, '-m ', InteractiveQuestion.GRADUATE_OPERATIONS))
       .concat(this.saveOptionIfExists(answers, '-O ', InteractiveQuestion.LOG_FILENAME))
       .concat(this.saveOptionIfExists(answers, '-l ', InteractiveQuestion.LOG_LEVEL))

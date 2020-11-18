@@ -44,8 +44,12 @@ export class SourceController extends BaseController {
         const source2 = this.organization2.getSources();
 
         // No error should be raised here as all extensions defined in a source should be available in the organization
-        this.replaceExtensionIdWithName(source1, this.extensionList[0]);
-        this.replaceExtensionIdWithName(source2, this.extensionList[1]);
+        if (this.organization1 instanceof DummyOrganization === false) {
+          this.replaceExtensionIdWithName(source1, this.extensionList[0]);
+        }
+        if (this.organization2 instanceof DummyOrganization === false) {
+          this.replaceExtensionIdWithName(source2, this.extensionList[1]);
+        }
 
         // Do not diff extensions that have been blacklisted
         this.removeExtensionFromSource(source1, this.organization1);
@@ -99,7 +103,7 @@ export class SourceController extends BaseController {
             sourceExt.extensionId = (extensionFound as IStringMap<string>)['name'];
           } else {
             const message = `The extension ${Colors.extension(sourceExt.extensionId)} does not exist`;
-            Logger.error(`${message}`);
+            // Logger.error(`${message}`);
             throw new Error(message);
           }
         });
@@ -209,8 +213,10 @@ export class SourceController extends BaseController {
       const graduationCleanup = (sourceList: Source[], stripParams = false) => {
         each(sourceList, (source) => {
           // Make some assertions here. Return an error if an extension is missing
-          // 1. Replacing extensions with destination id
-          this.replaceExtensionNameWithId(source, this.extensionList[1]);
+          // 1. Replacing extensions with destination id. Do nothing is org is a dummy org.
+          if (this.organization1 instanceof DummyOrganization === false) {
+            this.replaceExtensionNameWithId(source, this.extensionList[1]);
+          }
 
           // 2. Strip source from keys that should not be graduated using whitelist and blacklist strategy
           //    Should apply to "TO_UPDATE" sources only
@@ -460,11 +466,10 @@ export class SourceController extends BaseController {
    */
   loadRequiredExtensions(): Promise<Array<Array<{}>>> {
     Logger.verbose('Loading extensions.');
-    const promiseArray = [];
-    if (this.organization1 instanceof DummyOrganization === false) {
-      promiseArray.push(ExtensionAPI.getExtensionList(this.organization1));
-    }
-    promiseArray.push(ExtensionAPI.getExtensionList(this.organization2));
+    const promiseArray = [
+      this.organization1 instanceof DummyOrganization ? [{}] : ExtensionAPI.getExtensionList(this.organization1),
+      this.organization2 instanceof DummyOrganization ? [{}] : ExtensionAPI.getExtensionList(this.organization2),
+    ];
     return Promise.all(promiseArray);
   }
 

@@ -16,6 +16,13 @@ program
     'When specified, the graduation will not validate field integrity. Otherwise, the graduation will fail if at least one source to graduate references fields that do not exist in the desintation org',
     false
   )
+  // TODO: to implement
+  // .option(
+  //   '-S, --sources []',
+  //   'List of sources to download. If not specified all sources will be downlaoded. Source names should be separated by a comma',
+  //   CommanderUtils.list,
+  //   []
+  // )
   .option(
     '--ignoreSources []',
     'List of sources to ignore. String separated by ",". If no specified, all the sources will be diffed',
