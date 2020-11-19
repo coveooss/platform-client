@@ -76,4 +76,21 @@ export class UrlService {
   static getSinglePageUrl(organization: Organization, pageId: string): string {
     return `${this.getOrganizationUrl(organization)}/pages/${pageId}`;
   }
+
+  /*** Search Page Resources API ***/
+  static getCssResourcePageUrl(organization: Organization, pageId: string): string {
+    return `${this.getOrganizationUrl(organization)}/pages/${pageId}/header/css`;
+  }
+
+  static getJavascriptResourcePageUrl(organization: Organization, pageId: string): string {
+    return `${this.getOrganizationUrl(organization)}/pages/${pageId}/header/javascript`;
+  }
+
+  static getSingleCssResourcePageUrl(organization: Organization, pageId: string, resourceId: string): string {
+    return `${this.getOrganizationUrl(organization)}/pages/${pageId}/header/css/${resourceId}`;
+  }
+
+  static getSingleJavascriptResourcePageUrl(organization: Organization, pageId: string, resourceId: string): string {
+    return `${this.getOrganizationUrl(organization)}/pages/${pageId}/header/javascript/${resourceId}`;
+  }
 }

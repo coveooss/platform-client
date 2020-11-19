@@ -52,6 +52,11 @@ export class StaticErrorMessage {
   static MISSING_PAGE_NAME: string = 'Page name should not be undefined';
   static MISSING_PAGE_HTML: string = 'Page html should not be undefined';
 
+  // Page resources
+  static MISSING_PAGE_RESOURCE_NAME: string = 'missing page resource name';
+  static MISSING_PAGE_RESOURCE_URL: string = 'missing page resource url';
+  static MISSING_PAGE_RESOURCE_INLINECONTENT: string = 'missing page resource inlinecontent';
+
   // Sources
   static NO_SOURCE_FOUND: string = 'No source found';
   static UNABLE_TO_GET_SOURCE_NAME: string = 'Unable to get source names';

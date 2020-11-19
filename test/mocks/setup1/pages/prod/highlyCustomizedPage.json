@@ -1,51 +1,51 @@
 {
-    "id": "66b7e0e6-f067-482c-9563-accbe20f17cd",
-    "name": "highly-customized",
-    "title": "Highly Customized Search Page",
-    "lastModified": "2019-07-29T16:13:44Z",
-    "html": "<div id=\"search\" class=\"CoveoSearchInterface\" data-enable-history=\"true\" data-design=\"new\">\n  <div class=\"CoveoLanguageManager\"></div>\n  <div class=\"CoveoFoldingForThread\" data-field=\"@foldfoldingfield\" data-child=\"@foldchildfield\" data-parent=\"@foldparentfield\" data-range=\"0\"></div>\n  <div class=\"CoveoAnalytics\"></div>\n  <div class=\"coveo-tab-section\">\n    <div class=\"CoveoTab\" data-id=\"All\" data-caption=\"AllContent\"></div>\n    <div class=\"CoveoTab\" data-id=\"HelpCenter\" data-caption=\"Help Center\" data-expression='@commonsource==\"Help Center\"'></div>\n    <div class=\"CoveoTab\" data-id=\"Community\" data-caption=\"Community\" data-expression='@commonsource==\"Community\"'></div>\n  </div>\n  <div class=\"coveo-facet-column\">\n\n    <!-- <div class=\"CoveoFacet\" data-title=\"Category\" data-field=\"@licategorytitle\" data-number-of-values=\"5\" data-tab=\"Community\"></div> -->\n    <div class=\"CoveoFacet\" data-title=\"Language\" data-field=\"@language\" data-number-of-values=\"5\"></div>\n\n    <!-- <div class=\"CoveoFacet\" data-title=\"Author\" data-field=\"@limessageauthor\" data-tab=\"Community\"></div> -->\n\n    <!-- <div class=\"CoveoFacet\" data-title=\"Year\" data-sort-criteria=\"alphadescending\" data-field=\"@year\"></div>\n<div class=\"CoveoFacet\" data-title=\"Month\" data-field=\"@month\"></div> -->\n  </div>\n  <div class=\"coveo-results-column\">\n    <div class=\"CoveoBreadcrumb\"></div>\n    <div class=\"coveo-results-header\">\n      <div class=\"coveo-summary-section\">\n        <span class=\"CoveoQuerySummary\" data-enable-search-tips=\"false\"></span>\n      </div>\n      <div class=\"coveo-sort-section\">\n        <span class=\"CoveoSort\" data-sort-criteria=\"relevancy\" data-caption=\"Relevance\"></span>\n        <span class=\"CoveoSort\" data-sort-criteria=\"date descending,date ascending\" data-caption=\"Date\"></span>\n      </div>\n    </div>\n    <div class=\"CoveoHiddenQuery\"></div>\n    <div class=\"CoveoDidYouMean\"></div>\n    <div class=\"CoveoErrorReport\"></div>\n    <div class=\"CoveoTriggers\"></div>\n    <div class=\"CoveoResultList\" data-layout=\"list\" data-wait-animation=\"fade\" data-auto-select-fields-to-include=\"false\">\n      <script id=\"LithiumMessage\" class=\"result-template\" type=\"text/html\" data-layout=\"list\" data-field-objecttype=\"Message\">\n        <div class=\"coveo-result-frame\">\n  <div class=\"coveo-result-row\">\n    <div class=\"coveo-result-cell result-icon-section\">\n      <div class=\"CoveoCustomIcon\"></div>\n      <div class=\"CoveoText result-icon-label\" data-value=\"CommunityPost\"></div>\n    </div>\n    <div class=\"coveo-result-cell\">\n      <div class=\"coveo-result-row no-margin flex-space-between\">\n        <div class=\"coveo-result-cell\">\n          <a class=\"CoveoResultLink\" data-title-template=\"${raw.limessagesubject}\"></a>\n        </div>\n        <div class=\"coveo-result-cell result-date-section\">\n          <span class=\"CoveoFieldValue\" data-field=\"@date\" data-helper=\"date\" data-helper-options-include-time-if-this-week=\"false\"></span>\n        </div>\n      </div>\n      <div class=\"coveo-result-row margin-bottom-10 margin-top-10\">\n        <div class=\"coveo-result-cell\">\n          <span class=\"padding-right-5\"><i class=\"far fa-eye\"></i></span>\n          <span class=\"CoveoFieldValue black\" data-field=\"@limessageviewcount\"></span>\n          <span class=\"CoveoText\" data-value=\"views\"></span>\n          <span class=\"padding-right-5 padding-left-20\"><i class=\"fas fa-comment\"></i></span>\n          <span class=\"CoveoFieldValue black\" data-field=\"@lithreadreplycount\"></span>\n          <span class=\"CoveoText\" data-value=\"replies\"></span>\n          <span class=\"padding-right-5 padding-left-20\"><i class=\"fas fa-thumbs-up\"></i></span>\n          <span class=\"CoveoFieldValue black\" data-field=\"@limessagekudoscount\"></span>\n          <span class=\"CoveoText\" data-value=\"likes\"></span>\n        </div>\n      </div>\n      <div class=\"coveo-result-row margin-bottom-10 margin-top-10\">\n        <div class=\"coveo-result-cell\">\n          <span class=\"CoveoText\" data-value=\"By:\"></span>\n          <span class=\"CoveoFieldValue black\" data-field=\"@authorloginname\"></span>\n          <span class=\"CoveoText margin-left-20\" data-value=\"In:\"></span>\n          <span class=\"CoveoFieldValue black\" data-field=\"@liboardshorttitle\"></span>\n        </div>\n      </div>\n      <div class=\"coveo-result-row\">\n        <div class=\"coveo-result-cell\">\n          <span class=\"CoveoExcerpt\"></span>\n        </div>\n      </div>\n      <div class=\"coveo-result-row no-margin\">\n        <div class=\"coveo-result-cell\">\n          <span\n            class=\"CoveoResultFolding\"\n            data-result-template-id=\"LithiumMessageChild\"\n            data-more-caption=\"ShowCompleteThread\"\n            data-less-caption=\"ShowOnlyTopMatchingPosts\"\n          >\n          </span>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n</script>\n      <script id=\"LithiumMessageChild\" class=\"result-template\" type=\"text/html\" data-layout=\"list\" data-field-objecttype=\"Message\">\n        <div class=\"coveo-result-frame\">\n  <div class=\"coveo-result-row\">\n    <div class=\"coveo-result-cell\">\n      <div class=\"coveo-result-row no-margin flex-space-between\">\n        <div class=\"coveo-result-cell\">\n          <a class=\"CoveoResultLink\">\n            <span class=\"CoveoExcerpt text-small\"></span>\n          </a>\n        </div>\n      </div>\n      <div class=\"coveo-result-row margin-bottom-10 margin-top-10\">\n        <div class=\"coveo-result-cell\">\n          <span class=\"CoveoText\" data-value=\"By:\"></span>\n          <span class=\"CoveoFieldValue black\" data-field=\"@authorloginname\"></span>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n</script>\n      <script id=\"HelpCenter\" class=\"result-template\" type=\"text/html\" data-layout=\"list\" data-field-filetype=\"html\">\n        <div class=\"coveo-result-frame\">\n  <div class=\"coveo-result-row\">\n    <div class=\"coveo-result-cell result-icon-section\">\n      <div class=\"CoveoCustomIcon\" data-field=\"@filetype\"></div>\n      <div class=\"CoveoText result-icon-label\" data-value=\"Article\"></div>\n    </div>\n    <div class=\"coveo-result-cell\">\n      <div class=\"coveo-result-row no-margin flex-space-between\">\n        <div class=\"coveo-result-cell\">\n          <a class=\"CoveoResultLink\"></a>\n        </div>\n        <div class=\"coveo-result-cell result-date-section\">\n          <span\n            class=\"CoveoFieldValue\"\n            data-field=\"@date\"\n            data-helper=\"date\"\n            data-helper-options-include-time-if-this-week=\"false\"\n          ></span>\n        </div>\n      </div>\n      <div class=\"coveo-result-row\">\n        <div class=\"coveo-result-cell\">\n          <span class=\"CoveoExcerpt\"></span>\n        </div>\n      </div>\n      <div class=\"coveo-result-row no-margin\">\n        <div class=\"coveo-result-cell\">\n          <span\n            class=\"CoveoResultFolding\"\n            data-result-template-id=\"LithiumMessageChild\"\n            data-more-caption=\"ShowCompleteThread\"\n            data-less-caption=\"ShowOnlyTopMatchingPosts\"\n          >\n          </span>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n</script>\n      <script id=\"Default\" class=\"result-template\" type=\"text/html\" data-layout=\"list\">\n        <div class=\"coveo-result-frame\">\n  <div class=\"coveo-result-row\">\n    <div class=\"coveo-result-cell\">\n      <div class=\"CoveoCustomIcon\"> </div>\n    </div>\n    <div class=\"coveo-result-cell\">\n      <div class=\"coveo-result-row\">\n        <div class=\"coveo-result-cell\">\n          <a class=\"CoveoResultLink\"> </a>\n        </div>\n        <div class=\"coveo-result-cell\">\n          <span class=\"CoveoFieldValue\" data-field=\"@date\" data-helper=\"date\"> </span>\n        </div>\n      </div>\n      <div class=\"coveo-result-row\">\n        <div class=\"coveo-result-cell\">\n          <span class=\"CoveoExcerpt\"> </span>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n</script>\n    </div>\n    <div class=\"pagination-section\">\n      <div class=\"CoveoPager\"></div>\n      <div class=\"CoveoResultsPerPage\"></div>\n    </div>\n  </div>\n</div>\n\n<script>!function(e,t){\"object\"==typeof exports&&\"object\"==typeof module?module.exports=t(require(\"Coveo\")):\"function\"==typeof define&&define.amd?define([\"Coveo\"],t):\"object\"==typeof exports?exports.CommunitySearch=t(require(\"Coveo\")):e.CommunitySearch=t(e.Coveo)}(\"undefined\"!=typeof self?self:this,function(e){return function(e){var t={};function n(o){if(t[o])return t[o].exports;var i=t[o]={i:o,l:!1,exports:{}};return e[o].call(i.exports,i,i.exports,n),i.l=!0,i.exports}return n.m=e,n.c=t,n.d=function(e,t,o){n.o(e,t)||Object.defineProperty(e,t,{configurable:!1,enumerable:!0,get:o})},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,\"a\",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p=\"./\",n(n.s=3)}([function(e,t){e.exports='<svg version=\"1.1\" viewBox=\"0 0 36 36\" preserveAspectRatio=\"xMidYMid meet\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><title>unknown-status-line</title><circle class=\"clr-i-outline clr-i-outline-path-1\" cx=\"17.58\" cy=\"26.23\" r=\"1.4\"></circle><path class=\"clr-i-outline clr-i-outline-path-2\" d=\"M24.7,13a5.18,5.18,0,0,0-2.16-3.56,7.26,7.26,0,0,0-5.71-1.09A11.34,11.34,0,0,0,12,10.44,1,1,0,1,0,13.26,12a9.32,9.32,0,0,1,3.94-1.72,5.29,5.29,0,0,1,4.16.74,3.21,3.21,0,0,1,1.35,2.19c.33,2.69-3.19,3.75-5.32,4.14l-.82.15v4.36a1,1,0,0,0,2,0V19.17C24.61,17.79,24.88,14.41,24.7,13Z\"></path><rect x=\"0\" y=\"0\" width=\"36\" height=\"36\" fill-opacity=\"0\"></rect></svg>'},function(t,n){t.exports=e},function(e,t,n){\"use strict\";Object.defineProperty(t,\"__esModule\",{value:!0});var o=function(){function e(){}return e.icons={message:n(8),doc:n(0),unknown:n(0),stone:n(0)},e}();t.SVGIcons=o},function(e,t,n){n(4),e.exports=n(12)},function(e,t,n){\"use strict\";Object.defineProperty(t,\"__esModule\",{value:!0});var o=n(5);t.PSversion=o.PSversion;var i=n(6);t.DropboxIcon=i.DropboxIcon;var r=n(9);t.LanguageManager=r.LanguageManager;var s=n(10);t.StyleReplacer=s.StyleReplacer,n(11).swapVar(this)},function(e,t,n){\"use strict\";Object.defineProperty(t,\"__esModule\",{value:!0}),t.PSversion=\"0.3.4\"},function(e,t,n){\"use strict\";var o,i=this&&this.__extends||(o=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(e,t){e.__proto__=t}||function(e,t){for(var n in t)t.hasOwnProperty(n)&&(e[n]=t[n])},function(e,t){function n(){this.constructor=e}o(e,t),e.prototype=null===t?Object.create(t):(n.prototype=t.prototype,new n)});Object.defineProperty(t,\"__esModule\",{value:!0});var r=n(7),s=n(1),a=function(e){function t(n,o,i,a){var c=e.call(this,n,t.ID,i)||this;c.element=n,c.options=o,c.bindings=i,c.result=a,c.options=s.ComponentOptions.initComponentOptions(n,t,o);var u=r.IconUtils.injectSVG(c.getValue());return s.$$(c.element).append(s.$$(\"span\",{},u.icon).el),c.element.style.backgroundColor=u.color,c}return i(t,e),t.prototype.getValue=function(){var e=s.Utils.getFieldValue(this.result,this.options.field);return!_.isArray(e)&&_.isObject(e)&&(e=\"\"),e||\"\"},t.ID=\"DropboxIcon\",t.options={field:s.ComponentOptions.buildFieldOption({defaultValue:\"@objecttype\",required:!0})},t}(s.Component);t.DropboxIcon=a,s.Initialization.registerAutoCreateComponent(a)},function(e,t,n){\"use strict\";Object.defineProperty(t,\"__esModule\",{value:!0});var o=n(2),i=function(){function e(){}return e.prototype.getSVG=function(t){var n=(t||\"\").toLowerCase().replace(/\\s/g,\"\");return e.MAPPING_TABLE[n]||e.MAPPING_TABLE.unknown},e.MAPPING_TABLE={message:{icon:o.SVGIcons.icons.message,color:\"#c3f4ff\"},html:{icon:o.SVGIcons.icons.doc,color:\"rgba(206, 180, 255, 0.5)\"},unknown:{icon:o.SVGIcons.icons.unknown,color:\"#D0D0D2\"}},e}();t.IconMetadata=i;var r=function(){function e(){}return e.injectSVG=function(e){return(new i).getSVG(e)},e}();t.IconUtils=r},function(e,t){e.exports='<svg viewBox=\"0 0 24 26\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><title>message</title><desc>Created with Sketch.</desc><defs></defs><g id=\"Page-1\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"><g id=\"message\"><polygon id=\"white-background\" fill=\"#FFFFFF\" points=\"3.429 3.373 3.429 21.028 7.622 18.552 20.572 18.552 20.572 3.373 3.428 3.373\"></polygon><path d=\"M3.429,3.373 L3.429,21.028 L7.622,18.552 L20.572,18.552 L20.572,3.373 L3.428,3.373 L3.429,3.373 Z M0,2.54 C0,1.137 1.158,0 2.568,0 L21.432,0 C22.85,0 24,1.117 24,2.515 L24,19.41 C24,20.8 22.84,21.926 21.418,21.926 L8.57,21.926 L2.206,25.682 C0.988,26.402 0,25.86 0,24.447 L0,2.539 L0,2.54 Z\" id=\"Shape\" fill=\"#0061FF\" fill-rule=\"nonzero\"></path><path d=\"M7.2,8.864 L17.4,8.864 L17.4,10.439 L7.2,10.439 L7.2,8.864 Z M7.2,12.015 L12.3,12.015 L12.3,13.591 L7.2,13.591 L7.2,12.015 Z\" id=\"Shape\" fill=\"#B4D0E7\" fill-rule=\"nonzero\"></path></g></g></svg>'},function(e,t,n){\"use strict\";var o,i=this&&this.__extends||(o=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(e,t){e.__proto__=t}||function(e,t){for(var n in t)t.hasOwnProperty(n)&&(e[n]=t[n])},function(e,t){function n(){this.constructor=e}o(e,t),e.prototype=null===t?Object.create(t):(n.prototype=t.prototype,new n)});Object.defineProperty(t,\"__esModule\",{value:!0});var r=n(1),s=function(e){function t(n,o,i,s){var a=e.call(this,n,t.ID,i)||this;return a.element=n,a.options=o,a.bindings=i,a.result=s,a.options=r.ComponentOptions.initComponentOptions(n,t,o),a.bind.onRootElement(r.QueryEvents.buildingQuery,function(e){return a.handleBuildingQuery(e)}),a}return i(t,e),t.prototype.getCurrentLanguage=function(){var e=String.locale;return(t.languageMappings[e]||\"\").toLowerCase()},t.prototype.handleBuildingQuery=function(e){e.queryBuilder.addContextValue(\"language\",this.getCurrentLanguage())},t.ID=\"LanguageManager\",t.options={},t.languageMappings={\"zh-cn\":\"Chinese\",\"zh-tw\":\"Chinese\",cs:\"Czech\",da:\"Danish\",nl:\"Dutch\",en:\"English\",fi:\"Finnish\",fr:\"French\",de:\"German\",el:\"Greek\",hu:\"Hungarian\",id:\"Indonesian\",it:\"Italian\",ja:\"Japanese\",ko:\"Korean\",no:\"Norwegian\",pl:\"Polish\",\"pt-br\":\"Portuguese\",ru:\"Russian\",\"es-es\":\"Spanish\",sv:\"Swedish\",th:\"Thai\",tr:\"Turkish\"},t}(r.Component);t.LanguageManager=s,r.Initialization.registerAutoCreateComponent(s)},function(e,t,n){\"use strict\";var o,i=this&&this.__extends||(o=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(e,t){e.__proto__=t}||function(e,t){for(var n in t)t.hasOwnProperty(n)&&(e[n]=t[n])},function(e,t){function n(){this.constructor=e}o(e,t),e.prototype=null===t?Object.create(t):(n.prototype=t.prototype,new n)});Object.defineProperty(t,\"__esModule\",{value:!0});var r=n(1),s=n(2),a=function(e){function t(n,o,i,s){var a=e.call(this,n,t.ID,i)||this;return a.element=n,a.options=o,a.bindings=i,a.result=s,a.options=r.ComponentOptions.initComponentOptions(n,t,o),a.bind.onRootElement(r.InitializationEvents.afterComponentsInitialization,function(){return a.handleAfterComponentInitialization()}),a}return i(t,e),t.prototype.replaceSearchboxIcon=function(){var e=document.querySelector(\".CoveoSearchButton .coveo-search-button\");if(e){var t=e.querySelector(\"svg.coveo-search-button-svg\");t&&(t.innerHTML=s.SVGIcons.icons.stone)}},t.prototype.handleAfterComponentInitialization=function(){this.replaceSearchboxIcon()},t.ID=\"StyleReplacer\",t}(r.Component);t.StyleReplacer=a,r.Initialization.registerAutoCreateComponent(a)},function(e,t,n){\"use strict\";Object.defineProperty(t,\"__esModule\",{value:!0}),t.swapVar=function(e){void 0===window.Coveo?window.Coveo=e:_.each(_.keys(e),function(t){window.Coveo[t]=e[t]})}},function(e,t){}])});</script>",
-    "css": [
-        {
-            "Name": "CoveoUI",
-            "URL": "https://static.cloud.coveo.com/searchui/v2.6459/css/CoveoFullSearch.min.css",
-            "InlineContent": ""
-        },
-        {
-            "Name": "Interface Editor toolbox",
-            "URL": "https://static.cloud.coveo.com/interfaceeditor/v1.11/css/InterfaceToolbox.css",
-            "InlineContent": ""
-        },
-        {
-            "Name": "Reset body margin",
-            "URL": "",
-            "InlineContent": "body {margin:0;}"
-        }
-    ],
-    "javascript": [
-        {
-            "Name": "CoveoSearchUI",
-            "URL": "https://static.cloud.coveo.com/searchui/v2.6459/js/CoveoJsSearch.Lazy.min.js",
-            "InlineContent": ""
-        },
-        {
-            "Name": "CoveoSearchTemplates",
-            "URL": "https://static.cloud.coveo.com/searchui/v2.6459/js/templates/templates.js",
-            "InlineContent": ""
-        },
-        {
-            "Name": "CoveoInterfaceEditorToolbox",
-            "URL": "https://static.cloud.coveo.com/interfaceeditor/v1.11/js/InterfaceToolbox.js",
-            "InlineContent": ""
-        },
-        {
-            "Name": "CoveoInterfaceEditorToolboxString",
-            "URL": "https://static.cloud.coveo.com/interfaceeditor/v1.11/js/cultures/toolbox-en.js",
-            "InlineContent": ""
-        },
-        {
-            "Name": "Interface editor polyfill for IE11",
-            "URL": "https://cdn.jsdelivr.net/npm/whatwg-fetch@3.0.0/dist/fetch.umd.min.js",
-            "InlineContent": ""
-        }
-    ]
+  "id": "66b7e0e6-f067-482c-9563-accbe20f17cd",
+  "name": "highly-customized",
+  "title": "Highly Customized Search Page",
+  "lastModified": "2019-07-29T16:13:44Z",
+  "html": "<div>hello world</div>",
+  "css": [
+    {
+      "Name": "CoveoUI",
+      "URL": "https://static.cloud.coveo.com/searchui/v2.6459/css/CoveoFullSearch.min.css",
+      "InlineContent": ""
+    },
+    {
+      "Name": "Interface Editor toolbox",
+      "URL": "https://static.cloud.coveo.com/interfaceeditor/v1.11/css/InterfaceToolbox.css",
+      "InlineContent": ""
+    },
+    {
+      "Name": "Reset body margin",
+      "URL": "",
+      "InlineContent": "body {margin:0;}"
+    }
+  ],
+  "javascript": [
+    {
+      "Name": "CoveoSearchUI",
+      "URL": "https://static.cloud.coveo.com/searchui/v2.6459/js/CoveoJsSearch.Lazy.min.js",
+      "InlineContent": ""
+    },
+    {
+      "Name": "CoveoSearchTemplates",
+      "URL": "https://static.cloud.coveo.com/searchui/v2.6459/js/templates/templates.js",
+      "InlineContent": ""
+    },
+    {
+      "Name": "CoveoInterfaceEditorToolbox",
+      "URL": "https://static.cloud.coveo.com/interfaceeditor/v1.11/js/InterfaceToolbox.js",
+      "InlineContent": ""
+    },
+    {
+      "Name": "CoveoInterfaceEditorToolboxString",
+      "URL": "https://static.cloud.coveo.com/interfaceeditor/v1.11/js/cultures/toolbox-en.js",
+      "InlineContent": ""
+    },
+    {
+      "Name": "Interface editor polyfill for IE11",
+      "URL": "https://cdn.jsdelivr.net/npm/whatwg-fetch@3.0.0/dist/fetch.umd.min.js",
+      "InlineContent": ""
+    }
+  ]
 }

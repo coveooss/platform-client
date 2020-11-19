@@ -25,6 +25,8 @@ program
       'name', // mandatory
       'title', // mandatory
       'html',
+      'css',
+      'javascript',
     ];
 
     // Set diff options

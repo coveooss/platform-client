@@ -22,7 +22,7 @@ export const PageControllerTest = () => {
 
   // Prod
   const PRODhighlyCustomized: {} = require('./../mocks/setup1/pages/prod/highlyCustomizedPage.json');
-  const PRODproManagerPortalSearch: {} = require('./../mocks/setup1/pages/prod/ProManagePortalSearch.json');
+  const PRODproManagerPortalSearch: {} = require('./../mocks/setup1/pages/prod/ProManagePortalSearch.json'); // Same as in dev but has different css and JS files
   const PRODbrokenPage: {} = require('./../mocks/setup1/pages/prod/brokenPage.json');
   const PRODemptyPage: {} = require('./../mocks/setup1/pages/prod/emptyPage.json');
 
@@ -216,17 +216,21 @@ export const PageControllerTest = () => {
           .get('/rest/organizations/prod/pages')
           .reply(RequestUtils.OK, [PRODemptyPage]);
 
+        const diffOptions = {
+          includeOnly: ['name', 'title', 'html', 'css', 'javascript'],
+        };
         const graduateOptions: IGraduateOptions = {
           POST: true,
           PUT: false,
           DELETE: false,
-          diffOptions: {},
+          diffOptions: diffOptions,
         };
 
         controller
-          .runDiffSequence()
+          .runDiffSequence(diffOptions)
           .then((diffResultArray: DiffResultArray<Page>) => {
             // Nothing to graduate
+
             expect(diffResultArray.containsItems()).to.be.false;
             controller
               .runGraduateSequence(diffResultArray, graduateOptions)
@@ -251,17 +255,9 @@ export const PageControllerTest = () => {
           // Fecthing all prod pages
           .get('/rest/organizations/prod/pages')
           .reply(RequestUtils.OK, [PRODhighlyCustomized, PRODproManagerPortalSearch, PRODbrokenPage])
-          .post('/rest/organizations/prod/pages', {
-            title: (DEVemptyPage as any).title,
-            name: (DEVemptyPage as any).name,
-            html: (DEVemptyPage as any).html,
-          })
+          .post('/rest/organizations/prod/pages', DEVemptyPage)
           .reply(429, 'TOO_MANY_REQUESTS')
-          .put('/rest/organizations/prod/pages/66b7e0e6-f067-482c-9563-accbe20f17cd', {
-            title: (DEVhighlyCustomized as any).title,
-            name: (DEVhighlyCustomized as any).name,
-            html: (DEVhighlyCustomized as any).html,
-          })
+          .put('/rest/organizations/prod/pages/66b7e0e6-f067-482c-9563-accbe20f17cd', DEVhighlyCustomized)
           .reply(429, 'TOO_MANY_REQUESTS')
           .delete('/rest/organizations/prod/pages/2b34dc4a-5411-4606-9f93-03c27ca89e7a')
           .reply(429, 'TOO_MANY_REQUESTS');
@@ -299,26 +295,24 @@ export const PageControllerTest = () => {
           // Fecthing all prod pages
           .get('/rest/organizations/prod/pages')
           .reply(RequestUtils.OK, [PRODhighlyCustomized, PRODproManagerPortalSearch, PRODbrokenPage])
-          .post('/rest/organizations/prod/pages', {
-            title: (DEVemptyPage as any).title,
-            name: (DEVemptyPage as any).name,
-            html: (DEVemptyPage as any).html,
-          })
+          .post('/rest/organizations/prod/pages', DEVemptyPage)
           .reply(RequestUtils.OK)
-          .put('/rest/organizations/prod/pages/66b7e0e6-f067-482c-9563-accbe20f17cd', {
-            title: (DEVhighlyCustomized as any).title,
-            name: (DEVhighlyCustomized as any).name,
-            html: (DEVhighlyCustomized as any).html,
-          })
+          .put('/rest/organizations/prod/pages/66b7e0e6-f067-482c-9563-accbe20f17cd', DEVhighlyCustomized)
+          .reply(RequestUtils.NO_CONTENT)
+          .put('/rest/organizations/prod/pages/b510c98c-ac4e-4881-9d4e-20c862656aad', DEVproManagerPortalSearch)
           .reply(RequestUtils.NO_CONTENT)
           .delete('/rest/organizations/prod/pages/2b34dc4a-5411-4606-9f93-03c27ca89e7a')
           .reply(RequestUtils.NO_CONTENT);
+
+        const diffOptions = {
+          includeOnly: ['name', 'title', 'html', 'css', 'javascript'],
+        };
 
         const graduateOptions: IGraduateOptions = {
           POST: true,
           PUT: true,
           DELETE: true,
-          diffOptions: {},
+          diffOptions: diffOptions,
         };
 
         controller
