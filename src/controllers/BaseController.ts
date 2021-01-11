@@ -121,10 +121,6 @@ export abstract class BaseController {
       }
     }
 
-    console.log('*********************');
-    console.log(options);
-    console.log('*********************');
-
     if (!options.silent) {
       // Do not ask confirmation if silent option is enabled
       questions.push(this.InteractiveQuestion.confirmAction(`Are you sure want to ${phrase} ${this.objectName}?`, 'confirm'));
