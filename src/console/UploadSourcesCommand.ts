@@ -11,6 +11,11 @@ import { DummyOrganization } from '../coveoObjects/DummyOrganization';
 program
   .command('upload-sources <origin> [apiKey]')
   .description('Upload sources to an organization.')
+  .option(
+    '-t, --silent',
+    'When specified, the graduation will not ask for user confirmation. Useful when the operation is running in an automated process',
+    false
+  )
   .option('-f, --fileToUpload <path>', 'Path to file containing source configuration')
   .option(
     '-S, --ignoreSources []',
@@ -80,6 +85,7 @@ program
             keysToIgnore: keysToIgnore,
             originData: data,
           },
+          silent: options.silent,
           keyWhitelist: includeOnly,
           keyBlacklist: keysToIgnore,
           rebuild: options.rebuild,

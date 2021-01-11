@@ -23,4 +23,8 @@ export interface IGraduateOptions extends IHTTPGraduateOptions {
    * If set to true, the graduation will fail if some source dependencies (fields, extensions) are missings
    */
   ensureFieldIntegrity?: boolean;
+  /**
+   * Specify if the rebuild should be silent. If set to true, no confirmation will be prompt to the user
+   */
+  silent?: boolean;
 }

@@ -47,6 +47,7 @@ export abstract class BaseController {
 
   static DEFAULT_GRADUATE_OPTIONS: IGraduateOptions = {
     diffOptions: BaseController.DEFAULT_DIFF_OPTIONS,
+    silent: false,
     keyWhitelist: [],
     keyBlacklist: [],
     rebuild: false,
@@ -120,10 +121,17 @@ export abstract class BaseController {
       }
     }
 
-    questions.push(this.InteractiveQuestion.confirmAction(`Are you sure want to ${phrase} ${this.objectName}?`, 'confirm'));
+    console.log('*********************');
+    console.log(options);
+    console.log('*********************');
+
+    if (!options.silent) {
+      // Do not ask confirmation if silent option is enabled
+      questions.push(this.InteractiveQuestion.confirmAction(`Are you sure want to ${phrase} ${this.objectName}?`, 'confirm'));
+    }
     // Make sure the user selects at least one HTTP method
     inquirer.prompt(questions).then((res: inquirer.Answers) => {
-      if (res.confirm) {
+      if (res.confirm || options.silent) {
         console.log();
         console.log('Graduation Report');
         console.log(`${Colors.warn('─────────────────')}`);

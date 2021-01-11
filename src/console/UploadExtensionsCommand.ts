@@ -12,6 +12,11 @@ import { DummyOrganization } from '../coveoObjects/DummyOrganization';
 program
   .command('upload-extensions <origin> [apiKey]')
   .description('Upload extensions to an organization.')
+  .option(
+    '-t, --silent',
+    'When specified, the graduation will not ask for user confirmation. Useful when the operation is running in an automated process',
+    false
+  )
   .option('-f, --fileToUpload <path>', 'Path to file containing extension configuration')
   .option('-E, --ignoreExtensions []', 'Extensions to ignore. String separated by ",".', CommanderUtils.list)
   .option('-m, --methods []', 'HTTP method authorized by the Graduation', CommanderUtils.list, ['POST', 'PUT'])
@@ -45,6 +50,7 @@ program
         // Set graduation options
         const graduateOptions: IGraduateOptions = {
           diffOptions: diffOptions,
+          silent: options.silent,
           POST: options.methods.indexOf('POST') > -1,
           PUT: options.methods.indexOf('PUT') > -1,
           DELETE: options.methods.indexOf('DELETE') > -1,
