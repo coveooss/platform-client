@@ -9,6 +9,11 @@ import { ExtensionController } from '../controllers/ExtensionController';
 program
   .command('graduate-extensions <origin> <destination> [apiKey...]')
   .description('Graduate extensions from one organization to another')
+  .option(
+    '-t, --silent',
+    'When specified, the graduation will not ask for user confirmation. Useful when the operation is running in an automated process',
+    false
+  )
   .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', CommanderUtils.list, [
     'requiredDataStreams',
     'content',
@@ -40,6 +45,7 @@ program
         includeOnly: options.onlyKeys,
         silent: options.silent,
       },
+      silent: options.silent,
       keyWhitelist: options.onlyKeys,
       POST: options.methods.indexOf('POST') > -1,
       PUT: options.methods.indexOf('PUT') > -1,

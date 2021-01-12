@@ -9,6 +9,11 @@ import { PageController } from '../controllers/PageController';
 program
   .command('graduate-pages <origin> <destination> [apiKey...]')
   .description('Graduate pages from one organization to another')
+  .option(
+    '-t, --silent',
+    'When specified, the graduation will not ask for user confirmation. Useful when the operation is running in an automated process',
+    false
+  )
   .option('-E, --ignorePages []', 'Pages to ignore. String separated by ",".', CommanderUtils.list)
   .option('-m, --methods []', 'HTTP method authorized by the Graduation', CommanderUtils.list, ['POST', 'PUT'])
   .option('-O, --output <filename>', 'Output log data into a specific filename', Logger.getFilename())
@@ -35,6 +40,7 @@ program
 
     // Set graduation options
     const graduateOptions: IGraduateOptions = {
+      silent: options.silent,
       diffOptions: diffOptions,
       POST: options.methods.indexOf('POST') > -1,
       PUT: options.methods.indexOf('PUT') > -1,

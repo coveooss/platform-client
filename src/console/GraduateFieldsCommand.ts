@@ -9,6 +9,11 @@ import { isArray } from 'underscore';
 program
   .command('graduate-fields <origin> <destination> [apiKey...]')
   .description('Graduate fields from one organization to another')
+  .option(
+    '-t, --silent',
+    'When specified, the graduation will not ask for user confirmation. Useful when the operation is running in an automated process',
+    false
+  )
   .option('-n, --onlyFields []', 'Only the fields to diff.', CommanderUtils.list, [])
   .option('-i, --ignoreFields []', 'Fields to ignore. String separated by ","', CommanderUtils.list, [])
   .option(
@@ -58,6 +63,7 @@ program
         sources: options.sources,
       },
       // keyBlacklist: _.union(options.ignoreKeys, ['sources']),
+      silent: options.silent,
       keyBlacklist: ['sources', 'system'],
       POST: options.methods.indexOf('POST') > -1,
       PUT: options.methods.indexOf('PUT') > -1,

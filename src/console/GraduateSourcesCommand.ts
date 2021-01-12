@@ -9,6 +9,11 @@ import { SourceController } from '../controllers/SourceController';
 program
   .command('graduate-sources <origin> <destination> [apiKey...]')
   .description('Graduate sources from one organization to another')
+  .option(
+    '-t, --silent',
+    'When specified, the graduation will not ask for user confirmation. Useful when the operation is running in an automated process',
+    false
+  )
   // .option('-r, --rebuild', 'Rebuild the source once created. Default is false', false)
   .option('-i, --keysToIgnore []', 'Keys to ignore from the JSON configuration. String separated by ","', CommanderUtils.list, [])
   .option(
@@ -83,6 +88,7 @@ program
         includeOnly: includeOnly,
         keysToIgnore: [...options.keysToIgnore, ...keysToIgnore],
       },
+      silent: options.silent,
       keyWhitelist: includeOnly,
       keyBlacklist: keysToIgnore,
       ensureFieldIntegrity: !options.skipFieldIntegrity,

@@ -11,6 +11,11 @@ import { DummyOrganization } from '../coveoObjects/DummyOrganization';
 program
   .command('upload-fields <origin> [apiKey]')
   .description('Upload fields to an organization.')
+  .option(
+    '-t, --silent',
+    'When specified, the graduation will not ask for user confirmation. Useful when the operation is running in an automated process',
+    false
+  )
   .option('-f, --fileToUpload <path>', 'Path to file containing field configuration')
   .option('-i, --ignoreKeys []', 'Keys to ignore. String separated by ","', CommanderUtils.list, [])
   .option('-o, --onlyKeys []', 'Diff only the specified keys. String separated by ","', CommanderUtils.list, [])
@@ -55,6 +60,7 @@ program
             sources: options.sources,
             originData: data,
           },
+          silent: options.silent,
           keyBlacklist: union(options.ignoreKeys, ['sources']),
           POST: options.methods.indexOf('POST') > -1,
           PUT: options.methods.indexOf('PUT') > -1,
