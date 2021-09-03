@@ -3,11 +3,14 @@ import * as program from 'commander';
 // It is important to first set the environment
 setEnvironmentIfNecessary();
 import { InteractionController } from './console/InteractionController';
+// import { printDeprecationWarning } from './console/deprecateWarning';
 
 // Setup notification updates in case of a new version
 const pkg: any = require('./../package.json');
 const updateNotifier = require('update-notifier');
 updateNotifier({ pkg }).notify();
+// TODO: Uncomment when @coveo/cli feature is ready
+// printDeprecationWarning();
 
 program
   .option('--env [value]', '(DEPRECATED) Environment (Production by default. Supported environments are: development|qa|production)')
