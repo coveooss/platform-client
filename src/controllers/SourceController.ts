@@ -257,9 +257,7 @@ export class SourceController extends BaseController {
       return (callback: any) => {
         // Check if source contains security provider. That is the case for sources like Salesforce.
         if (source.sourceContainsSecuredSecurityProvider()) {
-          const err = new Error(
-            'Cannot create source with security provider. Please create the source manually in the destination org first.'
-          );
+          const err = new Error('Cannot create sources with security provider.');
           callback(err);
           this.errorHandler(
             { orgId: this.organization2.getId() } as IGenericError,
