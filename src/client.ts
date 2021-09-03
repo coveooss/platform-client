@@ -3,7 +3,6 @@ import * as program from 'commander';
 // It is important to first set the environment
 setEnvironmentIfNecessary();
 import { InteractionController } from './console/InteractionController';
-// import { printDeprecationWarning } from './console/deprecateWarning';
 
 // Setup notification updates in case of a new version
 const pkg: any = require('./../package.json');
