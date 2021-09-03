@@ -256,7 +256,7 @@ export class SourceController extends BaseController {
     const asyncArray = diffResult.TO_CREATE.map((source: Source) => {
       return (callback: any) => {
         // Check if source contains security provider. That is the case for sources like Salesforce.
-        if (source.sourceContainsSecurityProvider()) {
+        if (source.sourceContainsSecuredSecurityProvider()) {
           const err = new Error(
             'Cannot create source with security provider. Please create the source manually in the destination org first.'
           );
