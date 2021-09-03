@@ -49,15 +49,9 @@ export class Source extends BaseCoveoObject implements ISource {
     return this.configuration['preConversionExtensions'];
   }
 
-  sourceContainsSecuredSecurityProvider(): boolean {
-    const secProv = this.getConfiguration()?.configuration?.securityProviders || {};
-    for (const key in secProv) {
-      // Dirty patch... But the coveo-platform-client will die really soon and be replaced by the @coveo/cli.
-      if (key !== 'Email Security Provider') {
-        return true;
-      }
-    }
-    return false;
+  sourceContainsSecurityProvider(): boolean {
+    const secProv = this.getConfiguration()?.configuration?.securityProviders;
+    return secProv !== {} && secProv !== undefined; // undefined for unit tests
   }
 
   restoreMappingIds(mappingIds: string[] = []) {
