@@ -67,6 +67,7 @@ program
       'configuration.startingAddresses',
       'configuration.sourceSecurityOption',
       'configuration.permissions',
+      'configuration.securityProviders',
       'additionalInfos',
     ];
 
