@@ -20,7 +20,9 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
-      - run: npm run build
+      - run: |
+          npm install
+          npm run build
       - name: Setup credentials
         run: |
           git config --global user.email action@github.com
