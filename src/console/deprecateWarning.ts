@@ -7,5 +7,3 @@ export function printDeprecationWarning() {
   )} package instead.\nhttps://www.npmjs.com/package/@coveo/cli`;
   console.log(boxen(message, { padding: 1, align: 'center', borderColor: 'yellow', borderStyle: 'round' }));
 }
-
-printDeprecationWarning();
