@@ -30,7 +30,7 @@
     "snyk": "^1.373.1",
     "strip-ansi": "^6.0.0",
     "typescript": "^3.9.7",
-    "underscore": "1.10.2",
+    "underscore": "1.12.1",
     "update-notifier": "^4.1.0"
   },
   "devDependencies": {
